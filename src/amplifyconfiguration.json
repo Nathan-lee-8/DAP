@@ -1,0 +1,39 @@
+{
+  "aws_project_region": "us-west-2",
+  "aws_appsync_graphqlEndpoint": "https://o577gsuqurdqbmpuu5izoycf44.appsync-api.us-west-2.amazonaws.com/graphql",
+  "aws_appsync_region": "us-west-2",
+  "aws_appsync_authenticationType": "AMAZON_COGNITO_USER_POOLS",
+  "aws_appsync_apiKey": "da2-lrqe42grn5hqvkyhlv4mj2zuq4",
+  "aws_cognito_identity_pool_id": "us-west-2:17f6cb6a-a97d-44a0-bdf6-3ca7646c784b",
+  "aws_cognito_region": "us-west-2",
+  "aws_user_pools_id": "us-west-2_mplWjm6T6",
+  "aws_user_pools_web_client_id": "n2h2eftfosqt5fh19ov3070me",
+  "oauth": {
+    "domain": "commhub.auth.us-west-2.amazoncognito.com"
+  },
+  "aws_cognito_username_attributes": [
+    "EMAIL"
+  ],
+  "aws_cognito_social_providers": [],
+  "aws_cognito_signup_attributes": [
+    "EMAIL",
+    "GIVEN_NAME",
+    "FAMILY_NAME"
+  ],
+  "aws_cognito_mfa_configuration": "OFF",
+  "aws_cognito_mfa_types": [],
+  "aws_cognito_password_protection_settings": {
+    "passwordPolicyMinLength": 8,
+    "passwordPolicyCharacters": [
+      "REQUIRES_LOWERCASE",
+      "REQUIRES_UPPERCASE",
+      "REQUIRES_NUMBERS",
+      "REQUIRES_SYMBOLS"
+    ]
+  },
+  "aws_cognito_verification_mechanisms": [
+    "EMAIL"
+  ],
+  "aws_user_files_s3_bucket": "communityhub-storage-960360463ecf2-dev",
+  "aws_user_files_s3_bucket_region": "us-west-2"
+}
