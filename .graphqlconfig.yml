@@ -1,0 +1,19 @@
+projects:
+  commhub:
+    schemaPath: amplify/backend/api/commhub/build/schema.graphql
+    includes:
+      - src/graphql/**/*.ts
+    excludes:
+      - ./amplify/**
+      - src/API.ts
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: src/API.ts
+        docsFilePath: src/graphql
+        region: us-west-2
+        apiId: null
+        maxDepth: 2
+extensions:
+  amplify:
+    version: 3
