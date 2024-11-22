@@ -1,0 +1,51 @@
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } }
+
+type User @model {
+  id: ID!
+  email: AWSEmail! @index(name: "byEmail", queryField: "userByEmail")
+  firstname: String
+  lastname: String
+  phonenumber: String
+  posts: [Post] @hasMany
+  followings: [Following] @hasMany(indexName: "followingsByUser", fields: ["id"])
+  chats: [UserChat] @hasMany(indexName: "chatsByUser", fields: ["id"])
+}
+
+type Post @model { 
+  id: ID!
+  title: String!
+  content: String!
+  type: String! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
+  createdAt: AWSDateTime!
+  userID: ID!
+  user: User @belongsTo(fields:["userID"])
+}
+
+type Following @model{ 
+  id: ID!
+  userID: ID! @index(name: "followingsByUser")
+}
+
+type UserChat @model{
+  id: ID!
+  userID: ID! @index(name: "chatsByUser")
+  chatID: ID! @index(name: "participantsByChat")
+  user: User @belongsTo(fields: ["userID"])
+  chat: Chat @belongsTo(fields: ["chatID"])
+}
+
+type Chat @model{ 
+  id: ID!
+  messages: [Message] @hasMany(indexName: "messagesByChat", fields: ["id"])
+  createdAt: AWSDateTime!
+  participants: [UserChat] @hasMany(indexName: "participantsByChat", fields: ["id"])
+}
+
+type Message @model{
+  id: ID!
+  content: String!
+  senderID: ID! @index(name: "messagesByUser")
+  sender: User @hasOne(fields: ["senderID"])
+  chatID: ID! @index(name: "messagesByChat", queryField: "messagesByChat", sortKeyFields: ["createdAt"])
+  createdAt: AWSDateTime!
+}
