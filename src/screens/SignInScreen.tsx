@@ -28,12 +28,14 @@ const SignInRoute = () => {
   const { setSignedIn, setUserId, setUserEmail, setFirstName, setLastName, 
     userEmail, firstname, lastname } = authContext;
 
+  const lowercaseEmail = userEmail.toLowerCase();
+
   const handleSignIn = async () => {
     try{
-      const res = await signIn({ username: userEmail, password: password });
+      const res = await signIn({ username: lowercaseEmail, password: password });
       if(!res.isSignedIn){
         navigation.navigate('Verify', { 
-          email: userEmail,
+          email: lowercaseEmail,
           firstname: firstname,
           lastname: lastname,
         });
@@ -42,12 +44,12 @@ const SignInRoute = () => {
       };
       const data = await client.graphql({
         query: userByEmail,
-        variables: { email: userEmail },
+        variables: { email: lowercaseEmail },
       });
       const user = data.data.userByEmail.items[0];
       setSignedIn(true);
       setUserId(user.id);
-      setUserEmail(user.email);
+      setUserEmail(lowercaseEmail);
       if(user.firstname) setFirstName(user.firstname);
       if(user.lastname) setLastName(user.lastname);
 
@@ -58,7 +60,7 @@ const SignInRoute = () => {
 
   const resetPw = async () => {
     try{
-      await resetPassword({username: userEmail});
+      await resetPassword({username: lowercaseEmail});
       navigation.navigate('ResetPassword');
       Alert.alert('Password reset email sent.', 
         'Please check your email to reset your password.');
@@ -107,12 +109,13 @@ const SignUpRoute = () => {
   const { userEmail , firstname, lastname,
     setUserEmail, setFirstName, setLastName } = authContext;
   const [password, setPassword] = useState('');
+  const lowercaseEmail = userEmail;
 
   const handleSignUp = async () => {
     try{
-      await signUp({ username: userEmail, password: password });
+      await signUp({ username: lowercaseEmail, password: password });
       navigation.navigate('Verify', { 
-        email: userEmail,
+        email: lowercaseEmail,
         firstname: firstname,
         lastname: lastname
       });

@@ -26,7 +26,7 @@ const VerifyScreen = () => {
       const user = await client.graphql({
         query: createUser,
         variables: {
-          input: { email: userEmail, firstname: firstname, lastname: lastname },
+          input: { email: userEmail.toLowerCase(), firstname: firstname, lastname: lastname },
         },
       });
       const id = user.data.createUser.id;

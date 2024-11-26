@@ -24,14 +24,14 @@ const HomeScreen = () => {
 
   type PostProps = { 
     title: string, 
-    content: String,
-    createdAt: String,
-    type: String,
+    content: string,
+    createdAt: string,
+    type: string,
     user: {
-      email: String,
-      firstname: String,
-      lastname: String,
-      phonenumber: String,
+      email: string,
+      firstname: string,
+      lastname: string,
+      phonenumber: string,
     },
   };
 
