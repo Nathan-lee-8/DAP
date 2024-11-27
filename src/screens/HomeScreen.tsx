@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import client from '../client';
 import { postsByDate } from '../graphql/queries';
 import { ModelSortDirection } from '../API';
@@ -7,6 +7,7 @@ import { AuthContext } from '../context/AuthContext';
 import { userByEmail } from '../graphql/queries';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SelectDropdown from 'react-native-select-dropdown';
+import styles from '../styles/Styles';
 
 /**
  * Displays the active HomeScreen for the current user including:
@@ -47,15 +48,17 @@ const HomeScreen = () => {
       try{
         const data = await client.graphql({
           query: userByEmail,
-          variables: { email: userEmail },
+          variables: { email: userEmail.toLowerCase() },
         });
         console.log('Fetched user info from fetchuserID.'); //REMOVE 
         const user = data.data.userByEmail.items[0];
         setUserId(user.id);
         if (user.firstname) setFirstName(user.firstname);
         if (user.lastname) setLastName(user.lastname);
-      } catch (error) {
-        console.log('Error fetching user ID', error);
+      } catch (error: any) {
+        if(error.messsage) console.log('Error fetching user ID', error.message);
+        else if(error.errors) console.log('Error fetching user ID', error.errors);
+        else console.log('Error fetching user ID', error);
       }
     };
     fetchUserId();
@@ -66,13 +69,13 @@ const HomeScreen = () => {
       try {
         const cachedData = await AsyncStorage.getItem('newsFeedCache' + postType);
         if (cachedData) {
-          const { data, timestamp } = JSON.parse(cachedData);
-          const cacheAge = Date.now() - timestamp;
+          const data = JSON.parse(cachedData);
+          const cacheAge = Date.now() - data.timestamp;
           const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
   
           // If cache is less than 1 hour old, use cached data
           if (cacheAge < oneHour) {
-            setNewsFeed(data);
+            setNewsFeed(data.posts);
             setLoading(false);
             return;
           }
@@ -110,8 +113,10 @@ const HomeScreen = () => {
           posts,
           timestamp: Date.now(),
         }));
-      } catch (error) {
-        console.log('Error fetching news feed', error);
+      } catch (error: any) {
+        if(error.messsage) console.log('Error fetching news feed', error.message);
+        else if(error.errors) console.log('Error fetching news feed', error.errors);
+        else console.log('Error fetching news feed', error);
       } finally {
         setLoading(false);
       }
@@ -121,29 +126,23 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>My News Feed For {userEmail} </Text>
       <SelectDropdown data={['FreeAndForSale','JobListings', 'VolunteerOpportunities']}
-        onSelect={(selectedItem) => {
-          setPostType(selectedItem);
-        }}
-        renderButton={(selectedItem) => {
-          return (
-            <View style={styles.dropdownButtonStyle}>
-              <Text style={styles.dropdownButtonTxtStyle}>
-                {(selectedItem) || 'FreeAndForSale'}
-              </Text>
-            </View>
-          );
-        }}
-        renderItem={(item) => {
-          return (
-            <View style={styles.dropdownItemStyle}>
-              <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-            </View>
-          );
-        }}
+        onSelect={(selectedItem) => setPostType(selectedItem)}
+        renderButton={(selectedItem) => (
+          <TouchableOpacity style={styles.dropdownButtonStyle}>
+            <Text style={styles.dropdownButtonTxtStyle}>
+              {(selectedItem) || 'FreeAndForSale'}
+            </Text>
+          </TouchableOpacity>
+        )}
+        renderItem={(item) => (
+          <View style={styles.dropdownItemStyle}>
+            <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+          </View>
+        )}
         dropdownStyle={styles.dropdownMenuStyle}
       />
-      <Text style={styles.title}>My News Feed For {userEmail} </Text>
       {loading ? (
         <Text>Loading posts... </Text>
       ) : (
@@ -163,53 +162,5 @@ const HomeScreen = () => {
     
   );
 };
-
-//Styles for HomeScreen
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  dropdownButtonStyle: {
-    width: 180,
-    height: 50,
-    backgroundColor: '#E9ECEF',
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-  },
-  dropdownButtonTxtStyle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#151E26',
-  },
-  dropdownMenuStyle: {
-    backgroundColor: '#E9ECEF',
-    borderRadius: 8,
-  },
-  dropdownItemStyle: {
-    width: '100%',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  dropdownItemTxtStyle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#151E26',
-  },
-});
 
 export default HomeScreen;
