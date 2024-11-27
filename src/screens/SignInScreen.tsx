@@ -25,45 +25,39 @@ const SignInRoute = () => {
     console.log("Auth context not defined");
     return null;
   };
-  const { setSignedIn, setUserId, setUserEmail, setFirstName, setLastName, 
-    userEmail, firstname, lastname } = authContext;
 
-  const lowercaseEmail = userEmail.toLowerCase();
+  const { setSignedIn, setUserId, setUserEmail, setFirstName, setLastName, userEmail } = authContext;
 
   const handleSignIn = async () => {
     try{
-      const res = await signIn({ username: lowercaseEmail, password: password });
+      const res = await signIn({ username: userEmail, password: password });
       if(!res.isSignedIn){
-        navigation.navigate('Verify', { 
-          email: lowercaseEmail,
-          firstname: firstname,
-          lastname: lastname,
-        });
+        navigation.navigate('Verify');
         Alert.alert('Please verify your email before signing in.');
         return;
       };
       const data = await client.graphql({
         query: userByEmail,
-        variables: { email: lowercaseEmail },
+        variables: { email: userEmail.toLowerCase() },
       });
       const user = data.data.userByEmail.items[0];
       setSignedIn(true);
       setUserId(user.id);
-      setUserEmail(lowercaseEmail);
       if(user.firstname) setFirstName(user.firstname);
       if(user.lastname) setLastName(user.lastname);
 
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      if(error.message) Alert.alert('Error', error.message);
+      if(error.errors) Alert.alert('Error', error.errors[0].meesage);
+      else Alert.alert('Error', 'An unexpected error occurred.');
     };
   };
 
   const resetPw = async () => {
     try{
-      await resetPassword({username: lowercaseEmail});
+      await resetPassword({username: userEmail});
       navigation.navigate('ResetPassword');
-      Alert.alert('Password reset email sent.', 
-        'Please check your email to reset your password.');
+      Alert.alert('Password reset email sent.', 'Please check your email to reset your password.');
     } catch (error : any) {
       Alert.alert('Error', 'Please enter a valid email.');
     }
@@ -106,19 +100,13 @@ const SignUpRoute = () => {
     console.log("Auth context not defined");
     return null;
   };
-  const { userEmail , firstname, lastname,
-    setUserEmail, setFirstName, setLastName } = authContext;
+  const { userEmail , firstname, lastname, setUserEmail, setFirstName, setLastName } = authContext;
   const [password, setPassword] = useState('');
-  const lowercaseEmail = userEmail;
 
   const handleSignUp = async () => {
     try{
-      await signUp({ username: lowercaseEmail, password: password });
-      navigation.navigate('Verify', { 
-        email: lowercaseEmail,
-        firstname: firstname,
-        lastname: lastname
-      });
+      await signUp({ username: userEmail, password: password });
+      navigation.navigate('Verify');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     };

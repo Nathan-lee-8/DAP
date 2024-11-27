@@ -17,7 +17,7 @@ const VerifyScreen = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { setSignedIn, setUserId, userEmail, firstname, lastname } = authContext;
+  const { setSignedIn, setUserId, setFirstName, setLastName, userEmail, firstname, lastname } = authContext;
   const [code, setCode] = useState('');
 
   const handleVerification = async () => {
@@ -31,7 +31,9 @@ const VerifyScreen = () => {
       });
       const id = user.data.createUser.id;
       setSignedIn(true); 
-      setUserId(id);    
+      setUserId(id);
+      if(firstname) setFirstName(firstname);
+      if(lastname) setLastName(lastname);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }

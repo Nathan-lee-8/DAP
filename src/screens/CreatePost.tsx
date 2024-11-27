@@ -1,10 +1,11 @@
 import { useContext, useState } from 'react';
-import { View, Text, Button, TextInput, Alert, ActivityIndicator, 
-  StyleSheet } from 'react-native';
+import { View, Text, Button, TextInput, Alert, TouchableOpacity, 
+  ActivityIndicator } from 'react-native';
 import { createPost } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
 import client from '../client';
 import SelectDropdown from 'react-native-select-dropdown';
+import styles from '../styles/Styles';
 
 const CreatePost = () => {
   const [title, setTitle] = useState('');
@@ -17,7 +18,7 @@ const CreatePost = () => {
     Alert.alert("ERR: Auth context not available.");
     return null;
   };
-  const { userId, firstname, lastname } = authContext;
+  const { userId } = authContext;
 
   const createUserPost = async () => {
     setLoading(true);
@@ -47,37 +48,34 @@ const CreatePost = () => {
   }
 
   return (
-    <View>
-      <Text>Create Post</Text>
-      <SelectDropdown data={['FreeAndForSale', 'JobListings', 'VolunteerOpportunities']}
-        onSelect={(selectedItem) => {
-          setPostType(selectedItem);
-        }}
-        renderButton={(selectedItem) => {
-          return (
-            <View style={styles.dropdownButtonStyle}>
-              <Text style={styles.dropdownButtonTxtStyle}>
-                {(selectedItem) || 'FreeAndForSale'}
-              </Text>
-            </View>
-          );
-        }}
-        renderItem={(item) => {
-          return (
-            <View style={styles.dropdownItemStyle}>
-              <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-            </View>
-          );
-        }}
+    <View style={styles.container}>
+      <Text style={styles.title}>Create Post</Text>
+      <SelectDropdown 
+        data={['FreeAndForSale', 'JobListings', 'VolunteerOpportunities']}
+        onSelect={(selectedItem) => setPostType(selectedItem)}
+        renderButton={(selectedItem) => (
+          <TouchableOpacity style={styles.dropdownButtonStyle} >
+            <Text style={styles.dropdownButtonTxtStyle}>
+              {(selectedItem) || 'FreeAndForSale'}
+            </Text>
+          </TouchableOpacity>
+        )}
+        renderItem={(item) => (
+          <View style={styles.dropdownItemStyle}>
+            <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
+          </View>
+        )}
         dropdownStyle={styles.dropdownMenuStyle}
       />
       <TextInput
+        style={styles.input}
         placeholder="Title"
         autoCapitalize='words'
         value={title}
         onChangeText={setTitle}
       />
       <TextInput
+        style={styles.input}
         placeholder='Content'
         value={content}
         onChangeText={setContent}
@@ -87,42 +85,5 @@ const CreatePost = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  dropdownButtonStyle: {
-    width: 180,
-    height: 50,
-    backgroundColor: '#E9ECEF',
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-  },
-  dropdownButtonTxtStyle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#151E26',
-  },
-  dropdownMenuStyle: {
-    backgroundColor: '#E9ECEF',
-    borderRadius: 8,
-  },
-  dropdownItemStyle: {
-    width: '100%',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  dropdownItemTxtStyle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#151E26',
-  },
-});
 
 export default CreatePost;
