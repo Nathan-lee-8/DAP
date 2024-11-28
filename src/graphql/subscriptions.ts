@@ -27,6 +27,10 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser($filter: Mo
       nextToken
       __typename
     }
+    messages {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -55,6 +59,10 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser($filter: Mo
       nextToken
       __typename
     }
+    messages {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -80,6 +88,10 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser($filter: Mo
       __typename
     }
     chats {
+      nextToken
+      __typename
+    }
+    messages {
       nextToken
       __typename
     }
@@ -177,8 +189,21 @@ export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing($
   onCreateFollowing(filter: $filter) {
     id
     userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    followedAt
     createdAt
     updatedAt
+    userFollowingsId
     __typename
   }
 }
@@ -190,8 +215,21 @@ export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing($
   onUpdateFollowing(filter: $filter) {
     id
     userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    followedAt
     createdAt
     updatedAt
+    userFollowingsId
     __typename
   }
 }
@@ -203,8 +241,21 @@ export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing($
   onDeleteFollowing(filter: $filter) {
     id
     userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    followedAt
     createdAt
     updatedAt
+    userFollowingsId
     __typename
   }
 }
@@ -216,7 +267,6 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($fi
   onCreateUserChat(filter: $filter) {
     id
     userID
-    chatID
     user {
       id
       email
@@ -227,14 +277,23 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($fi
       updatedAt
       __typename
     }
+    chatID
     chat {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
     }
+    joinedAt
+    unreadMessageCount
+    lastReadAt
+    isMuted
     createdAt
     updatedAt
+    userChatsId
+    chatParticipantsId
     __typename
   }
 }
@@ -246,7 +305,6 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($fi
   onUpdateUserChat(filter: $filter) {
     id
     userID
-    chatID
     user {
       id
       email
@@ -257,14 +315,23 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($fi
       updatedAt
       __typename
     }
+    chatID
     chat {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
     }
+    joinedAt
+    unreadMessageCount
+    lastReadAt
+    isMuted
     createdAt
     updatedAt
+    userChatsId
+    chatParticipantsId
     __typename
   }
 }
@@ -276,7 +343,6 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($fi
   onDeleteUserChat(filter: $filter) {
     id
     userID
-    chatID
     user {
       id
       email
@@ -287,14 +353,23 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($fi
       updatedAt
       __typename
     }
+    chatID
     chat {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
     }
+    joinedAt
+    unreadMessageCount
+    lastReadAt
+    isMuted
     createdAt
     updatedAt
+    userChatsId
+    chatParticipantsId
     __typename
   }
 }
@@ -305,11 +380,13 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($fi
 export const onCreateChat = /* GraphQL */ `subscription OnCreateChat($filter: ModelSubscriptionChatFilterInput) {
   onCreateChat(filter: $filter) {
     id
+    name
+    isGroup
+    createdAt
     messages {
       nextToken
       __typename
     }
-    createdAt
     participants {
       nextToken
       __typename
@@ -325,11 +402,13 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat($filter: Mo
 export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat($filter: ModelSubscriptionChatFilterInput) {
   onUpdateChat(filter: $filter) {
     id
+    name
+    isGroup
+    createdAt
     messages {
       nextToken
       __typename
     }
-    createdAt
     participants {
       nextToken
       __typename
@@ -345,11 +424,13 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat($filter: Mo
 export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat($filter: ModelSubscriptionChatFilterInput) {
   onDeleteChat(filter: $filter) {
     id
+    name
+    isGroup
+    createdAt
     messages {
       nextToken
       __typename
     }
-    createdAt
     participants {
       nextToken
       __typename
@@ -378,8 +459,18 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage($filt
       __typename
     }
     chatID
+    chat {
+      id
+      name
+      isGroup
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
+    chatMessagesId
     __typename
   }
 }
@@ -403,8 +494,18 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage($filt
       __typename
     }
     chatID
+    chat {
+      id
+      name
+      isGroup
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
+    chatMessagesId
     __typename
   }
 }
@@ -428,8 +529,18 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage($filt
       __typename
     }
     chatID
+    chat {
+      id
+      name
+      isGroup
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
+    chatMessagesId
     __typename
   }
 }

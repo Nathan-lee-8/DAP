@@ -3,11 +3,11 @@ import { View, TextInput, FlatList, TouchableOpacity,
   Text, Image, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { FindUserParamList } from '../types/rootStackParamTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import filter from 'lodash/filter';
-import { listUsers } from '../graphql/queries';
-import { FindUserParamList } from '../types/rootStackParamTypes';
 import client  from '../client';
+import { listUsers } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 

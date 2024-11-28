@@ -85,7 +85,6 @@ const MessageUsers = () => {
   const handleSendMessage = (user: User) => {
     //Add fucntiaonlity to check if chatroom exists before creating a chat
     navigation.navigate('CreateChat', { user: user});
-    console.log(`Sending Message To: ${user.firstname} ${user.lastname}`);
     return(<View> Loading</View>)
   }
 

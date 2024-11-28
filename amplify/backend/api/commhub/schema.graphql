@@ -7,8 +7,9 @@ type User @model {
   lastname: String
   phonenumber: String
   posts: [Post] @hasMany
-  followings: [Following] @hasMany(indexName: "followingsByUser", fields: ["id"])
-  chats: [UserChat] @hasMany(indexName: "chatsByUser", fields: ["id"])
+  followings: [Following] @hasMany
+  chats: [UserChat] @hasMany
+  messages: [Message] @hasMany
 }
 
 type Post @model { 
@@ -23,29 +24,39 @@ type Post @model {
 
 type Following @model{ 
   id: ID!
-  userID: ID! @index(name: "followingsByUser")
+  userID: ID! @index(name: "followingsByUser", queryField: "followingsByUser", sortKeyFields: ["followedAt"])
+  followedUserID: ID!
+  followedUser: User @belongsTo(fields: ["followedUserID"])
+  followedAt: AWSDateTime!
 }
 
 type UserChat @model{
   id: ID!
-  userID: ID! @index(name: "chatsByUser")
-  chatID: ID! @index(name: "participantsByChat")
+  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["joinedAt"])
   user: User @belongsTo(fields: ["userID"])
+  chatID: ID! 
   chat: Chat @belongsTo(fields: ["chatID"])
+  joinedAt: AWSDateTime
+  unreadMessageCount: Int 
+  lastReadAt: AWSDateTime
+  isMuted: Boolean
 }
 
 type Chat @model{ 
   id: ID!
-  messages: [Message] @hasMany(indexName: "messagesByChat", fields: ["id"])
-  createdAt: AWSDateTime!
-  participants: [UserChat] @hasMany(indexName: "participantsByChat", fields: ["id"])
+  name: String!
+  isGroup: Boolean!
+  createdAt: AWSDateTime! 
+  messages: [Message] @hasMany
+  participants: [UserChat] @hasMany
 }
 
 type Message @model{
   id: ID!
   content: String!
-  senderID: ID! @index(name: "messagesByUser")
-  sender: User @hasOne(fields: ["senderID"])
+  senderID: ID! @index(name: "messagesByUser", queryField: "messagesByUser", sortKeyFields: ["createdAt"])
+  sender: User @belongsTo(fields: ["senderID"])
   chatID: ID! @index(name: "messagesByChat", queryField: "messagesByChat", sortKeyFields: ["createdAt"])
+  chat: Chat @belongsTo(fields: ["chatID"])
   createdAt: AWSDateTime!
 }
