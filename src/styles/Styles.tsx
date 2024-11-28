@@ -11,6 +11,7 @@ const styles = StyleSheet.create({
       fontSize: 24,
       fontWeight: 'bold',
       alignSelf: 'center',
+      marginBottom: 20,
     },
     dropdownButtonStyle: {
       width: 240,

@@ -1,10 +1,9 @@
 import { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import client from '../client';
-import { postsByDate } from '../graphql/queries';
+import { postsByDate, userByEmail } from '../graphql/queries';
 import { ModelSortDirection } from '../API';
 import { AuthContext } from '../context/AuthContext';
-import { userByEmail } from '../graphql/queries';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SelectDropdown from 'react-native-select-dropdown';
 import styles from '../styles/Styles';
@@ -45,13 +44,21 @@ const HomeScreen = () => {
     if(userId != '') return;
     console.log("UserId is: ", userId);
     const fetchUserId = async () => {
+      const cachedUser = await AsyncStorage.getItem('currUser');
+      if(cachedUser) {
+        const user = JSON.parse(cachedUser);
+        if(user.id) setUserId(user.id);
+        if(user.firstname) setFirstName(user.firstname);
+        if(user.lastname) setLastName(user.lastname);
+      }
       try{
         const data = await client.graphql({
           query: userByEmail,
           variables: { email: userEmail.toLowerCase() },
         });
-        console.log('Fetched user info from fetchuserID.'); //REMOVE 
         const user = data.data.userByEmail.items[0];
+        console.log('Fetched current user & set cache'); //REMOVE 
+        AsyncStorage.setItem('currUser', JSON.stringify(user));
         setUserId(user.id);
         if (user.firstname) setFirstName(user.firstname);
         if (user.lastname) setLastName(user.lastname);
@@ -152,7 +159,7 @@ const HomeScreen = () => {
             <View style={{ marginBottom: 15 }}>
               <Text style={{ fontWeight: 'bold' }}>{item.type}: {item.title}</Text>
               <Text>{item.content}</Text>
-              <Text>Posted by: {item.user.firstname || 'Unknown User'} {item.user.lastname}</Text>
+              <Text>Posted by: {item.user.firstname} {item.user.lastname}</Text>
               <Text>Contact: {item.user.email}</Text>
             </View>
           )}

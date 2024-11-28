@@ -31,7 +31,6 @@ const CreatePost = () => {
             content: content,
             type: postType,
             userID: userId,
-            userPostsId: userId,
           }
         },
       }); 

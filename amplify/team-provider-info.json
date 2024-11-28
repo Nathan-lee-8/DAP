@@ -12,11 +12,11 @@
       "AmplifyAppId": "d2o1d4k92u2uqi"
     },
     "categories": {
-      "api": {
-        "commhub": {}
-      },
       "auth": {
         "commHub": {}
+      },
+      "api": {
+        "commhub": {}
       }
     }
   }

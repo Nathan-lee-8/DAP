@@ -48,7 +48,7 @@ const SignInRoute = () => {
 
     } catch (error: any) {
       if(error.message) Alert.alert('Error', error.message);
-      if(error.errors) Alert.alert('Error', error.errors[0].meesage);
+      if(error.errors) Alert.alert('Error', error.errors[0].message);
       else Alert.alert('Error', 'An unexpected error occurred.');
     };
   };

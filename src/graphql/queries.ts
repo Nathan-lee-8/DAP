@@ -27,6 +27,10 @@ export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
       nextToken
       __typename
     }
+    messages {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -104,8 +108,21 @@ export const getFollowing = /* GraphQL */ `query GetFollowing($id: ID!) {
   getFollowing(id: $id) {
     id
     userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    followedAt
     createdAt
     updatedAt
+    userFollowingsId
     __typename
   }
 }
@@ -122,8 +139,11 @@ export const listFollowings = /* GraphQL */ `query ListFollowings(
     items {
       id
       userID
+      followedUserID
+      followedAt
       createdAt
       updatedAt
+      userFollowingsId
       __typename
     }
     nextToken
@@ -138,7 +158,6 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
   getUserChat(id: $id) {
     id
     userID
-    chatID
     user {
       id
       email
@@ -149,14 +168,23 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       updatedAt
       __typename
     }
+    chatID
     chat {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
     }
+    joinedAt
+    unreadMessageCount
+    lastReadAt
+    isMuted
     createdAt
     updatedAt
+    userChatsId
+    chatParticipantsId
     __typename
   }
 }
@@ -174,8 +202,14 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
       id
       userID
       chatID
+      joinedAt
+      unreadMessageCount
+      lastReadAt
+      isMuted
       createdAt
       updatedAt
+      userChatsId
+      chatParticipantsId
       __typename
     }
     nextToken
@@ -189,11 +223,13 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
 export const getChat = /* GraphQL */ `query GetChat($id: ID!) {
   getChat(id: $id) {
     id
+    name
+    isGroup
+    createdAt
     messages {
       nextToken
       __typename
     }
-    createdAt
     participants {
       nextToken
       __typename
@@ -211,6 +247,8 @@ export const listChats = /* GraphQL */ `query ListChats(
   listChats(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
@@ -236,8 +274,18 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       __typename
     }
     chatID
+    chat {
+      id
+      name
+      isGroup
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
+    chatMessagesId
     __typename
   }
 }
@@ -258,6 +306,8 @@ export const listMessages = /* GraphQL */ `query ListMessages(
       chatID
       createdAt
       updatedAt
+      userMessagesId
+      chatMessagesId
       __typename
     }
     nextToken
@@ -323,13 +373,6 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       type
       createdAt
       userID
-      user{
-        id
-        email
-        firstname
-        lastname
-        phonenumber
-      }
       updatedAt
       userPostsId
       __typename
@@ -342,15 +385,17 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
   APITypes.PostsByDateQueryVariables,
   APITypes.PostsByDateQuery
 >;
-export const followingsByUserID = /* GraphQL */ `query FollowingsByUserID(
+export const followingsByUser = /* GraphQL */ `query FollowingsByUser(
   $userID: ID!
+  $followedAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelFollowingFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  followingsByUserID(
+  followingsByUser(
     userID: $userID
+    followedAt: $followedAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -359,8 +404,11 @@ export const followingsByUserID = /* GraphQL */ `query FollowingsByUserID(
     items {
       id
       userID
+      followedUserID
+      followedAt
       createdAt
       updatedAt
+      userFollowingsId
       __typename
     }
     nextToken
@@ -368,18 +416,20 @@ export const followingsByUserID = /* GraphQL */ `query FollowingsByUserID(
   }
 }
 ` as GeneratedQuery<
-  APITypes.FollowingsByUserIDQueryVariables,
-  APITypes.FollowingsByUserIDQuery
+  APITypes.FollowingsByUserQueryVariables,
+  APITypes.FollowingsByUserQuery
 >;
-export const userChatsByUserID = /* GraphQL */ `query UserChatsByUserID(
+export const chatsByUser = /* GraphQL */ `query ChatsByUser(
   $userID: ID!
+  $joinedAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserChatFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  userChatsByUserID(
+  chatsByUser(
     userID: $userID
+    joinedAt: $joinedAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -389,8 +439,14 @@ export const userChatsByUserID = /* GraphQL */ `query UserChatsByUserID(
       id
       userID
       chatID
+      joinedAt
+      unreadMessageCount
+      lastReadAt
+      isMuted
       createdAt
       updatedAt
+      userChatsId
+      chatParticipantsId
       __typename
     }
     nextToken
@@ -398,48 +454,20 @@ export const userChatsByUserID = /* GraphQL */ `query UserChatsByUserID(
   }
 }
 ` as GeneratedQuery<
-  APITypes.UserChatsByUserIDQueryVariables,
-  APITypes.UserChatsByUserIDQuery
+  APITypes.ChatsByUserQueryVariables,
+  APITypes.ChatsByUserQuery
 >;
-export const userChatsByChatID = /* GraphQL */ `query UserChatsByChatID(
-  $chatID: ID!
-  $sortDirection: ModelSortDirection
-  $filter: ModelUserChatFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  userChatsByChatID(
-    chatID: $chatID
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      userID
-      chatID
-      createdAt
-      updatedAt
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.UserChatsByChatIDQueryVariables,
-  APITypes.UserChatsByChatIDQuery
->;
-export const messagesBySenderID = /* GraphQL */ `query MessagesBySenderID(
+export const messagesByUser = /* GraphQL */ `query MessagesByUser(
   $senderID: ID!
+  $createdAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelMessageFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  messagesBySenderID(
+  messagesByUser(
     senderID: $senderID
+    createdAt: $createdAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -452,6 +480,8 @@ export const messagesBySenderID = /* GraphQL */ `query MessagesBySenderID(
       chatID
       createdAt
       updatedAt
+      userMessagesId
+      chatMessagesId
       __typename
     }
     nextToken
@@ -459,8 +489,8 @@ export const messagesBySenderID = /* GraphQL */ `query MessagesBySenderID(
   }
 }
 ` as GeneratedQuery<
-  APITypes.MessagesBySenderIDQueryVariables,
-  APITypes.MessagesBySenderIDQuery
+  APITypes.MessagesByUserQueryVariables,
+  APITypes.MessagesByUserQuery
 >;
 export const messagesByChat = /* GraphQL */ `query MessagesByChat(
   $chatID: ID!
@@ -485,6 +515,8 @@ export const messagesByChat = /* GraphQL */ `query MessagesByChat(
       chatID
       createdAt
       updatedAt
+      userMessagesId
+      chatMessagesId
       __typename
     }
     nextToken

@@ -30,6 +30,10 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
       nextToken
       __typename
     }
+    messages {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -61,6 +65,10 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser(
       nextToken
       __typename
     }
+    messages {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     __typename
@@ -89,6 +97,10 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
       __typename
     }
     chats {
+      nextToken
+      __typename
+    }
+    messages {
       nextToken
       __typename
     }
@@ -198,8 +210,21 @@ export const createFollowing = /* GraphQL */ `mutation CreateFollowing(
   createFollowing(input: $input, condition: $condition) {
     id
     userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    followedAt
     createdAt
     updatedAt
+    userFollowingsId
     __typename
   }
 }
@@ -214,8 +239,21 @@ export const updateFollowing = /* GraphQL */ `mutation UpdateFollowing(
   updateFollowing(input: $input, condition: $condition) {
     id
     userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    followedAt
     createdAt
     updatedAt
+    userFollowingsId
     __typename
   }
 }
@@ -230,8 +268,21 @@ export const deleteFollowing = /* GraphQL */ `mutation DeleteFollowing(
   deleteFollowing(input: $input, condition: $condition) {
     id
     userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      createdAt
+      updatedAt
+      __typename
+    }
+    followedAt
     createdAt
     updatedAt
+    userFollowingsId
     __typename
   }
 }
@@ -246,7 +297,6 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
   createUserChat(input: $input, condition: $condition) {
     id
     userID
-    chatID
     user {
       id
       email
@@ -257,14 +307,23 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
       updatedAt
       __typename
     }
+    chatID
     chat {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
     }
+    joinedAt
+    unreadMessageCount
+    lastReadAt
+    isMuted
     createdAt
     updatedAt
+    userChatsId
+    chatParticipantsId
     __typename
   }
 }
@@ -279,7 +338,6 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
   updateUserChat(input: $input, condition: $condition) {
     id
     userID
-    chatID
     user {
       id
       email
@@ -290,14 +348,23 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
       updatedAt
       __typename
     }
+    chatID
     chat {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
     }
+    joinedAt
+    unreadMessageCount
+    lastReadAt
+    isMuted
     createdAt
     updatedAt
+    userChatsId
+    chatParticipantsId
     __typename
   }
 }
@@ -312,7 +379,6 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
   deleteUserChat(input: $input, condition: $condition) {
     id
     userID
-    chatID
     user {
       id
       email
@@ -323,14 +389,23 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
       updatedAt
       __typename
     }
+    chatID
     chat {
       id
+      name
+      isGroup
       createdAt
       updatedAt
       __typename
     }
+    joinedAt
+    unreadMessageCount
+    lastReadAt
+    isMuted
     createdAt
     updatedAt
+    userChatsId
+    chatParticipantsId
     __typename
   }
 }
@@ -344,11 +419,13 @@ export const createChat = /* GraphQL */ `mutation CreateChat(
 ) {
   createChat(input: $input, condition: $condition) {
     id
+    name
+    isGroup
+    createdAt
     messages {
       nextToken
       __typename
     }
-    createdAt
     participants {
       nextToken
       __typename
@@ -367,11 +444,13 @@ export const updateChat = /* GraphQL */ `mutation UpdateChat(
 ) {
   updateChat(input: $input, condition: $condition) {
     id
+    name
+    isGroup
+    createdAt
     messages {
       nextToken
       __typename
     }
-    createdAt
     participants {
       nextToken
       __typename
@@ -390,11 +469,13 @@ export const deleteChat = /* GraphQL */ `mutation DeleteChat(
 ) {
   deleteChat(input: $input, condition: $condition) {
     id
+    name
+    isGroup
+    createdAt
     messages {
       nextToken
       __typename
     }
-    createdAt
     participants {
       nextToken
       __typename
@@ -426,8 +507,18 @@ export const createMessage = /* GraphQL */ `mutation CreateMessage(
       __typename
     }
     chatID
+    chat {
+      id
+      name
+      isGroup
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
+    chatMessagesId
     __typename
   }
 }
@@ -454,8 +545,18 @@ export const updateMessage = /* GraphQL */ `mutation UpdateMessage(
       __typename
     }
     chatID
+    chat {
+      id
+      name
+      isGroup
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
+    chatMessagesId
     __typename
   }
 }
@@ -482,8 +583,18 @@ export const deleteMessage = /* GraphQL */ `mutation DeleteMessage(
       __typename
     }
     chatID
+    chat {
+      id
+      name
+      isGroup
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
+    chatMessagesId
     __typename
   }
 }
