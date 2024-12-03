@@ -518,7 +518,6 @@ export const createMessage = /* GraphQL */ `mutation CreateMessage(
     createdAt
     updatedAt
     userMessagesId
-    chatMessagesId
     __typename
   }
 }

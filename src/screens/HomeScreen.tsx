@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import client from '../client';
 import { postsByDate, userByEmail } from '../graphql/queries';
-import { ModelSortDirection } from '../API';
+import { ModelSortDirection, Post } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -20,22 +20,14 @@ const HomeScreen = () => {
     console.log("Auth context not defined");
     return null;
   };
-  const { userId, userEmail, setUserId, setFirstName, setLastName } = authContext;
+  const { userId, userEmail, firstname, lastname,
+     setUserId, setFirstName, setLastName } = authContext;
 
-  type PostProps = { 
-    title: string, 
-    content: string,
-    createdAt: string,
-    type: string,
-    user: {
-      email: string,
-      firstname: string,
-      lastname: string,
-      phonenumber: string,
-    },
-  };
+  let headerName = userEmail;
+  if(firstname) headerName = firstname;
+  if(lastname) headerName += ' ' + lastname;
 
-  const [newsFeed, setNewsFeed] = useState<PostProps[]> ([]);
+  const [newsFeed, setNewsFeed] = useState<Post[]> ([]);
   const [loading, setLoading] = useState(true);
   const [postType, setPostType] = useState('FreeAndForSale');
   
@@ -78,9 +70,9 @@ const HomeScreen = () => {
         if (cachedData) {
           const data = JSON.parse(cachedData);
           const cacheAge = Date.now() - data.timestamp;
-          const oneHour = 60 * 60 * 1000; // 1 hour in milliseconds
+          const oneHour = 5 * 60 * 1000; // 5 minute in milliseconds
   
-          // If cache is less than 1 hour old, use cached data
+          // If cache is less than 5 minute old, use cached data
           if (cacheAge < oneHour) {
             setNewsFeed(data.posts);
             setLoading(false);
@@ -105,15 +97,9 @@ const HomeScreen = () => {
             sortDirection: ModelSortDirection.DESC,
             limit: 10,
           },
-        });
-        console.log('Fetched graphql from fetchnewsfeed.'); //REMOVE 
-        const posts: PostProps[] = allPosts.data.postsByDate.items.map((post: any) => ({
-          title: post.title,
-          content: post.content,
-          type: post.type,
-          createdAt: post.createdAt,
-          user: post.user, // Add the user data here
-        }));
+        }); 
+        console.log('Fetched posts from fetchnewsfeed.');
+        const posts = allPosts.data.postsByDate.items;
         setNewsFeed(posts);
         
         await AsyncStorage.setItem('newsFeedCache' + postType, JSON.stringify({
@@ -133,7 +119,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>My News Feed For {userEmail} </Text>
+      <Text style={styles.title}>My News Feed For {headerName} </Text>
       <SelectDropdown data={['FreeAndForSale','JobListings', 'VolunteerOpportunities']}
         onSelect={(selectedItem) => setPostType(selectedItem)}
         renderButton={(selectedItem) => (
@@ -155,14 +141,23 @@ const HomeScreen = () => {
       ) : (
         <FlatList
           data={newsFeed}
-          renderItem={({ item }) => (
+          renderItem={({ item }) => {
+            let displayName = "";
+            let displayEmail = "";
+            if(item.user){
+              if(item.user.firstname) displayName += item.user.firstname;
+              if(item.user.lastname) displayName += " " + item.user.lastname;
+              if(item.user.email) displayEmail = item.user.email;
+            }
+            return (
             <View style={{ marginBottom: 15 }}>
               <Text style={{ fontWeight: 'bold' }}>{item.type}: {item.title}</Text>
               <Text>{item.content}</Text>
-              <Text>Posted by: {item.user.firstname} {item.user.lastname}</Text>
-              <Text>Contact: {item.user.email}</Text>
+              <Text>Posted by: {displayName}</Text>
+              <Text>Contact: {displayEmail}</Text>
+              <Text>Created At: {item.createdAt}</Text>
             </View>
-          )}
+          )}}
         />
       )}
     </View>

@@ -87,6 +87,29 @@ const styles = StyleSheet.create({
         fontWeight: 'bold', 
         fontSize: 14 
     },
+    myMessage: {
+      alignSelf: 'flex-end',
+      backgroundColor: '#0084ff',
+      borderRadius: 10,
+      padding: 10,
+      margin: 5,
+      maxWidth: '80%',
+    },
+    otherMessage: {
+      alignSelf: 'flex-start',
+      backgroundColor: '#f0f0f0',
+      borderRadius: 10,
+      padding: 10,
+      margin: 5,
+      maxWidth: '80%',
+    },
+    timestamp: {
+      fontSize: 9,
+      color: '#666',
+      alignSelf: 'center',
+      verticalAlign: 'middle',
+      margin: 5,
+    },
 });
 
   export default styles;

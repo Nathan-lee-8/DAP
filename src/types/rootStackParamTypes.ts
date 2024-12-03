@@ -1,3 +1,5 @@
+import{ User, UserChat } from '../API';
+
 export type RootStackParamList = {
     SignIn: undefined;
     Verify: undefined;
@@ -14,44 +16,11 @@ export type SignedInTabParamList = {
 
 export type MessagingStackParamList = {
     Messaging: undefined;
-    ChatRoom: { 
-        user: {
-            id: string;
-            email: string;
-            firstname?: string | null;
-            lastname?: string | null;
-            avatarUrl?: string | null;
-            phonenumber?: string | null;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
-    CreateChat: {
-        user: {
-            id: string;
-            email: string;
-            firstname?: string | null;
-            lastname?: string | null;
-            avatarUrl?: string | null;
-            phonenumber?: string | null;
-            createdAt: string;
-            updatedAt: string;
-        };
-    }
+    ChatRoom: { userChat: UserChat};
+    CreateChat: { user: User}
 }
 
 export type FindUserParamList = {
     FindUsers: undefined;
-    ViewProfiles: { 
-        user: {
-            id: string;
-            email: string;
-            firstname?: string | null;
-            lastname?: string | null;
-            avatarUrl?: string | null;
-            phonenumber?: string | null;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
+    ViewProfiles: { user: User; };
 }
