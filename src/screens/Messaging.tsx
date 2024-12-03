@@ -1,34 +1,49 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity,
+import { View, TextInput, FlatList, TouchableOpacity, Button,
   Text, Image, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import filter from 'lodash/filter';
-import { listUsers } from '../graphql/queries';
+import { listUsers, chatsByUser } from '../graphql/queries';
 import { MessagingStackParamList } from '../types/rootStackParamTypes';
+import { ModelSortDirection, UserChat, User } from '../API';
 import client  from '../client';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 
-interface User {
-  id: string,
-  email: string,
-  firstname?: string | null,
-  lastname?: string | null,
-  avatarUrl?: string,
-  phonenumber?: string | null,
-  createdAt: string,
-  updatedAt: string,
-}
-
 const MessageUsers = () => {
   const [search, setSearch] = useState<string | any>('');
   const [data, setData] = useState<User[]>([]);
+  const [chatRooms, setChatRooms] = useState<UserChat[]>([])
   const [filteredData, setFilteredData] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const currUserId = useContext(AuthContext)?.userId;
+  const authContext = useContext(AuthContext);
+  if(!authContext){
+    console.log("Auth context not defined");
+    return;
+  }
+  const currUserId = authContext.userId;
 
+  const fetchChatRooms = async () => {
+    try {
+      const chatRooms = await client.graphql({
+        query: chatsByUser,
+        variables: {
+          userID: currUserId,
+          sortDirection: ModelSortDirection.DESC,
+        }
+      });
+      const chatRoomData = chatRooms.data.chatsByUser.items;
+      setChatRooms(chatRoomData);
+      console.log('Fetched & cached from fetchChatRooms.', chatRoomData);
+      await AsyncStorage.setItem('chatRoomsCache', JSON.stringify({chatRoomData: chatRoomData}));
+    } catch (error) {
+      console.log('Error fetching chat rooms', error);
+    }
+  };
+  
+  //Fetches users to populate the Search bar
   const fetchUsers = async () => {
     try{
       const users = await client.graphql({
@@ -44,6 +59,8 @@ const MessageUsers = () => {
     }
   };
 
+  //On page load: check if cache contains users and loads from cache. 
+  //If not, calls fetch users.
   useEffect(() => {
     const initializeCache = async () => {
       setLoading(true);
@@ -55,6 +72,13 @@ const MessageUsers = () => {
         } else {
           await fetchUsers();
         }
+        const cachedChatRooms = await AsyncStorage.getItem('chatRoomsCache');
+        if(cachedChatRooms){
+          const parsedChatRooms = JSON.parse(cachedChatRooms).chatRoomData;
+          setChatRooms(parsedChatRooms);
+        } else {
+          await fetchChatRooms();
+        }
       } catch (error) {
         console.log('Error initializing cache', error);
       } finally {
@@ -64,6 +88,7 @@ const MessageUsers = () => {
     initializeCache();
   }, []);
 
+  //Handles querying functionality for the search bar. Filters users by search text.
   const handleSearch = async (query: string) => {
     setSearch(query);
     if(!query){
@@ -81,11 +106,26 @@ const MessageUsers = () => {
     setFilteredData(results);
   };
 
+  //Handles when user wants to message a user: checks if chatroom exists before creating new one
   const navigation = useNavigation<NativeStackNavigationProp<MessagingStackParamList, 'ChatRoom'>>();
   const handleSendMessage = (user: User) => {
+    for (const chatRoom of chatRooms) {
+      const participants = chatRoom.chat?.participants?.items;
+      if(participants && participants[0] && participants[1]){
+        if(participants[0].user?.id === user.id || participants[1].user?.id === user.id){
+          handleOpenChatRoom(chatRoom);
+          console.log('Chatroom already exists');
+          return;
+        }
+      }
+    };
     //Add fucntiaonlity to check if chatroom exists before creating a chat
     navigation.navigate('CreateChat', { user: user});
-    return(<View> Loading</View>)
+    return(<View> Loading</View>);
+  };
+
+  const handleOpenChatRoom = (chatRoom: UserChat) => {
+    navigation.navigate('ChatRoom', { userChat: chatRoom });
   }
 
   if (loading) {
@@ -126,6 +166,26 @@ const MessageUsers = () => {
         )}
         />
       )}
+      <FlatList
+        data={chatRooms}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => {
+          let chatname = "";
+          if(item.chat) chatname = item.chat.name;
+          return (
+          <View>
+            <Image style={styles.avatar} source={{}}/>
+            <View>
+              <Text>{chatname}</Text>
+              <Text>{item.createdAt}</Text>
+            </View>
+            <TouchableOpacity style={styles.button} onPress={() => handleOpenChatRoom(item)}>
+              <Text style={styles.buttonText}>Message</Text>
+            </TouchableOpacity>            
+          </View>
+        )}}
+      />
+      <Button title="Fetch Chat rooms" onPress={fetchChatRooms}/>
     </View>
   );
 };

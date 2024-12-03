@@ -227,10 +227,33 @@ export const getChat = /* GraphQL */ `query GetChat($id: ID!) {
     isGroup
     createdAt
     messages {
+      items {
+        id
+        content
+        senderID
+        sender{
+          id
+          email
+          firstname
+          lastname
+        }
+        chatID
+        createdAt
+        __typename
+      }
       nextToken
       __typename
     }
     participants {
+      items{
+        user{
+          id
+          email
+          firstname
+          lastname
+          __typename
+        }
+      }
       nextToken
       __typename
     }
@@ -371,6 +394,13 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       title
       content
       type
+      user{
+        id
+        email
+        firstname
+        lastname
+        __typename
+      }
       createdAt
       userID
       updatedAt
@@ -439,6 +469,25 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       id
       userID
       chatID
+      chat{
+        id
+        name
+        isGroup
+        createdAt
+        participants {
+          items{
+            user{
+              id
+              email
+              firstname
+              lastname
+              __typename
+            }
+          }
+          nextToken
+          __typename
+        }
+      }
       joinedAt
       unreadMessageCount
       lastReadAt
@@ -446,7 +495,6 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       createdAt
       updatedAt
       userChatsId
-      chatParticipantsId
       __typename
     }
     nextToken

@@ -34,9 +34,9 @@ type UserChat @model{
   id: ID!
   userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["joinedAt"])
   user: User @belongsTo(fields: ["userID"])
-  chatID: ID! 
+  chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["joinedAt"])
   chat: Chat @belongsTo(fields: ["chatID"])
-  joinedAt: AWSDateTime
+  joinedAt: AWSDateTime!
   unreadMessageCount: Int 
   lastReadAt: AWSDateTime
   isMuted: Boolean
@@ -47,8 +47,8 @@ type Chat @model{
   name: String!
   isGroup: Boolean!
   createdAt: AWSDateTime! 
-  messages: [Message] @hasMany
-  participants: [UserChat] @hasMany
+  messages: [Message] @hasMany(indexName:"messagesByChat", fields: ["id"])
+  participants: [UserChat] @hasMany(indexName:"UserChatByChat", fields: ["id"])
 }
 
 type Message @model{

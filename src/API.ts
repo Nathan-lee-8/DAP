@@ -127,7 +127,7 @@ export type UserChat = {
   user?: User | null,
   chatID: string,
   chat?: Chat | null,
-  joinedAt?: string | null,
+  joinedAt: string,
   unreadMessageCount?: number | null,
   lastReadAt?: string | null,
   isMuted?: boolean | null,
@@ -140,7 +140,7 @@ export type UserChat = {
 export type Chat = {
   __typename: "Chat",
   id: string,
-  name?: string | null,
+  name: string,
   isGroup: boolean,
   createdAt: string,
   messages?: ModelMessageConnection | null,
@@ -269,7 +269,7 @@ export type CreateUserChatInput = {
   id?: string | null,
   userID: string,
   chatID: string,
-  joinedAt?: string | null,
+  joinedAt: string,
   unreadMessageCount?: number | null,
   lastReadAt?: string | null,
   isMuted?: boolean | null,
@@ -330,7 +330,7 @@ export type DeleteUserChatInput = {
 
 export type CreateChatInput = {
   id?: string | null,
-  name?: string | null,
+  name: string,
   isGroup: boolean,
   createdAt?: string | null,
 };
@@ -923,12 +923,12 @@ export type CreateUserChatMutation = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
     } | null,
-    joinedAt?: string | null,
+    joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
     isMuted?: boolean | null,
@@ -963,12 +963,12 @@ export type UpdateUserChatMutation = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
     } | null,
-    joinedAt?: string | null,
+    joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
     isMuted?: boolean | null,
@@ -1003,12 +1003,12 @@ export type DeleteUserChatMutation = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
     } | null,
-    joinedAt?: string | null,
+    joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
     isMuted?: boolean | null,
@@ -1028,7 +1028,7 @@ export type CreateChatMutation = {
   createChat?:  {
     __typename: "Chat",
     id: string,
-    name?: string | null,
+    name: string,
     isGroup: boolean,
     createdAt: string,
     messages?:  {
@@ -1052,7 +1052,7 @@ export type UpdateChatMutation = {
   updateChat?:  {
     __typename: "Chat",
     id: string,
-    name?: string | null,
+    name: string,
     isGroup: boolean,
     createdAt: string,
     messages?:  {
@@ -1076,7 +1076,7 @@ export type DeleteChatMutation = {
   deleteChat?:  {
     __typename: "Chat",
     id: string,
-    name?: string | null,
+    name: string,
     isGroup: boolean,
     createdAt: string,
     messages?:  {
@@ -1116,7 +1116,7 @@ export type CreateMessageMutation = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
@@ -1153,7 +1153,7 @@ export type UpdateMessageMutation = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
@@ -1190,7 +1190,7 @@ export type DeleteMessageMutation = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
@@ -1383,12 +1383,12 @@ export type GetUserChatQuery = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
     } | null,
-    joinedAt?: string | null,
+    joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
     isMuted?: boolean | null,
@@ -1413,7 +1413,7 @@ export type ListUserChatsQuery = {
       id: string,
       userID: string,
       chatID: string,
-      joinedAt?: string | null,
+      joinedAt: string,
       unreadMessageCount?: number | null,
       lastReadAt?: string | null,
       isMuted?: boolean | null,
@@ -1434,7 +1434,7 @@ export type GetChatQuery = {
   getChat?:  {
     __typename: "Chat",
     id: string,
-    name?: string | null,
+    name: string,
     isGroup: boolean,
     createdAt: string,
     messages?:  {
@@ -1461,7 +1461,7 @@ export type ListChatsQuery = {
     items:  Array< {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
@@ -1494,7 +1494,7 @@ export type GetMessageQuery = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
@@ -1625,7 +1625,7 @@ export type ChatsByUserQuery = {
       id: string,
       userID: string,
       chatID: string,
-      joinedAt?: string | null,
+      joinedAt: string,
       unreadMessageCount?: number | null,
       lastReadAt?: string | null,
       isMuted?: boolean | null,
@@ -1979,12 +1979,12 @@ export type OnCreateUserChatSubscription = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
     } | null,
-    joinedAt?: string | null,
+    joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
     isMuted?: boolean | null,
@@ -2018,12 +2018,12 @@ export type OnUpdateUserChatSubscription = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
     } | null,
-    joinedAt?: string | null,
+    joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
     isMuted?: boolean | null,
@@ -2057,12 +2057,12 @@ export type OnDeleteUserChatSubscription = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
     } | null,
-    joinedAt?: string | null,
+    joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
     isMuted?: boolean | null,
@@ -2081,7 +2081,7 @@ export type OnCreateChatSubscription = {
   onCreateChat?:  {
     __typename: "Chat",
     id: string,
-    name?: string | null,
+    name: string,
     isGroup: boolean,
     createdAt: string,
     messages?:  {
@@ -2104,7 +2104,7 @@ export type OnUpdateChatSubscription = {
   onUpdateChat?:  {
     __typename: "Chat",
     id: string,
-    name?: string | null,
+    name: string,
     isGroup: boolean,
     createdAt: string,
     messages?:  {
@@ -2127,7 +2127,7 @@ export type OnDeleteChatSubscription = {
   onDeleteChat?:  {
     __typename: "Chat",
     id: string,
-    name?: string | null,
+    name: string,
     isGroup: boolean,
     createdAt: string,
     messages?:  {
@@ -2166,7 +2166,7 @@ export type OnCreateMessageSubscription = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
@@ -2202,7 +2202,7 @@ export type OnUpdateMessageSubscription = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
@@ -2238,7 +2238,7 @@ export type OnDeleteMessageSubscription = {
     chat?:  {
       __typename: "Chat",
       id: string,
-      name?: string | null,
+      name: string,
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,

@@ -10,17 +10,7 @@ import client  from '../client';
 import { listUsers } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
-
-interface User {
-  id: string,
-  email: string,
-  firstname?: string | null,
-  lastname?: string | null,
-  avatarUrl?: string | null;
-  phonenumber?: string | null,
-  createdAt: string,
-  updatedAt: string,
-}
+import { User } from '../API';
 
 const FindUsers = () => {
   const [search, setSearch] = useState<string>('');

@@ -470,7 +470,6 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage($filt
     createdAt
     updatedAt
     userMessagesId
-    chatMessagesId
     __typename
   }
 }
