@@ -184,7 +184,6 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
     createdAt
     updatedAt
     userChatsId
-    chatParticipantsId
     __typename
   }
 }
@@ -209,7 +208,6 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
       createdAt
       updatedAt
       userChatsId
-      chatParticipantsId
       __typename
     }
     nextToken
@@ -220,13 +218,17 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
   APITypes.ListUserChatsQueryVariables,
   APITypes.ListUserChatsQuery
 >;
-export const getChat = /* GraphQL */ `query GetChat($id: ID!) {
+export const getChat = /* GraphQL */ `query GetChat(
+  $id: ID!, 
+  $messagesLimit: Int, 
+  $messagesNextToken: String),
+{
   getChat(id: $id) {
     id
     name
     isGroup
     createdAt
-    messages {
+    messages (limit: $messagesLimit, nextToken: $messagesNextToken, sortDirection: DESC) {
       items {
         id
         content
@@ -308,7 +310,6 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
     createdAt
     updatedAt
     userMessagesId
-    chatMessagesId
     __typename
   }
 }
@@ -330,7 +331,6 @@ export const listMessages = /* GraphQL */ `query ListMessages(
       createdAt
       updatedAt
       userMessagesId
-      chatMessagesId
       __typename
     }
     nextToken
@@ -474,26 +474,12 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
         name
         isGroup
         createdAt
-        participants {
-          items{
-            user{
-              id
-              email
-              firstname
-              lastname
-              __typename
-            }
-          }
-          nextToken
-          __typename
-        }
       }
       joinedAt
       unreadMessageCount
       lastReadAt
       isMuted
       createdAt
-      updatedAt
       userChatsId
       __typename
     }
@@ -529,7 +515,6 @@ export const messagesByUser = /* GraphQL */ `query MessagesByUser(
       createdAt
       updatedAt
       userMessagesId
-      chatMessagesId
       __typename
     }
     nextToken
@@ -564,7 +549,6 @@ export const messagesByChat = /* GraphQL */ `query MessagesByChat(
       createdAt
       updatedAt
       userMessagesId
-      chatMessagesId
       __typename
     }
     nextToken

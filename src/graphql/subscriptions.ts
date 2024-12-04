@@ -293,7 +293,6 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($fi
     createdAt
     updatedAt
     userChatsId
-    chatParticipantsId
     __typename
   }
 }
@@ -331,7 +330,6 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($fi
     createdAt
     updatedAt
     userChatsId
-    chatParticipantsId
     __typename
   }
 }
@@ -369,7 +367,6 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($fi
     createdAt
     updatedAt
     userChatsId
-    chatParticipantsId
     __typename
   }
 }
@@ -504,7 +501,6 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage($filt
     createdAt
     updatedAt
     userMessagesId
-    chatMessagesId
     __typename
   }
 }
@@ -539,7 +535,6 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage($filt
     createdAt
     updatedAt
     userMessagesId
-    chatMessagesId
     __typename
   }
 }
