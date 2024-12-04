@@ -323,7 +323,6 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
     createdAt
     updatedAt
     userChatsId
-    chatParticipantsId
     __typename
   }
 }
@@ -364,7 +363,6 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
     createdAt
     updatedAt
     userChatsId
-    chatParticipantsId
     __typename
   }
 }
@@ -405,7 +403,6 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
     createdAt
     updatedAt
     userChatsId
-    chatParticipantsId
     __typename
   }
 }
@@ -555,7 +552,6 @@ export const updateMessage = /* GraphQL */ `mutation UpdateMessage(
     createdAt
     updatedAt
     userMessagesId
-    chatMessagesId
     __typename
   }
 }
@@ -593,7 +589,6 @@ export const deleteMessage = /* GraphQL */ `mutation DeleteMessage(
     createdAt
     updatedAt
     userMessagesId
-    chatMessagesId
     __typename
   }
 }

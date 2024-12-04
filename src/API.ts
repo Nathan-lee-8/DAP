@@ -132,9 +132,7 @@ export type UserChat = {
   lastReadAt?: string | null,
   isMuted?: boolean | null,
   createdAt: string,
-  updatedAt: string,
   userChatsId?: string | null,
-  chatParticipantsId?: string | null,
 };
 
 export type Chat = {
@@ -145,7 +143,6 @@ export type Chat = {
   createdAt: string,
   messages?: ModelMessageConnection | null,
   participants?: ModelUserChatConnection | null,
-  updatedAt: string,
 };
 
 export type ModelMessageConnection = {
@@ -165,7 +162,6 @@ export type Message = {
   createdAt: string,
   updatedAt: string,
   userMessagesId?: string | null,
-  chatMessagesId?: string | null,
 };
 
 export type UpdateUserInput = {
@@ -274,7 +270,6 @@ export type CreateUserChatInput = {
   lastReadAt?: string | null,
   isMuted?: boolean | null,
   userChatsId?: string | null,
-  chatParticipantsId?: string | null,
 };
 
 export type ModelUserChatConditionInput = {
@@ -290,7 +285,6 @@ export type ModelUserChatConditionInput = {
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   userChatsId?: ModelIDInput | null,
-  chatParticipantsId?: ModelIDInput | null,
 };
 
 export type ModelIntInput = {
@@ -321,7 +315,6 @@ export type UpdateUserChatInput = {
   lastReadAt?: string | null,
   isMuted?: boolean | null,
   userChatsId?: string | null,
-  chatParticipantsId?: string | null,
 };
 
 export type DeleteUserChatInput = {
@@ -363,7 +356,6 @@ export type CreateMessageInput = {
   chatID: string,
   createdAt?: string | null,
   userMessagesId?: string | null,
-  chatMessagesId?: string | null,
 };
 
 export type ModelMessageConditionInput = {
@@ -376,7 +368,6 @@ export type ModelMessageConditionInput = {
   not?: ModelMessageConditionInput | null,
   updatedAt?: ModelStringInput | null,
   userMessagesId?: ModelIDInput | null,
-  chatMessagesId?: ModelIDInput | null,
 };
 
 export type UpdateMessageInput = {
@@ -386,7 +377,6 @@ export type UpdateMessageInput = {
   chatID?: string | null,
   createdAt?: string | null,
   userMessagesId?: string | null,
-  chatMessagesId?: string | null,
 };
 
 export type DeleteMessageInput = {
@@ -453,7 +443,6 @@ export type ModelUserChatFilterInput = {
   or?: Array< ModelUserChatFilterInput | null > | null,
   not?: ModelUserChatFilterInput | null,
   userChatsId?: ModelIDInput | null,
-  chatParticipantsId?: ModelIDInput | null,
 };
 
 export type ModelChatFilterInput = {
@@ -484,7 +473,6 @@ export type ModelMessageFilterInput = {
   or?: Array< ModelMessageFilterInput | null > | null,
   not?: ModelMessageFilterInput | null,
   userMessagesId?: ModelIDInput | null,
-  chatMessagesId?: ModelIDInput | null,
 };
 
 export enum ModelSortDirection {
@@ -611,8 +599,6 @@ export type ModelSubscriptionChatFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionChatFilterInput | null > | null,
   or?: Array< ModelSubscriptionChatFilterInput | null > | null,
-  chatMessagesId?: ModelSubscriptionIDInput | null,
-  chatParticipantsId?: ModelSubscriptionIDInput | null,
 };
 
 export type ModelSubscriptionMessageFilterInput = {
@@ -935,7 +921,6 @@ export type CreateUserChatMutation = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
-    chatParticipantsId?: string | null,
   } | null,
 };
 
@@ -975,7 +960,6 @@ export type UpdateUserChatMutation = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
-    chatParticipantsId?: string | null,
   } | null,
 };
 
@@ -1015,7 +999,6 @@ export type DeleteUserChatMutation = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
-    chatParticipantsId?: string | null,
   } | null,
 };
 
@@ -1124,7 +1107,6 @@ export type CreateMessageMutation = {
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
-    chatMessagesId?: string | null,
   } | null,
 };
 
@@ -1161,7 +1143,6 @@ export type UpdateMessageMutation = {
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
-    chatMessagesId?: string | null,
   } | null,
 };
 
@@ -1198,7 +1179,6 @@ export type DeleteMessageMutation = {
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
-    chatMessagesId?: string | null,
   } | null,
 };
 
@@ -1395,7 +1375,6 @@ export type GetUserChatQuery = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
-    chatParticipantsId?: string | null,
   } | null,
 };
 
@@ -1420,7 +1399,6 @@ export type ListUserChatsQuery = {
       createdAt: string,
       updatedAt: string,
       userChatsId?: string | null,
-      chatParticipantsId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1428,6 +1406,8 @@ export type ListUserChatsQuery = {
 
 export type GetChatQueryVariables = {
   id: string,
+  messagesLimit?: number | null,
+  messagesNextToken?: string | null,
 };
 
 export type GetChatQuery = {
@@ -1439,10 +1419,35 @@ export type GetChatQuery = {
     createdAt: string,
     messages?:  {
       __typename: "ModelMessageConnection",
+      items:  Array< {
+        __typename: "Message",
+        id: string,
+        content: string,
+        senderID: string,
+        sender?:  {
+          __typename: "User",
+          id: string,
+          email: string,
+          firstname?: string | null,
+          lastname?: string | null,
+        } | null,
+        chatID: string,
+        createdAt: string,
+      } | null >,
       nextToken?: string | null,
     } | null,
     participants?:  {
       __typename: "ModelUserChatConnection",
+      items:  Array< {
+        __typename: "UserChat",
+        user?:  {
+          __typename: "User",
+          id: string,
+          email: string,
+          firstname?: string | null,
+          lastname?: string | null,
+        } | null,
+      } | null >,
       nextToken?: string | null,
     } | null,
     updatedAt: string,
@@ -1502,7 +1507,6 @@ export type GetMessageQuery = {
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
-    chatMessagesId?: string | null,
   } | null,
 };
 
@@ -1524,7 +1528,6 @@ export type ListMessagesQuery = {
       createdAt: string,
       updatedAt: string,
       userMessagesId?: string | null,
-      chatMessagesId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1573,6 +1576,13 @@ export type PostsByDateQuery = {
       title: string,
       content: string,
       type: string,
+      user?:  {
+        __typename: "User",
+        id: string,
+        email: string,
+        firstname?: string | null,
+        lastname?: string | null,
+      } | null,
       createdAt: string,
       userID: string,
       updatedAt: string,
@@ -1625,14 +1635,19 @@ export type ChatsByUserQuery = {
       id: string,
       userID: string,
       chatID: string,
+      chat?:  {
+        __typename: "Chat",
+        id: string,
+        name: string,
+        isGroup: boolean,
+        createdAt: string,
+      } | null,
       joinedAt: string,
       unreadMessageCount?: number | null,
       lastReadAt?: string | null,
       isMuted?: boolean | null,
       createdAt: string,
-      updatedAt: string,
       userChatsId?: string | null,
-      chatParticipantsId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1659,7 +1674,6 @@ export type MessagesByUserQuery = {
       createdAt: string,
       updatedAt: string,
       userMessagesId?: string | null,
-      chatMessagesId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1686,7 +1700,6 @@ export type MessagesByChatQuery = {
       createdAt: string,
       updatedAt: string,
       userMessagesId?: string | null,
-      chatMessagesId?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1991,7 +2004,6 @@ export type OnCreateUserChatSubscription = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
-    chatParticipantsId?: string | null,
   } | null,
 };
 
@@ -2030,7 +2042,6 @@ export type OnUpdateUserChatSubscription = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
-    chatParticipantsId?: string | null,
   } | null,
 };
 
@@ -2069,7 +2080,6 @@ export type OnDeleteUserChatSubscription = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
-    chatParticipantsId?: string | null,
   } | null,
 };
 
@@ -2174,7 +2184,6 @@ export type OnCreateMessageSubscription = {
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
-    chatMessagesId?: string | null,
   } | null,
 };
 
@@ -2210,7 +2219,6 @@ export type OnUpdateMessageSubscription = {
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
-    chatMessagesId?: string | null,
   } | null,
 };
 
@@ -2246,6 +2254,5 @@ export type OnDeleteMessageSubscription = {
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
-    chatMessagesId?: string | null,
   } | null,
 };

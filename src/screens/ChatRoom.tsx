@@ -1,5 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
-import { View, Text, FlatList, TextInput, Button } from 'react-native';
+import { View, Text, FlatList, TextInput, Button, Alert,
+    ActivityIndicator 
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MessagingStackParamList } from '../types/rootStackParamTypes';
 import styles from '../styles/Styles';
@@ -15,23 +17,43 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
     const UserChat = route.params.userChat;
     const [messages, setMessages] = useState<Message[]>([]);
     const [currMessage, setMessage] = useState<string>('');
+    const flatListRef = useRef<FlatList<Message>>(null);
+    const [nextToken, setNextToken] = useState<string | null | undefined>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    
+    const fetchChat = async () => {
+        setLoading(true);
+        try{
+            const chat = await client.graphql({
+                query: getChat,
+                variables: { 
+                    id: UserChat.chatID, 
+                    messagesLimit: 20, 
+                    messagesNextToken: nextToken,
+                },
+            });
+            console.log("chat fetched");
+            const fetchedMessages: Message[] = (chat.data.getChat?.messages?.items || []).filter(
+                (message): message is Message => message !== null
+            );
+            setMessages((prev) => {
+                const newMessages = fetchedMessages.filter((msg) => !prev.some((prevMsg) => prevMsg.id === msg.id));
+                return [...prev, ...newMessages];  // Add only new messages
+            });
+            setNextToken(chat.data.getChat?.messages?.nextToken); 
+        } catch (error: any) {
+            console.log(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchChat = async () => {
-            try{
-                const chat = await client.graphql({
-                    query: getChat,
-                    variables: { id: UserChat.chatID },
-                });
-                console.log("chat fetched", chat.data.getChat);
-                //@ts-ignore
-                setMessages(chat.data.getChat?.messages?.items);
-            } catch (error: any) {
-                console.log(error.message);
-            }
-        }
+        setMessages([]);
         fetchChat();
+    }, [UserChat.chatID]);
 
+    useEffect(() => {
         const subscription = client.graphql({
             query: onCreateMessage,
             variables: {
@@ -40,15 +62,22 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
         }).subscribe({
             next: ({ value }: any) => {
                 const newMessage = value?.data.onCreateMessage;
-                setMessages((prev) => [...prev, newMessage]);
+                setMessages((prev) => {
+                    if(!newMessage) return prev;
+                    const existing = prev.find((msg) => msg?.id === newMessage?.id);
+                    if (existing) return prev;
+                    return [...prev, newMessage];
+                });
+                scrollToBottom();
             },
             error: (err: any) => console.error("Subscription error:", err),
         });
     
         return () => subscription.unsubscribe(); // Clean up the subscription
-    }, []);
+    }, [UserChat.chatID]);
 
     const sendMessage = async () => {
+        if(currMessage === '')return;
         try {
             const msgData = await client.graphql({
                 query: createMessage,
@@ -60,11 +89,20 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
                     },
                 },
             });
-            setMessages((prev) => [...prev, msgData.data.createMessage]);
+            setMessages((prev) => [msgData.data.createMessage, ...prev]);
+            setMessage('');
+            scrollToBottom();
         } catch (error) {
             console.error("Failed to send message:", error);
             // Optionally mark the message as "unsent"
         }
+    };
+
+    const scrollToBottom = () => {
+        flatListRef.current?.scrollToOffset({
+            offset: 0,
+            animated: true,
+        });
     };
 
     const getMsgStyle = (id: string) => {
@@ -74,11 +112,14 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
 
     return(
         <View style={styles.container}>
+            {loading && <ActivityIndicator size="small" color="#0000ff" />}
             <Text style={styles.title}>{UserChat.chat?.name}</Text>
             <FlatList
+                ref={flatListRef}
                 data={messages}
+                keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
-                    const messageStyle = getMsgStyle(item.senderID);
+                    const messageStyle = getMsgStyle(item?.senderID);
                     return (
                         <View>
                             <Text style={styles.timestamp}>{item?.createdAt}</Text>
@@ -87,12 +128,18 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
                             </View>
                         </View>
                 )}}
+                onEndReached={ () => {
+                    if(nextToken) fetchChat();
+                }}
+                onEndReachedThreshold={0.5}
+                inverted
             />
             <TextInput
                 style={styles.input}
-                placeholder="Type a message..."
+                placeholder={'Type a message'}
+                value={currMessage}
                 autoCapitalize='sentences'
-                onChangeText={setMessage}
+                onChangeText={(text) => setMessage(text)}
             />
             <Button title="Send" onPress={sendMessage}/>
         </View>
