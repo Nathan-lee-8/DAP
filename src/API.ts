@@ -132,6 +132,7 @@ export type UserChat = {
   lastReadAt?: string | null,
   isMuted?: boolean | null,
   createdAt: string,
+  updatedAt: string,
   userChatsId?: string | null,
 };
 
@@ -143,6 +144,7 @@ export type Chat = {
   createdAt: string,
   messages?: ModelMessageConnection | null,
   participants?: ModelUserChatConnection | null,
+  updatedAt: string,
 };
 
 export type ModelMessageConnection = {
@@ -1582,6 +1584,8 @@ export type PostsByDateQuery = {
         email: string,
         firstname?: string | null,
         lastname?: string | null,
+        createdAt: string,
+        updatedAt: string,
       } | null,
       createdAt: string,
       userID: string,
@@ -1641,12 +1645,14 @@ export type ChatsByUserQuery = {
         name: string,
         isGroup: boolean,
         createdAt: string,
+        updatedAt: string,
       } | null,
       joinedAt: string,
       unreadMessageCount?: number | null,
       lastReadAt?: string | null,
       isMuted?: boolean | null,
       createdAt: string,
+      updatedAt: string,
       userChatsId?: string | null,
     } | null >,
     nextToken?: string | null,

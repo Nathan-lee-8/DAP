@@ -399,6 +399,8 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
         email
         firstname
         lastname
+        createdAt
+        updatedAt
         __typename
       }
       createdAt
@@ -474,12 +476,14 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
         name
         isGroup
         createdAt
+        updatedAt
       }
       joinedAt
       unreadMessageCount
       lastReadAt
       isMuted
       createdAt
+      updatedAt
       userChatsId
       __typename
     }
