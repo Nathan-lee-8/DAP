@@ -19,7 +19,6 @@ const CreatePost = () => {
     return null;
   };
   const { userId } = authContext;
-
   const createUserPost = async () => {
     setLoading(true);
     try{
@@ -33,6 +32,7 @@ const CreatePost = () => {
             userID: userId,
           }
         },
+        authMode: 'userPool'
       }); 
       console.log(data);
       setTitle('');

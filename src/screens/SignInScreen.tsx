@@ -6,13 +6,11 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../types/rootStackParamTypes';
-import client from '../client';
-import { userByEmail } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
 
 /**
- * Retrieves the User input email and password. Signs in with Cognito then gets
- * user information from dynamoDB. Sets user context data then navigates home.
+ * Retrieves the User input email and password. Signs in with Cognito and sets
+ * user email and signed in status & navigates to homepage.
  * 
  * TODO: Add social provider login (Facebook, Google, Twitter, etc.)
  */
@@ -26,30 +24,19 @@ const SignInRoute = () => {
     return null;
   };
 
-  const { setSignedIn, setUserId, setUserEmail, setFirstName, setLastName, userEmail } = authContext;
+  const { setSignedIn, setUserEmail, userEmail } = authContext;
 
   const handleSignIn = async () => {
     try{
       const res = await signIn({ username: userEmail, password: password });
       if(!res.isSignedIn){
-        navigation.navigate('Verify');
+        navigation.navigate('Verify', {password: password});
         Alert.alert('Please verify your email before signing in.');
         return;
       };
-      const data = await client.graphql({
-        query: userByEmail,
-        variables: { email: userEmail.toLowerCase() },
-      });
-      const user = data.data.userByEmail.items[0];
       setSignedIn(true);
-      setUserId(user.id);
-      if(user.firstname) setFirstName(user.firstname);
-      if(user.lastname) setLastName(user.lastname);
-
     } catch (error: any) {
-      if(error.message) Alert.alert('Error', error.message);
-      if(error.errors) Alert.alert('Error', error.errors[0].message);
-      else Alert.alert('Error', 'An unexpected error occurred.');
+      Alert.alert('Error', error.message);
     };
   };
 
@@ -106,7 +93,7 @@ const SignUpRoute = () => {
   const handleSignUp = async () => {
     try{
       await signUp({ username: userEmail, password: password });
-      navigation.navigate('Verify');
+      navigation.navigate('Verify', {password: password});
     } catch (error: any) {
       Alert.alert('Error', error.message);
     };

@@ -7,6 +7,7 @@ import { AuthContext } from '../context/AuthContext';
 import client from '../client';
 import { createChat, createUserChat, createMessage } from '../graphql/mutations';
 import { useNavigation } from '@react-navigation/native';
+import { getCurrentUser } from '@aws-amplify/auth';
 
 type CreateChatProps = NativeStackScreenProps<MessagingStackParamList, 'CreateChat'>;
 
@@ -25,14 +26,19 @@ const CreateChat = ( { route }: CreateChatProps) => {
 
     const createChatRoom = async () => {
         try{
+            const cogUser = await getCurrentUser();
+            console.log(cogUser.userId);
+
             const chat = await client.graphql({
                 query: createChat,
                 variables: {
                     input: {
-                        name: user.firstname + " " + user.lastname,
+                        name: "default name",
                         isGroup: false,
+                        participantIDs: [cogUser.userId] 
                     }
-                }
+                },
+                authMode: 'userPool'
             });
             console.log("chat created", chat.data.createChat.id);
             const myUserChat = await client.graphql({
@@ -44,7 +50,8 @@ const CreateChat = ( { route }: CreateChatProps) => {
                         unreadMessageCount: 0,
                         joinedAt: new Date().toISOString(),
                     }
-                }
+                },
+                authMode: 'userPool'
             })
             console.log("senderChat created", myUserChat.data.createUserChat);
             const targetUserChat = await client.graphql({
@@ -56,7 +63,8 @@ const CreateChat = ( { route }: CreateChatProps) => {
                         unreadMessageCount: 1,
                         joinedAt: new Date().toISOString(),
                     }
-                }
+                },
+                authMode: 'userPool'
             })
             console.log("recieverChat created", targetUserChat.data.createUserChat);
             const msgData = await client.graphql({
@@ -67,14 +75,14 @@ const CreateChat = ( { route }: CreateChatProps) => {
                         content: message,
                         chatID: chat.data.createChat.id,
                     }
-                }
+                },
+                authMode: 'userPool'
             })
             console.log("Sent Message:", msgData.data.createMessage)
             navigation.navigate('ChatRoom', { userChat: myUserChat.data.createUserChat });
         } catch (error: any) {
-            console.log(error.message);
+            console.log(error);
         }
-        console.log(message);
     }
     
     var displayName = user.email;

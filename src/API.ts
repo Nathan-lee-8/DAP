@@ -20,6 +20,7 @@ export type ModelUserConditionInput = {
   not?: ModelUserConditionInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelStringInput = {
@@ -75,6 +76,7 @@ export type User = {
   messages?: ModelMessageConnection | null,
   createdAt: string,
   updatedAt: string,
+  owner?: string | null,
 };
 
 export type ModelPostConnection = {
@@ -94,6 +96,7 @@ export type Post = {
   user?: User | null,
   updatedAt: string,
   userPostsId?: string | null,
+  owner?: string | null,
 };
 
 export type ModelFollowingConnection = {
@@ -112,6 +115,7 @@ export type Following = {
   createdAt: string,
   updatedAt: string,
   userFollowingsId?: string | null,
+  owner?: string | null,
 };
 
 export type ModelUserChatConnection = {
@@ -134,6 +138,7 @@ export type UserChat = {
   createdAt: string,
   updatedAt: string,
   userChatsId?: string | null,
+  owner?: string | null,
 };
 
 export type Chat = {
@@ -142,6 +147,7 @@ export type Chat = {
   name: string,
   isGroup: boolean,
   createdAt: string,
+  participantIDs: Array< string >,
   messages?: ModelMessageConnection | null,
   participants?: ModelUserChatConnection | null,
   updatedAt: string,
@@ -164,6 +170,7 @@ export type Message = {
   createdAt: string,
   updatedAt: string,
   userMessagesId?: string | null,
+  owner?: string | null,
 };
 
 export type UpdateUserInput = {
@@ -199,6 +206,7 @@ export type ModelPostConditionInput = {
   not?: ModelPostConditionInput | null,
   updatedAt?: ModelStringInput | null,
   userPostsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelIDInput = {
@@ -249,6 +257,7 @@ export type ModelFollowingConditionInput = {
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   userFollowingsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type UpdateFollowingInput = {
@@ -287,6 +296,7 @@ export type ModelUserChatConditionInput = {
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   userChatsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelIntInput = {
@@ -328,12 +338,14 @@ export type CreateChatInput = {
   name: string,
   isGroup: boolean,
   createdAt?: string | null,
+  participantIDs: Array< string >,
 };
 
 export type ModelChatConditionInput = {
   name?: ModelStringInput | null,
   isGroup?: ModelBooleanInput | null,
   createdAt?: ModelStringInput | null,
+  participantIDs?: ModelIDInput | null,
   and?: Array< ModelChatConditionInput | null > | null,
   or?: Array< ModelChatConditionInput | null > | null,
   not?: ModelChatConditionInput | null,
@@ -345,6 +357,7 @@ export type UpdateChatInput = {
   name?: string | null,
   isGroup?: boolean | null,
   createdAt?: string | null,
+  participantIDs?: Array< string > | null,
 };
 
 export type DeleteChatInput = {
@@ -370,6 +383,7 @@ export type ModelMessageConditionInput = {
   not?: ModelMessageConditionInput | null,
   updatedAt?: ModelStringInput | null,
   userMessagesId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type UpdateMessageInput = {
@@ -396,6 +410,7 @@ export type ModelUserFilterInput = {
   and?: Array< ModelUserFilterInput | null > | null,
   or?: Array< ModelUserFilterInput | null > | null,
   not?: ModelUserFilterInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelUserConnection = {
@@ -403,6 +418,12 @@ export type ModelUserConnection = {
   items:  Array<User | null >,
   nextToken?: string | null,
 };
+
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
 
 export type ModelPostFilterInput = {
   id?: ModelIDInput | null,
@@ -416,6 +437,17 @@ export type ModelPostFilterInput = {
   or?: Array< ModelPostFilterInput | null > | null,
   not?: ModelPostFilterInput | null,
   userPostsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelStringKeyConditionInput = {
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
 };
 
 export type ModelFollowingFilterInput = {
@@ -429,6 +461,7 @@ export type ModelFollowingFilterInput = {
   or?: Array< ModelFollowingFilterInput | null > | null,
   not?: ModelFollowingFilterInput | null,
   userFollowingsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelUserChatFilterInput = {
@@ -445,6 +478,7 @@ export type ModelUserChatFilterInput = {
   or?: Array< ModelUserChatFilterInput | null > | null,
   not?: ModelUserChatFilterInput | null,
   userChatsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelChatFilterInput = {
@@ -452,6 +486,7 @@ export type ModelChatFilterInput = {
   name?: ModelStringInput | null,
   isGroup?: ModelBooleanInput | null,
   createdAt?: ModelStringInput | null,
+  participantIDs?: ModelIDInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelChatFilterInput | null > | null,
   or?: Array< ModelChatFilterInput | null > | null,
@@ -475,22 +510,7 @@ export type ModelMessageFilterInput = {
   or?: Array< ModelMessageFilterInput | null > | null,
   not?: ModelMessageFilterInput | null,
   userMessagesId?: ModelIDInput | null,
-};
-
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
-export type ModelStringKeyConditionInput = {
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionUserFilterInput = {
@@ -507,6 +527,7 @@ export type ModelSubscriptionUserFilterInput = {
   userFollowingsId?: ModelSubscriptionIDInput | null,
   userChatsId?: ModelSubscriptionIDInput | null,
   userMessagesId?: ModelSubscriptionIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionIDInput = {
@@ -549,6 +570,7 @@ export type ModelSubscriptionPostFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionPostFilterInput | null > | null,
   or?: Array< ModelSubscriptionPostFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionFollowingFilterInput = {
@@ -560,6 +582,7 @@ export type ModelSubscriptionFollowingFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionFollowingFilterInput | null > | null,
   or?: Array< ModelSubscriptionFollowingFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionUserChatFilterInput = {
@@ -574,6 +597,7 @@ export type ModelSubscriptionUserChatFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionUserChatFilterInput | null > | null,
   or?: Array< ModelSubscriptionUserChatFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionIntInput = {
@@ -601,6 +625,7 @@ export type ModelSubscriptionChatFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionChatFilterInput | null > | null,
   or?: Array< ModelSubscriptionChatFilterInput | null > | null,
+  participantIDs?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionMessageFilterInput = {
@@ -612,6 +637,7 @@ export type ModelSubscriptionMessageFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionMessageFilterInput | null > | null,
   or?: Array< ModelSubscriptionMessageFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type CreateUserMutationVariables = {
@@ -645,6 +671,7 @@ export type CreateUserMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -679,6 +706,7 @@ export type UpdateUserMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -713,6 +741,7 @@ export type DeleteUserMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -730,18 +759,9 @@ export type CreatePostMutation = {
     type: string,
     createdAt: string,
     userID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname?: string | null,
-      lastname?: string | null,
-      phonenumber?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     updatedAt: string,
     userPostsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -768,9 +788,11 @@ export type UpdatePostMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     updatedAt: string,
     userPostsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -797,9 +819,11 @@ export type DeletePostMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     updatedAt: string,
     userPostsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -823,11 +847,13 @@ export type CreateFollowingMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     followedAt: string,
     createdAt: string,
     updatedAt: string,
     userFollowingsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -851,11 +877,13 @@ export type UpdateFollowingMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     followedAt: string,
     createdAt: string,
     updatedAt: string,
     userFollowingsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -879,11 +907,13 @@ export type DeleteFollowingMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     followedAt: string,
     createdAt: string,
     updatedAt: string,
     userFollowingsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -897,25 +927,7 @@ export type CreateUserChatMutation = {
     __typename: "UserChat",
     id: string,
     userID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname?: string | null,
-      lastname?: string | null,
-      phonenumber?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     chatID: string,
-    chat?:  {
-      __typename: "Chat",
-      id: string,
-      name: string,
-      isGroup: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     joinedAt: string,
     unreadMessageCount?: number | null,
     lastReadAt?: string | null,
@@ -923,6 +935,7 @@ export type CreateUserChatMutation = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -945,6 +958,7 @@ export type UpdateUserChatMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -953,6 +967,7 @@ export type UpdateUserChatMutation = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     joinedAt: string,
@@ -962,6 +977,7 @@ export type UpdateUserChatMutation = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -984,6 +1000,7 @@ export type DeleteUserChatMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -992,6 +1009,7 @@ export type DeleteUserChatMutation = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     joinedAt: string,
@@ -1001,6 +1019,7 @@ export type DeleteUserChatMutation = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1016,6 +1035,7 @@ export type CreateChatMutation = {
     name: string,
     isGroup: boolean,
     createdAt: string,
+    participantIDs: Array< string >,
     messages?:  {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
@@ -1040,6 +1060,7 @@ export type UpdateChatMutation = {
     name: string,
     isGroup: boolean,
     createdAt: string,
+    participantIDs: Array< string >,
     messages?:  {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
@@ -1064,6 +1085,7 @@ export type DeleteChatMutation = {
     name: string,
     isGroup: boolean,
     createdAt: string,
+    participantIDs: Array< string >,
     messages?:  {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
@@ -1096,6 +1118,7 @@ export type CreateMessageMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -1104,11 +1127,13 @@ export type CreateMessageMutation = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1132,6 +1157,7 @@ export type UpdateMessageMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -1140,11 +1166,13 @@ export type UpdateMessageMutation = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1168,6 +1196,7 @@ export type DeleteMessageMutation = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -1176,11 +1205,13 @@ export type DeleteMessageMutation = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1214,6 +1245,7 @@ export type GetUserQuery = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1235,6 +1267,33 @@ export type ListUsersQuery = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type UserByEmailQueryVariables = {
+  email: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelUserFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type UserByEmailQuery = {
+  userByEmail?:  {
+    __typename: "ModelUserConnection",
+    items:  Array< {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname?: string | null,
+      lastname?: string | null,
+      phonenumber?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1262,9 +1321,11 @@ export type GetPostQuery = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     updatedAt: string,
     userPostsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1287,6 +1348,45 @@ export type ListPostsQuery = {
       userID: string,
       updatedAt: string,
       userPostsId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type PostsByDateQueryVariables = {
+  type: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelPostFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type PostsByDateQuery = {
+  postsByDate?:  {
+    __typename: "ModelPostConnection",
+    items:  Array< {
+      __typename: "Post",
+      id: string,
+      title: string,
+      content: string,
+      type: string,
+      createdAt: string,
+      userID: string,
+      user?:  {
+        __typename: "User",
+        id: string,
+        email: string,
+        firstname?: string | null,
+        lastname?: string | null,
+        phonenumber?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      updatedAt: string,
+      userPostsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1311,11 +1411,13 @@ export type GetFollowingQuery = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     followedAt: string,
     createdAt: string,
     updatedAt: string,
     userFollowingsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1337,6 +1439,34 @@ export type ListFollowingsQuery = {
       createdAt: string,
       updatedAt: string,
       userFollowingsId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type FollowingsByUserQueryVariables = {
+  userID: string,
+  followedAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelFollowingFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type FollowingsByUserQuery = {
+  followingsByUser?:  {
+    __typename: "ModelFollowingConnection",
+    items:  Array< {
+      __typename: "Following",
+      id: string,
+      userID: string,
+      followedUserID: string,
+      followedAt: string,
+      createdAt: string,
+      updatedAt: string,
+      userFollowingsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1360,6 +1490,7 @@ export type GetUserChatQuery = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -1368,6 +1499,7 @@ export type GetUserChatQuery = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     joinedAt: string,
@@ -1377,6 +1509,7 @@ export type GetUserChatQuery = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1401,6 +1534,67 @@ export type ListUserChatsQuery = {
       createdAt: string,
       updatedAt: string,
       userChatsId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type ChatsByUserQueryVariables = {
+  userID: string,
+  joinedAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelUserChatFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ChatsByUserQuery = {
+  chatsByUser?:  {
+    __typename: "ModelUserChatConnection",
+    items:  Array< {
+      __typename: "UserChat",
+      id: string,
+      userID: string,
+      chatID: string,
+      joinedAt: string,
+      unreadMessageCount?: number | null,
+      lastReadAt?: string | null,
+      isMuted?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+      userChatsId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type UserChatsByChatIDAndJoinedAtQueryVariables = {
+  chatID: string,
+  joinedAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelUserChatFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type UserChatsByChatIDAndJoinedAtQuery = {
+  userChatsByChatIDAndJoinedAt?:  {
+    __typename: "ModelUserChatConnection",
+    items:  Array< {
+      __typename: "UserChat",
+      id: string,
+      userID: string,
+      chatID: string,
+      joinedAt: string,
+      unreadMessageCount?: number | null,
+      lastReadAt?: string | null,
+      isMuted?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+      userChatsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1419,6 +1613,7 @@ export type GetChatQuery = {
     name: string,
     isGroup: boolean,
     createdAt: string,
+    participantIDs: Array< string >,
     messages?:  {
       __typename: "ModelMessageConnection",
       items:  Array< {
@@ -1434,6 +1629,7 @@ export type GetChatQuery = {
           lastname?: string | null,
         } | null,
         chatID: string,
+        owner?: string | null,
         createdAt: string,
       } | null >,
       nextToken?: string | null,
@@ -1471,6 +1667,7 @@ export type ListChatsQuery = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null >,
     nextToken?: string | null,
@@ -1496,6 +1693,7 @@ export type GetMessageQuery = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -1504,11 +1702,13 @@ export type GetMessageQuery = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1530,130 +1730,7 @@ export type ListMessagesQuery = {
       createdAt: string,
       updatedAt: string,
       userMessagesId?: string | null,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type UserByEmailQueryVariables = {
-  email: string,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelUserFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type UserByEmailQuery = {
-  userByEmail?:  {
-    __typename: "ModelUserConnection",
-    items:  Array< {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname?: string | null,
-      lastname?: string | null,
-      phonenumber?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type PostsByDateQueryVariables = {
-  type: string,
-  createdAt?: ModelStringKeyConditionInput | null,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelPostFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type PostsByDateQuery = {
-  postsByDate?:  {
-    __typename: "ModelPostConnection",
-    items:  Array< {
-      __typename: "Post",
-      id: string,
-      title: string,
-      content: string,
-      type: string,
-      user?:  {
-        __typename: "User",
-        id: string,
-        email: string,
-        firstname?: string | null,
-        lastname?: string | null,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
-      createdAt: string,
-      userID: string,
-      updatedAt: string,
-      userPostsId?: string | null,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type FollowingsByUserQueryVariables = {
-  userID: string,
-  followedAt?: ModelStringKeyConditionInput | null,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelFollowingFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type FollowingsByUserQuery = {
-  followingsByUser?:  {
-    __typename: "ModelFollowingConnection",
-    items:  Array< {
-      __typename: "Following",
-      id: string,
-      userID: string,
-      followedUserID: string,
-      followedAt: string,
-      createdAt: string,
-      updatedAt: string,
-      userFollowingsId?: string | null,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type ChatsByUserQueryVariables = {
-  userID: string,
-  joinedAt?: ModelStringKeyConditionInput | null,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelUserChatFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ChatsByUserQuery = {
-  chatsByUser?:  {
-    __typename: "ModelUserChatConnection",
-    items:  Array< {
-      __typename: "UserChat",
-      id: string,
-      userID: string,
-      chatID: string,
-      chat?:  {
-        __typename: "Chat",
-        id: string,
-        name: string,
-        isGroup: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
-      joinedAt: string,
-      unreadMessageCount?: number | null,
-      lastReadAt?: string | null,
-      isMuted?: boolean | null,
-      createdAt: string,
-      updatedAt: string,
-      userChatsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1680,6 +1757,7 @@ export type MessagesByUserQuery = {
       createdAt: string,
       updatedAt: string,
       userMessagesId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1706,6 +1784,7 @@ export type MessagesByChatQuery = {
       createdAt: string,
       updatedAt: string,
       userMessagesId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1713,6 +1792,7 @@ export type MessagesByChatQuery = {
 
 export type OnCreateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateUserSubscription = {
@@ -1741,11 +1821,13 @@ export type OnCreateUserSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateUserSubscription = {
@@ -1774,11 +1856,13 @@ export type OnUpdateUserSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteUserSubscription = {
@@ -1807,11 +1891,13 @@ export type OnDeleteUserSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnCreatePostSubscriptionVariables = {
   filter?: ModelSubscriptionPostFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreatePostSubscription = {
@@ -1832,14 +1918,17 @@ export type OnCreatePostSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     updatedAt: string,
     userPostsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdatePostSubscriptionVariables = {
   filter?: ModelSubscriptionPostFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdatePostSubscription = {
@@ -1860,14 +1949,17 @@ export type OnUpdatePostSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     updatedAt: string,
     userPostsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeletePostSubscriptionVariables = {
   filter?: ModelSubscriptionPostFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeletePostSubscription = {
@@ -1888,14 +1980,17 @@ export type OnDeletePostSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     updatedAt: string,
     userPostsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnCreateFollowingSubscriptionVariables = {
   filter?: ModelSubscriptionFollowingFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateFollowingSubscription = {
@@ -1913,16 +2008,19 @@ export type OnCreateFollowingSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     followedAt: string,
     createdAt: string,
     updatedAt: string,
     userFollowingsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateFollowingSubscriptionVariables = {
   filter?: ModelSubscriptionFollowingFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateFollowingSubscription = {
@@ -1940,16 +2038,19 @@ export type OnUpdateFollowingSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     followedAt: string,
     createdAt: string,
     updatedAt: string,
     userFollowingsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteFollowingSubscriptionVariables = {
   filter?: ModelSubscriptionFollowingFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteFollowingSubscription = {
@@ -1967,16 +2068,19 @@ export type OnDeleteFollowingSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     followedAt: string,
     createdAt: string,
     updatedAt: string,
     userFollowingsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnCreateUserChatSubscriptionVariables = {
   filter?: ModelSubscriptionUserChatFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateUserChatSubscription = {
@@ -1993,6 +2097,7 @@ export type OnCreateUserChatSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -2001,6 +2106,7 @@ export type OnCreateUserChatSubscription = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     joinedAt: string,
@@ -2010,11 +2116,13 @@ export type OnCreateUserChatSubscription = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateUserChatSubscriptionVariables = {
   filter?: ModelSubscriptionUserChatFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateUserChatSubscription = {
@@ -2031,6 +2139,7 @@ export type OnUpdateUserChatSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -2039,6 +2148,7 @@ export type OnUpdateUserChatSubscription = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     joinedAt: string,
@@ -2048,11 +2158,13 @@ export type OnUpdateUserChatSubscription = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteUserChatSubscriptionVariables = {
   filter?: ModelSubscriptionUserChatFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteUserChatSubscription = {
@@ -2069,6 +2181,7 @@ export type OnDeleteUserChatSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -2077,6 +2190,7 @@ export type OnDeleteUserChatSubscription = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     joinedAt: string,
@@ -2086,6 +2200,7 @@ export type OnDeleteUserChatSubscription = {
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -2100,6 +2215,7 @@ export type OnCreateChatSubscription = {
     name: string,
     isGroup: boolean,
     createdAt: string,
+    participantIDs: Array< string >,
     messages?:  {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
@@ -2123,6 +2239,7 @@ export type OnUpdateChatSubscription = {
     name: string,
     isGroup: boolean,
     createdAt: string,
+    participantIDs: Array< string >,
     messages?:  {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
@@ -2146,6 +2263,7 @@ export type OnDeleteChatSubscription = {
     name: string,
     isGroup: boolean,
     createdAt: string,
+    participantIDs: Array< string >,
     messages?:  {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
@@ -2160,6 +2278,7 @@ export type OnDeleteChatSubscription = {
 
 export type OnCreateMessageSubscriptionVariables = {
   filter?: ModelSubscriptionMessageFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateMessageSubscription = {
@@ -2177,6 +2296,7 @@ export type OnCreateMessageSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -2185,16 +2305,19 @@ export type OnCreateMessageSubscription = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateMessageSubscriptionVariables = {
   filter?: ModelSubscriptionMessageFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateMessageSubscription = {
@@ -2212,6 +2335,7 @@ export type OnUpdateMessageSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -2220,16 +2344,19 @@ export type OnUpdateMessageSubscription = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteMessageSubscriptionVariables = {
   filter?: ModelSubscriptionMessageFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteMessageSubscription = {
@@ -2247,6 +2374,7 @@ export type OnDeleteMessageSubscription = {
       phonenumber?: string | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     chatID: string,
     chat?:  {
@@ -2255,10 +2383,12 @@ export type OnDeleteMessageSubscription = {
       name: string,
       isGroup: boolean,
       createdAt: string,
+      participantIDs: Array< string >,
       updatedAt: string,
     } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
+    owner?: string | null,
   } | null,
 };

@@ -8,8 +8,11 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
-export const onCreateUser = /* GraphQL */ `subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
-  onCreateUser(filter: $filter) {
+export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
+  $filter: ModelSubscriptionUserFilterInput
+  $owner: String
+) {
+  onCreateUser(filter: $filter, owner: $owner) {
     id
     email
     firstname
@@ -33,6 +36,7 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser($filter: Mo
     }
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -40,8 +44,11 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser($filter: Mo
   APITypes.OnCreateUserSubscriptionVariables,
   APITypes.OnCreateUserSubscription
 >;
-export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
-  onUpdateUser(filter: $filter) {
+export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
+  $filter: ModelSubscriptionUserFilterInput
+  $owner: String
+) {
+  onUpdateUser(filter: $filter, owner: $owner) {
     id
     email
     firstname
@@ -65,6 +72,7 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser($filter: Mo
     }
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -72,8 +80,11 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser($filter: Mo
   APITypes.OnUpdateUserSubscriptionVariables,
   APITypes.OnUpdateUserSubscription
 >;
-export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
-  onDeleteUser(filter: $filter) {
+export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
+  $filter: ModelSubscriptionUserFilterInput
+  $owner: String
+) {
+  onDeleteUser(filter: $filter, owner: $owner) {
     id
     email
     firstname
@@ -97,6 +108,7 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser($filter: Mo
     }
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -104,8 +116,11 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser($filter: Mo
   APITypes.OnDeleteUserSubscriptionVariables,
   APITypes.OnDeleteUserSubscription
 >;
-export const onCreatePost = /* GraphQL */ `subscription OnCreatePost($filter: ModelSubscriptionPostFilterInput) {
-  onCreatePost(filter: $filter) {
+export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
+  $filter: ModelSubscriptionPostFilterInput
+  $owner: String
+) {
+  onCreatePost(filter: $filter, owner: $owner) {
     id
     title
     content
@@ -120,10 +135,12 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost($filter: Mo
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     updatedAt
     userPostsId
+    owner
     __typename
   }
 }
@@ -131,8 +148,11 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost($filter: Mo
   APITypes.OnCreatePostSubscriptionVariables,
   APITypes.OnCreatePostSubscription
 >;
-export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost($filter: ModelSubscriptionPostFilterInput) {
-  onUpdatePost(filter: $filter) {
+export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
+  $filter: ModelSubscriptionPostFilterInput
+  $owner: String
+) {
+  onUpdatePost(filter: $filter, owner: $owner) {
     id
     title
     content
@@ -147,10 +167,12 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost($filter: Mo
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     updatedAt
     userPostsId
+    owner
     __typename
   }
 }
@@ -158,8 +180,11 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost($filter: Mo
   APITypes.OnUpdatePostSubscriptionVariables,
   APITypes.OnUpdatePostSubscription
 >;
-export const onDeletePost = /* GraphQL */ `subscription OnDeletePost($filter: ModelSubscriptionPostFilterInput) {
-  onDeletePost(filter: $filter) {
+export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
+  $filter: ModelSubscriptionPostFilterInput
+  $owner: String
+) {
+  onDeletePost(filter: $filter, owner: $owner) {
     id
     title
     content
@@ -174,10 +199,12 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost($filter: Mo
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     updatedAt
     userPostsId
+    owner
     __typename
   }
 }
@@ -185,8 +212,11 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost($filter: Mo
   APITypes.OnDeletePostSubscriptionVariables,
   APITypes.OnDeletePostSubscription
 >;
-export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing($filter: ModelSubscriptionFollowingFilterInput) {
-  onCreateFollowing(filter: $filter) {
+export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing(
+  $filter: ModelSubscriptionFollowingFilterInput
+  $owner: String
+) {
+  onCreateFollowing(filter: $filter, owner: $owner) {
     id
     userID
     followedUserID
@@ -198,12 +228,14 @@ export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing($
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     followedAt
     createdAt
     updatedAt
     userFollowingsId
+    owner
     __typename
   }
 }
@@ -211,8 +243,11 @@ export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing($
   APITypes.OnCreateFollowingSubscriptionVariables,
   APITypes.OnCreateFollowingSubscription
 >;
-export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing($filter: ModelSubscriptionFollowingFilterInput) {
-  onUpdateFollowing(filter: $filter) {
+export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing(
+  $filter: ModelSubscriptionFollowingFilterInput
+  $owner: String
+) {
+  onUpdateFollowing(filter: $filter, owner: $owner) {
     id
     userID
     followedUserID
@@ -224,12 +259,14 @@ export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing($
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     followedAt
     createdAt
     updatedAt
     userFollowingsId
+    owner
     __typename
   }
 }
@@ -237,8 +274,11 @@ export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing($
   APITypes.OnUpdateFollowingSubscriptionVariables,
   APITypes.OnUpdateFollowingSubscription
 >;
-export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing($filter: ModelSubscriptionFollowingFilterInput) {
-  onDeleteFollowing(filter: $filter) {
+export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing(
+  $filter: ModelSubscriptionFollowingFilterInput
+  $owner: String
+) {
+  onDeleteFollowing(filter: $filter, owner: $owner) {
     id
     userID
     followedUserID
@@ -250,12 +290,14 @@ export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing($
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     followedAt
     createdAt
     updatedAt
     userFollowingsId
+    owner
     __typename
   }
 }
@@ -263,8 +305,11 @@ export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing($
   APITypes.OnDeleteFollowingSubscriptionVariables,
   APITypes.OnDeleteFollowingSubscription
 >;
-export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($filter: ModelSubscriptionUserChatFilterInput) {
-  onCreateUserChat(filter: $filter) {
+export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
+  $filter: ModelSubscriptionUserChatFilterInput
+  $owner: String
+) {
+  onCreateUserChat(filter: $filter, owner: $owner) {
     id
     userID
     user {
@@ -275,6 +320,7 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($fi
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -283,6 +329,7 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($fi
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
@@ -293,6 +340,7 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($fi
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -300,8 +348,11 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat($fi
   APITypes.OnCreateUserChatSubscriptionVariables,
   APITypes.OnCreateUserChatSubscription
 >;
-export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($filter: ModelSubscriptionUserChatFilterInput) {
-  onUpdateUserChat(filter: $filter) {
+export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
+  $filter: ModelSubscriptionUserChatFilterInput
+  $owner: String
+) {
+  onUpdateUserChat(filter: $filter, owner: $owner) {
     id
     userID
     user {
@@ -312,6 +363,7 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($fi
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -320,6 +372,7 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($fi
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
@@ -330,6 +383,7 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($fi
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -337,8 +391,11 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat($fi
   APITypes.OnUpdateUserChatSubscriptionVariables,
   APITypes.OnUpdateUserChatSubscription
 >;
-export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($filter: ModelSubscriptionUserChatFilterInput) {
-  onDeleteUserChat(filter: $filter) {
+export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
+  $filter: ModelSubscriptionUserChatFilterInput
+  $owner: String
+) {
+  onDeleteUserChat(filter: $filter, owner: $owner) {
     id
     userID
     user {
@@ -349,6 +406,7 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($fi
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -357,6 +415,7 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($fi
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
@@ -367,6 +426,7 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat($fi
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -380,6 +440,7 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat($filter: Mo
     name
     isGroup
     createdAt
+    participantIDs
     messages {
       nextToken
       __typename
@@ -402,6 +463,7 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat($filter: Mo
     name
     isGroup
     createdAt
+    participantIDs
     messages {
       nextToken
       __typename
@@ -424,6 +486,7 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat($filter: Mo
     name
     isGroup
     createdAt
+    participantIDs
     messages {
       nextToken
       __typename
@@ -440,8 +503,11 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat($filter: Mo
   APITypes.OnDeleteChatSubscriptionVariables,
   APITypes.OnDeleteChatSubscription
 >;
-export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage($filter: ModelSubscriptionMessageFilterInput) {
-  onCreateMessage(filter: $filter) {
+export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
+  $filter: ModelSubscriptionMessageFilterInput
+  $owner: String
+) {
+  onCreateMessage(filter: $filter, owner: $owner) {
     id
     content
     senderID
@@ -453,6 +519,7 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage($filt
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -461,12 +528,14 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage($filt
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
     createdAt
     updatedAt
     userMessagesId
+    owner
     __typename
   }
 }
@@ -474,8 +543,11 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage($filt
   APITypes.OnCreateMessageSubscriptionVariables,
   APITypes.OnCreateMessageSubscription
 >;
-export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage($filter: ModelSubscriptionMessageFilterInput) {
-  onUpdateMessage(filter: $filter) {
+export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
+  $filter: ModelSubscriptionMessageFilterInput
+  $owner: String
+) {
+  onUpdateMessage(filter: $filter, owner: $owner) {
     id
     content
     senderID
@@ -487,6 +559,7 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage($filt
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -495,12 +568,14 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage($filt
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
     createdAt
     updatedAt
     userMessagesId
+    owner
     __typename
   }
 }
@@ -508,8 +583,11 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage($filt
   APITypes.OnUpdateMessageSubscriptionVariables,
   APITypes.OnUpdateMessageSubscription
 >;
-export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage($filter: ModelSubscriptionMessageFilterInput) {
-  onDeleteMessage(filter: $filter) {
+export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
+  $filter: ModelSubscriptionMessageFilterInput
+  $owner: String
+) {
+  onDeleteMessage(filter: $filter, owner: $owner) {
     id
     content
     senderID
@@ -521,6 +599,7 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage($filt
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -529,12 +608,14 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage($filt
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
     createdAt
     updatedAt
     userMessagesId
+    owner
     __typename
   }
 }
