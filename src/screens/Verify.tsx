@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
-import { confirmSignUp, resendSignUpCode } from '@aws-amplify/auth';
+import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import client from '../client';
 import { createUser } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
@@ -11,35 +11,38 @@ import { AuthContext } from '../context/AuthContext';
  * user is successfully verified through Cognito, the user info is added to dynamodb
  * tables. The user then is navigated to the home page.
  */
-const VerifyScreen = () => {
+const VerifyScreen = ( route : any) => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
     console.log("Auth context not defined");
     return null;
   }
-  const { setSignedIn, setUserId, setFirstName, setLastName, userEmail, firstname, lastname } = authContext;
+  const { userEmail, firstname, lastname, setSignedIn } = authContext;
   const [code, setCode] = useState('');
 
   const handleVerification = async () => {
     try {
-      await confirmSignUp({username: userEmail, confirmationCode: code});
+      await confirmSignUp({username: userEmail, confirmationCode: code });
+      const password = route.route.params.password;
+      await signIn({ username: userEmail, password: password });
       const user = await client.graphql({
         query: createUser,
         variables: {
-          input: { email: userEmail.toLowerCase(), firstname: firstname, lastname: lastname },
+          input: { 
+            email: userEmail.toLowerCase(), 
+            firstname: firstname, 
+            lastname: lastname, 
+          },
         },
+        authMode: 'userPool'
       });
-      const id = user.data.createUser.id;
       setSignedIn(true); 
-      setUserId(id);
-      if(firstname) setFirstName(firstname);
-      if(lastname) setLastName(lastname);
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
+    } catch (error) {
+      console.log(error);
     }
-  };
+  }
 
-  const resendSignUp = () => {
+  const resendSignUp = async () => {
     try {
       resendSignUpCode({ username: userEmail });
     } catch (error: any) {

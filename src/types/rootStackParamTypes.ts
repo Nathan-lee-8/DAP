@@ -2,7 +2,7 @@ import{ User, UserChat } from '../API';
 
 export type RootStackParamList = {
     SignIn: undefined;
-    Verify: undefined;
+    Verify: {password: string};
     ResetPassword: undefined;
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity,
+import { View, TextInput, FlatList, TouchableOpacity, Button,
   Text, Image, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,12 +23,12 @@ const FindUsers = () => {
     try{
       const users = await client.graphql({
         query: listUsers,
-        variables: { limit: 100 },
+        variables: { limit: 100 }
       });
       const userData = users.data.listUsers.items;
       setData(userData);
       await AsyncStorage.setItem('usersCache', JSON.stringify({userData: userData}));
-      console.log('Fetched & cached from fetchusers.');
+      console.log('Fetched & cached from fetchusers.', userData);
     } catch (error) {
       console.log('Error fetching users', error);
     }
@@ -72,9 +72,13 @@ const FindUsers = () => {
   };
 
   const navigation = useNavigation<NativeStackNavigationProp<FindUserParamList, 'ViewProfiles'>>();
-  
   const handleViewProfile = (user: User) => {
     navigation.navigate('ViewProfiles', { user: user });
+  }
+
+  const resetCache = async () => {
+    await AsyncStorage.removeItem('usersCache');
+    fetchUsers();
   }
 
   if (loading) {
@@ -113,6 +117,7 @@ const FindUsers = () => {
           </View>
         )}
       />
+      <Button title="Reset User Cache" onPress={resetCache}/>
     </View>
   );
 };

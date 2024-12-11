@@ -36,6 +36,7 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
     }
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -71,6 +72,7 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser(
     }
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -106,6 +108,7 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
     }
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -124,18 +127,9 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
     type
     createdAt
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      createdAt
-      updatedAt
-      __typename
-    }
     updatedAt
     userPostsId
+    owner
     __typename
   }
 }
@@ -162,10 +156,12 @@ export const updatePost = /* GraphQL */ `mutation UpdatePost(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     updatedAt
     userPostsId
+    owner
     __typename
   }
 }
@@ -192,10 +188,12 @@ export const deletePost = /* GraphQL */ `mutation DeletePost(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     updatedAt
     userPostsId
+    owner
     __typename
   }
 }
@@ -219,12 +217,14 @@ export const createFollowing = /* GraphQL */ `mutation CreateFollowing(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     followedAt
     createdAt
     updatedAt
     userFollowingsId
+    owner
     __typename
   }
 }
@@ -248,12 +248,14 @@ export const updateFollowing = /* GraphQL */ `mutation UpdateFollowing(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     followedAt
     createdAt
     updatedAt
     userFollowingsId
+    owner
     __typename
   }
 }
@@ -277,12 +279,14 @@ export const deleteFollowing = /* GraphQL */ `mutation DeleteFollowing(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     followedAt
     createdAt
     updatedAt
     userFollowingsId
+    owner
     __typename
   }
 }
@@ -297,25 +301,7 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
   createUserChat(input: $input, condition: $condition) {
     id
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      createdAt
-      updatedAt
-      __typename
-    }
     chatID
-    chat {
-      id
-      name
-      isGroup
-      createdAt
-      updatedAt
-      __typename
-    }
     joinedAt
     unreadMessageCount
     lastReadAt
@@ -323,6 +309,7 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -345,6 +332,7 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -353,6 +341,7 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
@@ -363,6 +352,7 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -385,6 +375,7 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -393,6 +384,7 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
@@ -403,6 +395,7 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -419,6 +412,7 @@ export const createChat = /* GraphQL */ `mutation CreateChat(
     name
     isGroup
     createdAt
+    participantIDs
     messages {
       nextToken
       __typename
@@ -444,6 +438,7 @@ export const updateChat = /* GraphQL */ `mutation UpdateChat(
     name
     isGroup
     createdAt
+    participantIDs
     messages {
       nextToken
       __typename
@@ -469,6 +464,7 @@ export const deleteChat = /* GraphQL */ `mutation DeleteChat(
     name
     isGroup
     createdAt
+    participantIDs
     messages {
       nextToken
       __typename
@@ -501,6 +497,7 @@ export const createMessage = /* GraphQL */ `mutation CreateMessage(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -509,12 +506,14 @@ export const createMessage = /* GraphQL */ `mutation CreateMessage(
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
     createdAt
     updatedAt
     userMessagesId
+    owner
     __typename
   }
 }
@@ -538,6 +537,7 @@ export const updateMessage = /* GraphQL */ `mutation UpdateMessage(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -546,12 +546,14 @@ export const updateMessage = /* GraphQL */ `mutation UpdateMessage(
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
     createdAt
     updatedAt
     userMessagesId
+    owner
     __typename
   }
 }
@@ -575,6 +577,7 @@ export const deleteMessage = /* GraphQL */ `mutation DeleteMessage(
       phonenumber
       createdAt
       updatedAt
+      owner
       __typename
     }
     chatID
@@ -583,12 +586,14 @@ export const deleteMessage = /* GraphQL */ `mutation DeleteMessage(
       name
       isGroup
       createdAt
+      participantIDs
       updatedAt
       __typename
     }
     createdAt
     updatedAt
     userMessagesId
+    owner
     __typename
   }
 }

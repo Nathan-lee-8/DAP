@@ -32,7 +32,8 @@ const MessageUsers = () => {
         variables: {
           userID: currUserId,
           sortDirection: ModelSortDirection.DESC,
-        }
+        },
+        authMode: 'userPool'
       });
       const chatRoomData = chatRooms.data.chatsByUser.items;
       setChatRooms(chatRoomData);
@@ -49,6 +50,7 @@ const MessageUsers = () => {
       const users = await client.graphql({
         query: listUsers,
         variables: { limit: 100 },
+        authMode: 'userPool'
       });
       const userData = users.data.listUsers.items;
       setData(userData);

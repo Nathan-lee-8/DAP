@@ -31,6 +31,7 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
                     messagesLimit: 20, 
                     messagesNextToken: nextToken,
                 },
+                authMode: 'userPool'
             });
             console.log("chat fetched");
             const fetchedMessages: Message[] = (chat.data.getChat?.messages?.items || []).filter(
@@ -42,7 +43,7 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
             });
             setNextToken(chat.data.getChat?.messages?.nextToken); 
         } catch (error: any) {
-            console.log(error.message);
+            console.log(error);
         } finally {
             setLoading(false);
         }
@@ -59,6 +60,7 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
             variables: {
                 filter: { chatID: { eq: UserChat.chatID } }, // Scope to the current chat
             },
+            authMode: 'userPool'
         }).subscribe({
             next: ({ value }: any) => {
                 const newMessage = value?.data.onCreateMessage;
@@ -88,6 +90,7 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
                         chatID: UserChat.chatID,
                     },
                 },
+                authMode: 'userPool'
             });
             setMessages((prev) => [msgData.data.createMessage, ...prev]);
             setMessage('');
