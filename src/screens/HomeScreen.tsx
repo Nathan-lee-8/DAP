@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import client from '../client';
 import { postsByDate, userByEmail } from '../graphql/queries';
 import { ModelSortDirection, Post } from '../API';
@@ -7,6 +7,7 @@ import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SelectDropdown from 'react-native-select-dropdown';
 import styles from '../styles/Styles';
+import ProfilePicture from '../components/ProfilePicture';
 
 /**
  * Displays the active HomeScreen for the current user including:
@@ -20,7 +21,7 @@ const HomeScreen = () => {
     console.log("Auth context not defined");
     return null;
   };
-  const { userId, userEmail, firstname, lastname,
+  const { userId, userEmail, firstname, lastname, setProfileURL,
      setUserId, setFirstName, setLastName } = authContext;
 
   let headerName = userEmail;
@@ -42,6 +43,7 @@ const HomeScreen = () => {
         if(user.id) setUserId(user.id);
         if(user.firstname) setFirstName(user.firstname);
         if(user.lastname) setLastName(user.lastname);
+        if(user.profileURL) setProfileURL(user.profileURL);
       }
       try{
         const data = await client.graphql({
@@ -49,8 +51,8 @@ const HomeScreen = () => {
           variables: { email: userEmail.toLowerCase() },
         });
         const user = data.data.userByEmail.items[0];
-        console.log('Fetched current user & set cache'); //REMOVE 
         AsyncStorage.setItem('currUser', JSON.stringify(user));
+        console.log('Fetched current user & set cache'); //REMOVE 
         setUserId(user.id);
         if (user.firstname) setFirstName(user.firstname);
         if (user.lastname) setLastName(user.lastname);
@@ -144,6 +146,8 @@ const HomeScreen = () => {
           renderItem={({ item }) => {
             let displayName = "";
             let displayEmail = "";
+            let profileURL = undefined;
+            if(item.user?.profileURL) profileURL = item.user.profileURL;
             if(item.user){
               if(item.user.firstname) displayName += item.user.firstname;
               if(item.user.lastname) displayName += " " + item.user.lastname;
@@ -151,6 +155,7 @@ const HomeScreen = () => {
             }
             return (
             <View style={{ marginBottom: 15 }}>
+              <ProfilePicture uri={profileURL} size={50} />
               <Text style={{ fontWeight: 'bold' }}>{item.type}: {item.title}</Text>
               <Text>{item.content}</Text>
               <Text>Posted by: {displayName}</Text>

@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { View, TextInput, StyleSheet, Button, Alert } from 'react-native';
+import { View, TextInput, StyleSheet, Button, Alert, Text } from 'react-native';
 import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import client from '../client';
 import { createUser } from '../graphql/mutations';
@@ -25,7 +25,7 @@ const VerifyScreen = ( route : any) => {
       await confirmSignUp({username: userEmail, confirmationCode: code });
       const password = route.route.params.password;
       await signIn({ username: userEmail, password: password });
-      const user = await client.graphql({
+      await client.graphql({
         query: createUser,
         variables: {
           input: { 
@@ -54,17 +54,18 @@ const VerifyScreen = ( route : any) => {
 
   return (
     <View style={styles.container}>
-    <TextInput
-      style={styles.input}
-      placeholder="Enter verification code"
-      value={code}
-      onChangeText={setCode}
-      keyboardType="numeric"
-      maxLength={6}
-    />
-    <Button title="Verify" onPress={handleVerification} />
-    <Button title="Resend Code" onPress={resendSignUp} />
-  </View>
+      <Text>Email sent to: {userEmail}</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter verification code"
+        value={code}
+        onChangeText={setCode}
+        keyboardType="numeric"
+        maxLength={6}
+      />
+      <Button title="Verify" onPress={handleVerification} />
+      <Button title="Resend Code" onPress={resendSignUp} />
+    </View>
   );
 };
 

@@ -18,6 +18,8 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
     firstname
     lastname
     phonenumber
+    profileURL
+    location
     posts {
       nextToken
       __typename
@@ -54,6 +56,8 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
     firstname
     lastname
     phonenumber
+    profileURL
+    location
     posts {
       nextToken
       __typename
@@ -90,6 +94,8 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
     firstname
     lastname
     phonenumber
+    profileURL
+    location
     posts {
       nextToken
       __typename
@@ -133,6 +139,8 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -165,6 +173,8 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -197,6 +207,8 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -226,6 +238,8 @@ export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -257,6 +271,8 @@ export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -288,6 +304,8 @@ export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -307,10 +325,12 @@ export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing(
 >;
 export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
-  $owner: String
+  $ownerID: String
 ) {
-  onCreateUserChat(filter: $filter, owner: $owner) {
+  onCreateUserChat(filter: $filter, ownerID: $ownerID) {
     id
+    ownerID
+    chatName
     userID
     user {
       id
@@ -318,6 +338,8 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -329,6 +351,7 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -340,7 +363,6 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
     createdAt
     updatedAt
     userChatsId
-    owner
     __typename
   }
 }
@@ -350,10 +372,12 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
 >;
 export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
-  $owner: String
+  $ownerID: String
 ) {
-  onUpdateUserChat(filter: $filter, owner: $owner) {
+  onUpdateUserChat(filter: $filter, ownerID: $ownerID) {
     id
+    ownerID
+    chatName
     userID
     user {
       id
@@ -361,6 +385,8 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -372,6 +398,7 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -383,7 +410,6 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
     createdAt
     updatedAt
     userChatsId
-    owner
     __typename
   }
 }
@@ -393,10 +419,12 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
 >;
 export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
-  $owner: String
+  $ownerID: String
 ) {
-  onDeleteUserChat(filter: $filter, owner: $owner) {
+  onDeleteUserChat(filter: $filter, ownerID: $ownerID) {
     id
+    ownerID
+    chatName
     userID
     user {
       id
@@ -404,6 +432,8 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -415,6 +445,7 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -426,7 +457,6 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
     createdAt
     updatedAt
     userChatsId
-    owner
     __typename
   }
 }
@@ -440,6 +470,7 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat($filter: Mo
     name
     isGroup
     createdAt
+    iconURLs
     participantIDs
     messages {
       nextToken
@@ -463,6 +494,7 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat($filter: Mo
     name
     isGroup
     createdAt
+    iconURLs
     participantIDs
     messages {
       nextToken
@@ -486,6 +518,7 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat($filter: Mo
     name
     isGroup
     createdAt
+    iconURLs
     participantIDs
     messages {
       nextToken
@@ -517,6 +550,8 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -528,6 +563,7 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -557,6 +593,8 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -568,6 +606,7 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -597,6 +636,8 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -608,6 +649,7 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
