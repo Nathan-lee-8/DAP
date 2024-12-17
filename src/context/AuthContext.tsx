@@ -1,7 +1,7 @@
 // context/AuthContext.tsx
 import { createContext, useState, ReactNode, useEffect } from 'react';
 import { fetchUserAttributes } from 'aws-amplify/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AuthContextType {
   isSignedIn: boolean;
@@ -9,11 +9,13 @@ interface AuthContextType {
   userEmail: string;
   firstname: string;
   lastname: string;
+  profileURL: string | undefined;
   setSignedIn: (value: boolean) => void;
   setUserId: (id: string) => void;
   setUserEmail: (email: string) => void;
   setFirstName: (firstname: string) => void;
   setLastName: (lastname: string) => void;
+  setProfileURL: (url: string) => void;
   logout: () => void;
 }
 
@@ -25,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userEmail, setUserEmail] = useState<string>('');
   const [firstname, setFirstName] = useState<string>('');
   const [lastname, setLastName] = useState<string>('');
+  const [profileURL, setProfileURL] = useState<string | undefined>(undefined);
 
   const logout = async () => {
     setSignedIn(false);
@@ -32,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUserEmail('');
     setFirstName('');
     setLastName('');
+    setProfileURL(undefined);
     AsyncStorage.clear();
   }
 
@@ -50,7 +54,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ 
-        isSignedIn, userId, userEmail, firstname, lastname,
+        isSignedIn, userId, userEmail, firstname, lastname, profileURL, setProfileURL,
         setSignedIn, setUserId, setUserEmail, setFirstName, setLastName, logout,
       }}>
       {children}

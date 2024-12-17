@@ -116,7 +116,7 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
     return(
         <View style={styles.container}>
             {loading && <ActivityIndicator size="small" color="#0000ff" />}
-            <Text style={styles.title}>{UserChat.chat?.name}</Text>
+            <Text style={styles.title}>{UserChat.chatName}</Text>
             <FlatList
                 ref={flatListRef}
                 data={messages}

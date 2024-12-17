@@ -9,6 +9,8 @@ type User @model @auth(
   firstname: String
   lastname: String
   phonenumber: String
+  profileURL: String
+  location: AWSIPAddress
   posts: [Post] @hasMany
   followings: [Following] @hasMany
   chats: [UserChat] @hasMany
@@ -44,9 +46,14 @@ type Following @model @auth(
 }
 
 type UserChat @model @auth(
-    rules: [{ allow: owner }]
+    rules: [
+      { allow: owner, ownerField: "ownerID" },
+      { allow: private, operations: [create, read] }
+    ]
   ) {
   id: ID!
+  ownerID: ID!
+  chatName: String!
   userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["joinedAt"])
   user: User @belongsTo(fields: ["userID"])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["joinedAt"])

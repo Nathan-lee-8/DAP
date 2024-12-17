@@ -1,0 +1,16 @@
+{
+  "resourceName": "commHubStorage",
+  "policyUUID": "0fab2fc0",
+  "bucketName": "commhubimages",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "READ"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

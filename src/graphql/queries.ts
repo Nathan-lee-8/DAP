@@ -15,6 +15,8 @@ export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
     firstname
     lastname
     phonenumber
+    profileURL
+    location
     posts {
       nextToken
       __typename
@@ -50,6 +52,8 @@ export const listUsers = /* GraphQL */ `query ListUsers(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -80,6 +84,8 @@ export const userByEmail = /* GraphQL */ `query UserByEmail(
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -107,6 +113,8 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -171,8 +179,11 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
         firstname
         lastname
         phonenumber
+        profileURL
+        location
         createdAt
         updatedAt
+        owner
         __typename
       }
       updatedAt
@@ -199,6 +210,8 @@ export const getFollowing = /* GraphQL */ `query GetFollowing($id: ID!) {
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -279,6 +292,8 @@ export const followingsByUser = /* GraphQL */ `query FollowingsByUser(
 export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
   getUserChat(id: $id) {
     id
+    ownerID
+    chatName
     userID
     user {
       id
@@ -286,6 +301,8 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -297,6 +314,7 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -308,7 +326,6 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
     createdAt
     updatedAt
     userChatsId
-    owner
     __typename
   }
 }
@@ -324,6 +341,8 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
   listUserChats(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
+      ownerID
+      chatName
       userID
       chatID
       joinedAt
@@ -333,7 +352,6 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
       createdAt
       updatedAt
       userChatsId
-      owner
       __typename
     }
     nextToken
@@ -362,8 +380,19 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
   ) {
     items {
       id
+      ownerID
+      chatName
       userID
       chatID
+      chat{
+        id
+        name
+        isGroup
+        participantIDs
+        createdAt
+        updatedAt
+        __typename
+      }
       joinedAt
       unreadMessageCount
       lastReadAt
@@ -371,7 +400,6 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       createdAt
       updatedAt
       userChatsId
-      owner
       __typename
     }
     nextToken
@@ -400,6 +428,8 @@ export const userChatsByChatIDAndJoinedAt = /* GraphQL */ `query UserChatsByChat
   ) {
     items {
       id
+      ownerID
+      chatName
       userID
       chatID
       joinedAt
@@ -409,7 +439,6 @@ export const userChatsByChatIDAndJoinedAt = /* GraphQL */ `query UserChatsByChat
       createdAt
       updatedAt
       userChatsId
-      owner
       __typename
     }
     nextToken
@@ -431,34 +460,16 @@ export const getChat = /* GraphQL */ `query GetChat(
     isGroup
     createdAt
     participantIDs
+    iconURLs
     messages (limit: $messagesLimit, nextToken: $messagesNextToken, sortDirection: DESC) {
       items {
         id
         content
         senderID
-        sender{
-          id
-          email
-          firstname
-          lastname
-        }
         chatID
         owner
         createdAt
         __typename
-      }
-      nextToken
-      __typename
-    }
-    participants {
-      items{
-        user{
-          id
-          email
-          firstname
-          lastname
-          __typename
-        }
       }
       nextToken
       __typename
@@ -479,6 +490,7 @@ export const listChats = /* GraphQL */ `query ListChats(
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -499,6 +511,8 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       firstname
       lastname
       phonenumber
+      profileURL
+      location
       createdAt
       updatedAt
       owner
@@ -510,6 +524,7 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       name
       isGroup
       createdAt
+      iconURLs
       participantIDs
       updatedAt
       __typename

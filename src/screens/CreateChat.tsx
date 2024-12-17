@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { View, Text, TextInput, Button } from 'react-native';
+import { View, Text, TextInput, Button, Alert } from 'react-native';
 import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MessagingStackParamList } from '../types/rootStackParamTypes';
 import styles from '../styles/Styles';
@@ -18,35 +18,53 @@ const CreateChat = ( { route }: CreateChatProps) => {
         console.log("Auth context not defined");
         return null;
     }
+    const { firstname, lastname, userId, userEmail } = authContext;
+    const targetUser = route.params.user;
 
-    const currUserId = authContext.userId;
-    const [ message, setMesesage ] = useState('');
-    const user = route.params.user;
+    const [ message, setMessage ] = useState('');
+    const [ loading, setLoading ] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<MessagingStackParamList, 'ChatRoom'>>();
+
+    var displayName = userEmail;
+    if(firstname) displayName = firstname;
+    if(lastname) displayName += " " + lastname;
+
+    var targetDisplayName = targetUser.email;
+    if(targetUser.firstname) targetDisplayName = targetUser.firstname;
+    if(targetUser.lastname) targetDisplayName += " " + targetUser.lastname;
 
     const createChatRoom = async () => {
         try{
-            const cogUser = await getCurrentUser();
-            console.log(cogUser.userId);
-
+            setLoading(true);
+            const cognitoID = await getCurrentUser();
+            let cognitoIDs = [cognitoID.userId];
+            let targetOwnerID = targetUser.owner;
+            if(!targetOwnerID) {
+                console.log("No taget owner ID");
+                Alert.alert("Error no ownerID");
+                return;
+            }
+            cognitoIDs.push(targetOwnerID);
             const chat = await client.graphql({
                 query: createChat,
                 variables: {
                     input: {
-                        name: "default name",
+                        name: "default",
                         isGroup: false,
-                        participantIDs: [cogUser.userId] 
+                        participantIDs: cognitoIDs,
                     }
                 },
                 authMode: 'userPool'
             });
-            console.log("chat created", chat.data.createChat.id);
+            console.log("chat created", chat.data.createChat);
             const myUserChat = await client.graphql({
                 query: createUserChat,
                 variables:{
                     input:{
-                        userID: currUserId,
+                        userID: userId,
                         chatID: chat.data.createChat.id,
+                        chatName: targetDisplayName,
+                        ownerID: cognitoID.userId,
                         unreadMessageCount: 0,
                         joinedAt: new Date().toISOString(),
                     }
@@ -58,8 +76,10 @@ const CreateChat = ( { route }: CreateChatProps) => {
                 query: createUserChat,
                 variables:{
                     input:{
-                        userID: user.id,
+                        userID: targetUser.id,
                         chatID: chat.data.createChat.id,
+                        chatName: displayName,
+                        ownerID: targetOwnerID,
                         unreadMessageCount: 1,
                         joinedAt: new Date().toISOString(),
                     }
@@ -71,7 +91,7 @@ const CreateChat = ( { route }: CreateChatProps) => {
                 query: createMessage,
                 variables:{
                     input:{
-                        senderID: currUserId,
+                        senderID: userId,
                         content: message,
                         chatID: chat.data.createChat.id,
                     }
@@ -79,24 +99,29 @@ const CreateChat = ( { route }: CreateChatProps) => {
                 authMode: 'userPool'
             })
             console.log("Sent Message:", msgData.data.createMessage)
-            navigation.navigate('ChatRoom', { userChat: myUserChat.data.createUserChat });
+            navigation.reset({
+                index: 1,
+                routes: [
+                    { name: 'Messaging'},
+                    { name: 'ChatRoom', params: { userChat: myUserChat.data.createUserChat } 
+                }],
+            });
         } catch (error: any) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
-    
-    var displayName = user.email;
-    if(user.firstname) displayName = user.firstname;
-    if(user.lastname) displayName += " " + user.lastname;
+    if(loading) return <Text style={styles.container}>Loading...</Text>;
 
     return(
         <View style={styles.container}> 
-            <Text style={styles.title}> Messaging: {displayName}</Text>
+            <Text style={styles.title}>{targetDisplayName}</Text>
             <TextInput
                 style={styles.input}
                 placeholder="Type a message..."
                 value={message}
-                onChangeText={setMesesage}
+                onChangeText={setMessage}
             />
             <Button title="Send" onPress={createChatRoom} />
         </View>
