@@ -1,7 +1,8 @@
 type User @model @auth(
     rules: [
       { allow: owner }, 
-      { allow: public, operations: [read] }
+      { allow: public, operations: [read] },
+      { allow: private, operations: [read] }
     ]
   ) {
   id: ID!
@@ -28,7 +29,7 @@ type Post @model @auth(
   content: String!
   type: String! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
   createdAt: AWSDateTime!
-  userID: ID!
+  userID: ID! @index(name: "postsByUser", queryField: "postsByUser", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields:["userID"])
 }
 
@@ -53,9 +54,9 @@ type UserChat @model @auth(
   ) {
   id: ID!
   ownerID: ID!
-  chatName: String!
   userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["joinedAt"])
   user: User @belongsTo(fields: ["userID"])
+    @auth(rules: [{ allow: private, operations: [read] }])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["joinedAt"])
   chat: Chat @belongsTo(fields: ["chatID"])
   joinedAt: AWSDateTime!

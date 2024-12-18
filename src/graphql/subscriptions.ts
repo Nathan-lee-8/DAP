@@ -330,7 +330,6 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
   onCreateUserChat(filter: $filter, ownerID: $ownerID) {
     id
     ownerID
-    chatName
     userID
     user {
       id
@@ -351,7 +350,6 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -377,7 +375,6 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
   onUpdateUserChat(filter: $filter, ownerID: $ownerID) {
     id
     ownerID
-    chatName
     userID
     user {
       id
@@ -398,7 +395,6 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -424,7 +420,6 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
   onDeleteUserChat(filter: $filter, ownerID: $ownerID) {
     id
     ownerID
-    chatName
     userID
     user {
       id
@@ -445,7 +440,6 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -470,7 +464,6 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat($filter: Mo
     name
     isGroup
     createdAt
-    iconURLs
     participantIDs
     messages {
       nextToken
@@ -494,7 +487,6 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat($filter: Mo
     name
     isGroup
     createdAt
-    iconURLs
     participantIDs
     messages {
       nextToken
@@ -518,7 +510,6 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat($filter: Mo
     name
     isGroup
     createdAt
-    iconURLs
     participantIDs
     messages {
       nextToken
@@ -563,7 +554,6 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -606,7 +596,6 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -649,7 +638,6 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename

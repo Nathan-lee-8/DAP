@@ -1,7 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { View, Text, FlatList, TextInput, Button, Alert,
-    ActivityIndicator 
-} from 'react-native';
+import { View, Text, FlatList, TextInput, Button, ActivityIndicator } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MessagingStackParamList } from '../types/rootStackParamTypes';
 import styles from '../styles/Styles';
@@ -116,7 +114,7 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
     return(
         <View style={styles.container}>
             {loading && <ActivityIndicator size="small" color="#0000ff" />}
-            <Text style={styles.title}>{UserChat.chatName}</Text>
+            <Text style={styles.title}>{UserChat.chat?.name}</Text>
             <FlatList
                 ref={flatListRef}
                 data={messages}

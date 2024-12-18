@@ -18,6 +18,8 @@ import CreateChat from '../screens/CreateChat';
 import { RootStackParamList, SignedInTabParamList, MessagingStackParamList,
   FindUserParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
+import ProfilePicture from '../components/ProfilePicture';
+import Icon from '@react-native-vector-icons/ionicons'
 
 const Tab = createBottomTabNavigator<SignedInTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -30,21 +32,38 @@ const AppNavigator = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { isSignedIn } = authContext;
+  const { isSignedIn, profileURL } = authContext;
 
   return (
     <NavigationContainer>
       {isSignedIn ? (
         <Tab.Navigator screenOptions={{headerRight: LogOutButton}}>
-          <Tab.Screen name="Home" component={Home} />
+          <Tab.Screen name="Home" component={Home} 
+            options={{
+              tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
+            }}/>
           <Tab.Screen name="CreatePost" component={CreatePost} 
-            options={{title: 'Create Post'}} />
+            options={{
+              title: 'Create Post',
+              tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
+              }} />
           <Tab.Screen name="MessageScreens" component={MessageScreens} 
-            options={{title: 'Messages', headerShown: false}} />
+            options={{
+              title: 'Messages', 
+              headerShown: false,
+              tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
+              }} />
           <Tab.Screen name="ProfileScreens" component={ProfileScreens} 
-            options={{title: 'Search Users', headerShown: false}} />
+            options={{
+              title: 'Search Users', 
+              headerShown: false,
+              tabBarIcon: () => <Icon name="search-outline" size={30} color="grey" />
+              }} />
           <Tab.Screen name="EditProfile" component={EditProfile}
-            options={{title: 'Edit Profile'}}  />
+            options={{
+              title: 'Edit Profile', 
+              tabBarIcon: () => <ProfilePicture uri={profileURL}size={35}/>
+            }} />
         </Tab.Navigator>
       ) : (
         <Stack.Navigator initialRouteName="SignIn">

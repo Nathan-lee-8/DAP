@@ -173,7 +173,7 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       type
       createdAt
       userID
-      user{
+       user{
         id
         email
         firstname
@@ -198,6 +198,42 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
 ` as GeneratedQuery<
   APITypes.PostsByDateQueryVariables,
   APITypes.PostsByDateQuery
+>;
+export const postsByUser = /* GraphQL */ `query PostsByUser(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelPostFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  postsByUser(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      title
+      content
+      type
+      createdAt
+      userID
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.PostsByUserQueryVariables,
+  APITypes.PostsByUserQuery
 >;
 export const getFollowing = /* GraphQL */ `query GetFollowing($id: ID!) {
   getFollowing(id: $id) {
@@ -293,7 +329,6 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
   getUserChat(id: $id) {
     id
     ownerID
-    chatName
     userID
     user {
       id
@@ -314,7 +349,6 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -342,7 +376,6 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
     items {
       id
       ownerID
-      chatName
       userID
       chatID
       joinedAt
@@ -381,7 +414,6 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
     items {
       id
       ownerID
-      chatName
       userID
       chatID
       chat{
@@ -389,6 +421,31 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
         name
         isGroup
         participantIDs
+        participants{
+          items{
+            id
+            ownerID
+            userID
+            user {
+              id
+              email
+              firstname
+              lastname
+              phonenumber
+              profileURL
+              location
+              createdAt
+              updatedAt
+              owner
+              __typename
+            }
+            chatID
+            joinedAt
+            createdAt
+            updatedAt
+            __typename
+          }
+        }
         createdAt
         updatedAt
         __typename
@@ -429,7 +486,6 @@ export const userChatsByChatIDAndJoinedAt = /* GraphQL */ `query UserChatsByChat
     items {
       id
       ownerID
-      chatName
       userID
       chatID
       joinedAt
@@ -460,7 +516,6 @@ export const getChat = /* GraphQL */ `query GetChat(
     isGroup
     createdAt
     participantIDs
-    iconURLs
     messages (limit: $messagesLimit, nextToken: $messagesNextToken, sortDirection: DESC) {
       items {
         id
@@ -490,7 +545,6 @@ export const listChats = /* GraphQL */ `query ListChats(
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename
@@ -524,7 +578,6 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       name
       isGroup
       createdAt
-      iconURLs
       participantIDs
       updatedAt
       __typename

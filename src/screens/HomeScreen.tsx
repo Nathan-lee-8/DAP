@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import client from '../client';
 import { postsByDate, userByEmail } from '../graphql/queries';
 import { ModelSortDirection, Post } from '../API';
@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SelectDropdown from 'react-native-select-dropdown';
 import styles from '../styles/Styles';
 import ProfilePicture from '../components/ProfilePicture';
+import moment from 'moment';
 
 /**
  * Displays the active HomeScreen for the current user including:
@@ -119,9 +120,24 @@ const HomeScreen = () => {
     loadNewsFeed();
   }, [postType]);
 
+  const getTimeDisplay = ( postTime: string) => {
+    var postDate = moment(postTime);
+    var currDate = moment();
+    const daysDiff = currDate.diff(postDate, 'days');
+    if(daysDiff > 0){
+      let date = new Date(postTime);
+      let cutOff = date.toDateString().indexOf(' '); //index to cut off the day
+      let display = date.toDateString().slice(cutOff, ) + " " + date.toLocaleTimeString();
+      return display;
+    }
+    const hoursDiff = currDate.diff(postDate, 'hours');
+    const minutesDiff = currDate.diff(postDate, 'minutes');
+    if(hoursDiff > 0) return hoursDiff + ' hours ago';
+    return minutesDiff + ' minutes ago';
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>My News Feed For {headerName} </Text>
       <SelectDropdown data={['FreeAndForSale','JobListings', 'VolunteerOpportunities']}
         onSelect={(selectedItem) => setPostType(selectedItem)}
         renderButton={(selectedItem) => (
@@ -139,7 +155,7 @@ const HomeScreen = () => {
         dropdownStyle={styles.dropdownMenuStyle}
       />
       {loading ? (
-        <Text>Loading posts... </Text>
+        <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
           data={newsFeed}
@@ -147,6 +163,7 @@ const HomeScreen = () => {
             let displayName = "";
             let displayEmail = "";
             let profileURL = undefined;
+            const displayDate = getTimeDisplay(item.createdAt);
             if(item.user?.profileURL) profileURL = item.user.profileURL;
             if(item.user){
               if(item.user.firstname) displayName += item.user.firstname;
@@ -154,14 +171,18 @@ const HomeScreen = () => {
               if(item.user.email) displayEmail = item.user.email;
             }
             return (
-            <View style={{ marginBottom: 15 }}>
-              <ProfilePicture uri={profileURL} size={50} />
-              <Text style={{ fontWeight: 'bold' }}>{item.type}: {item.title}</Text>
-              <Text>{item.content}</Text>
-              <Text>Posted by: {displayName}</Text>
-              <Text>Contact: {displayEmail}</Text>
-              <Text>Created At: {item.createdAt}</Text>
-            </View>
+              <View style={styles.postContainer}>
+                <View style={styles.profileSection}> 
+                  <ProfilePicture uri={profileURL} size={35} />
+                  <View style={styles.textContainer}>
+                    <Text style={styles.postAuthor}>{displayName}</Text>
+                    <Text style={styles.postContact}>{displayEmail}</Text>
+                  </View>
+                </View>
+                <Text style={styles.postDate}>{displayDate}</Text>
+                <Text style={styles.postType}>{item.title}</Text>
+                <Text style={styles.postContent}>{item.content}</Text>
+              </View>
           )}}
         />
       )}
