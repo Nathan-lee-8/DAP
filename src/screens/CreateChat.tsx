@@ -18,16 +18,12 @@ const CreateChat = ( { route }: CreateChatProps) => {
         console.log("Auth context not defined");
         return null;
     }
-    const { firstname, lastname, userId, userEmail } = authContext;
+    const { userId } = authContext;
     const targetUser = route.params.user;
 
     const [ message, setMessage ] = useState('');
     const [ loading, setLoading ] = useState(false);
     const navigation = useNavigation<NativeStackNavigationProp<MessagingStackParamList, 'ChatRoom'>>();
-
-    var displayName = userEmail;
-    if(firstname) displayName = firstname;
-    if(lastname) displayName += " " + lastname;
 
     var targetDisplayName = targetUser.email;
     if(targetUser.firstname) targetDisplayName = targetUser.firstname;
@@ -63,7 +59,6 @@ const CreateChat = ( { route }: CreateChatProps) => {
                     input:{
                         userID: userId,
                         chatID: chat.data.createChat.id,
-                        chatName: targetDisplayName,
                         ownerID: cognitoID.userId,
                         unreadMessageCount: 0,
                         joinedAt: new Date().toISOString(),
@@ -78,7 +73,6 @@ const CreateChat = ( { route }: CreateChatProps) => {
                     input:{
                         userID: targetUser.id,
                         chatID: chat.data.createChat.id,
-                        chatName: displayName,
                         ownerID: targetOwnerID,
                         unreadMessageCount: 1,
                         joinedAt: new Date().toISOString(),

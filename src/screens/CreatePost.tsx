@@ -21,6 +21,15 @@ const CreatePost = () => {
   const { userId } = authContext;
   const createUserPost = async () => {
     setLoading(true);
+    if(title === '') {
+      Alert.alert("Title is empty");
+      setLoading(false);
+      return;
+    }else if(content === '') {
+      Alert.alert("Content is empty");
+      setLoading(false);
+      return;
+    }
     try{
       const data = await client.graphql({
         query: createPost,
@@ -79,7 +88,9 @@ const CreatePost = () => {
         value={content}
         onChangeText={setContent}
       />
-      <Button title="Create Post" onPress={createUserPost}/>
+      <TouchableOpacity style={styles.button} onPress={createUserPost} >
+        <Text style={styles.buttonText}>Create Post</Text>
+      </TouchableOpacity>
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
     </View>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { View, FlatList, TouchableOpacity, Button,
-  Text, Image, ActivityIndicator } from 'react-native';
+  Text, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,6 +12,7 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import { User } from '../API';
+import ProfilePicture from '../components/ProfilePicture';
 
 const MessageUsers = () => {
   const [chatRooms, setChatRooms] = useState<UserChat[]>([])
@@ -35,7 +36,7 @@ const MessageUsers = () => {
       });
       const chatRoomData = chatRooms.data.chatsByUser.items;
       setChatRooms(chatRoomData);
-      console.log('Fetched & cached from fetchChatRooms.', chatRoomData);
+      console.log('Fetched & cached from fetchChatRooms.', chatRoomData[0].chat?.participants?.items);
       await AsyncStorage.setItem('chatRoomsCache', JSON.stringify({chatRoomData: chatRoomData}));
     } catch (error) {
       console.log('Error fetching chat rooms', error);
@@ -101,20 +102,39 @@ const MessageUsers = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           let chatname = "";
-          if(item.chatName) chatname = item.chatName;
+          let displayURI = undefined;
           if(item?.chat?.isGroup){
               chatname = item.chat.name;
+          }else{
+            const participants = item.chat?.participants?.items;
+            if(participants && participants[0] && participants[1]){
+              var part;
+              if(participants[0].user?.id === currUserId){
+                part = participants[1].user;
+              }else{
+                part = participants[0].user;
+              }
+              chatname = part?.firstname + " " + part?.lastname;
+              if(part?.profileURL === null){
+                displayURI = undefined;
+              }else{
+                displayURI = part?.profileURL;
+              }
+            }
           }
+          
           return (
-            <View>
-              <Image style={styles.avatar} source={{}}/>
-              <View>
-                <Text>{chatname}</Text>
+            <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>
+              <View style={styles.postContainer}> 
+                  <View style={styles.profileSection}>
+                    <ProfilePicture uri={displayURI} size={50}/>
+                    <View style={styles.textContainer}>
+                      <Text style={styles.postAuthor}>{chatname}</Text>
+                      <Text style={styles.postContact}>Unread Msgs: {item.unreadMessageCount}</Text>
+                    </View>  
+                  </View> 
               </View>
-              <TouchableOpacity style={styles.button} onPress={() => handleOpenChatRoom(item)}>
-                <Text style={styles.buttonText}>Message</Text>
-              </TouchableOpacity>            
-            </View>
+            </TouchableOpacity>  
         )}}
       />
       <Button title="Fetch Chat rooms" onPress={fetchChatRooms}/>
