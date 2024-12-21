@@ -160,6 +160,9 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     margin: 5,
   },
+  tabView:{
+    backgroundColor: 'black',
+  }
 });
 
 export default styles;

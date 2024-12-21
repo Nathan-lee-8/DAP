@@ -1,11 +1,10 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import client from '../client';
 import { postsByDate, userByEmail } from '../graphql/queries';
 import { ModelSortDirection, Post } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import SelectDropdown from 'react-native-select-dropdown';
 import styles from '../styles/Styles';
 import ProfilePicture from '../components/ProfilePicture';
 import moment from 'moment';
@@ -16,7 +15,9 @@ import moment from 'moment';
  * A tab view at the bottom which allows users to: create a post, 
  *    view feed, edit profile, find other users and send messages
  */
-const HomeScreen = () => {
+const HomeScreen = (route : any) => {
+  var category = route.route.params.category;
+  if(!category) return
   const authContext = useContext(AuthContext);
   if(!authContext) {
     console.log("Auth context not defined");
@@ -31,7 +32,6 @@ const HomeScreen = () => {
 
   const [newsFeed, setNewsFeed] = useState<Post[]> ([]);
   const [loading, setLoading] = useState(true);
-  const [postType, setPostType] = useState('FreeAndForSale');
   
   //Reset Cache if it was cleared but user is still logged in
   useEffect(() => {
@@ -69,7 +69,7 @@ const HomeScreen = () => {
   useEffect(()=> {
     const loadNewsFeed = async () => {
       try {
-        const cachedData = await AsyncStorage.getItem('newsFeedCache' + postType);
+        const cachedData = await AsyncStorage.getItem('newsFeedCache' + category);
         if (cachedData) {
           const data = JSON.parse(cachedData);
           const cacheAge = Date.now() - data.timestamp;
@@ -96,7 +96,7 @@ const HomeScreen = () => {
         const allPosts = await client.graphql({
           query: postsByDate,
           variables: {
-            type: postType,
+            type: category,
             sortDirection: ModelSortDirection.DESC,
             limit: 10,
           },
@@ -105,7 +105,7 @@ const HomeScreen = () => {
         const posts = allPosts.data.postsByDate.items;
         setNewsFeed(posts);
         
-        await AsyncStorage.setItem('newsFeedCache' + postType, JSON.stringify({
+        await AsyncStorage.setItem('newsFeedCache' + category, JSON.stringify({
           posts,
           timestamp: Date.now(),
         }));
@@ -118,7 +118,7 @@ const HomeScreen = () => {
       }
     };
     loadNewsFeed();
-  }, [postType]);
+  }, []);
 
   const getTimeDisplay = ( postTime: string) => {
     var postDate = moment(postTime);
@@ -138,22 +138,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <SelectDropdown data={['FreeAndForSale','JobListings', 'VolunteerOpportunities']}
-        onSelect={(selectedItem) => setPostType(selectedItem)}
-        renderButton={(selectedItem) => (
-          <TouchableOpacity style={styles.dropdownButtonStyle}>
-            <Text style={styles.dropdownButtonTxtStyle}>
-              {(selectedItem) || 'FreeAndForSale'}
-            </Text>
-          </TouchableOpacity>
-        )}
-        renderItem={(item) => (
-          <View style={styles.dropdownItemStyle}>
-            <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-          </View>
-        )}
-        dropdownStyle={styles.dropdownMenuStyle}
-      />
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
