@@ -1,17 +1,20 @@
 import { useContext, useState } from 'react';
-import { View, Text, Button, TextInput, Alert, TouchableOpacity, 
+import { View, Text, TextInput, Alert, TouchableOpacity, 
   ActivityIndicator } from 'react-native';
 import { createPost } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
 import client from '../client';
-import SelectDropdown from 'react-native-select-dropdown';
 import styles from '../styles/Styles';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { TopTabParamList } from '../types/rootStackParamTypes';
 
-const CreatePost = () => {
+const TopTabStack = createMaterialTopTabNavigator<TopTabParamList>();
+
+const CreatePostLogic = ({ route }: any) => {
+  const { category: postType } = route.params;
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const [postType, setPostType] = useState('FreeAndForSale');
 
   const authContext = useContext(AuthContext);
   if(!authContext) {
@@ -57,24 +60,6 @@ const CreatePost = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Post</Text>
-      <SelectDropdown 
-        data={['FreeAndForSale', 'JobListings', 'VolunteerOpportunities']}
-        onSelect={(selectedItem) => setPostType(selectedItem)}
-        renderButton={(selectedItem) => (
-          <TouchableOpacity style={styles.dropdownButtonStyle} >
-            <Text style={styles.dropdownButtonTxtStyle}>
-              {(selectedItem) || 'FreeAndForSale'}
-            </Text>
-          </TouchableOpacity>
-        )}
-        renderItem={(item) => (
-          <View style={styles.dropdownItemStyle}>
-            <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-          </View>
-        )}
-        dropdownStyle={styles.dropdownMenuStyle}
-      />
       <TextInput
         style={styles.input}
         placeholder="Title"
@@ -95,5 +80,18 @@ const CreatePost = () => {
     </View>
   );
 };
+
+const CreatePost = () => {
+  return (
+    <TopTabStack.Navigator>
+      <TopTabStack.Screen name="Market" component={CreatePostLogic} initialParams={{category: "Market"}}
+        options={{title: 'Market'}} />
+      <TopTabStack.Screen name="Jobs" component={CreatePostLogic} initialParams={{category: "Jobs"}}
+        options={{title: 'Jobs'}} />
+      <TopTabStack.Screen name="Volunteer" component={CreatePostLogic} initialParams={{category: "Volunteer"}}
+        options={{title: 'Volunteer'}} />
+    </TopTabStack.Navigator>
+  );
+}
 
 export default CreatePost;

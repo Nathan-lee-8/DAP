@@ -7,7 +7,7 @@ export type RootStackParamList = {
 };
 
 export type SignedInTabParamList = {
-    Home: undefined;
+    HomeScreen: undefined;
     MessageScreens: undefined;
     CreatePost: undefined;
     ProfileScreens: undefined;
@@ -23,4 +23,16 @@ export type MessagingStackParamList = {
 export type FindUserParamList = {
     FindUsers: undefined;
     ViewProfiles: { user: User; };
+}
+
+export type TopTabParamList = { 
+    Market: { category: string};
+    Jobs: { category: string};
+    Volunteer: { category: string};
+}
+
+export type PostsTopTabParamList = { 
+    Market: { category: string, userID: string};
+    Jobs: { category: string, userID: string};
+    Volunteer: { category: string, userID: string};
 }

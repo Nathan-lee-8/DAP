@@ -16,15 +16,17 @@ import ChatRoom from '../screens/ChatRoom';
 import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
 import { RootStackParamList, SignedInTabParamList, MessagingStackParamList,
-  FindUserParamList } from '../types/rootStackParamTypes';
+  FindUserParamList, TopTabParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
 import ProfilePicture from '../components/ProfilePicture';
 import Icon from '@react-native-vector-icons/ionicons'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 const Tab = createBottomTabNavigator<SignedInTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const MessageStack = createNativeStackNavigator<MessagingStackParamList>();
 const FindUserStack = createNativeStackNavigator<FindUserParamList>();
+const TopTabStack = createMaterialTopTabNavigator<TopTabParamList>();
 
 const AppNavigator = () => {
   const authContext = useContext(AuthContext);
@@ -37,21 +39,22 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       {isSignedIn ? (
-        <Tab.Navigator screenOptions={{headerRight: LogOutButton}}>
-          <Tab.Screen name="Home" component={Home} 
+        <Tab.Navigator>
+          <Tab.Screen name="HomeScreen" component={HomeTopNav} 
             options={{
+              title: 'Home',
               tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
             }}/>
-          <Tab.Screen name="CreatePost" component={CreatePost} 
-            options={{
-              title: 'Create Post',
-              tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
-              }} />
           <Tab.Screen name="MessageScreens" component={MessageScreens} 
             options={{
               title: 'Messages', 
               headerShown: false,
               tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
+              }} />
+          <Tab.Screen name="CreatePost" component={CreatePost} 
+            options={{
+              title: 'Create Post',
+              tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
               }} />
           <Tab.Screen name="ProfileScreens" component={ProfileScreens} 
             options={{
@@ -62,7 +65,8 @@ const AppNavigator = () => {
           <Tab.Screen name="EditProfile" component={EditProfile}
             options={{
               title: 'Edit Profile', 
-              tabBarIcon: () => <ProfilePicture uri={profileURL}size={35}/>
+              tabBarIcon: () => <ProfilePicture uri={profileURL}size={35}/>,
+              headerRight: LogOutButton
             }} />
         </Tab.Navigator>
       ) : (
@@ -78,11 +82,24 @@ const AppNavigator = () => {
   );
 };
 
+const HomeTopNav = () => {
+  return (
+    <TopTabStack.Navigator>
+      <TopTabStack.Screen name="Market" component={Home} initialParams={{category: "Market"}}
+        options={{title: 'Market'}} />
+      <TopTabStack.Screen name="Jobs" component={Home} initialParams={{category: "Jobs"}}
+        options={{title: 'Jobs'}} />
+      <TopTabStack.Screen name="Volunteer" component={Home} initialParams={{category: "Volunteer"}}
+        options={{title: 'Volunteer'}} />
+    </TopTabStack.Navigator>
+  )
+}
+
 const MessageScreens = () => {
   return (
     <MessageStack.Navigator initialRouteName='Messaging' >
       <MessageStack.Screen name="Messaging" component={Messaging} 
-        options={{title: 'Messages', headerRight: LogOutButton}} />
+        options={{title: 'Messages'}} />
       <MessageStack.Screen name="ChatRoom" component={ChatRoom} 
         options={{title: 'Messages'}}/>
       <MessageStack.Screen name="CreateChat" component={CreateChat}
@@ -95,7 +112,7 @@ const ProfileScreens = () => {
   return (
     <FindUserStack.Navigator initialRouteName='FindUsers' >
       <FindUserStack.Screen name="FindUsers" component={FindUsers} 
-        options={{title: 'Search User', headerRight: LogOutButton}}/>
+        options={{title: 'Search User'}}/>
       <FindUserStack.Screen name="ViewProfiles" component={ViewProfiles} 
         options={{title: 'Profile'}}/>
     </FindUserStack.Navigator>

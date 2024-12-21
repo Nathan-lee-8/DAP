@@ -7,8 +7,16 @@ import styles from '../styles/Styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ModelSortDirection } from '../API';
 import moment from 'moment';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { PostsTopTabParamList } from '../types/rootStackParamTypes';
 
-const UserPosts = ( { userID } : any ) => {
+const TopTabStack = createMaterialTopTabNavigator<PostsTopTabParamList>();
+
+const UserPostsLogic = ( { route } : any ) => {
+  const userID = route.params.userID;
+  const category = route.params.category;
+  if(!userID) return (<View> <Text>Error retriving posts</Text></View>);
+
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -101,10 +109,10 @@ const UserPosts = ( { userID } : any ) => {
 
   return(
     <View>
-      <Text style={styles.title}>Post History</Text>
       <FlatList
         data={posts}
         renderItem={({ item }) => {
+          if(item.type !== category) return <View></View>;
           const displayDate = getTimeDisplay(item.createdAt);
           return(
             <View style={styles.postContainer}>
@@ -116,6 +124,22 @@ const UserPosts = ( { userID } : any ) => {
         )}}
       />
     </View>
+  );
+}
+
+const UserPosts = ({ userID } : any) => {
+  return (
+    <TopTabStack.Navigator>
+      <TopTabStack.Screen name="Market" component={UserPostsLogic} 
+        initialParams={{category: "Market", userID: userID}}
+        options={{title: 'Market'}} />
+      <TopTabStack.Screen name="Jobs" component={UserPostsLogic} 
+        initialParams={{category: "Jobs", userID: userID}}
+        options={{title: 'Jobs'}} />
+      <TopTabStack.Screen name="Volunteer" component={UserPostsLogic} 
+        initialParams={{category: "Volunteer", userID: userID}}
+        options={{title: 'Volunteer'}} />
+    </TopTabStack.Navigator>
   );
 }
 
