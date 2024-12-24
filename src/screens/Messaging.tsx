@@ -36,7 +36,7 @@ const MessageUsers = () => {
       });
       const chatRoomData = chatRooms.data.chatsByUser.items;
       setChatRooms(chatRoomData);
-      console.log('Fetched & cached from fetchChatRooms.', chatRoomData[0].chat?.participants?.items);
+      console.log('Fetched & cached from fetchChatRooms.');
       await AsyncStorage.setItem('chatRoomsCache', JSON.stringify({chatRoomData: chatRoomData}));
     } catch (error) {
       console.log('Error fetching chat rooms', error);

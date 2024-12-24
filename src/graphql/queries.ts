@@ -529,6 +529,19 @@ export const getChat = /* GraphQL */ `query GetChat(
       nextToken
       __typename
     }
+    participants {
+      items{
+        user{
+          id
+          firstname
+          lastname
+          profileURL
+        }
+        __typename
+      }
+      nextToken
+      __typename
+    }
     updatedAt
     __typename
   }

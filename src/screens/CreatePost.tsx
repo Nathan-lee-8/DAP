@@ -73,7 +73,7 @@ const CreatePostLogic = ({ route }: any) => {
         value={content}
         onChangeText={setContent}
       />
-      <TouchableOpacity style={styles.button} onPress={createUserPost} >
+      <TouchableOpacity style={styles.buttonCentered} onPress={createUserPost} >
         <Text style={styles.buttonText}>Create Post</Text>
       </TouchableOpacity>
       {loading && <ActivityIndicator size="large" color="#0000ff" />}

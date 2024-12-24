@@ -1,7 +1,8 @@
 import { useContext, useState } from 'react';
-import { View, TextInput, StyleSheet, Button, Alert, Text } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Alert, Text } from 'react-native';
 import { confirmResetPassword } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
+import styles from '../styles/Styles';
 
 /**
  * Retrieves the code and password from the user. Resets the password in Cognito
@@ -33,8 +34,8 @@ const ResetPassword = () => {
   }
 
   return (
-    <View style={styles.container}>
-        <Text style={styles.title}>Please enter the confirmation code sent to your email to set a new password. </Text>
+    <View style={[styles.container, styles.formContainer]}>
+        <Text style={[styles.title, {marginBottom: 30}]}>Enter the confirmation code sent to: {userEmail} </Text>
         <TextInput
             style={styles.input}
             placeholder="Enter confirmation code"
@@ -55,31 +56,11 @@ const ResetPassword = () => {
             value={password1}
             onChangeText={setPassword1}
         />
-        <Button title="Reset Password" onPress={confirmPasswordReset} />
+        <TouchableOpacity style={styles.buttonCentered} onPress={ confirmPasswordReset }>
+            <Text style={styles.buttonText}>Reset Password</Text>
+        </TouchableOpacity>
     </View>
   );
 };
-
-//Styles for resetPassword page
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    borderRadius: 5,
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 20,
-  }, 
-});
 
 export default ResetPassword;

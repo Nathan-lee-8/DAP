@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
+  /**Overall App styles */
   container: {
     flex: 1,
     padding: 20,
@@ -13,36 +14,66 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     color: '#333',
   },
-  dropdownButtonStyle: {
-    width: 240,
-    backgroundColor: '#E9ECEF',
-    borderRadius: 5,
+  button: { 
+    borderRadius: 10,
+    borderColor: '#007BFF',
+    borderWidth: 1,
+    padding: 10,
+    marginLeft: 'auto',
+  },
+  buttonCentered: {
+    borderRadius: 10,
+    borderColor: '#007BFF',
+    borderWidth: 1,
+    marginVertical: 5,
+    marginHorizontal: 15,
     padding: 10,
     alignSelf: 'center',
-    margin: 5,
+    width: '45%',
   },
-  dropdownButtonTxtStyle: {
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#151E26',
+  buttonText: { 
+    fontSize: 14,
     textAlign: 'center',
+    color: '#007BFF'
   },
-  dropdownMenuStyle: {
-    backgroundColor: '#E9ECEF',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#ddd'
-  },
-  dropdownItemStyle: {
-    width: '100%',
+  iconContainer: {
+    alignSelf: 'center',
+    padding: 20,
     alignItems: 'center',
+    justifyContent: 'center'
+  },
+  icon: {
+    marginHorizontal: 10,
     padding: 10,
   },
-  dropdownItemTxtStyle: {
-    fontSize: 16,
-    fontWeight: '400',
-    color: '#151E26',
+  avatar: {
+    marginLeft: 'auto',
   },
+  tabView:{
+    backgroundColor: 'black',
+  },
+
+  /** Form Styles */
+  formContainer: {
+    justifyContent: 'center',
+    padding: 20,
+    flex: 1,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+    borderRadius: 5,
+  },
+  label: {
+    marginBottom: 8,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+
+  /** User Posts styles */
   postContainer: {
     padding: 15,
     backgroundColor: '#fff',
@@ -94,6 +125,8 @@ const styles = StyleSheet.create({
     right: 10,
     bottom: 5,
   },
+
+  /** Search User Styles  */
   searchUserContainer: {
     margin: 5,
     padding: 5,
@@ -103,17 +136,6 @@ const styles = StyleSheet.create({
   listUserContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    borderRadius: 5,
-  },
-  avatar: {
-    marginLeft: 'auto',
   },
   textName: {
     fontSize: 16,
@@ -125,17 +147,12 @@ const styles = StyleSheet.create({
     color: '#666',
     marginLeft: 10,
   },
-  button: { 
-    backgroundColor: '#007BFF', 
-    paddingVertical: 8, 
-    paddingHorizontal: 12, 
-    borderRadius: 10,
-    marginLeft: 'auto',
-  },
-  buttonText: { 
-    fontSize: 14,
-    textAlign: 'center',
-    color: 'white'
+
+  /** Messaging Styles   */
+  myMessageContainer: {
+    flexDirection: 'row',
+    alignSelf: 'flex-end',
+    alignItems: 'center'
   },
   myMessage: {
     alignSelf: 'flex-end',
@@ -144,6 +161,11 @@ const styles = StyleSheet.create({
     padding: 10,
     margin: 5,
     maxWidth: '80%',
+  },
+  otherMessageContainer: {
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
+    alignItems: 'center'
   },
   otherMessage: {
     alignSelf: 'flex-start',
@@ -160,9 +182,6 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     margin: 5,
   },
-  tabView:{
-    backgroundColor: 'black',
-  }
 });
 
 export default styles;

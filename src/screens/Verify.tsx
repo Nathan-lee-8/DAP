@@ -1,9 +1,10 @@
 import { useContext, useState } from 'react';
-import { View, TextInput, StyleSheet, Button, Alert, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, Alert, Text } from 'react-native';
 import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import client from '../client';
 import { createUser } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
+import styles from '../styles/Styles'
 
 /**
  * Retrieves the email, firstname, and lastname entered from the sign up page and 
@@ -30,8 +31,8 @@ const VerifyScreen = ( route : any) => {
         variables: {
           input: { 
             email: userEmail.toLowerCase(), 
-            firstname: firstname, 
-            lastname: lastname, 
+            firstname: firstname.trim(), 
+            lastname: lastname.trim(), 
           },
         },
         authMode: 'userPool'
@@ -53,8 +54,8 @@ const VerifyScreen = ( route : any) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Email sent to: {userEmail}</Text>
+    <View style={[styles.container, styles.formContainer]}>
+      <Text style={[styles.title, {marginBottom: 35}]}>Email sent to: {userEmail}</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter verification code"
@@ -63,28 +64,17 @@ const VerifyScreen = ( route : any) => {
         keyboardType="numeric"
         maxLength={6}
       />
-      <Button title="Verify" onPress={handleVerification} />
-      <Button title="Resend Code" onPress={resendSignUp} />
+      <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+        <TouchableOpacity style={styles.buttonCentered} onPress={ resendSignUp }>
+          <Text style={styles.buttonText}>Resend</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buttonCentered} onPress={ handleVerification }>
+          <Text style={styles.buttonText}>Verify</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
-//Styles for Verify page
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    borderRadius: 5,
-  },
-});
 
 export default VerifyScreen;

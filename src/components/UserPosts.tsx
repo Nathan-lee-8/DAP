@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, Alert, ActivityIndicator } from 'react-native';
 import client from '../client';
 import { postsByUser } from '../graphql/queries';
@@ -13,116 +13,87 @@ import { PostsTopTabParamList } from '../types/rootStackParamTypes';
 const TopTabStack = createMaterialTopTabNavigator<PostsTopTabParamList>();
 
 const UserPostsLogic = ( { route } : any ) => {
-  const userID = route.params.userID;
-  const category = route.params.category;
-  if(!userID) return (<View> <Text>Error retriving posts</Text></View>);
+  const { userID, category } = route.params;
+  if(!userID || !category) return (<View> <Text>Error retriving posts</Text></View>);
 
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      const response = await client.graphql({
+        query: postsByUser,
+        variables: { userID: userID, sortDirection: ModelSortDirection.DESC },
+      });
+      const fetchedPosts = response?.data?.postsByUser?.items || [];
+      console.log("fetched post from userposts page");
+      setPosts(fetchedPosts);
+      await AsyncStorage.setItem(
+        `${userID}PostsCache`, 
+        JSON.stringify({posts: fetchedPosts,timestamp: Date.now()})
+      );
+    } catch (error) {
+      Alert.alert('Error getting posts', 'Please restart the app');
+    } 
+  }, [userID]);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        setLoading(true);
-        const response = await client.graphql({
-          query: postsByUser,
-          variables: {
-            userID: userID,
-            sortDirection: ModelSortDirection.DESC,
-          },
-        });
-        const posts = response.data.postsByUser.items;
-        console.log("fetched post from userposts page");
-        setPosts(posts);
-        const cacheData = {
-          posts: posts,
-          timestamp: Date.now(),
-        };
-        await AsyncStorage.setItem(userID + 'PostsCache', JSON.stringify(cacheData));
-      } catch (error) {
-        console.log('Error fetching user posts', error);
-        Alert.alert('Error getting posts', 'Please restart the app');
-      } finally {
-        setLoading(false);
-      }
-    }
-
+    let isMounted = true;
     const loadPosts = async () => {
       try {
-        const cachedData = await AsyncStorage.getItem(userID + 'PostsCache');
-        if(cachedData){
+        const cachedData = await AsyncStorage.getItem(`${userID}PostsCache`);
+        if(isMounted && cachedData){
           const data = JSON.parse(cachedData);
-          const cacheAge = Date.now() - data.timestamp;
-          const oneHour = 5 * 60 * 1000; // 5 minute in milliseconds
-  
-          // If cache is less than 5 minute old, use cached data
-          if (cacheAge < oneHour) {
+          const fiveMin = 5 * 60 * 1000;
+          if (Date.now() - data.timestamp < fiveMin) {
             setPosts(data.posts);
-            setLoading(false);
             return;
           }
         }
         // If no cache or cache expired, fetch new data
-        await fetchPosts();
+        if(isMounted) await fetchPosts();
       } catch (error) {
-        console.log('Error loading cached posts', error);
+        if(isMounted) console.log('Error loading cached posts', error);
       } finally {
-        setLoading(false);
+        if(isMounted) setLoading(false);
       }
     };
     loadPosts();
-  }, []);
+    return () => {isMounted = false};
+  }, [fetchPosts]);
 
-  const getTimeDisplay = ( postTime: string) => {
-    var postDate = moment(postTime);
-    var currDate = moment();
-    const daysDiff = currDate.diff(postDate, 'days');
-    if(daysDiff > 0){
-      let date = new Date(postTime);
-      let cutOff = date.toDateString().indexOf(' '); //index to cut off the day
-      let display = date.toDateString().slice(cutOff, ) + " " + date.toLocaleTimeString();
-      return display;
-    }
+  const filteredPosts = posts.filter((item) => item.type === category);
 
-    const hoursDiff = currDate.diff(postDate, 'hours');
-    if(hoursDiff > 0) return hoursDiff + ' hours ago';
-    
-    const minutesDiff = currDate.diff(postDate, 'minutes');
-    return minutesDiff + ' minutes ago';
-  }
-
-  if (loading) {
-    return (
-      <View >
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-  if (posts.length === 0) {
-    return (
-      <View>
-        <Text>No posts found</Text>
-      </View>
-    );
-  }
-
-  return(
+  return loading ? (
     <View>
-      <FlatList
-        data={posts}
-        renderItem={({ item }) => {
-          if(item.type !== category) return <View></View>;
-          const displayDate = getTimeDisplay(item.createdAt);
-          return(
-            <View style={styles.postContainer}>
-              <Text style={styles.postType}>{item.title}</Text>
-              <Text style={styles.postContent}>{item.content}</Text>
-              <Text style={styles.postDate}>{displayDate}</Text>
-              <Text style={styles.postCategory}>{item.type}</Text>
-            </View>
-        )}}
-      />
+      <ActivityIndicator size="large" color="#0000ff" />
+      <Text>Loading...</Text>
+    </View>
+  ) : (
+    <View>
+      {filteredPosts.length === 0 ? (
+        <View>
+          <Text>No posts found</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredPosts}
+          renderItem={({ item }) => {
+            return(
+              <View style={styles.postContainer}>
+                <Text style={styles.postType}>{item.title}</Text>
+                <Text style={styles.postContent}>{item.content}</Text>
+                <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
+              </View>
+            )
+          }}
+          keyExtractor={(item) => item.id}
+          initialNumToRender={10}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          removeClippedSubviews={true}
+        />
+      )}
     </View>
   );
 }

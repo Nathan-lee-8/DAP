@@ -1,21 +1,18 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Button, useWindowDimensions, 
-  Alert } from 'react-native';
-import { signIn, signUp, resetPassword } from '@aws-amplify/auth';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { useContext, useState } from 'react';
+import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { signIn, resetPassword } from '@aws-amplify/auth';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
-import { RootStackParamList } from '../types/rootStackParamTypes';
+import { SignInParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
+import styles from '../styles/Styles'
 
 /**
  * Retrieves the User input email and password. Signs in with Cognito and sets
  * user email and signed in status & navigates to homepage.
- * 
- * TODO: Add social provider login (Facebook, Google, Twitter, etc.)
  */
-const SignInRoute = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'SignIn'>>();
+const SignIn = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
   const [password, setPassword] = useState('');
 
   const authContext = useContext(AuthContext);
@@ -23,7 +20,6 @@ const SignInRoute = () => {
     console.log("Auth context not defined");
     return null;
   };
-
   const { setSignedIn, setUserEmail, userEmail } = authContext;
 
   const handleSignIn = async () => {
@@ -50,139 +46,50 @@ const SignInRoute = () => {
     }
   }
 
+  const resetConfirm = async () => {
+    if(userEmail === ''){
+      Alert.alert('Please enter a valid email.');
+      return;
+    }
+    Alert.alert(
+      'Confirm password reset for: ', userEmail,[
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'OK', onPress: resetPw },
+      ]
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={userEmail}
-        onChangeText={ setUserEmail }
-      />
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        secureTextEntry
-        value={password}
-        onChangeText={ setPassword }
-      />
-      <Button title="Sign In" onPress={ handleSignIn } />
-      <Button title="Reset Password" onPress={ resetPw } />
+      <View style={styles.formContainer}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={userEmail}
+          onChangeText={ setUserEmail }
+        />
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your password"
+          secureTextEntry
+          value={password}
+          onChangeText={ setPassword }
+        />
+        <View style={{flexDirection: 'row', alignSelf: 'center'}} > 
+          <TouchableOpacity style={styles.buttonCentered} onPress={ resetConfirm }>
+            <Text style={styles.buttonText}>Reset Password</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonCentered} onPress={ handleSignIn }>
+            <Text style={styles.buttonText}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
 
-/**
- * Accesses user inputted email, password, first and last name and creates a 
- * user profile in Cognito. Navigates to the Verify page to confirm 
- * verification code.
- */
-const SignUpRoute = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'SignIn'>>();
-  const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  };
-  const { userEmail , firstname, lastname, setUserEmail, setFirstName, setLastName } = authContext;
-  const [password, setPassword] = useState('');
-
-  const handleSignUp = async () => {
-    try{
-      await signUp({ username: userEmail, password: password });
-      navigation.navigate('Verify', {password: password});
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    };
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Enter your first name:</Text>
-      <TextInput
-        style={styles.input}
-        value={firstname}
-        onChangeText={setFirstName}
-        placeholder="First Name"
-      />
-      <Text style={styles.label}>Enter your last name:</Text>
-      <TextInput
-        style={styles.input}
-        value={lastname}
-        onChangeText={setLastName}
-        placeholder="Last Name"
-      />
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={userEmail}
-        onChangeText={setUserEmail}
-      />
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-      <Button title="Create Account" onPress={ handleSignUp } />
-    </View>
-  );
-};
-
-//main UI that creates tab view with sign-in page and sign up page
-const SignInScreen = () => {
-  const layout = useWindowDimensions();
-  const [index, setIndex] = React.useState(0);
-
-  const renderScene = SceneMap({
-    first: SignInRoute,
-    second: SignUpRoute,
-  });
-
-  const routes = [
-    { key: 'first', title: 'Sign In' },
-    { key: 'second', title: 'Sign Up'},
-  ];
-
-  return (
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={ renderScene }
-      onIndexChange={ setIndex }
-      initialLayout={{ width: layout.width }}
-    />
-  );
-};
-
-//Styles for Sign-in and Sign-up page
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  label: {
-    marginBottom: 8,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    borderRadius: 5,
-  },
-});
-
-export default SignInScreen;
+export default SignIn;
