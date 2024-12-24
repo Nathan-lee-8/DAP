@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import client from '../client';
 import { postsByDate, userByEmail } from '../graphql/queries';
 import { ModelSortDirection, Post } from '../API';
@@ -8,6 +8,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
 import ProfilePicture from '../components/ProfilePicture';
 import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { HomeParamList } from '../types/rootStackParamTypes';
 
 /**
  * Displays the active HomeScreen for the current user including:
@@ -72,11 +75,8 @@ const HomeScreen = (route : any) => {
         const cachedData = await AsyncStorage.getItem('newsFeedCache' + category);
         if (cachedData) {
           const data = JSON.parse(cachedData);
-          const cacheAge = Date.now() - data.timestamp;
-          const oneHour = 5 * 60 * 1000; // 5 minute in milliseconds
-  
-          // If cache is less than 5 minute old, use cached data
-          if (cacheAge < oneHour) {
+          const fiveMin = 5 * 60 * 1000;
+          if (Date.now() - data.timestamp < fiveMin) {
             setNewsFeed(data.posts);
             setLoading(false);
             return;
@@ -86,7 +86,6 @@ const HomeScreen = (route : any) => {
         await fetchNewsFeed();
       } catch (error) {
         console.log('Error loading cached news feed', error);
-        await fetchNewsFeed(); // Fallback to fetching new data if something goes wrong
       }
     };
 
@@ -120,20 +119,9 @@ const HomeScreen = (route : any) => {
     loadNewsFeed();
   }, []);
 
-  const getTimeDisplay = ( postTime: string) => {
-    var postDate = moment(postTime);
-    var currDate = moment();
-    const daysDiff = currDate.diff(postDate, 'days');
-    if(daysDiff > 0){
-      let date = new Date(postTime);
-      let cutOff = date.toDateString().indexOf(' '); //index to cut off the day
-      let display = date.toDateString().slice(cutOff, ) + " " + date.toLocaleTimeString();
-      return display;
-    }
-    const hoursDiff = currDate.diff(postDate, 'hours');
-    const minutesDiff = currDate.diff(postDate, 'minutes');
-    if(hoursDiff > 0) return hoursDiff + ' hours ago';
-    return minutesDiff + ' minutes ago';
+  const navigation = useNavigation<NativeStackNavigationProp<HomeParamList, 'ViewHomeProf'>>();
+  const visitProfile = (item : any) => {
+    navigation.navigate('ViewHomeProf', { user: item.user });
   }
 
   return (
@@ -147,7 +135,6 @@ const HomeScreen = (route : any) => {
             let displayName = "";
             let displayEmail = "";
             let profileURL = undefined;
-            const displayDate = getTimeDisplay(item.createdAt);
             if(item.user?.profileURL) profileURL = item.user.profileURL;
             if(item.user){
               if(item.user.firstname) displayName += item.user.firstname;
@@ -157,13 +144,15 @@ const HomeScreen = (route : any) => {
             return (
               <View style={styles.postContainer}>
                 <View style={styles.profileSection}> 
-                  <ProfilePicture uri={profileURL} size={35} />
+                  <TouchableOpacity onPress={() => visitProfile(item)}>
+                    <ProfilePicture uri={profileURL} size={35} />
+                  </TouchableOpacity>
                   <View style={styles.textContainer}>
                     <Text style={styles.postAuthor}>{displayName}</Text>
                     <Text style={styles.postContact}>{displayEmail}</Text>
                   </View>
                 </View>
-                <Text style={styles.postDate}>{displayDate}</Text>
+                <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
                 <Text style={styles.postType}>{item.title}</Text>
                 <Text style={styles.postContent}>{item.content}</Text>
               </View>

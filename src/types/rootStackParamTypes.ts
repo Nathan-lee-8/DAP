@@ -1,18 +1,29 @@
 import{ User, UserChat } from '../API';
 
-export type RootStackParamList = {
+export type SignInParamList = {
     SignIn: undefined;
+    SignUp: undefined;
     Verify: {password: string};
     ResetPassword: undefined;
 };
 
-export type SignedInTabParamList = {
+export type SignInTopTabParamList = {
+    SignInRoute: undefined;
+    SignUpRoute: undefined;
+}
+
+export type LoggedInParamList = {
     HomeScreen: undefined;
     MessageScreens: undefined;
     CreatePost: undefined;
     ProfileScreens: undefined;
     EditProfile: undefined;
 };
+
+export type HomeParamList = {
+    Home: undefined;
+    ViewHomeProf: { user: User };
+}
 
 export type MessagingStackParamList = {
     Messaging: undefined;
@@ -22,7 +33,7 @@ export type MessagingStackParamList = {
 
 export type FindUserParamList = {
     FindUsers: undefined;
-    ViewProfiles: { user: User; };
+    ViewProfiles: { user: User };
 }
 
 export type TopTabParamList = { 
@@ -36,3 +47,14 @@ export type PostsTopTabParamList = {
     Jobs: { category: string, userID: string};
     Volunteer: { category: string, userID: string};
 }
+
+export type Participant = {
+    __typename: "UserChat";
+    user?: {
+      __typename: "User";
+      id: string,
+      firstname?: string | null;
+      lastname?: string | null;
+      profileURL?: string | null;
+    } | null;
+} | null;

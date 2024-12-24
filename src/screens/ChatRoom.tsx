@@ -1,24 +1,32 @@
-import { useEffect, useState, useRef } from 'react';
-import { View, Text, FlatList, TextInput, Button, ActivityIndicator } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { MessagingStackParamList } from '../types/rootStackParamTypes';
+import { useEffect, useState, useRef, useContext } from 'react';
+import { View, Text, FlatList, TextInput, TouchableOpacity,
+     ActivityIndicator } from 'react-native';
 import styles from '../styles/Styles';
 import client from '../client';
 import { getChat } from '../graphql/queries';
 import { createMessage } from '../graphql/mutations';
 import { onCreateMessage } from '../graphql/subscriptions';
 import  { Message } from '../API';
+import ProfilePicture from '../components/ProfilePicture';
+import { Participant } from '../types/rootStackParamTypes'
+import { AuthContext } from '../context/AuthContext';
 
-type ChatRoomProps = NativeStackScreenProps<MessagingStackParamList, 'ChatRoom'>;
-
-const ChatRoom = ( { route }: ChatRoomProps) => {
+const ChatRoom = ( { route } : any) => {
     const UserChat = route.params.userChat;
     const [messages, setMessages] = useState<Message[]>([]);
     const [currMessage, setMessage] = useState<string>('');
     const flatListRef = useRef<FlatList<Message>>(null);
     const [nextToken, setNextToken] = useState<string | null | undefined>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    
+    const [participants, setParticipants] = useState<Participant[] | undefined>([]);
+    const [chatName, setChatName] = useState<string | undefined>('');
+    const authContext = useContext(AuthContext);
+    if(!authContext){
+        console.log("Auth context not defined");
+        return;
+    }
+    const userId = authContext.userId;
+
     const fetchChat = async () => {
         setLoading(true);
         try{
@@ -31,15 +39,25 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
                 },
                 authMode: 'userPool'
             });
-            console.log("chat fetched");
-            const fetchedMessages: Message[] = (chat.data.getChat?.messages?.items || []).filter(
+            console.log("chat fetched from chatroom");
+            const chatData = chat.data.getChat;
+
+            const fetchedMessages: Message[] = (chatData?.messages?.items || []).filter(
                 (message): message is Message => message !== null
             );
             setMessages((prev) => {
                 const newMessages = fetchedMessages.filter((msg) => !prev.some((prevMsg) => prevMsg.id === msg.id));
                 return [...prev, ...newMessages];  // Add only new messages
             });
-            setNextToken(chat.data.getChat?.messages?.nextToken); 
+            setNextToken(chatData?.messages?.nextToken);
+
+            let participantData = chatData?.participants?.items;
+            setParticipants(participantData);
+            if(UserChat.chat.isGroup) setChatName(chatData?.name);
+            else(participantData?.forEach((participant) => {
+                let part = participant?.user;
+                if(part?.id !== userId) setChatName(part?.firstname + " " + part?.lastname);
+            }));
         } catch (error: any) {
             console.log(error);
         } finally {
@@ -50,9 +68,6 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
     useEffect(() => {
         setMessages([]);
         fetchChat();
-    }, [UserChat.chatID]);
-
-    useEffect(() => {
         const subscription = client.graphql({
             query: onCreateMessage,
             variables: {
@@ -111,22 +126,33 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
         return styles.otherMessage;
     }
 
+    const getMsgContainerStyle = (id: string) => {
+        if(id === UserChat.userID) return styles.myMessageContainer;
+        return styles.otherMessageContainer;
+    }
+
     return(
         <View style={styles.container}>
             {loading && <ActivityIndicator size="small" color="#0000ff" />}
-            <Text style={styles.title}>{UserChat.chat?.name}</Text>
+            <Text style={styles.title}>{chatName}</Text>
             <FlatList
                 ref={flatListRef}
                 data={messages}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
-                    const messageStyle = getMsgStyle(item?.senderID);
+                    var profURL;
+                    if(participants){
+                        const part = participants.find((participant) => participant?.user?.id === item?.senderID);
+                        if(part?.user?.profileURL === null) profURL = undefined;
+                        else profURL = part?.user?.profileURL;
+                    }
                     return (
-                        <View>
-                            <Text style={styles.timestamp}>{item?.createdAt}</Text>
-                            <View style={messageStyle}>
+                        <View style={getMsgContainerStyle(item?.senderID)}>
+                            {item?.senderID !== UserChat.userID  && <ProfilePicture uri={profURL} size={35}/>}
+                            <View style={getMsgStyle(item?.senderID)}>
                                 <Text>{item?.content}</Text>
                             </View>
+                            {item?.senderID === UserChat.userID  && <ProfilePicture uri={profURL} size={35}/>}
                         </View>
                 )}}
                 onEndReached={ () => {
@@ -142,7 +168,9 @@ const ChatRoom = ( { route }: ChatRoomProps) => {
                 autoCapitalize='sentences'
                 onChangeText={(text) => setMessage(text)}
             />
-            <Button title="Send" onPress={sendMessage}/>
+            <TouchableOpacity style={styles.button} onPress={sendMessage} >
+                <Text style={styles.buttonText}>Send</Text>
+            </TouchableOpacity>
         </View>
     )
 }

@@ -3,7 +3,7 @@ import { View, TextInput, FlatList, TouchableOpacity,
   Text, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FindUserParamList } from '../types/rootStackParamTypes';
+import { FindUserParamList, HomeParamList } from '../types/rootStackParamTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import filter from 'lodash/filter';
 import client  from '../client';
@@ -30,7 +30,7 @@ const SearchBar = ( { screen, handleSendMessage } : any) => {
       const userData = users.data.listUsers.items;
       setData(userData);
       await AsyncStorage.setItem('usersCache', JSON.stringify({userData: userData}));
-      console.log('Fetched & cached from fetchusers.', userData);
+      console.log('Fetched & cached from searchbar component.');
     } catch (error) {
       console.log('Error fetching users', error);
     }
@@ -66,7 +66,8 @@ const SearchBar = ( { screen, handleSendMessage } : any) => {
       if(user.id === currUserId){
         return false;
       }
-      return user.firstname && user.firstname.toLowerCase().includes(formattedSearch) || 
+      const name = user.firstname + " " + user.lastname;
+      return name.toLowerCase().includes(formattedSearch) || 
         user.email.toLowerCase().includes(formattedSearch)
     });
     setFilteredData(results);

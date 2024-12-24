@@ -1,10 +1,14 @@
 import { useContext } from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { signOut } from 'aws-amplify/auth';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { SignInParamList, LoggedInParamList, MessagingStackParamList, 
+  FindUserParamList, TopTabParamList, SignInTopTabParamList, HomeParamList
+} from '../types/rootStackParamTypes';
+import { AuthContext } from '../context/AuthContext';
 import SignIn from '../screens/SignInScreen';
+import SignUp from '../screens/SignUpScreen';
 import Home from '../screens/HomeScreen';
 import CreatePost from '../screens/CreatePost';
 import Verify from '../screens/Verify';
@@ -15,15 +19,15 @@ import ResetPassword from '../screens/ResetPassword';
 import ChatRoom from '../screens/ChatRoom';
 import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
-import { RootStackParamList, SignedInTabParamList, MessagingStackParamList,
-  FindUserParamList, TopTabParamList } from '../types/rootStackParamTypes';
-import { AuthContext } from '../context/AuthContext';
+import LogOutButton from '../components/LogOutButton';
 import ProfilePicture from '../components/ProfilePicture';
 import Icon from '@react-native-vector-icons/ionicons'
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-const Tab = createBottomTabNavigator<SignedInTabParamList>();
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const SignInStack = createNativeStackNavigator<SignInParamList>();
+const SignInTopTab = createMaterialTopTabNavigator<SignInTopTabParamList>();
+
+const Tab = createBottomTabNavigator<LoggedInParamList>();
+const HomeStack = createNativeStackNavigator<HomeParamList>();
 const MessageStack = createNativeStackNavigator<MessagingStackParamList>();
 const FindUserStack = createNativeStackNavigator<FindUserParamList>();
 const TopTabStack = createMaterialTopTabNavigator<TopTabParamList>();
@@ -40,47 +44,73 @@ const AppNavigator = () => {
     <NavigationContainer>
       {isSignedIn ? (
         <Tab.Navigator>
-          <Tab.Screen name="HomeScreen" component={HomeTopNav} 
+          <Tab.Screen name="HomeScreen" component={HomeScreen}
             options={{
               title: 'Home',
+              headerShown: false,
+              lazy: true,
               tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
             }}/>
           <Tab.Screen name="MessageScreens" component={MessageScreens} 
             options={{
-              title: 'Messages', 
+              title: 'Messages',
               headerShown: false,
+              lazy: true,
               tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
               }} />
           <Tab.Screen name="CreatePost" component={CreatePost} 
             options={{
               title: 'Create Post',
+              lazy: true,
               tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
               }} />
           <Tab.Screen name="ProfileScreens" component={ProfileScreens} 
             options={{
-              title: 'Search Users', 
+              title: 'Find Users',
               headerShown: false,
+              lazy: true,
               tabBarIcon: () => <Icon name="search-outline" size={30} color="grey" />
               }} />
           <Tab.Screen name="EditProfile" component={EditProfile}
             options={{
-              title: 'Edit Profile', 
-              tabBarIcon: () => <ProfilePicture uri={profileURL}size={35}/>,
+              title: 'Profile', 
+              lazy: true,
+              tabBarIcon: () => <ProfilePicture uri={profileURL}size={30}/>,
               headerRight: LogOutButton
             }} />
         </Tab.Navigator>
       ) : (
-        <Stack.Navigator initialRouteName="SignIn">
-          <Stack.Screen name="SignIn" component={SignIn}
-            options={{title: 'Sign In'}}  />
-          <Stack.Screen name="Verify" component={Verify} />
-          <Stack.Screen name="ResetPassword" component={ResetPassword} 
-            options={{title: 'Reset Password'}} />
-        </Stack.Navigator>
+        <SignInTopTab.Navigator>
+          <SignInTopTab.Screen name="SignInRoute" component={SignInNav} 
+            options={{title: 'Sign In'}} />
+          <SignInTopTab.Screen name="SignUpRoute" component={SignUpNav} 
+            options={{title: 'Sign Up'}} />
+        </SignInTopTab.Navigator>
       )}
     </NavigationContainer>
   );
 };
+
+const HomeScreen = () => {
+  return(
+    <HomeStack.Navigator initialRouteName='Home' >
+      <HomeStack.Screen name="Home" component={HomeTopNav}/>
+      <HomeStack.Screen name="ViewHomeProf" component={ViewProfiles}
+        options={{title: 'Profile'}}/>
+    </HomeStack.Navigator>
+  )
+}
+
+const ProfileScreens = () => {
+  return (
+    <FindUserStack.Navigator initialRouteName='FindUsers' >
+      <FindUserStack.Screen name="FindUsers" component={FindUsers} 
+        options={{title: 'Search User'}}/>
+      <FindUserStack.Screen name="ViewProfiles" component={ViewProfiles} 
+        options={{title: 'Profile'}}/>
+    </FindUserStack.Navigator>
+  )
+}
 
 const HomeTopNav = () => {
   return (
@@ -108,56 +138,27 @@ const MessageScreens = () => {
   )
 }
 
-const ProfileScreens = () => {
-  return (
-    <FindUserStack.Navigator initialRouteName='FindUsers' >
-      <FindUserStack.Screen name="FindUsers" component={FindUsers} 
-        options={{title: 'Search User'}}/>
-      <FindUserStack.Screen name="ViewProfiles" component={ViewProfiles} 
-        options={{title: 'Profile'}}/>
-    </FindUserStack.Navigator>
+const SignInNav = () => {
+  return(
+    <SignInStack.Navigator initialRouteName='SignIn' >
+      <SignInStack.Screen name="SignIn" component={SignIn} 
+        options={{headerShown: false}}/>
+      <SignInStack.Screen name="ResetPassword" component={ResetPassword} 
+        options={{title: 'Reset Password'}}/>
+    </SignInStack.Navigator>
   )
 }
 
-//Button to handle logout logic
-const LogOutButton = () => {
-  const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  }
-  const { logout } = authContext;
-
-  const handleSignOut = async () => {
-    try{ 
-      await signOut();
-      logout();
-    } catch (error) {
-      console.log('error signing out: ', error);
-    };
-  };
-
-  return (
-      <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-          <Text style={styles.buttonText}>Log Out</Text>
-      </TouchableOpacity>
-  );
-};
-
-//Styles for LogOut button
-const styles = StyleSheet.create({
-  button: {
-      padding: 10,
-      backgroundColor: '#000', // Customize background color as needed
-      borderRadius: 5, // Rounded corners
-      marginRight: 10, // Add some margin to the right of the button
-  },
-  buttonText: {
-      color: '#fff', // Text color
-      fontSize: 16, // Font size
-      fontWeight: 'bold', // Font weight
-  },
-});
+const SignUpNav = () => {
+  return( 
+    <SignInStack.Navigator initialRouteName='SignUp' >
+      <SignInStack.Screen name="SignUp" component={SignUp} 
+        options={{headerShown: false}}/>
+      <SignInStack.Screen name="Verify" component={Verify} 
+      options={{title: 'Verify'}}/>
+    </SignInStack.Navigator>
+  )
+}
 
 
 export default AppNavigator;

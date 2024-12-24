@@ -94,7 +94,10 @@ const EditProfile = () => {
           <Text style={styles.postContact}>{userEmail} </Text>
         </View>
       </View>
-      <UserPosts userID={userId} />
+      <View>
+
+      </View>
+      <UserPosts style={{backgroundColor: 'black'}} userID={userId} />
     </View>
   );
 };

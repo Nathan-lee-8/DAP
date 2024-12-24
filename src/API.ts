@@ -1707,6 +1707,20 @@ export type GetChatQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    participants?:  {
+      __typename: "ModelUserChatConnection",
+      items:  Array< {
+        __typename: "UserChat",
+        user?:  {
+          __typename: "User",
+          id: string,
+          firstname?: string | null,
+          lastname?: string | null,
+          profileURL?: string | null,
+        } | null,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
     updatedAt: string,
   } | null,
 };

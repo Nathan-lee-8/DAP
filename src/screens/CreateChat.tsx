@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
-import { View, Text, TextInput, Button, Alert } from 'react-native';
-import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MessagingStackParamList } from '../types/rootStackParamTypes';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
@@ -9,10 +9,8 @@ import { createChat, createUserChat, createMessage } from '../graphql/mutations'
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentUser } from '@aws-amplify/auth';
 
-type CreateChatProps = NativeStackScreenProps<MessagingStackParamList, 'CreateChat'>;
-
 //TODO: Add rollback in case of failure, create Loading screen
-const CreateChat = ( { route }: CreateChatProps) => {
+const CreateChat = ( { route }: any) => {
     const authContext = useContext(AuthContext);
     if(!authContext) {
         console.log("Auth context not defined");
@@ -111,13 +109,17 @@ const CreateChat = ( { route }: CreateChatProps) => {
     return(
         <View style={styles.container}> 
             <Text style={styles.title}>{targetDisplayName}</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Type a message..."
-                value={message}
-                onChangeText={setMessage}
-            />
-            <Button title="Send" onPress={createChatRoom} />
+            <View style={{justifyContent: 'flex-end', flex: 1}}>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Type a message..."
+                    value={message}
+                    onChangeText={setMessage}
+                />
+                <TouchableOpacity style={styles.button} onPress={createChatRoom} >
+                    <Text style={styles.buttonText}>Send</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
