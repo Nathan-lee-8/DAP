@@ -3,7 +3,7 @@ import { View, TextInput, FlatList, TouchableOpacity,
   Text, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FindUserParamList, HomeParamList } from '../types/rootStackParamTypes';
+import { GlobalParamList } from '../types/rootStackParamTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import filter from 'lodash/filter';
 import client  from '../client';
@@ -73,9 +73,9 @@ const SearchBar = ( { screen, handleSendMessage } : any) => {
     setFilteredData(results);
   };
   
-  const navigation = useNavigation<NativeStackNavigationProp<FindUserParamList, 'ViewProfiles'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const handleViewProfile = (user: User) => {
-    navigation.navigate('ViewProfiles', { user: user });
+    navigation.navigate('ViewProfile', { user: user });
   }
   
   const resetCache = async () => {

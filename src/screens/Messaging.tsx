@@ -69,15 +69,15 @@ const MessageUsers = () => {
   const navigation = useNavigation<NativeStackNavigationProp<MessagingStackParamList, 'ChatRoom'>>();
 
   const handleSendMessage = (user: User) => {
-    for (const chatRoom of chatRooms) {
-      const participants = chatRoom.chat?.participantIDs;
-      if(participants && participants[0] && participants[1]){
-        if(participants[0] === user.owner || participants[1] === user.owner){
-          navigation.navigate('ChatRoom', { userChat: chatRoom });
-          return;
-        }
-      }
-    };
+    // for (const chatRoom of chatRooms) {
+    //   const participants = chatRoom.chat?.participantIDs;
+    //   if(participants && participants[0] && participants[1]){
+    //     if(participants[0] === user.owner || participants[1] === user.owner){
+    //       navigation.navigate('ChatRoom', { userChat: chatRoom });
+    //       return;
+    //     }
+    //   }
+    // };
     navigation.navigate('CreateChat', { user: user});
 };
 

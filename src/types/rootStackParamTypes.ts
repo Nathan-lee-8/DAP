@@ -12,28 +12,24 @@ export type SignInTopTabParamList = {
     SignUpRoute: undefined;
 }
 
+export type GlobalParamList = {
+    MainTabs: undefined;
+    ViewProfile: {user: User};
+    ViewFollowing: {userId: string};
+}
+
 export type LoggedInParamList = {
-    HomeScreen: undefined;
+    HomeTopNav: undefined;
     MessageScreens: undefined;
     CreatePost: undefined;
-    ProfileScreens: undefined;
-    EditProfile: undefined;
+    FindUsers: undefined;
+    Profile: undefined;
 };
-
-export type HomeParamList = {
-    Home: undefined;
-    ViewHomeProf: { user: User };
-}
 
 export type MessagingStackParamList = {
     Messaging: undefined;
     ChatRoom: { userChat: UserChat};
     CreateChat: { user: User}
-}
-
-export type FindUserParamList = {
-    FindUsers: undefined;
-    ViewProfiles: { user: User };
 }
 
 export type TopTabParamList = { 

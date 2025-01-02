@@ -161,16 +161,18 @@ const ChatRoom = ( { route } : any) => {
                 onEndReachedThreshold={0.5}
                 inverted
             />
-            <TextInput
-                style={styles.input}
-                placeholder={'Type a message'}
-                value={currMessage}
-                autoCapitalize='sentences'
-                onChangeText={(text) => setMessage(text)}
-            />
-            <TouchableOpacity style={styles.button} onPress={sendMessage} >
-                <Text style={styles.buttonText}>Send</Text>
-            </TouchableOpacity>
+            <View style={{flexDirection: 'row'}}> 
+                <TextInput
+                    style={styles.textInput}
+                    placeholder={'Type a message'}
+                    value={currMessage}
+                    autoCapitalize='sentences'
+                    onChangeText={(text) => setMessage(text)}
+                />
+                <TouchableOpacity style={styles.msgButton} onPress={sendMessage} >
+                    <Text style={styles.buttonText}>Send</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 }
