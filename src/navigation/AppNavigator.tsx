@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { SignInParamList, LoggedInParamList, MessagingStackParamList, 
-  FindUserParamList, TopTabParamList, SignInTopTabParamList, HomeParamList
+import { SignInParamList, SignInTopTabParamList, LoggedInParamList,
+  MessagingStackParamList, TopTabParamList,
 } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
 import SignIn from '../screens/SignInScreen';
@@ -21,15 +21,16 @@ import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
 import LogOutButton from '../components/LogOutButton';
 import ProfilePicture from '../components/ProfilePicture';
-import Icon from '@react-native-vector-icons/ionicons'
+import ListUsers from '../components/ListUsers';
+import Icon from '@react-native-vector-icons/ionicons';
+import styles from '../styles/Styles';
 
 const SignInStack = createNativeStackNavigator<SignInParamList>();
 const SignInTopTab = createMaterialTopTabNavigator<SignInTopTabParamList>();
 
-const Tab = createBottomTabNavigator<LoggedInParamList>();
-const HomeStack = createNativeStackNavigator<HomeParamList>();
+const GlobalStack = createNativeStackNavigator();
+const BottomTab = createBottomTabNavigator<LoggedInParamList>();
 const MessageStack = createNativeStackNavigator<MessagingStackParamList>();
-const FindUserStack = createNativeStackNavigator<FindUserParamList>();
 const TopTabStack = createMaterialTopTabNavigator<TopTabParamList>();
 
 const AppNavigator = () => {
@@ -38,49 +39,21 @@ const AppNavigator = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { isSignedIn, profileURL } = authContext;
+  const { isSignedIn } = authContext;
 
   return (
     <NavigationContainer>
       {isSignedIn ? (
-        <Tab.Navigator>
-          <Tab.Screen name="HomeScreen" component={HomeScreen}
-            options={{
-              title: 'Home',
-              headerShown: false,
-              lazy: true,
-              tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
-            }}/>
-          <Tab.Screen name="MessageScreens" component={MessageScreens} 
-            options={{
-              title: 'Messages',
-              headerShown: false,
-              lazy: true,
-              tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
-              }} />
-          <Tab.Screen name="CreatePost" component={CreatePost} 
-            options={{
-              title: 'Create Post',
-              lazy: true,
-              tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
-              }} />
-          <Tab.Screen name="ProfileScreens" component={ProfileScreens} 
-            options={{
-              title: 'Find Users',
-              headerShown: false,
-              lazy: true,
-              tabBarIcon: () => <Icon name="search-outline" size={30} color="grey" />
-              }} />
-          <Tab.Screen name="EditProfile" component={EditProfile}
-            options={{
-              title: 'Profile', 
-              lazy: true,
-              tabBarIcon: () => <ProfilePicture uri={profileURL}size={30}/>,
-              headerRight: LogOutButton
-            }} />
-        </Tab.Navigator>
+        <GlobalStack.Navigator>
+          <GlobalStack.Screen name="MainTabs" component={BottomTabs} 
+            options={{headerShown: false, title:"Home"}}/>
+          <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} 
+            options={{title: 'Profile'}}/>
+          <GlobalStack.Screen name="ViewFollowing" component={ListUsers} 
+            options={{title: 'Following'}}/>
+        </GlobalStack.Navigator>
       ) : (
-        <SignInTopTab.Navigator>
+        <SignInTopTab.Navigator style={styles.topTab}>
           <SignInTopTab.Screen name="SignInRoute" component={SignInNav} 
             options={{title: 'Sign In'}} />
           <SignInTopTab.Screen name="SignUpRoute" component={SignUpNav} 
@@ -88,27 +61,51 @@ const AppNavigator = () => {
         </SignInTopTab.Navigator>
       )}
     </NavigationContainer>
-  );
+  )
 };
 
-const HomeScreen = () => {
+const BottomTabs = () => {
+  const authContext = useContext(AuthContext);
+  if(!authContext) {
+    console.log("Auth context not defined");
+    return null;
+  }
+  const { profileURL } = authContext;
   return(
-    <HomeStack.Navigator initialRouteName='Home' >
-      <HomeStack.Screen name="Home" component={HomeTopNav}/>
-      <HomeStack.Screen name="ViewHomeProf" component={ViewProfiles}
-        options={{title: 'Profile'}}/>
-    </HomeStack.Navigator>
-  )
-}
-
-const ProfileScreens = () => {
-  return (
-    <FindUserStack.Navigator initialRouteName='FindUsers' >
-      <FindUserStack.Screen name="FindUsers" component={FindUsers} 
-        options={{title: 'Search User'}}/>
-      <FindUserStack.Screen name="ViewProfiles" component={ViewProfiles} 
-        options={{title: 'Profile'}}/>
-    </FindUserStack.Navigator>
+    <BottomTab.Navigator>
+      <BottomTab.Screen name="HomeTopNav" component={HomeTopNav}
+        options={{
+          title: 'Home',
+          lazy: true,
+          tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
+        }}/>
+      <BottomTab.Screen name="MessageScreens" component={MessageScreens} 
+        options={{
+          title: 'Messages',
+          headerShown: false,
+          lazy: true,
+          tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
+          }} />
+      <BottomTab.Screen name="CreatePost" component={CreatePost} 
+        options={{
+          title: 'Create Post',
+          lazy: true,
+          tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
+          }} />
+      <BottomTab.Screen name="FindUsers" component={FindUsers} 
+        options={{
+          title: 'Find Users',
+          lazy: true,
+          tabBarIcon: () => <Icon name="search-outline" size={30} color="grey" />
+          }} />
+      <BottomTab.Screen name="Profile" component={EditProfile}
+        options={{
+          title: 'Profile', 
+          lazy: true,
+          tabBarIcon: () => <ProfilePicture uri={profileURL}size={30}/>,
+          headerRight: LogOutButton
+        }} />
+    </BottomTab.Navigator>
   )
 }
 
@@ -159,6 +156,5 @@ const SignUpNav = () => {
     </SignInStack.Navigator>
   )
 }
-
 
 export default AppNavigator;

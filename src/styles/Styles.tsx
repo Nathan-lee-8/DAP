@@ -14,13 +14,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     color: '#333',
   },
-  button: { 
-    borderRadius: 10,
-    borderColor: '#007BFF',
-    borderWidth: 1,
-    padding: 10,
-    marginLeft: 'auto',
-  },
   buttonCentered: {
     borderRadius: 10,
     borderColor: '#007BFF',
@@ -37,10 +30,10 @@ const styles = StyleSheet.create({
     color: '#007BFF'
   },
   iconContainer: {
-    alignSelf: 'center',
     padding: 20,
+    alignSelf: 'baseline',
     alignItems: 'center',
-    justifyContent: 'center'
+  
   },
   icon: {
     marginHorizontal: 10,
@@ -51,6 +44,10 @@ const styles = StyleSheet.create({
   },
   tabView:{
     backgroundColor: 'black',
+  },
+  topTab: {
+    marginTop: 60,
+
   },
 
   /** Form Styles */
@@ -182,6 +179,41 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     margin: 5,
   },
+  msgButton: {
+    marginLeft: 'auto',
+    borderWidth: 1,
+    borderColor:  '#007BFF',
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+  },
+  textInput: {
+    height: 40,
+    width: '85%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+    borderRadius: 5,
+  },
+
+  /**Edit profile section */
+  following: {
+    alignSelf: 'flex-end',
+  },
+  profileButton: {
+    backgroundColor: 'lightblue',
+    borderWidth: .3,
+    borderColor: 'blue',
+    borderRadius: 10,
+    alignItems: 'center',
+    padding: 4,
+    width: '50%'
+  }
 });
+
+
 
 export default styles;

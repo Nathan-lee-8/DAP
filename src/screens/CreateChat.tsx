@@ -107,16 +107,16 @@ const CreateChat = ( { route }: any) => {
     if(loading) return <Text style={styles.container}>Loading...</Text>;
 
     return(
-        <View style={styles.container}> 
-            <Text style={styles.title}>{targetDisplayName}</Text>
-            <View style={{justifyContent: 'flex-end', flex: 1}}>
+        <View style={[styles.container, {justifyContent: "flex-end"}]}> 
+            <Text style={[styles.title, {flex: 1}]}>{targetDisplayName}</Text>
+            <View style={{flexDirection: 'row'}}>
                 <TextInput
-                    style={styles.input}
+                    style={styles.textInput}
                     placeholder="Type a message..."
                     value={message}
                     onChangeText={setMessage}
                 />
-                <TouchableOpacity style={styles.button} onPress={createChatRoom} >
+                <TouchableOpacity style={styles.msgButton} onPress={createChatRoom} >
                     <Text style={styles.buttonText}>Send</Text>
                 </TouchableOpacity>
             </View>

@@ -1,7 +1,10 @@
 import { useContext } from 'react';
-import { View, Text, Button, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { AuthContext } from '../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { GlobalParamList } from '../types/rootStackParamTypes';
 import { uploadData } from '@aws-amplify/storage';
 import { updateUser } from '../graphql/mutations';
 import client from '../client'
@@ -83,6 +86,11 @@ const EditProfile = () => {
     }
   };
 
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
+  const viewFollowing = () => {
+    navigation.navigate('ViewFollowing', {userId: userId});
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.profileSection}>
@@ -93,6 +101,9 @@ const EditProfile = () => {
           <Text style={styles.postAuthor}>{firstname} {lastname} </Text>
           <Text style={styles.postContact}>{userEmail} </Text>
         </View>
+        <TouchableOpacity onPress={viewFollowing} style={styles.following}>
+          <Text>Following: </Text>
+        </TouchableOpacity>
       </View>
       <View>
 

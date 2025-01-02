@@ -10,7 +10,7 @@ import ProfilePicture from '../components/ProfilePicture';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { HomeParamList } from '../types/rootStackParamTypes';
+import { GlobalParamList, LoggedInParamList } from '../types/rootStackParamTypes';
 
 /**
  * Displays the active HomeScreen for the current user including:
@@ -119,9 +119,15 @@ const HomeScreen = (route : any) => {
     loadNewsFeed();
   }, []);
 
-  const navigation = useNavigation<NativeStackNavigationProp<HomeParamList, 'ViewHomeProf'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
+  const nav2 = useNavigation<NativeStackNavigationProp<LoggedInParamList>>();
   const visitProfile = (item : any) => {
-    navigation.navigate('ViewHomeProf', { user: item.user });
+
+    if(item.user.id === userId){
+      nav2.navigate('Profile');
+    }else{
+      navigation.navigate('ViewProfile', { user: item.user });
+    }
   }
 
   return (

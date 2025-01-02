@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { SignInParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
+import Icon from '@react-native-vector-icons/ionicons'
 import styles from '../styles/Styles'
 
 /**
@@ -59,9 +60,13 @@ const SignIn = () => {
     );
   }
 
+  const googleLogin = async () => {
+    console.log('Google login not implemented yet.');
+  }
+
   return (
     <View style={styles.container}>
-      <View style={styles.formContainer}>
+      <View style={[styles.formContainer, {flex: 1}]}>
         <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
@@ -85,6 +90,24 @@ const SignIn = () => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.buttonCentered} onPress={ handleSignIn }>
             <Text style={styles.buttonText}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.iconContainer}>
+        <Text style={[styles.label]}>Login with Social Provider</Text>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-google" size={35} color="#007BFF"/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-facebook" size={35} color="#007BFF"/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-apple" size={35} color="#007BFF"/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-amazon" size={35} color="#007BFF"/>
           </TouchableOpacity>
         </View>
       </View>
