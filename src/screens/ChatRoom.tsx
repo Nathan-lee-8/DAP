@@ -4,7 +4,7 @@ import { View, Text, FlatList, TextInput, TouchableOpacity,
 import styles from '../styles/Styles';
 import client from '../client';
 import { getChat } from '../graphql/queries';
-import { createMessage } from '../graphql/mutations';
+import { createMessage, updateUserChat } from '../graphql/mutations';
 import { onCreateMessage } from '../graphql/subscriptions';
 import  { Message } from '../API';
 import ProfilePicture from '../components/ProfilePicture';
@@ -20,6 +20,11 @@ const ChatRoom = ( { route } : any) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [participants, setParticipants] = useState<Participant[] | undefined>([]);
     const [chatName, setChatName] = useState<string | undefined>('');
+    const msgCountRef = useRef<number>(0);
+    const targetChatIDref = useRef<string | undefined>('');
+    const messageRef = useRef<string>('');
+    const msgSent = useRef<boolean>(false);
+
     const authContext = useContext(AuthContext);
     if(!authContext){
         console.log("Auth context not defined");
@@ -47,6 +52,7 @@ const ChatRoom = ( { route } : any) => {
             );
             setMessages((prev) => {
                 const newMessages = fetchedMessages.filter((msg) => !prev.some((prevMsg) => prevMsg.id === msg.id));
+                if(newMessages[0]) messageRef.current = newMessages[0].content; 
                 return [...prev, ...newMessages];  // Add only new messages
             });
             setNextToken(chatData?.messages?.nextToken);
@@ -56,7 +62,11 @@ const ChatRoom = ( { route } : any) => {
             if(UserChat.chat.isGroup) setChatName(chatData?.name);
             else(participantData?.forEach((participant) => {
                 let part = participant?.user;
-                if(part?.id !== userId) setChatName(part?.firstname + " " + part?.lastname);
+                if(part?.id !== userId){
+                    setChatName(part?.firstname + " " + part?.lastname);
+                    targetChatIDref.current = participant?.id;
+                    if(participant?.unreadMessageCount) msgCountRef.current = participant?.unreadMessageCount;
+                } 
             }));
         } catch (error: any) {
             console.log(error);
@@ -66,7 +76,6 @@ const ChatRoom = ( { route } : any) => {
     };
 
     useEffect(() => {
-        setMessages([]);
         fetchChat();
         const subscription = client.graphql({
             query: onCreateMessage,
@@ -75,7 +84,7 @@ const ChatRoom = ( { route } : any) => {
             },
             authMode: 'userPool'
         }).subscribe({
-            next: ({ value }: any) => {
+            next: (value : any) => {
                 const newMessage = value?.data.onCreateMessage;
                 setMessages((prev) => {
                     if(!newMessage) return prev;
@@ -83,12 +92,50 @@ const ChatRoom = ( { route } : any) => {
                     if (existing) return prev;
                     return [...prev, newMessage];
                 });
+                if(newMessage.content) messageRef.current = newMessage.content;
+                msgSent.current = true;
                 scrollToBottom();
             },
             error: (err: any) => console.error("Subscription error:", err),
         });
     
-        return () => subscription.unsubscribe(); // Clean up the subscription
+        return () => {
+            if (messageRef.current && msgSent.current) {
+                const updateLastMessage = async () => {
+                    try {
+                        await client.graphql({
+                            query: updateUserChat, // GraphQL mutation to update last message
+                            variables: {
+                                input: {
+                                    id: UserChat.id,
+                                    lastMessage: messageRef.current, // You may need to adjust based on your schema
+                                    unreadMessageCount: 0
+                                },
+                            },
+                            authMode: 'userPool'
+                        });
+                        if(targetChatIDref.current){
+                            await client.graphql({
+                                query: updateUserChat, // GraphQL mutation to update last message
+                                variables: {
+                                    input: {
+                                        id: targetChatIDref.current,
+                                        lastMessage: messageRef.current, // You may need to adjust based on your schema
+                                        unreadMessageCount: msgCountRef.current
+                                    },
+                                },
+                                authMode: 'userPool'
+                            });
+                        }
+                        console.log("Last message updated in chat data");
+                    } catch (error) {
+                        console.error("Error updating last message:", error);
+                    }
+                };
+                updateLastMessage();
+            }
+            subscription.unsubscribe(); // Clean up the subscription
+        } 
     }, [UserChat.chatID]);
 
     const sendMessage = async () => {
@@ -108,6 +155,7 @@ const ChatRoom = ( { route } : any) => {
             setMessages((prev) => [msgData.data.createMessage, ...prev]);
             setMessage('');
             scrollToBottom();
+            msgCountRef.current = msgCountRef.current + 1;
         } catch (error) {
             console.error("Failed to send message:", error);
             // Optionally mark the message as "unsent"
@@ -140,17 +188,25 @@ const ChatRoom = ( { route } : any) => {
                 data={messages}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
-                    var profURL;
-                    if(participants){
-                        const part = participants.find((participant) => participant?.user?.id === item?.senderID);
-                        if(part?.user?.profileURL === null) profURL = undefined;
-                        else profURL = part?.user?.profileURL;
+                    if(!item){
+                        console.warn("Undefined items in messages list");
+                        return null;
                     }
+                    let profURL;
+                    if(participants){
+                        const part = participants.find(
+                            (participant) => participant?.user?.id === item?.senderID
+                        );
+                        if(part?.user?.profileURL === null){ 
+                            profURL = part?.user?.profileURL || undefined;
+                        }
+                    }
+                    const textContent = item?.content || "Message content not available";
                     return (
                         <View style={getMsgContainerStyle(item?.senderID)}>
                             {item?.senderID !== UserChat.userID  && <ProfilePicture uri={profURL} size={35}/>}
                             <View style={getMsgStyle(item?.senderID)}>
-                                <Text>{item?.content}</Text>
+                                <Text>{textContent}</Text>
                             </View>
                             {item?.senderID === UserChat.userID  && <ProfilePicture uri={profURL} size={35}/>}
                         </View>

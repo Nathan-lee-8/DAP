@@ -45,7 +45,6 @@ const CreateChat = ( { route }: any) => {
                     input: {
                         name: "default",
                         isGroup: false,
-                        participantIDs: cognitoIDs,
                     }
                 },
                 authMode: 'userPool'
@@ -59,7 +58,7 @@ const CreateChat = ( { route }: any) => {
                         chatID: chat.data.createChat.id,
                         ownerID: cognitoID.userId,
                         unreadMessageCount: 0,
-                        joinedAt: new Date().toISOString(),
+                        lastMessage: message
                     }
                 },
                 authMode: 'userPool'
@@ -73,7 +72,6 @@ const CreateChat = ( { route }: any) => {
                         chatID: chat.data.createChat.id,
                         ownerID: targetOwnerID,
                         unreadMessageCount: 1,
-                        joinedAt: new Date().toISOString(),
                     }
                 },
                 authMode: 'userPool'
