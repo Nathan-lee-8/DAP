@@ -9,7 +9,6 @@ import client from '../client';
 
 const ViewProfiles = ( { route, navigation } : any) => {
     const user = route.params?.user;
-    console.log(user.followings)
     if(!user) return (<View><Text>Error: User not found</Text></View>);
 
     const profileURL = user.profileURL === null ? undefined: user.profileURL;
