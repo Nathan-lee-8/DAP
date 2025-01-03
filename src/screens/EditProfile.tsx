@@ -15,7 +15,6 @@ import UserPosts from '../components/UserPosts';
 //Update to get user data from authContext
 const EditProfile = () => {
   const authContext = useContext(AuthContext);
-
   if(!authContext) {
     console.log("Auth context not defined");
     return null;

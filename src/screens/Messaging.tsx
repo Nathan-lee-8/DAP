@@ -69,15 +69,15 @@ const MessageUsers = () => {
   const navigation = useNavigation<NativeStackNavigationProp<MessagingStackParamList, 'ChatRoom'>>();
 
   const handleSendMessage = (user: User) => {
-    // for (const chatRoom of chatRooms) {
-    //   const participants = chatRoom.chat?.participantIDs;
-    //   if(participants && participants[0] && participants[1]){
-    //     if(participants[0] === user.owner || participants[1] === user.owner){
-    //       navigation.navigate('ChatRoom', { userChat: chatRoom });
-    //       return;
-    //     }
-    //   }
-    // };
+    for (const chatRoom of chatRooms) {
+      const participants = chatRoom.chat?.participants?.items;
+      if(participants && participants[0] && participants[1] && 
+        (participants[0].user?.owner === user.owner || participants[1].user?.owner === user.owner)){
+        navigation.navigate('ChatRoom', { userChat: chatRoom });
+        return;
+      }
+      
+    };
     navigation.navigate('CreateChat', { user: user});
 };
 
@@ -96,7 +96,7 @@ const MessageUsers = () => {
 
   return (
     <View style={styles.container}>
-      <SearchBar screen="messaging" handleSendMessage={handleSendMessage}/>
+      <SearchBar handleSendMessage={handleSendMessage}/>
       <FlatList
         data={chatRooms}
         keyExtractor={(item) => item.id}
@@ -131,6 +131,7 @@ const MessageUsers = () => {
                     <View style={styles.textContainer}>
                       <Text style={styles.postAuthor}>{chatname}</Text>
                       <Text style={styles.postContact}>Unread Msgs: {item.unreadMessageCount}</Text>
+                      <Text style={styles.postContact}> {item.lastMessage} </Text>
                     </View>  
                   </View> 
               </View>

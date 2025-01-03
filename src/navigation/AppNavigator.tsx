@@ -12,7 +12,7 @@ import SignUp from '../screens/SignUpScreen';
 import Home from '../screens/HomeScreen';
 import CreatePost from '../screens/CreatePost';
 import Verify from '../screens/Verify';
-import FindUsers from '../screens/FindUsers';
+import Groups from '../screens/Groups';
 import Messaging from '../screens/Messaging';
 import EditProfile from '../screens/EditProfile';
 import ResetPassword from '../screens/ResetPassword';
@@ -92,11 +92,10 @@ const BottomTabs = () => {
           lazy: true,
           tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
           }} />
-      <BottomTab.Screen name="FindUsers" component={FindUsers} 
+      <BottomTab.Screen name="Groups" component={Groups} 
         options={{
-          title: 'Find Users',
           lazy: true,
-          tabBarIcon: () => <Icon name="search-outline" size={30} color="grey" />
+          tabBarIcon: () => <Icon name="people-outline" size={30} color="grey" />
           }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
         options={{

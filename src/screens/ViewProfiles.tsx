@@ -2,11 +2,15 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ProfilePicture';
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
+import { createFollowing } from '../graphql/mutations';
+import client from '../client';
 
 const ViewProfiles = ( { route, navigation } : any) => {
     const user = route.params?.user;
+    console.log(user.followings)
     if(!user) return (<View><Text>Error: User not found</Text></View>);
-    console.log(user)
 
     const profileURL = user.profileURL === null ? undefined: user.profileURL;
     const creationDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "unknown";
@@ -15,10 +19,29 @@ const ViewProfiles = ( { route, navigation } : any) => {
         navigation.navigate('ViewFollowing', {userId: user.id});
     }
 
-    const follow = async () => {
-
+    const authContext = useContext(AuthContext);
+    if(!authContext) {
+        console.log("Auth context not defined");
+        return null;
     }
+    const { userId } = authContext;
 
+    const follow = async () => {
+        try{
+            await client.graphql({
+                query: createFollowing,
+                variables: {
+                    input: {
+                        userID: userId,
+                        followedUserID: user.id
+                    },
+                },
+              });
+        } catch (error) {
+            console.error('Error following user:', error);
+        }
+    }
+    let followNumber = user.followings.items.length;
     return(
         <View style={styles.container}>
             <View style={styles.profileSection}>
@@ -35,7 +58,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
                         <Text>Message</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={viewFollowing} style={styles.following}>
-                        <Text>Following: </Text>
+                        <Text>Following: {followNumber}</Text>
                     </TouchableOpacity>
                 </View>
             </View>

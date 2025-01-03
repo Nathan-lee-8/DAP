@@ -1,9 +1,6 @@
 import { useEffect, useState, useContext } from 'react';
 import { View, TextInput, FlatList, TouchableOpacity,
   Text, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GlobalParamList } from '../types/rootStackParamTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import filter from 'lodash/filter';
 import client  from '../client';
@@ -14,7 +11,7 @@ import { User } from '../API';
 import ProfilePicture from './ProfilePicture';
 import Icon from '@react-native-vector-icons/ionicons';
 
-const SearchBar = ( { screen, handleSendMessage } : any) => {
+const SearchBar = ( { handleSendMessage } : any) => {
   const [search, setSearch] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
@@ -73,11 +70,6 @@ const SearchBar = ( { screen, handleSendMessage } : any) => {
     setFilteredData(results);
   };
   
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  const handleViewProfile = (user: User) => {
-    navigation.navigate('ViewProfile', { user: user });
-  }
-  
   const resetCache = async () => {
     await AsyncStorage.removeItem('usersCache');
     fetchUsers();
@@ -112,26 +104,14 @@ const SearchBar = ( { screen, handleSendMessage } : any) => {
           }
           return (
             <View style={styles.searchUserContainer}>
-              <TouchableOpacity onPress={() => {
-                if(screen === 'messaging') handleSendMessage(item);
-                else if(screen === 'findUser') handleViewProfile(item)
-                else{
-                  console.log('Invalid screen type in searchBar.tsx');
-                  return <Text>Unknown Error</Text>;
-                }
-              }}>
+              <TouchableOpacity onPress={() => { handleSendMessage(item) }}>
                 <View style={styles.listUserContainer}>
                   <ProfilePicture uri={item.profileURL} size={50}/>
                   <View style={styles.textContainer}>
                     <Text style={styles.textName}>{item.firstname} {item.lastname}</Text>
                     <Text style={styles.textEmail}>{item.email}</Text>
                   </View>
-                  {screen === 'messaging' && 
-                    <Icon style={styles.avatar} name='chatbubbles-outline' size={25}/>  
-                  }
-                  {screen === 'findUser' &&
-                    <Icon style={styles.avatar} name='person-outline' size={25}/>
-                  }
+                  <Icon style={styles.avatar} name='chatbubbles-outline' size={25}/>  
                 </View>
               </TouchableOpacity>
             </View>

@@ -22,7 +22,7 @@ export type LoggedInParamList = {
     HomeTopNav: undefined;
     MessageScreens: undefined;
     CreatePost: undefined;
-    FindUsers: undefined;
+    Groups: undefined;
     Profile: undefined;
 };
 

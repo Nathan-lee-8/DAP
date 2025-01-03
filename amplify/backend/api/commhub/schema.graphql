@@ -1,10 +1,10 @@
 type User @model @auth(
-    rules: [
-      { allow: owner }, 
-      { allow: public, operations: [read] },
-      { allow: private, operations: [read] }
-    ]
-  ) {
+  rules: [
+    { allow: owner },
+    { allow: private, operations: [read]},
+    { allow: public, operations: [read]}
+  ]
+) {
   id: ID!
   email: AWSEmail! @index(name: "byEmail", queryField: "userByEmail")
   firstname: String
@@ -16,81 +16,111 @@ type User @model @auth(
   followings: [Following] @hasMany
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
+  groups: [UserGroup] @hasMany
 }
 
 type Post @model @auth(
-    rules: [
-      { allow: owner },
-      { allow: public, operations: [read] }
-    ]
-  ) { 
+  rules: [
+    { allow: owner },
+    { allow: public, operations: [read] }
+  ]
+) { 
   id: ID!
   title: String!
   content: String!
+  postURL: [String]
   type: String! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
-  createdAt: AWSDateTime!
   userID: ID! @index(name: "postsByUser", queryField: "postsByUser", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields:["userID"])
+  createdAt: AWSDateTime!
 }
 
 type Following @model @auth(
-    rules: [
-      { allow: owner },
-      { allow: public, operations: [read] }
-    ]
-  ) { 
+  rules: [
+    { allow: owner },
+    { allow: public, operations: [create, read] }
+  ]
+) { 
   id: ID!
-  userID: ID! @index(name: "followingsByUser", queryField: "followingsByUser", sortKeyFields: ["followedAt"])
+  userID: ID! @index(name: "followingsByUser", queryField: "followingsByUser")
   followedUserID: ID!
   followedUser: User @belongsTo(fields: ["followedUserID"])
-  followedAt: AWSDateTime!
 }
 
 type UserChat @model @auth(
-    rules: [
-      { allow: owner, ownerField: "ownerID" },
-      { allow: private, operations: [create, read] }
-    ]
-  ) {
+  rules: [
+    { allow: owner, ownerField: "ownerID" },
+    { allow: private, operations: [create, read, update] }
+  ]
+) {
   id: ID!
   ownerID: ID!
-  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["joinedAt"])
-  user: User @belongsTo(fields: ["userID"])
-    @auth(rules: [{ allow: private, operations: [read] }])
-  chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["joinedAt"])
-  chat: Chat @belongsTo(fields: ["chatID"])
-  joinedAt: AWSDateTime!
   unreadMessageCount: Int 
+  lastMessage: String
   lastReadAt: AWSDateTime
   isMuted: Boolean
+  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["createdAt"])
+  chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["createdAt"])
+  user: User @belongsTo(fields: ["userID"])
+    @auth(rules: [{ allow: private, operations: [read] }])
+  chat: Chat @belongsTo(fields: ["chatID"])
+  createdAt: AWSDateTime!
 }
 
 type Chat @model @auth(
-    rules: [
-      { allow: owner, ownerField: "participantIDs" },
+  rules: [
       { allow: private, operations: [create, read] }
     ]
-  ) { 
+) { 
   id: ID!
   name: String!
   isGroup: Boolean!
-  createdAt: AWSDateTime! 
-  participantIDs: [ID!]!
+  createdAt: AWSDateTime!
   messages: [Message] @hasMany(indexName:"messagesByChat", fields: ["id"])
   participants: [UserChat] @hasMany(indexName:"UserChatByChat", fields: ["id"])
 }
 
 type Message @model @auth(
-    rules: [
-      { allow: owner },
-      { allow: private, operations: [ read] }
-    ]
-  ) {
+  rules: [
+    { allow: owner },
+    { allow: private, operations: [ read] }
+  ]
+) {
   id: ID!
   content: String!
+  msgURL: [String]
   senderID: ID! @index(name: "messagesByUser", queryField: "messagesByUser", sortKeyFields: ["createdAt"])
-  sender: User @belongsTo(fields: ["senderID"])
   chatID: ID! @index(name: "messagesByChat", queryField: "messagesByChat", sortKeyFields: ["createdAt"])
+  groupID: ID @index(name: "messageByGroup", queryField: "messageByGroup", sortKeyFields: ["createdAt"])
+  sender: User @belongsTo(fields: ["senderID"])
   chat: Chat @belongsTo(fields: ["chatID"])
+  group: Group @belongsTo(fields: ["groupID"])
   createdAt: AWSDateTime!
+}
+
+type UserGroup @model @auth(
+  rules: [
+    { allow: owner, ownerField: "ownerID" },
+    { allow: private, operations: [create, read] }
+  ]
+) {
+  id: ID!
+  ownerID: ID!
+  userID: ID!
+  groupID: ID! @index(name: "membersByGroup", queryField: "membersByGroup")
+  role: String
+  user: User @belongsTo(fields: ["userID"])
+  group: Group @belongsTo(fields: ["groupID"])
+}
+
+type Group @model @auth(
+  rules: [
+    { allow: private, operations: [ create, read ] }
+  ]
+) {
+  id: ID!
+  groupName: String!
+  groupURL: String
+  members: [UserGroup] @hasMany(indexName:"membersByGroup", fields: ["id"])
+  messages: [Message] @hasMany(indexName:"messageByGroup", fields: ["id"])
 }
