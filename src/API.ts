@@ -168,8 +168,6 @@ export type Following = {
   followedUser?: User | null,
   createdAt: string,
   updatedAt: string,
-  userFollowingsId?: string | null,
-  owner?: string | null,
 };
 
 export type ModelUserChatConnection = {
@@ -217,9 +215,9 @@ export type Group = {
   id: string,
   groupName: string,
   groupURL?: string | null,
+  createdAt: string,
   members?: ModelUserGroupConnection | null,
   messages?: ModelMessageConnection | null,
-  createdAt: string,
   updatedAt: string,
 };
 
@@ -268,15 +266,16 @@ export type UpdateGroupInput = {
   id: string,
   groupName?: string | null,
   groupURL?: string | null,
+  createdAt?: string | null,
 };
 
 export type ModelGroupConditionInput = {
   groupName?: ModelStringInput | null,
   groupURL?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
   and?: Array< ModelGroupConditionInput | null > | null,
   or?: Array< ModelGroupConditionInput | null > | null,
   not?: ModelGroupConditionInput | null,
-  createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
 };
 
@@ -368,7 +367,6 @@ export type CreateFollowingInput = {
   id?: string | null,
   userID: string,
   followedUserID: string,
-  userFollowingsId?: string | null,
 };
 
 export type ModelFollowingConditionInput = {
@@ -379,15 +377,12 @@ export type ModelFollowingConditionInput = {
   not?: ModelFollowingConditionInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
-  userFollowingsId?: ModelIDInput | null,
-  owner?: ModelStringInput | null,
 };
 
 export type UpdateFollowingInput = {
   id: string,
   userID?: string | null,
   followedUserID?: string | null,
-  userFollowingsId?: string | null,
 };
 
 export type DeleteFollowingInput = {
@@ -474,6 +469,7 @@ export type CreateUserGroupInput = {
   userID: string,
   groupID: string,
   role?: string | null,
+  createdAt?: string | null,
   userGroupsId?: string | null,
 };
 
@@ -482,10 +478,10 @@ export type ModelUserGroupConditionInput = {
   userID?: ModelIDInput | null,
   groupID?: ModelIDInput | null,
   role?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
   and?: Array< ModelUserGroupConditionInput | null > | null,
   or?: Array< ModelUserGroupConditionInput | null > | null,
   not?: ModelUserGroupConditionInput | null,
-  createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   userGroupsId?: ModelIDInput | null,
 };
@@ -496,6 +492,7 @@ export type UpdateUserGroupInput = {
   userID?: string | null,
   groupID?: string | null,
   role?: string | null,
+  createdAt?: string | null,
   userGroupsId?: string | null,
 };
 
@@ -507,6 +504,7 @@ export type CreateGroupInput = {
   id?: string | null,
   groupName: string,
   groupURL?: string | null,
+  createdAt?: string | null,
 };
 
 export type ModelUserFilterInput = {
@@ -572,8 +570,6 @@ export type ModelFollowingFilterInput = {
   and?: Array< ModelFollowingFilterInput | null > | null,
   or?: Array< ModelFollowingFilterInput | null > | null,
   not?: ModelFollowingFilterInput | null,
-  userFollowingsId?: ModelIDInput | null,
-  owner?: ModelStringInput | null,
 };
 
 export type ModelUserChatFilterInput = {
@@ -670,7 +666,6 @@ export type ModelSubscriptionUserFilterInput = {
   and?: Array< ModelSubscriptionUserFilterInput | null > | null,
   or?: Array< ModelSubscriptionUserFilterInput | null > | null,
   userPostsId?: ModelSubscriptionIDInput | null,
-  userFollowingsId?: ModelSubscriptionIDInput | null,
   userChatsId?: ModelSubscriptionIDInput | null,
   userMessagesId?: ModelSubscriptionIDInput | null,
   userGroupsId?: ModelSubscriptionIDInput | null,
@@ -729,7 +724,6 @@ export type ModelSubscriptionFollowingFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionFollowingFilterInput | null > | null,
   or?: Array< ModelSubscriptionFollowingFilterInput | null > | null,
-  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionUserChatFilterInput = {
@@ -912,6 +906,7 @@ export type UpdateGroupMutation = {
     id: string,
     groupName: string,
     groupURL?: string | null,
+    createdAt: string,
     members?:  {
       __typename: "ModelUserGroupConnection",
       nextToken?: string | null,
@@ -920,7 +915,6 @@ export type UpdateGroupMutation = {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
     } | null,
-    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -936,6 +930,7 @@ export type DeleteGroupMutation = {
     id: string,
     groupName: string,
     groupURL?: string | null,
+    createdAt: string,
     members?:  {
       __typename: "ModelUserGroupConnection",
       nextToken?: string | null,
@@ -944,7 +939,6 @@ export type DeleteGroupMutation = {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
     } | null,
-    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -1174,8 +1168,6 @@ export type CreateFollowingMutation = {
     followedUserID: string,
     createdAt: string,
     updatedAt: string,
-    userFollowingsId?: string | null,
-    owner?: string | null,
   } | null,
 };
 
@@ -1205,8 +1197,6 @@ export type UpdateFollowingMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    userFollowingsId?: string | null,
-    owner?: string | null,
   } | null,
 };
 
@@ -1236,8 +1226,6 @@ export type DeleteFollowingMutation = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    userFollowingsId?: string | null,
-    owner?: string | null,
   } | null,
 };
 
@@ -1561,6 +1549,7 @@ export type CreateGroupMutation = {
     id: string,
     groupName: string,
     groupURL?: string | null,
+    createdAt: string,
     members?:  {
       __typename: "ModelUserGroupConnection",
       nextToken?: string | null,
@@ -1569,7 +1558,6 @@ export type CreateGroupMutation = {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
     } | null,
-    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -1588,29 +1576,21 @@ export type GetUserQuery = {
     phonenumber?: string | null,
     profileURL?: string | null,
     location?: string | null,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
-    followings?:  {
-      __typename: "ModelFollowingConnection",
-      nextToken?: string | null,
-    } | null,
-    chats?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    groups?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
+    followings?:  {
+      __typename: "ModelFollowingConnection",
+      items:  Array< {
+        __typename: "Following",
+        id: string,
+        userID: string,
+        followedUserID: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null >,
+      nextToken?: string | null,
+    } | null,
   } | null,
 };
 
@@ -1746,7 +1726,6 @@ export type PostsByDateQuery = {
       content: string,
       postURL?: Array< string | null > | null,
       type: string,
-      createdAt: string,
       userID: string,
       user?:  {
         __typename: "User",
@@ -1773,6 +1752,7 @@ export type PostsByDateQuery = {
         updatedAt: string,
         owner?: string | null,
       } | null,
+      createdAt: string,
       updatedAt: string,
       userPostsId?: string | null,
       owner?: string | null,
@@ -1835,8 +1815,6 @@ export type GetFollowingQuery = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    userFollowingsId?: string | null,
-    owner?: string | null,
   } | null,
 };
 
@@ -1856,8 +1834,6 @@ export type ListFollowingsQuery = {
       followedUserID: string,
       createdAt: string,
       updatedAt: string,
-      userFollowingsId?: string | null,
-      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1881,8 +1857,18 @@ export type FollowingsByUserQuery = {
       followedUserID: string,
       createdAt: string,
       updatedAt: string,
-      userFollowingsId?: string | null,
-      owner?: string | null,
+      followedUser?:  {
+        __typename: "User",
+        id: string,
+        email: string,
+        firstname?: string | null,
+        lastname?: string | null,
+        phonenumber?: string | null,
+        profileURL?: string | null,
+        location?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2291,24 +2277,23 @@ export type GetUserGroupQuery = {
     userID: string,
     groupID: string,
     role?: string | null,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname?: string | null,
-      lastname?: string | null,
-      phonenumber?: string | null,
-      profileURL?: string | null,
-      location?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
     group?:  {
       __typename: "Group",
       id: string,
       groupName: string,
       groupURL?: string | null,
+      members?:  {
+        __typename: "ModelUserGroupConnection",
+        items:  Array< {
+          __typename: "UserGroup",
+          id: string,
+          ownerID: string,
+          userID: string,
+          groupID: string,
+          role?: string | null,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
       createdAt: string,
       updatedAt: string,
     } | null,
@@ -2326,6 +2311,33 @@ export type ListUserGroupsQueryVariables = {
 
 export type ListUserGroupsQuery = {
   listUserGroups?:  {
+    __typename: "ModelUserGroupConnection",
+    items:  Array< {
+      __typename: "UserGroup",
+      id: string,
+      ownerID: string,
+      userID: string,
+      groupID: string,
+      role?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      userGroupsId?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GroupsByUserQueryVariables = {
+  userID: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelUserGroupFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type GroupsByUserQuery = {
+  groupsByUser?:  {
     __typename: "ModelUserGroupConnection",
     items:  Array< {
       __typename: "UserGroup",
@@ -2378,6 +2390,7 @@ export type GetGroupQuery = {
     id: string,
     groupName: string,
     groupURL?: string | null,
+    createdAt: string,
     members?:  {
       __typename: "ModelUserGroupConnection",
       nextToken?: string | null,
@@ -2386,7 +2399,6 @@ export type GetGroupQuery = {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
     } | null,
-    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -2639,7 +2651,6 @@ export type OnDeletePostSubscription = {
 
 export type OnCreateFollowingSubscriptionVariables = {
   filter?: ModelSubscriptionFollowingFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnCreateFollowingSubscription = {
@@ -2663,14 +2674,11 @@ export type OnCreateFollowingSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    userFollowingsId?: string | null,
-    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateFollowingSubscriptionVariables = {
   filter?: ModelSubscriptionFollowingFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnUpdateFollowingSubscription = {
@@ -2694,14 +2702,11 @@ export type OnUpdateFollowingSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    userFollowingsId?: string | null,
-    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteFollowingSubscriptionVariables = {
   filter?: ModelSubscriptionFollowingFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnDeleteFollowingSubscription = {
@@ -2725,8 +2730,6 @@ export type OnDeleteFollowingSubscription = {
     } | null,
     createdAt: string,
     updatedAt: string,
-    userFollowingsId?: string | null,
-    owner?: string | null,
   } | null,
 };
 
@@ -3179,6 +3182,7 @@ export type OnCreateGroupSubscription = {
     id: string,
     groupName: string,
     groupURL?: string | null,
+    createdAt: string,
     members?:  {
       __typename: "ModelUserGroupConnection",
       nextToken?: string | null,
@@ -3187,7 +3191,6 @@ export type OnCreateGroupSubscription = {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
     } | null,
-    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -3202,6 +3205,7 @@ export type OnUpdateGroupSubscription = {
     id: string,
     groupName: string,
     groupURL?: string | null,
+    createdAt: string,
     members?:  {
       __typename: "ModelUserGroupConnection",
       nextToken?: string | null,
@@ -3210,7 +3214,6 @@ export type OnUpdateGroupSubscription = {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
     } | null,
-    createdAt: string,
     updatedAt: string,
   } | null,
 };
@@ -3225,6 +3228,7 @@ export type OnDeleteGroupSubscription = {
     id: string,
     groupName: string,
     groupURL?: string | null,
+    createdAt: string,
     members?:  {
       __typename: "ModelUserGroupConnection",
       nextToken?: string | null,
@@ -3233,7 +3237,6 @@ export type OnDeleteGroupSubscription = {
       __typename: "ModelMessageConnection",
       nextToken?: string | null,
     } | null,
-    createdAt: string,
     updatedAt: string,
   } | null,
 };

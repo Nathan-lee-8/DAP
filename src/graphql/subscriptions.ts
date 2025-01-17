@@ -241,9 +241,8 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
 >;
 export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing(
   $filter: ModelSubscriptionFollowingFilterInput
-  $owner: String
 ) {
-  onCreateFollowing(filter: $filter, owner: $owner) {
+  onCreateFollowing(filter: $filter) {
     id
     userID
     followedUserID
@@ -262,8 +261,6 @@ export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing(
     }
     createdAt
     updatedAt
-    userFollowingsId
-    owner
     __typename
   }
 }
@@ -273,9 +270,8 @@ export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing(
 >;
 export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing(
   $filter: ModelSubscriptionFollowingFilterInput
-  $owner: String
 ) {
-  onUpdateFollowing(filter: $filter, owner: $owner) {
+  onUpdateFollowing(filter: $filter) {
     id
     userID
     followedUserID
@@ -294,8 +290,6 @@ export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing(
     }
     createdAt
     updatedAt
-    userFollowingsId
-    owner
     __typename
   }
 }
@@ -305,9 +299,8 @@ export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing(
 >;
 export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing(
   $filter: ModelSubscriptionFollowingFilterInput
-  $owner: String
 ) {
-  onDeleteFollowing(filter: $filter, owner: $owner) {
+  onDeleteFollowing(filter: $filter) {
     id
     userID
     followedUserID
@@ -326,8 +319,6 @@ export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing(
     }
     createdAt
     updatedAt
-    userFollowingsId
-    owner
     __typename
   }
 }
@@ -785,6 +776,7 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup($filter: 
     id
     groupName
     groupURL
+    createdAt
     members {
       nextToken
       __typename
@@ -793,7 +785,6 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup($filter: 
       nextToken
       __typename
     }
-    createdAt
     updatedAt
     __typename
   }
@@ -807,6 +798,7 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup($filter: 
     id
     groupName
     groupURL
+    createdAt
     members {
       nextToken
       __typename
@@ -815,7 +807,6 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup($filter: 
       nextToken
       __typename
     }
-    createdAt
     updatedAt
     __typename
   }
@@ -829,6 +820,7 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup($filter: 
     id
     groupName
     groupURL
+    createdAt
     members {
       nextToken
       __typename
@@ -837,7 +829,6 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup($filter: 
       nextToken
       __typename
     }
-    createdAt
     updatedAt
     __typename
   }

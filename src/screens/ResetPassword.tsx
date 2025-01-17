@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { View, TextInput, StyleSheet, TouchableOpacity, Alert, Text } from 'react-native';
+import { View, TextInput, TouchableOpacity, Alert, Text } from 'react-native';
 import { confirmResetPassword } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';

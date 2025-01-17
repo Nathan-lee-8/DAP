@@ -4,13 +4,14 @@ import { followingsByUser } from "../graphql/queries";
 import { Following } from '../API';
 import client from '../client';
 import styles from '../styles/Styles';
+import ProfilePicture from './ProfilePicture';
 
 /**
  * TODO: Add fetch limits, use next token to retrieve next values on scroll
  *       Add indicator if no data found. 
  */
 const ListUsers = ( {route}: any) => {
-    const userId = route.params?.userId;
+    const userId = route.params?.userID;
     const [users, setUsers] = useState<Following[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -33,21 +34,29 @@ const ListUsers = ( {route}: any) => {
             setLoading(false);
         }
     }
+
+    
     return (
         <View style={styles.container}>
-            <Text style={styles.title}> {userId} is Following: </Text>
             {loading ? (
                 <ActivityIndicator size="large" color="#0000ff" />
             ) : (
                 <FlatList
                     data={users}
                     renderItem={({ item }) => {
-                    return (
-                        <View style={styles.postContainer}>
-                        <Text style={styles.postType}>{item.followedUserID}</Text>
-                        <Text style={styles.postContent}>{item.owner}</Text>
-                        </View>
-                    )}}
+                        let user = item.followedUser;
+                        let name = user?.firstname + ' ' + user?.lastname;
+                        let userURL = user?.profileURL || undefined;
+
+                        return (
+                            <View style={styles.searchUserContainer}>
+                                <View style={styles.listUserContainer}>
+                                    <ProfilePicture uri={userURL} size={50}/>
+                                    <Text style={[styles.postContent, {marginLeft: 10}]}>{name}</Text>
+                                </View>
+                            </View>
+                        )
+                    }}
                 />
             )}
         </View>

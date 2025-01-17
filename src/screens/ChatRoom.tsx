@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useRef, useContext, useLayoutEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity,
      ActivityIndicator } from 'react-native';
 import styles from '../styles/Styles';
@@ -10,6 +10,8 @@ import  { Message } from '../API';
 import ProfilePicture from '../components/ProfilePicture';
 import { Participant } from '../types/rootStackParamTypes'
 import { AuthContext } from '../context/AuthContext';
+import { useNavigation } from '@react-navigation/native';
+import Icon from '@react-native-vector-icons/ionicons'
 
 const ChatRoom = ( { route } : any) => {
     const UserChat = route.params.userChat;
@@ -31,6 +33,33 @@ const ChatRoom = ( { route } : any) => {
         return;
     }
     const userId = authContext.userId;
+
+    useEffect(() => {
+        fetchChat();
+        const subscription = client.graphql({
+            query: onCreateMessage,
+            variables: {
+                filter: { chatID: { eq: UserChat.chatID } }, // Scope to the current chat
+            },
+            authMode: 'userPool'
+        }).subscribe({
+            next: (value : any) => {
+                const newMessage = value?.data.onCreateMessage;
+                setMessages((prev) => {
+                    if(!newMessage) return prev;
+                    const existing = prev.find((msg) => msg?.id === newMessage?.id);
+                    if (existing) return prev;
+                    return [...prev, newMessage];
+                });
+                if(newMessage.content) messageRef.current = newMessage.content;
+                msgSent.current = true;
+                scrollToBottom();
+            },
+            error: (err: any) => console.error("Subscription error:", err),
+        });
+    
+        return () => subscription.unsubscribe(); // Clean up the subscription
+    }, []);
 
     const fetchChat = async () => {
         setLoading(true);
@@ -75,68 +104,61 @@ const ChatRoom = ( { route } : any) => {
         }
     };
 
-    useEffect(() => {
-        fetchChat();
-        const subscription = client.graphql({
-            query: onCreateMessage,
-            variables: {
-                filter: { chatID: { eq: UserChat.chatID } }, // Scope to the current chat
-            },
-            authMode: 'userPool'
-        }).subscribe({
-            next: (value : any) => {
-                const newMessage = value?.data.onCreateMessage;
-                setMessages((prev) => {
-                    if(!newMessage) return prev;
-                    const existing = prev.find((msg) => msg?.id === newMessage?.id);
-                    if (existing) return prev;
-                    return [...prev, newMessage];
-                });
-                if(newMessage.content) messageRef.current = newMessage.content;
-                msgSent.current = true;
-                scrollToBottom();
-            },
-            error: (err: any) => console.error("Subscription error:", err),
-        });
     
-        return () => {
-            if (messageRef.current && msgSent.current) {
-                const updateLastMessage = async () => {
-                    try {
-                        await client.graphql({
-                            query: updateUserChat, // GraphQL mutation to update last message
-                            variables: {
-                                input: {
-                                    id: UserChat.id,
-                                    lastMessage: messageRef.current, // You may need to adjust based on your schema
-                                    unreadMessageCount: 0
-                                },
-                            },
-                            authMode: 'userPool'
-                        });
-                        if(targetChatIDref.current){
-                            await client.graphql({
-                                query: updateUserChat, // GraphQL mutation to update last message
-                                variables: {
-                                    input: {
-                                        id: targetChatIDref.current,
-                                        lastMessage: messageRef.current, // You may need to adjust based on your schema
-                                        unreadMessageCount: msgCountRef.current
-                                    },
-                                },
-                                authMode: 'userPool'
-                            });
-                        }
-                        console.log("Last message updated in chat data");
-                    } catch (error) {
-                        console.error("Error updating last message:", error);
-                    }
-                };
-                updateLastMessage();
+    const navigation = useNavigation();
+
+    useLayoutEffect(()=> {
+        navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity onPress={handleGoBack} >
+                    <Icon name="arrow-back" size={24} />
+                </TouchableOpacity>
+            ),
+        })
+    })
+
+    const handleGoBack = async () => {
+        if (messageRef.current && msgSent.current) {
+            try{
+                await updateLastMessage();
+            } catch (error) {
+                console.error("Error updating last message:", error);
             }
-            subscription.unsubscribe(); // Clean up the subscription
-        } 
-    }, [UserChat.chatID]);
+        }
+        navigation.goBack();
+    }
+
+    const updateLastMessage = async () => {
+        try {
+            await client.graphql({
+                query: updateUserChat, // GraphQL mutation to update last message
+                variables: {
+                    input: {
+                        id: UserChat.id,
+                        lastMessage: messageRef.current, // You may need to adjust based on your schema
+                        unreadMessageCount: 0
+                    },
+                },
+                authMode: 'userPool'
+            });
+            if(targetChatIDref.current){
+                await client.graphql({
+                    query: updateUserChat, // GraphQL mutation to update last message
+                    variables: {
+                        input: {
+                            id: targetChatIDref.current,
+                            lastMessage: messageRef.current, // You may need to adjust based on your schema
+                            unreadMessageCount: msgCountRef.current
+                        },
+                    },
+                    authMode: 'userPool'
+                });
+            }
+            console.log("Last message updated in chat data");
+        } catch (error) {
+            console.error("Error updating last message:", error);
+        }
+    };
 
     const sendMessage = async () => {
         if(currMessage === '')return;
@@ -214,7 +236,7 @@ const ChatRoom = ( { route } : any) => {
                 onEndReached={ () => {
                     if(nextToken) fetchChat();
                 }}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0.4}
                 inverted
             />
             <View style={{flexDirection: 'row'}}> 

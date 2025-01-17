@@ -1,13 +1,13 @@
 import { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { MessagingStackParamList } from '../types/rootStackParamTypes';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
 import client from '../client';
 import { createChat, createUserChat, createMessage } from '../graphql/mutations';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentUser } from '@aws-amplify/auth';
+import { GlobalParamList } from '../types/rootStackParamTypes';
 
 //TODO: Add rollback in case of failure, create Loading screen
 const CreateChat = ( { route }: any) => {
@@ -21,7 +21,7 @@ const CreateChat = ( { route }: any) => {
 
     const [ message, setMessage ] = useState('');
     const [ loading, setLoading ] = useState(false);
-    const navigation = useNavigation<NativeStackNavigationProp<MessagingStackParamList, 'ChatRoom'>>();
+    const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList, 'ChatRoom'>>();
 
     var targetDisplayName = targetUser.email;
     if(targetUser.firstname) targetDisplayName = targetUser.firstname;
@@ -92,7 +92,7 @@ const CreateChat = ( { route }: any) => {
             navigation.reset({
                 index: 1,
                 routes: [
-                    { name: 'Messaging'},
+                    { name: 'MainTabs'},
                     { name: 'ChatRoom', params: { userChat: myUserChat.data.createUserChat } 
                 }],
             });
