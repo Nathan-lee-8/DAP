@@ -1,11 +1,8 @@
-import { useEffect, useState, useContext } from 'react';
-import { View, FlatList, TouchableOpacity, Button,
-  Text, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useState, useContext, useCallback } from 'react';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { chatsByUser } from '../graphql/queries';
-import { MessagingStackParamList } from '../types/rootStackParamTypes';
 import { ModelSortDirection, UserChat } from '../API';
 import client  from '../client';
 import { AuthContext } from '../context/AuthContext';
@@ -13,6 +10,7 @@ import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import { User } from '../API';
 import ProfilePicture from '../components/ProfilePicture';
+import { GlobalParamList } from '../types/rootStackParamTypes';
 
 const MessageUsers = () => {
   const [chatRooms, setChatRooms] = useState<UserChat[]>([])
@@ -25,6 +23,7 @@ const MessageUsers = () => {
   const currUserId = authContext.userId;
 
   const fetchChatRooms = async () => {
+    setLoading(true);
     try {
       const chatRooms = await client.graphql({
         query: chatsByUser,
@@ -36,37 +35,22 @@ const MessageUsers = () => {
       });
       const chatRoomData = chatRooms.data.chatsByUser.items;
       setChatRooms(chatRoomData);
-      console.log('Fetched & cached from fetchChatRooms.');
-      await AsyncStorage.setItem('chatRoomsCache', JSON.stringify({chatRoomData: chatRoomData}));
+      console.log('Fetched Chat rooms from Messaging.');
     } catch (error) {
       console.log('Error fetching chat rooms', error);
+    } finally {
+      setLoading(false);
     }
   };
-  
-  //On page load: check if cache contains users and loads from cache. 
-  //If not, calls fetch users.
-  useEffect(() => {
-    const initializeCache = async () => {
-      setLoading(true);
-      try {
-        const cachedData = await AsyncStorage.getItem('chatRoomsCache');
-        if(cachedData){
-          const parsedChatRooms = JSON.parse(cachedData).chatRoomData;
-          setChatRooms(parsedChatRooms);
-        } else {
-          await fetchChatRooms();
-        }
-      } catch (error) {
-        console.log('Error initializing cache', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    initializeCache();
-  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchChatRooms();
+    }, [])
+  );
 
   //Handles when user wants to message a user: checks if chatroom exists before creating new one
-  const navigation = useNavigation<NativeStackNavigationProp<MessagingStackParamList, 'ChatRoom'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
 
   const handleSendMessage = (user: User) => {
     for (const chatRoom of chatRooms) {
@@ -115,11 +99,7 @@ const MessageUsers = () => {
                 part = participants[0].user;
               }
               chatname = part?.firstname + " " + part?.lastname;
-              if(part?.profileURL === null){
-                displayURI = undefined;
-              }else{
-                displayURI = part?.profileURL;
-              }
+              displayURI = part?.profileURL || undefined;
             }
           }
           
@@ -136,9 +116,9 @@ const MessageUsers = () => {
                   </View> 
               </View>
             </TouchableOpacity>  
-        )}}
+          )
+        }}
       />
-      <Button title="Fetch Chat rooms" onPress={fetchChatRooms}/>
     </View>
   );
 };

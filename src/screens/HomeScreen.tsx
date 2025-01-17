@@ -1,5 +1,6 @@
-import { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { useEffect, useState, useContext, useCallback } from 'react';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl,
+  TouchableOpacity } from 'react-native';
 import client from '../client';
 import { postsByDate, userByEmail } from '../graphql/queries';
 import { ModelSortDirection, Post } from '../API';
@@ -82,53 +83,56 @@ const HomeScreen = (route : any) => {
             return;
           }
         }
-        // If no cache or cache expired, fetch new data
         await fetchNewsFeed();
       } catch (error) {
         console.log('Error loading cached news feed', error);
       }
     };
-
-    const fetchNewsFeed = async () => { 
-      setLoading(true);
-      try{
-        const allPosts = await client.graphql({
-          query: postsByDate,
-          variables: {
-            type: category,
-            sortDirection: ModelSortDirection.DESC,
-            limit: 10,
-          },
-        }); 
-        console.log('Fetched posts from fetchnewsfeed.');
-        const posts = allPosts.data.postsByDate.items;
-        setNewsFeed(posts);
-        
-        await AsyncStorage.setItem('newsFeedCache' + category, JSON.stringify({
-          posts,
-          timestamp: Date.now(),
-        }));
-      } catch (error: any) {
-        if(error.messsage) console.log('Error fetching news feed', error.message);
-        else if(error.errors) console.log('Error fetching news feed', error.errors);
-        else console.log('Error fetching news feed', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadNewsFeed();
   }, []);
+
+  const fetchNewsFeed = async () => { 
+    setLoading(true);
+    try{
+      const allPosts = await client.graphql({
+        query: postsByDate,
+        variables: {
+          type: category,
+          sortDirection: ModelSortDirection.DESC,
+          limit: 10,
+        },
+      }); 
+      const posts = allPosts.data.postsByDate.items;
+      
+      console.log(`Fetched ${category} from fetchnewsfeed.`, posts[0].user?.followings);
+      setNewsFeed(posts);
+      
+      await AsyncStorage.setItem('newsFeedCache' + category, JSON.stringify({
+        posts,
+        timestamp: Date.now(),
+      }));
+    } catch (error: any) {
+      if(error.messsage) console.log('Error fetching news feed', error.message);
+      else if(error.errors) console.log('Error fetching news feed', error.errors);
+      else console.log('Error fetching news feed', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const nav2 = useNavigation<NativeStackNavigationProp<LoggedInParamList>>();
   const visitProfile = (item : any) => {
-
-    if(item.user.id === userId){
-      nav2.navigate('Profile');
-    }else{
+    // if(item.user.id === userId){
+    //   nav2.navigate('Profile');
+    // }else{
       navigation.navigate('ViewProfile', { user: item.user });
-    }
+    //}
   }
+
+  const onRefresh = useCallback(() => {
+    fetchNewsFeed();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -162,7 +166,16 @@ const HomeScreen = (route : any) => {
                 <Text style={styles.postType}>{item.title}</Text>
                 <Text style={styles.postContent}>{item.content}</Text>
               </View>
-          )}}
+            )
+          }}
+          refreshControl={
+            <RefreshControl
+                refreshing={loading}
+                onRefresh={onRefresh}
+                colors={['#9Bd35A', '#689F38']}  // Customize loading spinner color
+                progressBackgroundColor="#ffffff" // Background color of the spinner
+            />
+          }
         />
       )}
     </View>

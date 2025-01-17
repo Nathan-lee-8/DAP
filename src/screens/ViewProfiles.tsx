@@ -1,29 +1,55 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ProfilePicture';
 import { AuthContext } from '../context/AuthContext';
-import { useContext } from 'react';
 import { createFollowing } from '../graphql/mutations';
+import { followingsByUser } from '../graphql/queries';
 import client from '../client';
+import { Following } from '../API';
 
 const ViewProfiles = ( { route, navigation } : any) => {
-    const user = route.params?.user;
-    if(!user) return (<View><Text>Error: User not found</Text></View>);
-
-    const profileURL = user.profileURL === null ? undefined: user.profileURL;
-    const creationDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "unknown";
-    
-    const viewFollowing = () => {
-        navigation.navigate('ViewFollowing', {userId: user.id});
-    }
-
+    const targetUser = route.params?.user;
     const authContext = useContext(AuthContext);
+    const [followedUsers, setUsers] = useState<Following[]>([]);
+    const [loading, setLoading] = useState(true);
+
     if(!authContext) {
         console.log("Auth context not defined");
         return null;
     }
     const { userId } = authContext;
+
+    const fetchFollowing = async () => {
+        try{
+            const data = await client.graphql({
+                query: followingsByUser,
+                variables: { userID: userId}
+            });
+            console.log('fetched from getFollowers');
+            setUsers(data.data.followingsByUser.items)
+        } catch (error: any){
+            console.log(error);
+            return <View><Text>Error fetching Data</Text></View>;
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(()=>{
+        fetchFollowing();
+    }, []);
+
+
+    if(!targetUser) return (<View><Text>Error: User not found</Text></View>);
+
+    const profileURL = targetUser.profileURL === null ? undefined: targetUser.profileURL;
+    const creationDate = targetUser.createdAt ? new Date(targetUser.createdAt).toLocaleDateString() : "unknown";
+    
+    const viewFollowing = () => {
+        navigation.navigate('ViewFollowing', {userID: targetUser.id});
+    }
 
     const follow = async () => {
         try{
@@ -32,7 +58,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
                 variables: {
                     input: {
                         userID: userId,
-                        followedUserID: user.id
+                        followedUserID: targetUser.id
                     },
                 },
               });
@@ -40,15 +66,17 @@ const ViewProfiles = ( { route, navigation } : any) => {
             console.error('Error following user:', error);
         }
     }
-    let followNumber = user.followings.items.length;
+    let followNumber = followedUsers.length;
+
+    if(loading) return <ActivityIndicator size="large" color="#0000ff" />;
     return(
         <View style={styles.container}>
             <View style={styles.profileSection}>
                 <ProfilePicture uri={profileURL} size={100} />
                 <View style={styles.textContainer}>
-                    <Text style={styles.postAuthor}>{user.firstname} {user.lastname}</Text>
-                    <Text style={styles.postContact}>{user.email}</Text>
-                    <Text style={styles.postContact}>Phonenumber: {user.phonenumber}</Text>
+                    <Text style={styles.postAuthor}>{targetUser.firstname} {targetUser.lastname}</Text>
+                    <Text style={styles.postContact}>{targetUser.email}</Text>
+                    <Text style={styles.postContact}>Phonenumber: {targetUser.phonenumber}</Text>
                     <Text style={styles.postContact}>User since {creationDate}</Text>
                     <TouchableOpacity onPress={follow} style={styles.profileButton}>
                         <Text>Follow</Text>
@@ -61,7 +89,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <UserPosts userID={user.id} />
+            <UserPosts userID={targetUser.id} />
         </View>
         
     )

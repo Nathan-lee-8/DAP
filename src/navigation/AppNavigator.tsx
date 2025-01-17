@@ -4,8 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { SignInParamList, SignInTopTabParamList, LoggedInParamList,
-  MessagingStackParamList, TopTabParamList,
-} from '../types/rootStackParamTypes';
+  TopTabParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
 import SignIn from '../screens/SignInScreen';
 import SignUp from '../screens/SignUpScreen';
@@ -30,7 +29,6 @@ const SignInTopTab = createMaterialTopTabNavigator<SignInTopTabParamList>();
 
 const GlobalStack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator<LoggedInParamList>();
-const MessageStack = createNativeStackNavigator<MessagingStackParamList>();
 const TopTabStack = createMaterialTopTabNavigator<TopTabParamList>();
 
 const AppNavigator = () => {
@@ -44,20 +42,17 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       {isSignedIn ? (
-        <GlobalStack.Navigator>
-          <GlobalStack.Screen name="MainTabs" component={BottomTabs} 
-            options={{headerShown: false, title:"Home"}}/>
-          <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} 
-            options={{title: 'Profile'}}/>
-          <GlobalStack.Screen name="ViewFollowing" component={ListUsers} 
-            options={{title: 'Following'}}/>
+        <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
+          <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false}}/>
+          <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
+          <GlobalStack.Screen name="ViewFollowing" component={ListUsers} options={{title: "Following"}}/>
+          <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
+          <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
         </GlobalStack.Navigator>
       ) : (
         <SignInTopTab.Navigator style={styles.topTab}>
-          <SignInTopTab.Screen name="SignInRoute" component={SignInNav} 
-            options={{title: 'Sign In'}} />
-          <SignInTopTab.Screen name="SignUpRoute" component={SignUpNav} 
-            options={{title: 'Sign Up'}} />
+          <SignInTopTab.Screen name="SignInRoute" component={SignInNav} options={{title: 'Sign In'}} />
+          <SignInTopTab.Screen name="SignUpRoute" component={SignUpNav} options={{title: 'Sign Up'}} />
         </SignInTopTab.Navigator>
       )}
     </NavigationContainer>
@@ -77,30 +72,34 @@ const BottomTabs = () => {
         options={{
           title: 'Home',
           lazy: true,
+          headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
         }}/>
-      <BottomTab.Screen name="MessageScreens" component={MessageScreens} 
+      <BottomTab.Screen name="Messaging" component={Messaging} 
         options={{
           title: 'Messages',
-          headerShown: false,
           lazy: true,
+          headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
           }} />
       <BottomTab.Screen name="CreatePost" component={CreatePost} 
         options={{
           title: 'Create Post',
           lazy: true,
+          headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
           }} />
       <BottomTab.Screen name="Groups" component={Groups} 
         options={{
           lazy: true,
+          headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="people-outline" size={30} color="grey" />
           }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
         options={{
           title: 'Profile', 
           lazy: true,
+          headerTitleAlign:'center',
           tabBarIcon: () => <ProfilePicture uri={profileURL}size={30}/>,
           headerRight: LogOutButton
         }} />
@@ -118,19 +117,6 @@ const HomeTopNav = () => {
       <TopTabStack.Screen name="Volunteer" component={Home} initialParams={{category: "Volunteer"}}
         options={{title: 'Volunteer'}} />
     </TopTabStack.Navigator>
-  )
-}
-
-const MessageScreens = () => {
-  return (
-    <MessageStack.Navigator initialRouteName='Messaging' >
-      <MessageStack.Screen name="Messaging" component={Messaging} 
-        options={{title: 'Messages'}} />
-      <MessageStack.Screen name="ChatRoom" component={ChatRoom} 
-        options={{title: 'Messages'}}/>
-      <MessageStack.Screen name="CreateChat" component={CreateChat}
-        options={{title: 'Create New Chat'}}/>
-    </MessageStack.Navigator>
   )
 }
 

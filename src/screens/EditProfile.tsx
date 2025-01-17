@@ -87,7 +87,7 @@ const EditProfile = () => {
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const viewFollowing = () => {
-    navigation.navigate('ViewFollowing', {userId: userId});
+    navigation.navigate('ViewFollowing', {userID: userId});
   }
 
   return (

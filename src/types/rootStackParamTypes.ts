@@ -1,4 +1,4 @@
-import{ User, UserChat } from '../API';
+import{ User, UserChat, Following } from '../API';
 
 export type SignInParamList = {
     SignIn: undefined;
@@ -15,22 +15,18 @@ export type SignInTopTabParamList = {
 export type GlobalParamList = {
     MainTabs: undefined;
     ViewProfile: {user: User};
-    ViewFollowing: {userId: string};
+    ViewFollowing: {userID: string};
+    ChatRoom: { userChat: UserChat};
+    CreateChat: { user: User};
 }
 
 export type LoggedInParamList = {
     HomeTopNav: undefined;
-    MessageScreens: undefined;
+    Messaging: undefined;
     CreatePost: undefined;
     Groups: undefined;
     Profile: undefined;
 };
-
-export type MessagingStackParamList = {
-    Messaging: undefined;
-    ChatRoom: { userChat: UserChat};
-    CreateChat: { user: User}
-}
 
 export type TopTabParamList = { 
     Market: { category: string};

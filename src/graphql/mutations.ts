@@ -110,6 +110,7 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
     id
     groupName
     groupURL
+    createdAt
     members {
       nextToken
       __typename
@@ -118,7 +119,6 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
       nextToken
       __typename
     }
-    createdAt
     updatedAt
     __typename
   }
@@ -135,6 +135,7 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
     id
     groupName
     groupURL
+    createdAt
     members {
       nextToken
       __typename
@@ -143,7 +144,6 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
       nextToken
       __typename
     }
-    createdAt
     updatedAt
     __typename
   }
@@ -380,8 +380,6 @@ export const createFollowing = /* GraphQL */ `mutation CreateFollowing(
     followedUserID
     createdAt
     updatedAt
-    userFollowingsId
-    owner
     __typename
   }
 }
@@ -412,8 +410,6 @@ export const updateFollowing = /* GraphQL */ `mutation UpdateFollowing(
     }
     createdAt
     updatedAt
-    userFollowingsId
-    owner
     __typename
   }
 }
@@ -444,8 +440,6 @@ export const deleteFollowing = /* GraphQL */ `mutation DeleteFollowing(
     }
     createdAt
     updatedAt
-    userFollowingsId
-    owner
     __typename
   }
 }
@@ -779,6 +773,7 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
     id
     groupName
     groupURL
+    createdAt
     members {
       nextToken
       __typename
@@ -787,7 +782,6 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
       nextToken
       __typename
     }
-    createdAt
     updatedAt
     __typename
   }
