@@ -420,7 +420,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       isMuted
       userID
       chatID
-          chat{
+      chat{
         id
         name
         isGroup

@@ -1,4 +1,4 @@
-import{ User, UserChat, Following } from '../API';
+import{ User, UserChat } from '../API';
 
 export type SignInParamList = {
     SignIn: undefined;
@@ -18,6 +18,7 @@ export type GlobalParamList = {
     ViewFollowing: {userID: string};
     ChatRoom: { userChat: UserChat};
     CreateChat: { user: User};
+    CreateGroup: undefined;
 }
 
 export type LoggedInParamList = {

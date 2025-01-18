@@ -239,9 +239,7 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
   APITypes.OnDeletePostSubscriptionVariables,
   APITypes.OnDeletePostSubscription
 >;
-export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing(
-  $filter: ModelSubscriptionFollowingFilterInput
-) {
+export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing($filter: ModelSubscriptionFollowingFilterInput) {
   onCreateFollowing(filter: $filter) {
     id
     userID
@@ -268,9 +266,7 @@ export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing(
   APITypes.OnCreateFollowingSubscriptionVariables,
   APITypes.OnCreateFollowingSubscription
 >;
-export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing(
-  $filter: ModelSubscriptionFollowingFilterInput
-) {
+export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing($filter: ModelSubscriptionFollowingFilterInput) {
   onUpdateFollowing(filter: $filter) {
     id
     userID
@@ -297,9 +293,7 @@ export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing(
   APITypes.OnUpdateFollowingSubscriptionVariables,
   APITypes.OnUpdateFollowingSubscription
 >;
-export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing(
-  $filter: ModelSubscriptionFollowingFilterInput
-) {
+export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing($filter: ModelSubscriptionFollowingFilterInput) {
   onDeleteFollowing(filter: $filter) {
     id
     userID
