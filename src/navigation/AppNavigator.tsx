@@ -19,6 +19,7 @@ import ChatRoom from '../screens/ChatRoom';
 import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
 import CreateGroup from '../screens/CreateGroup';
+import ViewGroup from '../screens/ViewGroup';
 import LogOutButton from '../components/LogOutButton';
 import ProfilePicture from '../components/ProfilePicture';
 import ListUsers from '../components/ListUsers';
@@ -50,6 +51,7 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
+          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} options={{title: 'Group'}}/>
         </GlobalStack.Navigator>
       ) : (
         <SignInTopTab.Navigator style={styles.topTab}>

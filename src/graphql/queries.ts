@@ -838,6 +838,14 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
       createdAt
       updatedAt
       userGroupsId
+      group{
+        id
+        groupName
+        groupURL
+        createdAt
+        updatedAt
+        __typename
+      }
       __typename
     }
     nextToken
@@ -888,10 +896,52 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     groupURL
     createdAt
     members {
+      items{
+        id
+        ownerID
+        userID
+        groupID
+        role
+        user{
+          id
+          email
+          firstname
+          lastname
+          phonenumber
+          profileURL
+          location
+          createdAt
+          updatedAt
+          __typename
+        }
+        createdAt
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
     messages {
+      items{
+        id
+        content
+        msgURL
+        senderID
+        chatID
+        groupID
+        sender{
+          id
+          email
+          firstname
+          lastname
+          phonenumber
+          profileURL
+          location
+          createdAt
+          updatedAt
+          __typename
+        }
+      }
       nextToken
       __typename
     }
