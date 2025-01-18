@@ -10,6 +10,7 @@ import Icon from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+import ProfilePicture from '../components/ProfilePicture';
 
 const Groups = () => {
   const [group, setGroup] = useState<UserGroup[]>([]);
@@ -30,7 +31,7 @@ const Groups = () => {
         authMode: 'userPool'
       });
       const groupData = groups.data.groupsByUser.items;
-      console.log("fetched group data", groupData);
+      console.log("fetched groups data");
       setGroup(groupData);
     } catch (error: any) {
       console.error("Error fetching user groups:", error);
@@ -45,8 +46,12 @@ const Groups = () => {
   
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
 
-  const createGroup = () =>{
+  const createGroup = () => {
     navigation.navigate('CreateGroup');
+  }
+
+  const viewGroup = (item: any) => {
+    navigation.navigate('ViewGroup', { groupID: item.group.id });
   }
 
   if (loading) {
@@ -63,6 +68,14 @@ const Groups = () => {
       <TouchableOpacity style={{alignSelf: 'center'}} onPress={createGroup}>
         <Icon name="add-circle-outline" size={30}/>
       </TouchableOpacity>
+      <FlatList
+        data={group}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => viewGroup(item)}>
+            <Text style={styles.title}>{item.group?.groupName}</Text>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
