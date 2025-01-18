@@ -2,24 +2,18 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type DeleteUserChatInput = {
+export type DeleteFollowingInput = {
   id: string,
 };
 
-export type ModelUserChatConditionInput = {
-  ownerID?: ModelIDInput | null,
-  unreadMessageCount?: ModelIntInput | null,
-  lastMessage?: ModelStringInput | null,
-  lastReadAt?: ModelStringInput | null,
-  isMuted?: ModelBooleanInput | null,
+export type ModelFollowingConditionInput = {
   userID?: ModelIDInput | null,
-  chatID?: ModelIDInput | null,
+  followedUserID?: ModelIDInput | null,
+  and?: Array< ModelFollowingConditionInput | null > | null,
+  or?: Array< ModelFollowingConditionInput | null > | null,
+  not?: ModelFollowingConditionInput | null,
   createdAt?: ModelStringInput | null,
-  and?: Array< ModelUserChatConditionInput | null > | null,
-  or?: Array< ModelUserChatConditionInput | null > | null,
-  not?: ModelUserChatConditionInput | null,
   updatedAt?: ModelStringInput | null,
-  userChatsId?: ModelIDInput | null,
 };
 
 export type ModelIDInput = {
@@ -62,18 +56,6 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
-export type ModelIntInput = {
-  ne?: number | null,
-  eq?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  between?: Array< number | null > | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-};
-
 export type ModelStringInput = {
   ne?: string | null,
   eq?: string | null,
@@ -90,28 +72,14 @@ export type ModelStringInput = {
   size?: ModelSizeInput | null,
 };
 
-export type ModelBooleanInput = {
-  ne?: boolean | null,
-  eq?: boolean | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-};
-
-export type UserChat = {
-  __typename: "UserChat",
+export type Following = {
+  __typename: "Following",
   id: string,
-  ownerID: string,
-  unreadMessageCount?: number | null,
-  lastMessage?: string | null,
-  lastReadAt?: string | null,
-  isMuted?: boolean | null,
   userID: string,
-  chatID: string,
-  user?: User | null,
-  chat?: Chat | null,
+  followedUserID: string,
+  followedUser?: User | null,
   createdAt: string,
   updatedAt: string,
-  userChatsId?: string | null,
 };
 
 export type User = {
@@ -160,20 +128,38 @@ export type ModelFollowingConnection = {
   nextToken?: string | null,
 };
 
-export type Following = {
-  __typename: "Following",
-  id: string,
-  userID: string,
-  followedUserID: string,
-  followedUser?: User | null,
-  createdAt: string,
-  updatedAt: string,
-};
-
 export type ModelUserChatConnection = {
   __typename: "ModelUserChatConnection",
   items:  Array<UserChat | null >,
   nextToken?: string | null,
+};
+
+export type UserChat = {
+  __typename: "UserChat",
+  id: string,
+  ownerID: string,
+  unreadMessageCount?: number | null,
+  lastMessage?: string | null,
+  lastReadAt?: string | null,
+  isMuted?: boolean | null,
+  userID: string,
+  chatID: string,
+  user?: User | null,
+  chat?: Chat | null,
+  createdAt: string,
+  updatedAt: string,
+  userChatsId?: string | null,
+};
+
+export type Chat = {
+  __typename: "Chat",
+  id: string,
+  name: string,
+  isGroup: boolean,
+  createdAt: string,
+  messages?: ModelMessageConnection | null,
+  participants?: ModelUserChatConnection | null,
+  updatedAt: string,
 };
 
 export type ModelMessageConnection = {
@@ -197,17 +183,6 @@ export type Message = {
   updatedAt: string,
   userMessagesId?: string | null,
   owner?: string | null,
-};
-
-export type Chat = {
-  __typename: "Chat",
-  id: string,
-  name: string,
-  isGroup: boolean,
-  createdAt: string,
-  messages?: ModelMessageConnection | null,
-  participants?: ModelUserChatConnection | null,
-  updatedAt: string,
 };
 
 export type Group = {
@@ -239,6 +214,45 @@ export type UserGroup = {
   createdAt: string,
   updatedAt: string,
   userGroupsId?: string | null,
+};
+
+export type DeleteUserChatInput = {
+  id: string,
+};
+
+export type ModelUserChatConditionInput = {
+  ownerID?: ModelIDInput | null,
+  unreadMessageCount?: ModelIntInput | null,
+  lastMessage?: ModelStringInput | null,
+  lastReadAt?: ModelStringInput | null,
+  isMuted?: ModelBooleanInput | null,
+  userID?: ModelIDInput | null,
+  chatID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelUserChatConditionInput | null > | null,
+  or?: Array< ModelUserChatConditionInput | null > | null,
+  not?: ModelUserChatConditionInput | null,
+  updatedAt?: ModelStringInput | null,
+  userChatsId?: ModelIDInput | null,
+};
+
+export type ModelIntInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+};
+
+export type ModelBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
 };
 
 export type UpdateChatInput = {
@@ -369,24 +383,10 @@ export type CreateFollowingInput = {
   followedUserID: string,
 };
 
-export type ModelFollowingConditionInput = {
-  userID?: ModelIDInput | null,
-  followedUserID?: ModelIDInput | null,
-  and?: Array< ModelFollowingConditionInput | null > | null,
-  or?: Array< ModelFollowingConditionInput | null > | null,
-  not?: ModelFollowingConditionInput | null,
-  createdAt?: ModelStringInput | null,
-  updatedAt?: ModelStringInput | null,
-};
-
 export type UpdateFollowingInput = {
   id: string,
   userID?: string | null,
   followedUserID?: string | null,
-};
-
-export type DeleteFollowingInput = {
-  id: string,
 };
 
 export type CreateUserChatInput = {
@@ -804,6 +804,35 @@ export type ModelSubscriptionGroupFilterInput = {
   or?: Array< ModelSubscriptionGroupFilterInput | null > | null,
 };
 
+export type DeleteFollowingMutationVariables = {
+  input: DeleteFollowingInput,
+  condition?: ModelFollowingConditionInput | null,
+};
+
+export type DeleteFollowingMutation = {
+  deleteFollowing?:  {
+    __typename: "Following",
+    id: string,
+    userID: string,
+    followedUserID: string,
+    followedUser?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname?: string | null,
+      lastname?: string | null,
+      phonenumber?: string | null,
+      profileURL?: string | null,
+      location?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type DeleteUserChatMutationVariables = {
   input: DeleteUserChatInput,
   condition?: ModelUserChatConditionInput | null,
@@ -1200,35 +1229,6 @@ export type UpdateFollowingMutation = {
   } | null,
 };
 
-export type DeleteFollowingMutationVariables = {
-  input: DeleteFollowingInput,
-  condition?: ModelFollowingConditionInput | null,
-};
-
-export type DeleteFollowingMutation = {
-  deleteFollowing?:  {
-    __typename: "Following",
-    id: string,
-    userID: string,
-    followedUserID: string,
-    followedUser?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname?: string | null,
-      lastname?: string | null,
-      phonenumber?: string | null,
-      profileURL?: string | null,
-      location?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
 export type CreateUserChatMutationVariables = {
   input: CreateUserChatInput,
   condition?: ModelUserChatConditionInput | null,
@@ -1431,27 +1431,6 @@ export type CreateUserGroupMutation = {
     userID: string,
     groupID: string,
     role?: string | null,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname?: string | null,
-      lastname?: string | null,
-      phonenumber?: string | null,
-      profileURL?: string | null,
-      location?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    group?:  {
-      __typename: "Group",
-      id: string,
-      groupName: string,
-      groupURL?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
@@ -1511,27 +1490,6 @@ export type DeleteUserGroupMutation = {
     userID: string,
     groupID: string,
     role?: string | null,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname?: string | null,
-      lastname?: string | null,
-      phonenumber?: string | null,
-      profileURL?: string | null,
-      location?: string | null,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    group?:  {
-      __typename: "Group",
-      id: string,
-      groupName: string,
-      groupURL?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
@@ -1550,14 +1508,6 @@ export type CreateGroupMutation = {
     groupName: string,
     groupURL?: string | null,
     createdAt: string,
-    members?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
     updatedAt: string,
   } | null,
 };
@@ -1579,18 +1529,6 @@ export type GetUserQuery = {
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
-    followings?:  {
-      __typename: "ModelFollowingConnection",
-      items:  Array< {
-        __typename: "Following",
-        id: string,
-        userID: string,
-        followedUserID: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
   } | null,
 };
 

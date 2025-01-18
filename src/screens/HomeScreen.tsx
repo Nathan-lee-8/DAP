@@ -104,7 +104,7 @@ const HomeScreen = (route : any) => {
       }); 
       const posts = allPosts.data.postsByDate.items;
       
-      console.log(`Fetched ${category} from fetchnewsfeed.`, posts[0].user?.followings);
+      console.log(`Fetched ${category} from fetchnewsfeed.`);
       setNewsFeed(posts);
       
       await AsyncStorage.setItem('newsFeedCache' + category, JSON.stringify({
@@ -123,11 +123,11 @@ const HomeScreen = (route : any) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const nav2 = useNavigation<NativeStackNavigationProp<LoggedInParamList>>();
   const visitProfile = (item : any) => {
-    // if(item.user.id === userId){
-    //   nav2.navigate('Profile');
-    // }else{
+    if(item.user.id === userId){
+      nav2.navigate('Profile');
+    }else{
       navigation.navigate('ViewProfile', { user: item.user });
-    //}
+    }
   }
 
   const onRefresh = useCallback(() => {

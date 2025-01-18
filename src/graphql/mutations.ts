@@ -8,6 +8,36 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
+export const deleteFollowing = /* GraphQL */ `mutation DeleteFollowing(
+  $input: DeleteFollowingInput!
+  $condition: ModelFollowingConditionInput
+) {
+  deleteFollowing(input: $input, condition: $condition) {
+    id
+    userID
+    followedUserID
+    followedUser {
+      id
+      email
+      firstname
+      lastname
+      phonenumber
+      profileURL
+      location
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteFollowingMutationVariables,
+  APITypes.DeleteFollowingMutation
+>;
 export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
   $input: DeleteUserChatInput!
   $condition: ModelUserChatConditionInput
@@ -417,36 +447,6 @@ export const updateFollowing = /* GraphQL */ `mutation UpdateFollowing(
   APITypes.UpdateFollowingMutationVariables,
   APITypes.UpdateFollowingMutation
 >;
-export const deleteFollowing = /* GraphQL */ `mutation DeleteFollowing(
-  $input: DeleteFollowingInput!
-  $condition: ModelFollowingConditionInput
-) {
-  deleteFollowing(input: $input, condition: $condition) {
-    id
-    userID
-    followedUserID
-    followedUser {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.DeleteFollowingMutationVariables,
-  APITypes.DeleteFollowingMutation
->;
 export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
   $input: CreateUserChatInput!
   $condition: ModelUserChatConditionInput
@@ -652,27 +652,6 @@ export const createUserGroup = /* GraphQL */ `mutation CreateUserGroup(
     userID
     groupID
     role
-    user {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      createdAt
-      updatedAt
-      __typename
-    }
     createdAt
     updatedAt
     userGroupsId
@@ -734,27 +713,6 @@ export const deleteUserGroup = /* GraphQL */ `mutation DeleteUserGroup(
     userID
     groupID
     role
-    user {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      createdAt
-      updatedAt
-      __typename
-    }
     createdAt
     updatedAt
     userGroupsId
@@ -774,14 +732,6 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
     groupName
     groupURL
     createdAt
-    members {
-      nextToken
-      __typename
-    }
-    messages {
-      nextToken
-      __typename
-    }
     updatedAt
     __typename
   }

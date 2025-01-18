@@ -13,7 +13,7 @@ type User @model @auth(
   profileURL: String
   location: AWSIPAddress
   posts: [Post] @hasMany
-  followings: [Following] @hasMany(fields: ["id"])
+  followings: [Following] @hasMany(indexName: "followingsByUser", fields: ["id"])
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
   groups: [UserGroup] @hasMany
@@ -50,7 +50,7 @@ type Following @model @auth(
 type UserChat @model @auth(
   rules: [
     { allow: owner, ownerField: "ownerID" },
-    { allow: private, operations: [create, read, update] }
+    { allow: private }
   ]
 ) {
   id: ID!
@@ -101,7 +101,7 @@ type Message @model @auth(
 type UserGroup @model @auth(
   rules: [
     { allow: owner, ownerField: "ownerID" },
-    { allow: private, operations: [create, read, update] }
+    { allow: private}
   ]
 ) {
   id: ID!
@@ -110,13 +110,14 @@ type UserGroup @model @auth(
   groupID: ID! @index(name: "membersByGroup", queryField: "membersByGroup")
   role: String
   user: User @belongsTo(fields: ["userID"])
+    @auth(rules: [{ allow: private, operations: [read] }])
   group: Group @belongsTo(fields: ["groupID"])
   createdAt: AWSDateTime!
 }
 
 type Group @model @auth(
   rules: [
-    { allow: private, operations: [ create, read ] }
+    { allow: private}
   ]
 ) {
   id: ID!

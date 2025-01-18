@@ -9,9 +9,8 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import { User } from '../API';
 import ProfilePicture from './ProfilePicture';
-import Icon from '@react-native-vector-icons/ionicons';
 
-const SearchBar = ( { handleSendMessage } : any) => {
+const SearchBar = ( { userPressed } : any) => {
   const [search, setSearch] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
@@ -104,14 +103,13 @@ const SearchBar = ( { handleSendMessage } : any) => {
           }
           return (
             <View style={styles.searchUserContainer}>
-              <TouchableOpacity onPress={() => { handleSendMessage(item) }}>
+              <TouchableOpacity onPress={() => { if(userPressed) userPressed(item) }}>
                 <View style={styles.listUserContainer}>
                   <ProfilePicture uri={item.profileURL} size={50}/>
                   <View style={styles.textContainer}>
                     <Text style={styles.textName}>{item.firstname} {item.lastname}</Text>
                     <Text style={styles.textEmail}>{item.email}</Text>
                   </View>
-                  <Icon style={styles.avatar} name='chatbubbles-outline' size={25}/>  
                 </View>
               </TouchableOpacity>
             </View>

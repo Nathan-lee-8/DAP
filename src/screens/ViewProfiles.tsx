@@ -1,19 +1,15 @@
-import { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { useContext} from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ProfilePicture';
 import { AuthContext } from '../context/AuthContext';
 import { createFollowing } from '../graphql/mutations';
-import { followingsByUser } from '../graphql/queries';
 import client from '../client';
-import { Following } from '../API';
 
 const ViewProfiles = ( { route, navigation } : any) => {
     const targetUser = route.params?.user;
     const authContext = useContext(AuthContext);
-    const [followedUsers, setUsers] = useState<Following[]>([]);
-    const [loading, setLoading] = useState(true);
 
     if(!authContext) {
         console.log("Auth context not defined");
@@ -21,35 +17,11 @@ const ViewProfiles = ( { route, navigation } : any) => {
     }
     const { userId } = authContext;
 
-    const fetchFollowing = async () => {
-        try{
-            const data = await client.graphql({
-                query: followingsByUser,
-                variables: { userID: userId}
-            });
-            console.log('fetched from getFollowers');
-            setUsers(data.data.followingsByUser.items)
-        } catch (error: any){
-            console.log(error);
-            return <View><Text>Error fetching Data</Text></View>;
-        } finally {
-            setLoading(false);
-        }
-    }
-
-    useEffect(()=>{
-        fetchFollowing();
-    }, []);
-
 
     if(!targetUser) return (<View><Text>Error: User not found</Text></View>);
 
     const profileURL = targetUser.profileURL === null ? undefined: targetUser.profileURL;
     const creationDate = targetUser.createdAt ? new Date(targetUser.createdAt).toLocaleDateString() : "unknown";
-    
-    const viewFollowing = () => {
-        navigation.navigate('ViewFollowing', {userID: targetUser.id});
-    }
 
     const follow = async () => {
         try{
@@ -66,9 +38,13 @@ const ViewProfiles = ( { route, navigation } : any) => {
             console.error('Error following user:', error);
         }
     }
-    let followNumber = followedUsers.length;
 
-    if(loading) return <ActivityIndicator size="large" color="#0000ff" />;
+    const viewFollowing = () => {
+        navigation.navigate('ViewFollowing', {userID: targetUser.id});
+    }
+    
+    let followNumber = targetUser.followings.items.length;
+
     return(
         <View style={styles.container}>
             <View style={styles.profileSection}>

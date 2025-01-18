@@ -80,7 +80,7 @@ const MessageUsers = () => {
 
   return (
     <View style={styles.container}>
-      <SearchBar handleSendMessage={handleSendMessage}/>
+      <SearchBar userPressed={handleSendMessage}/>
       <FlatList
         data={chatRooms}
         keyExtractor={(item) => item.id}

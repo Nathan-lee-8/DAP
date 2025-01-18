@@ -211,6 +211,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 4,
     width: '50%'
+  },
+
+  /** Groups Section */
+  groupProfile: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    marginVertical: 20,
+    alignSelf: 'center'
   }
 });
 
