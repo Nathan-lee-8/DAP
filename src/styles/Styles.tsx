@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignSelf: 'baseline',
     alignItems: 'center',
-  
   },
   icon: {
     marginHorizontal: 10,
@@ -47,7 +46,6 @@ const styles = StyleSheet.create({
   },
   topTab: {
     marginTop: 60,
-
   },
 
   /** Form Styles */
@@ -90,7 +88,7 @@ const styles = StyleSheet.create({
   textContainer: {
     paddingLeft: 10,
   },
-  postType: {
+  postTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: 'Black',
@@ -116,12 +114,6 @@ const styles = StyleSheet.create({
     right: 10,
     top: 15,
   },
-  postCategory:{
-    fontSize: 12,
-    position: 'absolute',
-    right: 10,
-    bottom: 5,
-  },
 
   /** Search User Styles  */
   searchUserContainer: {
@@ -133,16 +125,10 @@ const styles = StyleSheet.create({
   listUserContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  textName: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 10,
-  },
-  textEmail: {
-    fontSize: 13,
-    color: '#666',
-    marginLeft: 10,
+    padding: 5,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    marginBottom: 5,
   },
 
   /** Messaging Styles   */
@@ -199,20 +185,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 
-  /**Edit profile section */
-  following: {
-    alignSelf: 'flex-end',
-  },
-  profileButton: {
-    backgroundColor: 'lightblue',
-    borderWidth: .3,
-    borderColor: 'blue',
-    borderRadius: 10,
-    alignItems: 'center',
-    padding: 4,
-    width: '50%'
-  },
-
   /** Groups Section */
   groupProfile: {
     width: 90,
@@ -220,6 +192,20 @@ const styles = StyleSheet.create({
     borderRadius: 45,
     marginVertical: 20,
     alignSelf: 'center'
+  },
+  groupContainer: {
+    flexDirection:'row',
+    marginVertical: 15,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  groupTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
   }
 });
 

@@ -157,8 +157,9 @@ const CreateGroup = () => {
         value={description}
         onChangeText={ setDescription }
       />
-      <SearchBar userPressed={getUser}/>
+      
       <Text style={styles.title}>Members</Text>
+      <SearchBar userPressed={getUser}/>
       <FlatList
         data={members}
         renderItem={({ item }) => {

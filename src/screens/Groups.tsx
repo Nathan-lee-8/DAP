@@ -70,11 +70,22 @@ const Groups = () => {
       </TouchableOpacity>
       <FlatList
         data={group}
-        renderItem={({ item }) => (
+        renderItem={({ item }) => {
+          var groupURL = item.group?.groupURL ? item.group?.groupURL : undefined;
+          return (
           <TouchableOpacity onPress={() => viewGroup(item)}>
-            <Text style={styles.title}>{item.group?.groupName}</Text>
+            <View style={styles.postContainer}>
+              <View style={styles.profileSection}>
+                  
+                <ProfilePicture uri={groupURL} size={45}/>
+                <View style={styles.textContainer}>
+                  <Text style={styles.groupTitle}>{item.group?.groupName}</Text>
+                  <Text style={styles.postContact}>description here</Text>
+                </View>
+              </View>
+            </View>
           </TouchableOpacity>
-        )}
+        )}}
       />
     </View>
   );

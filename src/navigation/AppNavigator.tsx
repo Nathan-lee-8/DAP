@@ -4,12 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { SignInParamList, SignInTopTabParamList, LoggedInParamList,
-  TopTabParamList } from '../types/rootStackParamTypes';
+  } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
 import SignIn from '../screens/SignInScreen';
 import SignUp from '../screens/SignUpScreen';
 import Home from '../screens/HomeScreen';
-import CreatePost from '../screens/CreatePost';
 import Verify from '../screens/Verify';
 import Groups from '../screens/Groups';
 import Messaging from '../screens/Messaging';
@@ -22,7 +21,6 @@ import CreateGroup from '../screens/CreateGroup';
 import ViewGroup from '../screens/ViewGroup';
 import LogOutButton from '../components/LogOutButton';
 import ProfilePicture from '../components/ProfilePicture';
-import ListUsers from '../components/ListUsers';
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../styles/Styles';
 
@@ -31,7 +29,6 @@ const SignInTopTab = createMaterialTopTabNavigator<SignInTopTabParamList>();
 
 const GlobalStack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator<LoggedInParamList>();
-const TopTabStack = createMaterialTopTabNavigator<TopTabParamList>();
 
 const AppNavigator = () => {
   const authContext = useContext(AuthContext);
@@ -47,7 +44,6 @@ const AppNavigator = () => {
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
-          <GlobalStack.Screen name="ViewFollowing" component={ListUsers} options={{title: "Following"}}/>
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
@@ -72,7 +68,7 @@ const BottomTabs = () => {
   const { profileURL } = authContext;
   return(
     <BottomTab.Navigator>
-      <BottomTab.Screen name="HomeTopNav" component={HomeTopNav}
+      <BottomTab.Screen name="Home" component={Home}
         options={{
           title: 'Home',
           lazy: true,
@@ -86,13 +82,6 @@ const BottomTabs = () => {
           headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
           }} />
-      <BottomTab.Screen name="CreatePost" component={CreatePost} 
-        options={{
-          title: 'Create Post',
-          lazy: true,
-          headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="create-outline" size={30} color="grey" />
-          }} />
       <BottomTab.Screen name="Groups" component={Groups} 
         options={{
           lazy: true,
@@ -104,23 +93,10 @@ const BottomTabs = () => {
           title: 'Profile', 
           lazy: true,
           headerTitleAlign:'center',
-          tabBarIcon: () => <ProfilePicture uri={profileURL}size={30}/>,
+          tabBarIcon: () => <ProfilePicture uri={profileURL} size={30}/>,
           headerRight: LogOutButton
         }} />
     </BottomTab.Navigator>
-  )
-}
-
-const HomeTopNav = () => {
-  return (
-    <TopTabStack.Navigator>
-      <TopTabStack.Screen name="Market" component={Home} initialParams={{category: "Market"}}
-        options={{title: 'Market'}} />
-      <TopTabStack.Screen name="Jobs" component={Home} initialParams={{category: "Jobs"}}
-        options={{title: 'Jobs'}} />
-      <TopTabStack.Screen name="Volunteer" component={Home} initialParams={{category: "Volunteer"}}
-        options={{title: 'Volunteer'}} />
-    </TopTabStack.Navigator>
   )
 }
 
