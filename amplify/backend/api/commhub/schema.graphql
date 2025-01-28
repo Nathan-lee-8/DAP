@@ -13,7 +13,6 @@ type User @model @auth(
   profileURL: String
   location: AWSIPAddress
   posts: [Post] @hasMany
-  followings: [Following] @hasMany(indexName: "followingsByUser", fields: ["id"])
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
   groups: [UserGroup] @hasMany
@@ -29,22 +28,11 @@ type Post @model @auth(
   title: String!
   content: String!
   postURL: [String]
-  type: String! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
+  groupID: ID! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
   userID: ID! @index(name: "postsByUser", queryField: "postsByUser", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields:["userID"])
+  group: Group @belongsTo(fields: ["groupID"])
   createdAt: AWSDateTime!
-}
-
-type Following @model @auth(
-  rules: [
-    { allow: private, operations: [create, read, update] },
-    { allow: public, operations: [create, read] }
-  ]
-) { 
-  id: ID!
-  userID: ID! @index(name: "followingsByUser", queryField: "followingsByUser")
-  followedUserID: ID!
-  followedUser: User @belongsTo(fields: ["followedUserID"])
 }
 
 type UserChat @model @auth(
@@ -91,10 +79,8 @@ type Message @model @auth(
   msgURL: [String]
   senderID: ID! @index(name: "messagesByUser", queryField: "messagesByUser", sortKeyFields: ["createdAt"])
   chatID: ID! @index(name: "messagesByChat", queryField: "messagesByChat", sortKeyFields: ["createdAt"])
-  groupID: ID @index(name: "messageByGroup", queryField: "messageByGroup", sortKeyFields: ["createdAt"])
   sender: User @belongsTo(fields: ["senderID"])
   chat: Chat @belongsTo(fields: ["chatID"])
-  group: Group @belongsTo(fields: ["groupID"])
   createdAt: AWSDateTime!
 }
 
@@ -123,7 +109,8 @@ type Group @model @auth(
   id: ID!
   groupName: String!
   groupURL: String
+  description: String
   createdAt: AWSDateTime!
   members: [UserGroup] @hasMany(indexName:"membersByGroup", fields: ["id"])
-  messages: [Message] @hasMany(indexName:"messageByGroup", fields: ["id"])
+  posts: [Post] @hasMany(indexName:"postsByDate", fields: ["id"])
 }
