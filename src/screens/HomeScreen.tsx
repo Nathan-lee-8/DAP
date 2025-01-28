@@ -19,9 +19,7 @@ import { GlobalParamList, LoggedInParamList } from '../types/rootStackParamTypes
  * A tab view at the bottom which allows users to: create a post, 
  *    view feed, edit profile, find other users and send messages
  */
-const HomeScreen = (route : any) => {
-  var category = route.route.params.category;
-  if(!category) return
+const HomeScreen = () => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
     console.log("Auth context not defined");
@@ -73,17 +71,18 @@ const HomeScreen = (route : any) => {
   useEffect(()=> {
     const loadNewsFeed = async () => {
       try {
-        const cachedData = await AsyncStorage.getItem('newsFeedCache' + category);
+        const cachedData = await AsyncStorage.getItem('newsFeedCache');
         if (cachedData) {
           const data = JSON.parse(cachedData);
-          const fiveMin = 5 * 60 * 1000;
-          if (Date.now() - data.timestamp < fiveMin) {
+          //const fiveMin = 5 * 60 * 1000;
+          //if (Date.now() - data.timestamp < fiveMin) {
             setNewsFeed(data.posts);
             setLoading(false);
             return;
-          }
+          //}
+        }else{
+          await fetchNewsFeed();
         }
-        await fetchNewsFeed();
       } catch (error) {
         console.log('Error loading cached news feed', error);
       }
@@ -97,17 +96,17 @@ const HomeScreen = (route : any) => {
       const allPosts = await client.graphql({
         query: postsByDate,
         variables: {
-          type: category,
+          groupID: "Market",
           sortDirection: ModelSortDirection.DESC,
           limit: 10,
         },
       }); 
       const posts = allPosts.data.postsByDate.items;
       
-      console.log(`Fetched ${category} from fetchnewsfeed.`);
+      console.log(`Fetched from fetchnewsfeed.`);
       setNewsFeed(posts);
       
-      await AsyncStorage.setItem('newsFeedCache' + category, JSON.stringify({
+      await AsyncStorage.setItem('newsFeedCache', JSON.stringify({
         posts,
         timestamp: Date.now(),
       }));
@@ -163,7 +162,7 @@ const HomeScreen = (route : any) => {
                   </View>
                 </View>
                 <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-                <Text style={styles.postType}>{item.title}</Text>
+                <Text style={styles.postTitle}>{item.title}</Text>
                 <Text style={styles.postContent}>{item.content}</Text>
               </View>
             )

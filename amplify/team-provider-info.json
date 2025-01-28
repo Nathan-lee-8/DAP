@@ -22,5 +22,12 @@
         "commHubStorage": {}
       }
     }
+  },
+  "dapdev": {
+    "categories": {
+      "auth": {
+        "commHub": {}
+      }
+    }
   }
 }
