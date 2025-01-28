@@ -104,7 +104,6 @@ const ChatRoom = ( { route } : any) => {
         }
     };
 
-    
     const navigation = useNavigation();
 
     useLayoutEffect(()=> {

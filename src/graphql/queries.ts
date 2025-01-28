@@ -89,7 +89,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
     title
     content
     postURL
-    type
+    groupID
     userID
     user {
       id
@@ -123,7 +123,7 @@ export const listPosts = /* GraphQL */ `query ListPosts(
       title
       content
       postURL
-      type
+      groupID
       userID
       createdAt
       updatedAt
@@ -137,7 +137,7 @@ export const listPosts = /* GraphQL */ `query ListPosts(
 }
 ` as GeneratedQuery<APITypes.ListPostsQueryVariables, APITypes.ListPostsQuery>;
 export const postsByDate = /* GraphQL */ `query PostsByDate(
-  $type: String!
+  $groupID: ID!
   $createdAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelPostFilterInput
@@ -145,7 +145,7 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
   $nextToken: String
 ) {
   postsByDate(
-    type: $type
+    groupID: $groupID
     createdAt: $createdAt
     sortDirection: $sortDirection
     filter: $filter
@@ -157,7 +157,7 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       title
       content
       postURL
-      type
+      groupID
       userID
       user{
         id
@@ -167,18 +167,6 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
         phonenumber
         profileURL
         location
-        followings{
-          items {
-            id
-            userID
-            followedUserID
-            createdAt
-            updatedAt
-            __typename
-          }
-          nextToken
-          __typename
-        }
         createdAt
         updatedAt
         owner
@@ -219,7 +207,7 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
       title
       content
       postURL
-      type
+      groupID
       userID
       createdAt
       updatedAt
@@ -234,97 +222,6 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
 ` as GeneratedQuery<
   APITypes.PostsByUserQueryVariables,
   APITypes.PostsByUserQuery
->;
-export const getFollowing = /* GraphQL */ `query GetFollowing($id: ID!) {
-  getFollowing(id: $id) {
-    id
-    userID
-    followedUserID
-    followedUser {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetFollowingQueryVariables,
-  APITypes.GetFollowingQuery
->;
-export const listFollowings = /* GraphQL */ `query ListFollowings(
-  $filter: ModelFollowingFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listFollowings(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      userID
-      followedUserID
-      createdAt
-      updatedAt
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ListFollowingsQueryVariables,
-  APITypes.ListFollowingsQuery
->;
-export const followingsByUser = /* GraphQL */ `query FollowingsByUser(
-  $userID: ID!
-  $sortDirection: ModelSortDirection
-  $filter: ModelFollowingFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  followingsByUser(
-    userID: $userID
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      userID
-      followedUserID
-      createdAt
-      updatedAt
-      followedUser{
-        id
-        email
-        firstname
-        lastname
-        phonenumber
-        profileURL
-        location
-        createdAt
-        updatedAt
-        __typename
-      }
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.FollowingsByUserQueryVariables,
-  APITypes.FollowingsByUserQuery
 >;
 export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
   getUserChat(id: $id) {
@@ -572,7 +469,6 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
     msgURL
     senderID
     chatID
-    groupID
     sender {
       id
       email
@@ -590,14 +486,6 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       id
       name
       isGroup
-      createdAt
-      updatedAt
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
       createdAt
       updatedAt
       __typename
@@ -625,7 +513,6 @@ export const listMessages = /* GraphQL */ `query ListMessages(
       msgURL
       senderID
       chatID
-      groupID
       createdAt
       updatedAt
       userMessagesId
@@ -662,7 +549,6 @@ export const messagesByUser = /* GraphQL */ `query MessagesByUser(
       msgURL
       senderID
       chatID
-      groupID
       createdAt
       updatedAt
       userMessagesId
@@ -699,7 +585,6 @@ export const messagesByChat = /* GraphQL */ `query MessagesByChat(
       msgURL
       senderID
       chatID
-      groupID
       createdAt
       updatedAt
       userMessagesId
@@ -714,43 +599,6 @@ export const messagesByChat = /* GraphQL */ `query MessagesByChat(
   APITypes.MessagesByChatQueryVariables,
   APITypes.MessagesByChatQuery
 >;
-export const messageByGroup = /* GraphQL */ `query MessageByGroup(
-  $groupID: ID!
-  $createdAt: ModelStringKeyConditionInput
-  $sortDirection: ModelSortDirection
-  $filter: ModelMessageFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  messageByGroup(
-    groupID: $groupID
-    createdAt: $createdAt
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      content
-      msgURL
-      senderID
-      chatID
-      groupID
-      createdAt
-      updatedAt
-      userMessagesId
-      owner
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.MessageByGroupQueryVariables,
-  APITypes.MessageByGroupQuery
->;
 export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
   getUserGroup(id: $id) {
     id
@@ -762,6 +610,7 @@ export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
       id
       groupName
       groupURL
+      description
       members{
         items{
           id
@@ -769,6 +618,8 @@ export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
           userID
           groupID
           role
+          createdAt
+          updatedAt
           __typename
         }
         nextToken
@@ -844,6 +695,20 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
         groupURL
         createdAt
         updatedAt
+        members{
+          items{
+            id
+            ownerID
+            userID
+            groupID
+            role
+            createdAt
+            updatedAt
+            __typename
+          }
+          nextToken
+          __typename
+        }
         __typename
       }
       __typename
@@ -894,6 +759,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     id
     groupName
     groupURL
+    description
     createdAt
     members {
       items{
@@ -921,15 +787,15 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
       nextToken
       __typename
     }
-    messages {
-      items{
+    posts {
+      items {
         id
+        title
         content
-        msgURL
-        senderID
-        chatID
+        postURL
         groupID
-        sender{
+        userID
+        user{
           id
           email
           firstname
@@ -939,8 +805,14 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           location
           createdAt
           updatedAt
+          owner
           __typename
         }
+        createdAt
+        updatedAt
+        userPostsId
+        owner
+        __typename
       }
       nextToken
       __typename
@@ -960,6 +832,7 @@ export const listGroups = /* GraphQL */ `query ListGroups(
       id
       groupName
       groupURL
+      description
       createdAt
       updatedAt
       __typename

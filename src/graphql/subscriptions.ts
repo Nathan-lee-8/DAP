@@ -24,10 +24,6 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
       nextToken
       __typename
     }
-    followings {
-      nextToken
-      __typename
-    }
     chats {
       nextToken
       __typename
@@ -63,10 +59,6 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
     profileURL
     location
     posts {
-      nextToken
-      __typename
-    }
-    followings {
       nextToken
       __typename
     }
@@ -108,10 +100,6 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
       nextToken
       __typename
     }
-    followings {
-      nextToken
-      __typename
-    }
     chats {
       nextToken
       __typename
@@ -143,21 +131,8 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
     title
     content
     postURL
-    type
+    groupID
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userPostsId
@@ -178,21 +153,8 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
     title
     content
     postURL
-    type
+    groupID
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userPostsId
@@ -213,21 +175,8 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
     title
     content
     postURL
-    type
+    groupID
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userPostsId
@@ -238,87 +187,6 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
 ` as GeneratedSubscription<
   APITypes.OnDeletePostSubscriptionVariables,
   APITypes.OnDeletePostSubscription
->;
-export const onCreateFollowing = /* GraphQL */ `subscription OnCreateFollowing($filter: ModelSubscriptionFollowingFilterInput) {
-  onCreateFollowing(filter: $filter) {
-    id
-    userID
-    followedUserID
-    followedUser {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnCreateFollowingSubscriptionVariables,
-  APITypes.OnCreateFollowingSubscription
->;
-export const onUpdateFollowing = /* GraphQL */ `subscription OnUpdateFollowing($filter: ModelSubscriptionFollowingFilterInput) {
-  onUpdateFollowing(filter: $filter) {
-    id
-    userID
-    followedUserID
-    followedUser {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnUpdateFollowingSubscriptionVariables,
-  APITypes.OnUpdateFollowingSubscription
->;
-export const onDeleteFollowing = /* GraphQL */ `subscription OnDeleteFollowing($filter: ModelSubscriptionFollowingFilterInput) {
-  onDeleteFollowing(filter: $filter) {
-    id
-    userID
-    followedUserID
-    followedUser {
-      id
-      email
-      firstname
-      lastname
-      phonenumber
-      profileURL
-      location
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnDeleteFollowingSubscriptionVariables,
-  APITypes.OnDeleteFollowingSubscription
 >;
 export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
@@ -528,7 +396,6 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     msgURL
     senderID
     chatID
-    groupID
     createdAt
     updatedAt
     userMessagesId
@@ -550,7 +417,6 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
     msgURL
     senderID
     chatID
-    groupID
     sender {
       id
       email
@@ -568,14 +434,6 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
       id
       name
       isGroup
-      createdAt
-      updatedAt
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
       createdAt
       updatedAt
       __typename
@@ -601,7 +459,6 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
     msgURL
     senderID
     chatID
-    groupID
     sender {
       id
       email
@@ -619,14 +476,6 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
       id
       name
       isGroup
-      createdAt
-      updatedAt
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
       createdAt
       updatedAt
       __typename
@@ -669,6 +518,7 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
       id
       groupName
       groupURL
+      description
       createdAt
       updatedAt
       __typename
@@ -710,6 +560,7 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
       id
       groupName
       groupURL
+      description
       createdAt
       updatedAt
       __typename
@@ -751,6 +602,7 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
       id
       groupName
       groupURL
+      description
       createdAt
       updatedAt
       __typename
@@ -770,12 +622,13 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup($filter: 
     id
     groupName
     groupURL
+    description
     createdAt
     members {
       nextToken
       __typename
     }
-    messages {
+    posts {
       nextToken
       __typename
     }
@@ -792,12 +645,13 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup($filter: 
     id
     groupName
     groupURL
+    description
     createdAt
     members {
       nextToken
       __typename
     }
-    messages {
+    posts {
       nextToken
       __typename
     }
@@ -814,12 +668,13 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup($filter: 
     id
     groupName
     groupURL
+    description
     createdAt
     members {
       nextToken
       __typename
     }
-    messages {
+    posts {
       nextToken
       __typename
     }

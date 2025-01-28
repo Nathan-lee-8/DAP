@@ -23,24 +23,11 @@ export type GlobalParamList = {
 }
 
 export type LoggedInParamList = {
-    HomeTopNav: undefined;
+    Home: undefined;
     Messaging: undefined;
-    CreatePost: undefined;
     Groups: undefined;
     Profile: undefined;
 };
-
-export type TopTabParamList = { 
-    Market: { category: string};
-    Jobs: { category: string};
-    Volunteer: { category: string};
-}
-
-export type PostsTopTabParamList = { 
-    Market: { category: string, userID: string};
-    Jobs: { category: string, userID: string};
-    Volunteer: { category: string, userID: string};
-}
 
 export type Participant = {
     __typename: "UserChat";
