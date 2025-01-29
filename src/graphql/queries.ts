@@ -709,6 +709,35 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
           nextToken
           __typename
         }
+        posts{
+          items {
+            id
+            title
+            content
+            postURL
+            groupID
+            userID
+            user{
+              id
+              email
+              firstname
+              lastname
+              phonenumber
+              profileURL
+              location
+              createdAt
+              updatedAt
+              owner
+              __typename
+            }
+            createdAt
+            updatedAt
+            owner
+            __typename
+          }
+          nextToken
+          __typename
+        }
         __typename
       }
       __typename

@@ -19,6 +19,7 @@ export type GlobalParamList = {
     ChatRoom: { userChat: UserChat};
     CreateChat: { user: User};
     CreateGroup: undefined;
+    CreatePost: {groupID: string};
     ViewGroup: {groupID: string};
 }
 
@@ -26,6 +27,7 @@ export type LoggedInParamList = {
     Home: undefined;
     Messaging: undefined;
     Groups: undefined;
+    Search: undefined;
     Profile: undefined;
 };
 

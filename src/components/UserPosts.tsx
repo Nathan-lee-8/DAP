@@ -57,17 +57,10 @@ const UserPosts = ( { userID } : any ) => {
     return () => {isMounted = false};
   }, [fetchPosts]);
 
-  return loading ? (
+  return (
     <View>
-      <ActivityIndicator size="large" color="#0000ff" />
-      <Text>Loading...</Text>
-    </View>
-  ) : (
-    <View>
-      {posts.length === 0 ? (
-        <View>
-          <Text>No posts found</Text>
-        </View>
+      {loading? ( 
+        <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <FlatList
           data={posts}
@@ -80,13 +73,17 @@ const UserPosts = ( { userID } : any ) => {
               </View>
             )
           }}
+          ListEmptyComponent={() => (
+            <View>
+              <Text>No posts found</Text>
+            </View>
+          )}
           keyExtractor={(item) => item.id}
           initialNumToRender={10}
           maxToRenderPerBatch={5}
           windowSize={5}
           removeClippedSubviews={true}
-        />
-      )}
+        />)}
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, FlatList,
+  ActivityIndicator } from 'react-native'
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
@@ -9,11 +10,9 @@ import client from '../client';
 import { createUserGroup, createGroup, deleteUserGroup, deleteGroup } from '../graphql/mutations';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
+import { getImgURI } from '../components/addImg';
 
 /**
- * TODO: Add members, add name, add image
- *       mutation to create group
- *  
  * @returns 
  */
 const CreateGroup = () => {
@@ -21,6 +20,9 @@ const CreateGroup = () => {
   const [description, setDescription] = useState('');
   const [members, setMembers] = useState<User[]>([]);
   const [groupURI, setGroupURL] = useState<string | null>(null);
+  const [imgLoading, setImgLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [addImgText, setAddImgText] = useState("Add Img");
   const authContext = useContext(AuthContext);
   if(!authContext){
     console.log("Auth context not defined");
@@ -34,6 +36,7 @@ const CreateGroup = () => {
     const addedMembers = [];
 
     try{
+      setLoading(true);
       //Create Group
       const groupData = await client.graphql({
         query: createGroup,
@@ -84,6 +87,8 @@ const CreateGroup = () => {
     } catch (error) {
       console.log(error);
       rollBack(addedMembers, groupID);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -140,9 +145,37 @@ const CreateGroup = () => {
     }
   }
 
+  const getFilePath = async () => {
+    try{
+      setImgLoading(true);
+      var path = await getImgURI(`groupProfile/${userId}/${Date.now()}.jpg`);
+      if(path){
+        setGroupURL("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + path);      
+        setAddImgText('');
+      }
+    } catch(error){
+      console.log(error);
+    }finally{
+      setImgLoading(false);
+    }
+  }
+
+  if(loading) {
+    return(
+      <ActivityIndicator size="large" color="#0000ff" />
+    )
+  }
+
   return(
     <View style={styles.container}>
-      <ProfilePicture style={styles.groupProfile} size={90}/>
+      {imgLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <TouchableOpacity onPress={getFilePath} style={styles.groupProfileContainer}>
+          <ProfilePicture style={styles.groupProfile} size={90}/>
+          <Text style={styles.addImageText}>{addImgText}</Text>
+        </TouchableOpacity>
+      )}
       <TextInput
         style={styles.input}
         placeholder="Group name"
@@ -151,8 +184,9 @@ const CreateGroup = () => {
         onChangeText={ setGroupName }
       />
       <TextInput
-        style={styles.input}
+        style={styles.longInput}
         placeholder="Description"
+        multiline={true}
         autoCapitalize="sentences"
         value={description}
         onChangeText={ setDescription }
@@ -180,9 +214,9 @@ const CreateGroup = () => {
           )
         }}
       />
-      <TouchableOpacity style={{alignSelf:'center', alignItems: 'center', flexDirection: 'row'}} onPress={addGroup}>
-        <Icon name="add-circle-outline" size={30}/>
-        <Text> Create Group </Text>
+      <TouchableOpacity style={styles.createGroupContainer} onPress={addGroup}>
+        <Text style={styles.createGroupTitle}> Create Group </Text>
+        <Icon name="arrow-forward-circle-outline" size={25}/>
       </TouchableOpacity>
     </View>
   )

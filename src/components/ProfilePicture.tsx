@@ -1,7 +1,7 @@
 import FastImage from 'react-native-fast-image';
 
 const ProfilePicture = ({ uri, size, style } : {uri?: string; size: number, style?: any}) => {
-    const defaultImage = require('../../images/DefaultAvatar.jpg'); // Replace with your default image path
+    const defaultImage = require('../../images/DefaultAvatar.jpg');
 
     const getStyle = () => {
       if(style) return style;
