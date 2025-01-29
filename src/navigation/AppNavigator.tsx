@@ -19,6 +19,8 @@ import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
 import CreateGroup from '../screens/CreateGroup';
 import ViewGroup from '../screens/ViewGroup';
+import CreatePost from '../screens/CreatePost';
+import Search from '../screens/Search';
 import LogOutButton from '../components/LogOutButton';
 import ProfilePicture from '../components/ProfilePicture';
 import Icon from '@react-native-vector-icons/ionicons';
@@ -47,7 +49,9 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
-          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} options={{title: 'Group'}}/>
+          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} 
+            options={{title: 'Group'}}/>
+          <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
         </GlobalStack.Navigator>
       ) : (
         <SignInTopTab.Navigator style={styles.topTab}>
@@ -70,7 +74,6 @@ const BottomTabs = () => {
     <BottomTab.Navigator>
       <BottomTab.Screen name="Home" component={Home}
         options={{
-          title: 'Home',
           lazy: true,
           headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
@@ -88,9 +91,14 @@ const BottomTabs = () => {
           headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="people-outline" size={30} color="grey" />
           }} />
+      <BottomTab.Screen name="Search" component={Search} 
+        options={{
+          lazy: true,
+          headerTitleAlign:'center',
+          tabBarIcon: () => <Icon name="search-outline" size={30} color="grey" />
+          }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
         options={{
-          title: 'Profile', 
           lazy: true,
           headerTitleAlign:'center',
           tabBarIcon: () => <ProfilePicture uri={profileURL} size={30}/>,

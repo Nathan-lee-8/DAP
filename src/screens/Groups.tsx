@@ -11,16 +11,34 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
 import ProfilePicture from '../components/ProfilePicture';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Groups = () => {
   const [group, setGroup] = useState<UserGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
-      if(!authContext) {
-          console.log("Auth context not defined");
-          return null;
-      }
+    if(!authContext) {
+      console.log("Auth context not defined");
+      return null;
+    }
   const { userId } = authContext;
+
+  const loadGroups = async () => {
+    try{
+      const cachedData = await AsyncStorage.getItem('groups');
+      if(cachedData){
+        console.log("loaded cached groups");
+        const data = JSON.parse(cachedData);
+        setGroup(data);
+        setLoading(false);
+        return;
+      }else{
+        await fetchGroups();
+      }
+    } catch (error) {
+      console.log('Error loading cached groups', error);
+    }
+  }
   
   const fetchGroups = async () => {
     setLoading(true);
@@ -32,6 +50,7 @@ const Groups = () => {
       });
       const groupData = groups.data.groupsByUser.items;
       console.log("fetched groups data");
+      AsyncStorage.setItem('groups', JSON.stringify(groupData));
       setGroup(groupData);
     } catch (error: any) {
       console.error("Error fetching user groups:", error);
@@ -41,7 +60,7 @@ const Groups = () => {
   }
 
   useEffect(() => {
-    fetchGroups();
+    loadGroups();
   }, []);
   
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -65,27 +84,31 @@ const Groups = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={{alignSelf: 'center'}} onPress={createGroup}>
-        <Icon name="add-circle-outline" size={30}/>
+      <TouchableOpacity style={styles.createGroupContainer} onPress={createGroup}>
+        <Text style={styles.createGroupTitle}>Create Group</Text>
+        <Icon name="arrow-forward-circle-outline" size={25}/>
       </TouchableOpacity>
       <FlatList
         data={group}
         renderItem={({ item }) => {
           var groupURL = item.group?.groupURL ? item.group?.groupURL : undefined;
+          var members = item.group?.members?.items.length;
+          var description = item.group?.description ? item.group?.description : "No description";
           return (
-          <TouchableOpacity onPress={() => viewGroup(item)}>
-            <View style={styles.postContainer}>
-              <View style={styles.profileSection}>
-                  
-                <ProfilePicture uri={groupURL} size={45}/>
-                <View style={styles.textContainer}>
-                  <Text style={styles.groupTitle}>{item.group?.groupName}</Text>
-                  <Text style={styles.postContact}>description here</Text>
+            <TouchableOpacity onPress={() => viewGroup(item)}>
+              <View style={styles.postContainer}>
+                <View style={styles.profileSection}>
+                  <ProfilePicture uri={groupURL} size={45}/>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.postTitle}>{item.group?.groupName}</Text>
+                    <Text style={styles.postContact}>{description}</Text>
+                  </View>
                 </View>
+                <Text style={styles.postDate}>{members} members</Text>
               </View>
-            </View>
-          </TouchableOpacity>
-        )}}
+            </TouchableOpacity>
+          )
+        }}
       />
     </View>
   );

@@ -2,8 +2,8 @@ import { useEffect, useState, useContext, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl,
   TouchableOpacity } from 'react-native';
 import client from '../client';
-import { postsByDate, userByEmail } from '../graphql/queries';
-import { ModelSortDirection, Post } from '../API';
+import { groupsByUser, userByEmail } from '../graphql/queries';
+import { ModelSortDirection, Post, Group } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
@@ -32,13 +32,13 @@ const HomeScreen = () => {
   if(firstname) headerName = firstname;
   if(lastname) headerName += ' ' + lastname;
 
-  const [newsFeed, setNewsFeed] = useState<Post[]> ([]);
+  const [newsFeed, setNewsFeed] = useState<Post[]>([]);
+  const [groups, setGroups] = useState<Group[]>([])
   const [loading, setLoading] = useState(true);
   
   //Reset Cache if it was cleared but user is still logged in
   useEffect(() => {
     if(userId != '') return;
-    console.log("UserId is: ", userId);
     const fetchUserId = async () => {
       const cachedUser = await AsyncStorage.getItem('currUser');
       if(cachedUser) {
@@ -93,16 +93,28 @@ const HomeScreen = () => {
   const fetchNewsFeed = async () => { 
     setLoading(true);
     try{
-      const allPosts = await client.graphql({
-        query: postsByDate,
+      const res = await client.graphql({
+        query: groupsByUser,
         variables: {
-          groupID: "Market",
+          userID: userId,
           sortDirection: ModelSortDirection.DESC,
-          limit: 10,
         },
+        authMode: 'userPool'
       }); 
-      const posts = allPosts.data.postsByDate.items;
+      const userGroupData = res.data.groupsByUser.items;
+      let groupData = userGroupData.flatMap(group => {
+        return (group.group  || []);
+      });
+      setGroups(groupData.filter(group => group !== null))
       
+      let posts = userGroupData.flatMap(userGroup => {
+        return (userGroup.group?.posts?.items || []).filter(post => post !== null);
+      })
+      posts = posts.sort((a, b) => {
+        const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
       console.log(`Fetched from fetchnewsfeed.`);
       setNewsFeed(posts);
       
@@ -129,6 +141,15 @@ const HomeScreen = () => {
     }
   }
 
+  const getGroupName = ( id : string) => {
+    const res = groups.flatMap(group => {
+      if(group.id === id){
+        return group.groupName;
+      }
+    })
+    return res;
+  }
+
   const onRefresh = useCallback(() => {
     fetchNewsFeed();
   }, []);
@@ -141,15 +162,11 @@ const HomeScreen = () => {
         <FlatList
           data={newsFeed}
           renderItem={({ item }) => {
-            let displayName = "";
-            let displayEmail = "";
-            let profileURL = undefined;
-            if(item.user?.profileURL) profileURL = item.user.profileURL;
-            if(item.user){
-              if(item.user.firstname) displayName += item.user.firstname;
-              if(item.user.lastname) displayName += " " + item.user.lastname;
-              if(item.user.email) displayEmail = item.user.email;
-            }
+            let firstname = item?.user?.firstname ? item.user.firstname : undefined;
+            let lastname = item?.user?.lastname ? item.user.lastname: undefined;
+            let displayEmail = item?.user?.email ? item.user.email : undefined ;
+            let profileURL = item?.user?.profileURL ? item.user.profileURL : undefined;
+            var groupName = getGroupName(item.groupID);
             return (
               <View style={styles.postContainer}>
                 <View style={styles.profileSection}> 
@@ -157,16 +174,22 @@ const HomeScreen = () => {
                     <ProfilePicture uri={profileURL} size={35} />
                   </TouchableOpacity>
                   <View style={styles.textContainer}>
-                    <Text style={styles.postAuthor}>{displayName}</Text>
+                    <Text style={styles.postAuthor}>{firstname + " " + lastname}</Text>
                     <Text style={styles.postContact}>{displayEmail}</Text>
                   </View>
                 </View>
+                <Text style={styles.postGroup}> {groupName}</Text>
                 <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
                 <Text style={styles.postTitle}>{item.title}</Text>
                 <Text style={styles.postContent}>{item.content}</Text>
               </View>
             )
           }}
+          ListEmptyComponent={() => (
+            <View>
+              <Text>New To DAP? Create or join a Group to get started!</Text>
+            </View>
+          )}
           refreshControl={
             <RefreshControl
                 refreshing={loading}

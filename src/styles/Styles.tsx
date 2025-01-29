@@ -1,11 +1,13 @@
 import { StyleSheet } from 'react-native';
 
+const colorBackground = '#f2f7f7';
+
 const styles = StyleSheet.create({
   /**Overall App styles */
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f2f7f7',
+    backgroundColor: colorBackground,
   },
   title: {
     fontSize: 20,
@@ -61,6 +63,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginBottom: 16,
     borderRadius: 5,
+    backgroundColor: 'white'
+  },
+  longInput: {
+    height: 100,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    marginBottom: 16,
+    borderRadius: 5,
+    backgroundColor: 'white'
   },
   label: {
     marginBottom: 8,
@@ -113,6 +125,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     top: 15,
+  },
+  postGroup: {
+    position: 'absolute',
+    right: 10,
+    bottom: 15,
   },
 
   /** Search User Styles  */
@@ -180,6 +197,7 @@ const styles = StyleSheet.create({
     width: '85%',
     borderColor: '#ccc',
     borderWidth: 1,
+    backgroundColor: 'white',
     paddingHorizontal: 8,
     marginBottom: 16,
     borderRadius: 5,
@@ -187,11 +205,24 @@ const styles = StyleSheet.create({
 
   /** Groups Section */
   groupProfile: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    marginVertical: 20,
-    alignSelf: 'center'
+    width: '100%',
+    height: 170,
+    alignSelf: 'center',
+  },
+  groupProfileContainer: {
+    position: 'relative',
+    width: '100%',
+    height: '28%',
+    alignSelf: 'center',
+  },
+  groupTitle: {
+    position: 'absolute',
+    fontSize: 20,
+    alignContent:'center',
+    top: 30,
+    left: 30,
+    fontWeight: '600',
+    color: 'black'
   },
   groupContainer: {
     flexDirection:'row',
@@ -202,10 +233,48 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  groupTitle: {
+  createGroupContainer: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    shadowColor: '#3c4043',
+    shadowOffset: { width: 10, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    borderRadius: 24,
+    padding: 5,
+    marginBottom: 20,
+    width: '50%',
+  },
+  createGroupTitle: {
+    alignSelf: 'center',
     fontSize: 20,
-    fontWeight: 'bold',
     color: 'black',
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  addImageContainer: {
+    justifyContent:'center'
+  },
+  uploadImage: {
+    height: 150,
+    width: 150,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  addImageText: {
+    position: 'absolute',
+    fontSize: 20,
+    top: 60,
+    left: 150,
+    fontWeight: '600',
+    color: 'black'
+  },
+  createPostImage: {
+    height: 150,
+    width: 150,
   }
 });
 
