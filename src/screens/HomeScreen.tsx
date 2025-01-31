@@ -25,70 +25,61 @@ const HomeScreen = () => {
     console.log("Auth context not defined");
     return null;
   };
-  const { userId, userEmail, firstname, lastname, setProfileURL,
-     setUserId, setFirstName, setLastName } = authContext;
-
-  let headerName = userEmail;
-  if(firstname) headerName = firstname;
-  if(lastname) headerName += ' ' + lastname;
+  const { userId, userEmail, setProfileURL, setUserId, setFirstName, setLastName } = authContext;
 
   const [newsFeed, setNewsFeed] = useState<Post[]>([]);
-  const [groups, setGroups] = useState<Group[]>([])
+  const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   
   //Reset Cache if it was cleared but user is still logged in
   useEffect(() => {
-    if(userId != '') return;
     const fetchUserId = async () => {
-      const cachedUser = await AsyncStorage.getItem('currUser');
-      if(cachedUser) {
-        const user = JSON.parse(cachedUser);
-        if(user.id) setUserId(user.id);
-        if(user.firstname) setFirstName(user.firstname);
-        if(user.lastname) setLastName(user.lastname);
-        if(user.profileURL) setProfileURL(user.profileURL);
-      }
       try{
         const data = await client.graphql({
           query: userByEmail,
           variables: { email: userEmail.toLowerCase() },
+          authMode: 'userPool'
         });
         const user = data.data.userByEmail.items[0];
-        AsyncStorage.setItem('currUser', JSON.stringify(user));
-        console.log('Fetched current user & set cache'); //REMOVE 
         setUserId(user.id);
         if (user.firstname) setFirstName(user.firstname);
         if (user.lastname) setLastName(user.lastname);
+        if (user.profileURL) setProfileURL(user.profileURL)
       } catch (error: any) {
         if(error.messsage) console.log('Error fetching user ID', error.message);
         else if(error.errors) console.log('Error fetching user ID', error.errors);
         else console.log('Error fetching user ID', error);
+      } finally{
+        loadNewsFeed();
       }
     };
     fetchUserId();
   }, []);
 
-  useEffect(()=> {
-    const loadNewsFeed = async () => {
-      try {
-        const cachedData = await AsyncStorage.getItem('newsFeedCache');
-        if (cachedData) {
-          const data = JSON.parse(cachedData);
-          //const fiveMin = 5 * 60 * 1000;
-          //if (Date.now() - data.timestamp < fiveMin) {
-            setNewsFeed(data.posts);
-            setLoading(false);
-            return;
-          //}
-        }else{
-          await fetchNewsFeed();
-        }
-      } catch (error) {
-        console.log('Error loading cached news feed', error);
+  useEffect(() => {
+    if(userId){
+      loadNewsFeed();
+    }
+  }, [userId]);
+
+  const loadNewsFeed = async () => {
+    try {
+      const cachedData = await AsyncStorage.getItem('newsFeedCache');
+      if (cachedData) {
+        const data = JSON.parse(cachedData);
+        //const fiveMin = 5 * 60 * 1000;
+        //if (Date.now() - data.timestamp < fiveMin) {
+          setNewsFeed(data.posts);
+          setLoading(false);
+          return;
+        //}
+      }else{
+        await fetchNewsFeed();
       }
-    };
-    loadNewsFeed();
-  }, []);
+    } catch (error) {
+      console.log('Error loading cached news feed', error);
+    }
+  };
 
   const fetchNewsFeed = async () => { 
     setLoading(true);
@@ -102,11 +93,12 @@ const HomeScreen = () => {
         authMode: 'userPool'
       }); 
       const userGroupData = res.data.groupsByUser.items;
+      console.log(`Fetched from fetchnewsfeed.`);
+
       let groupData = userGroupData.flatMap(group => {
         return (group.group  || []);
       });
       setGroups(groupData.filter(group => group !== null))
-      
       let posts = userGroupData.flatMap(userGroup => {
         return (userGroup.group?.posts?.items || []).filter(post => post !== null);
       })
@@ -115,7 +107,6 @@ const HomeScreen = () => {
         const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
         return dateB - dateA;
       });
-      console.log(`Fetched from fetchnewsfeed.`);
       setNewsFeed(posts);
       
       await AsyncStorage.setItem('newsFeedCache', JSON.stringify({
@@ -187,7 +178,7 @@ const HomeScreen = () => {
           }}
           ListEmptyComponent={() => (
             <View>
-              <Text>New To DAP? Create or join a Group to get started!</Text>
+              <Text style={styles.noResultsMsg}>New To DAP? Create or join a Group to get started!</Text>
             </View>
           )}
           refreshControl={

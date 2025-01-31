@@ -25,7 +25,7 @@ export type GlobalParamList = {
 
 export type LoggedInParamList = {
     Home: undefined;
-    Messaging: undefined;
+    Messages: undefined;
     Groups: undefined;
     Search: undefined;
     Profile: undefined;

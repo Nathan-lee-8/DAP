@@ -14,9 +14,7 @@ export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
     email
     firstname
     lastname
-    phonenumber
     profileURL
-    location
     createdAt
     updatedAt
     owner
@@ -35,9 +33,7 @@ export const listUsers = /* GraphQL */ `query ListUsers(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -67,9 +63,7 @@ export const userByEmail = /* GraphQL */ `query UserByEmail(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -96,9 +90,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -164,9 +156,7 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
         email
         firstname
         lastname
-        phonenumber
         profileURL
-        location
         createdAt
         updatedAt
         owner
@@ -238,9 +228,7 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -331,9 +319,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
               email
               firstname
               lastname
-              phonenumber
               profileURL
-              location
               createdAt
               updatedAt
               owner
@@ -415,6 +401,16 @@ export const getChat = /* GraphQL */ `query GetChat(
         id
         content
         senderID
+        sender{
+          id
+          firstname
+          lastname
+          profileURL
+          createdAt
+          updatedAt
+          owner
+          __typename
+        }
         chatID
         owner
         createdAt
@@ -474,9 +470,7 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -722,9 +716,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
               email
               firstname
               lastname
-              phonenumber
               profileURL
-              location
               createdAt
               updatedAt
               owner
@@ -802,9 +794,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           email
           firstname
           lastname
-          phonenumber
           profileURL
-          location
           createdAt
           updatedAt
           __typename
@@ -829,9 +819,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           email
           firstname
           lastname
-          phonenumber
           profileURL
-          location
           createdAt
           updatedAt
           owner
@@ -862,6 +850,30 @@ export const listGroups = /* GraphQL */ `query ListGroups(
       groupName
       groupURL
       description
+      members {
+        items{
+          id
+          ownerID
+          userID
+          groupID
+          role
+          user{
+            id
+            email
+            firstname
+            lastname
+            profileURL
+            createdAt
+            updatedAt
+            __typename
+          }
+          createdAt
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       __typename

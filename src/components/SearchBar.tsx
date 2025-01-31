@@ -10,7 +10,7 @@ import styles from '../styles/Styles';
 import { User } from '../API';
 import ProfilePicture from './ProfilePicture';
 
-const SearchBar = ( { userPressed } : any) => {
+const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => {
   const [search, setSearch] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
@@ -84,7 +84,7 @@ const SearchBar = ( { userPressed } : any) => {
   }
   
   return (
-    <View>
+    <View style={{width: width}}>
       <TextInput
         style={styles.input}
         value={search}
@@ -97,23 +97,19 @@ const SearchBar = ( { userPressed } : any) => {
       <FlatList
         data={filteredData}
         keyExtractor={(item) => item.email}
-        renderItem={({ item }) => {
-          if(item.profileURL == null){
-            item.profileURL = undefined;
-          }
-          return (
-            <View style={styles.searchUserContainer}>
-              <TouchableOpacity onPress={() => { if(userPressed) userPressed(item) }}>
-                <View style={styles.listUserContainer}>
-                  <ProfilePicture uri={item.profileURL} size={50}/>
-                  <View style={styles.textContainer}>
-                    <Text style={styles.postAuthor}>{item.firstname} {item.lastname}</Text>
-                    <Text style={styles.postContact}>{item.email}</Text>
-                  </View>
+        renderItem={({ item }) => (
+          <View style={styles.searchUserContainer}>
+            <TouchableOpacity onPress={() => { if(userPressed) userPressed(item) }}>
+              <View style={styles.listUserContainer}>
+                <ProfilePicture uri={item.profileURL? item.profileURL : undefined} size={50}/>
+                <View style={styles.textContainer}>
+                  <Text style={styles.postAuthor}>{item.firstname} {item.lastname}</Text>
+                  <Text style={styles.postContact}>{item.email}</Text>
                 </View>
-              </TouchableOpacity>
-            </View>
-          )}}
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
       />
     </View>
   );

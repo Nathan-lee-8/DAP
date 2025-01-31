@@ -62,14 +62,12 @@ const CreatePost = ({route}: any) => {
       console.log('Error creating post', error);
     } finally {
       setLoading(false);
-      Alert.alert('Success','Post Created', [
-        {
-          text: 'OK',
-          onPress: () => {
-            navigation.goBack();
-          }
+      Alert.alert('Success','Post Created', [{
+        text: 'OK',
+        onPress: () => {
+          navigation.goBack();
         }
-      ])
+      }])
     }
   }
 
@@ -84,8 +82,8 @@ const CreatePost = ({route}: any) => {
       {loadingIMG ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <TouchableOpacity style={styles.groupProfileContainer} onPress={getFilePath}>
-          <ProfilePicture uri={filepath} size={100} style={styles.groupProfile}/>
+        <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
+          <ProfilePicture uri={filepath} size={100} style={styles.groupImg}/>
           <Text style={styles.addImageText}>{addImgText}</Text>
         </TouchableOpacity>
       )}
@@ -104,8 +102,8 @@ const CreatePost = ({route}: any) => {
         value={content}
         onChangeText={setContent}
       />
-      <TouchableOpacity style={[styles.createGroupContainer, {marginTop: 'auto'}]} onPress={sendPost}>
-        <Text style={styles.createGroupTitle}>Create Post</Text>
+      <TouchableOpacity style={[styles.createGroupButton, {marginTop: 'auto'}]} onPress={sendPost}>
+        <Text style={styles.createGroupButtonText}>Create Post</Text>
         <Icon name="arrow-forward-circle-outline" size={25}/>
       </TouchableOpacity>
     </View>

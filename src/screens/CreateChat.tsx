@@ -72,6 +72,7 @@ const CreateChat = ( { route }: any) => {
                         chatID: chat.data.createChat.id,
                         ownerID: targetOwnerID,
                         unreadMessageCount: 1,
+                        lastMessage: message
                     }
                 },
                 authMode: 'userPool'
@@ -109,7 +110,7 @@ const CreateChat = ( { route }: any) => {
             <Text style={[styles.title, {flex: 1}]}>{targetDisplayName}</Text>
             <View style={{flexDirection: 'row'}}>
                 <TextInput
-                    style={styles.textInput}
+                    style={styles.msgInput}
                     placeholder="Type a message..."
                     value={message}
                     onChangeText={setMessage}

@@ -9,9 +9,7 @@ type User @model @auth(
   email: AWSEmail! @index(name: "byEmail", queryField: "userByEmail")
   firstname: String
   lastname: String
-  phonenumber: String
   profileURL: String
-  location: AWSIPAddress
   posts: [Post] @hasMany
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
@@ -21,6 +19,7 @@ type User @model @auth(
 type Post @model @auth(
   rules: [
     { allow: owner },
+    { allow: private, operations: [read]},
     { allow: public, operations: [read] }
   ]
 ) { 

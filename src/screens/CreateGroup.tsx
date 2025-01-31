@@ -171,8 +171,8 @@ const CreateGroup = () => {
       {imgLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <TouchableOpacity onPress={getFilePath} style={styles.groupProfileContainer}>
-          <ProfilePicture style={styles.groupProfile} size={90}/>
+        <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
+          <ProfilePicture style={styles.groupImg} size={90}/>
           <Text style={styles.addImageText}>{addImgText}</Text>
         </TouchableOpacity>
       )}
@@ -214,8 +214,8 @@ const CreateGroup = () => {
           )
         }}
       />
-      <TouchableOpacity style={styles.createGroupContainer} onPress={addGroup}>
-        <Text style={styles.createGroupTitle}> Create Group </Text>
+      <TouchableOpacity style={styles.createGroupButton} onPress={addGroup}>
+        <Text style={styles.createGroupButtonText}> Create Group </Text>
         <Icon name="arrow-forward-circle-outline" size={25}/>
       </TouchableOpacity>
     </View>

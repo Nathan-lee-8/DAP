@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext, useLayoutEffect } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity,
      ActivityIndicator } from 'react-native';
 import styles from '../styles/Styles';
@@ -8,7 +8,6 @@ import { createMessage, updateUserChat } from '../graphql/mutations';
 import { onCreateMessage } from '../graphql/subscriptions';
 import  { Message } from '../API';
 import ProfilePicture from '../components/ProfilePicture';
-import { Participant } from '../types/rootStackParamTypes'
 import { AuthContext } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons'
@@ -17,15 +16,15 @@ const ChatRoom = ( { route } : any) => {
     const UserChat = route.params.userChat;
     const [messages, setMessages] = useState<Message[]>([]);
     const [currMessage, setMessage] = useState<string>('');
-    const flatListRef = useRef<FlatList<Message>>(null);
     const [nextToken, setNextToken] = useState<string | null | undefined>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [participants, setParticipants] = useState<Participant[] | undefined>([]);
     const [chatName, setChatName] = useState<string | undefined>('');
+    
+    const flatListRef = useRef<FlatList<Message>>(null); //for scroll to bottom
     const msgCountRef = useRef<number>(0);
     const targetChatIDref = useRef<string | undefined>('');
-    const messageRef = useRef<string>('');
-    const msgSent = useRef<boolean>(false);
+    const lastMsgRef = useRef<string>('');
+    const msgSentRef = useRef<boolean>(false);
 
     const authContext = useContext(AuthContext);
     if(!authContext){
@@ -47,12 +46,11 @@ const ChatRoom = ( { route } : any) => {
                 const newMessage = value?.data.onCreateMessage;
                 setMessages((prev) => {
                     if(!newMessage) return prev;
-                    const existing = prev.find((msg) => msg?.id === newMessage?.id);
-                    if (existing) return prev;
+                    //If msg ID already exists:
+                    if (prev.find((msg) => msg?.id === newMessage?.id)) return prev;
                     return [...prev, newMessage];
                 });
-                if(newMessage.content) messageRef.current = newMessage.content;
-                msgSent.current = true;
+                if(newMessage.content) lastMsgRef.current = newMessage.content;
                 scrollToBottom();
             },
             error: (err: any) => console.error("Subscription error:", err),
@@ -73,21 +71,20 @@ const ChatRoom = ( { route } : any) => {
                 },
                 authMode: 'userPool'
             });
-            console.log("chat fetched from chatroom");
             const chatData = chat.data.getChat;
+            console.log("chat fetched from chatroom");
 
+            //filter out null messages
             const fetchedMessages: Message[] = (chatData?.messages?.items || []).filter(
                 (message): message is Message => message !== null
             );
             setMessages((prev) => {
                 const newMessages = fetchedMessages.filter((msg) => !prev.some((prevMsg) => prevMsg.id === msg.id));
-                if(newMessages[0]) messageRef.current = newMessages[0].content; 
-                return [...prev, ...newMessages];  // Add only new messages
+                if(newMessages[0]) lastMsgRef.current = newMessages[0].content; 
+                return [...prev, ...newMessages];
             });
             setNextToken(chatData?.messages?.nextToken);
-
             let participantData = chatData?.participants?.items;
-            setParticipants(participantData);
             if(UserChat.chat.isGroup) setChatName(chatData?.name);
             else(participantData?.forEach((participant) => {
                 let part = participant?.user;
@@ -105,59 +102,39 @@ const ChatRoom = ( { route } : any) => {
     };
 
     const navigation = useNavigation();
-
-    useLayoutEffect(()=> {
-        navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity onPress={handleGoBack} >
-                    <Icon name="arrow-back" size={24} />
-                </TouchableOpacity>
-            ),
-        })
-    })
-
     const handleGoBack = async () => {
-        if (messageRef.current && msgSent.current) {
-            try{
-                await updateLastMessage();
-            } catch (error) {
-                console.error("Error updating last message:", error);
-            }
-        }
-        navigation.goBack();
-    }
-
-    const updateLastMessage = async () => {
-        try {
-            await client.graphql({
-                query: updateUserChat, // GraphQL mutation to update last message
-                variables: {
-                    input: {
-                        id: UserChat.id,
-                        lastMessage: messageRef.current, // You may need to adjust based on your schema
-                        unreadMessageCount: 0
+        try{
+            if(lastMsgRef.current){
+                await client.graphql({
+                    query: updateUserChat, // GraphQL mutation to update last message
+                    variables: {
+                        input: {
+                            id: UserChat.id,
+                            lastMessage: lastMsgRef.current, // You may need to adjust based on your schema
+                            unreadMessageCount: 0
+                        },
                     },
-                },
-                authMode: 'userPool'
-            });
-            if(targetChatIDref.current){
+                    authMode: 'userPool'
+                });
+            }
+            if(targetChatIDref.current && msgSentRef.current){
                 await client.graphql({
                     query: updateUserChat, // GraphQL mutation to update last message
                     variables: {
                         input: {
                             id: targetChatIDref.current,
-                            lastMessage: messageRef.current, // You may need to adjust based on your schema
+                            lastMessage: lastMsgRef.current, // You may need to adjust based on your schema
                             unreadMessageCount: msgCountRef.current
                         },
                     },
                     authMode: 'userPool'
                 });
             }
-            console.log("Last message updated in chat data");
         } catch (error) {
             console.error("Error updating last message:", error);
         }
-    };
+        navigation.goBack();
+    }
 
     const sendMessage = async () => {
         if(currMessage === '')return;
@@ -177,9 +154,9 @@ const ChatRoom = ( { route } : any) => {
             setMessage('');
             scrollToBottom();
             msgCountRef.current = msgCountRef.current + 1;
+            msgSentRef.current = true;
         } catch (error) {
             console.error("Failed to send message:", error);
-            // Optionally mark the message as "unsent"
         }
     };
 
@@ -203,6 +180,9 @@ const ChatRoom = ( { route } : any) => {
     return(
         <View style={styles.container}>
             {loading && <ActivityIndicator size="small" color="#0000ff" />}
+            <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
+                <Icon name="arrow-back" size={24} />
+            </TouchableOpacity>
             <Text style={styles.title}>{chatName}</Text>
             <FlatList
                 ref={flatListRef}
@@ -213,15 +193,7 @@ const ChatRoom = ( { route } : any) => {
                         console.warn("Undefined items in messages list");
                         return null;
                     }
-                    let profURL;
-                    if(participants){
-                        const part = participants.find(
-                            (participant) => participant?.user?.id === item?.senderID
-                        );
-                        if(part?.user?.profileURL === null){ 
-                            profURL = part?.user?.profileURL || undefined;
-                        }
-                    }
+                    let profURL = item?.sender?.profileURL ? item?.sender?.profileURL: undefined;
                     const textContent = item?.content || "Message content not available";
                     return (
                         <View style={getMsgContainerStyle(item?.senderID)}>
@@ -240,7 +212,7 @@ const ChatRoom = ( { route } : any) => {
             />
             <View style={{flexDirection: 'row'}}> 
                 <TextInput
-                    style={styles.textInput}
+                    style={styles.msgInput}
                     placeholder={'Type a message'}
                     value={currMessage}
                     autoCapitalize='sentences'

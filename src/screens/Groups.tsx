@@ -17,10 +17,10 @@ const Groups = () => {
   const [group, setGroup] = useState<UserGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
-    if(!authContext) {
-      console.log("Auth context not defined");
-      return null;
-    }
+  if(!authContext) {
+    console.log("Auth context not defined");
+    return null;
+  }
   const { userId } = authContext;
 
   const loadGroups = async () => {
@@ -64,11 +64,9 @@ const Groups = () => {
   }, []);
   
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-
   const createGroup = () => {
     navigation.navigate('CreateGroup');
   }
-
   const viewGroup = (item: any) => {
     navigation.navigate('ViewGroup', { groupID: item.group.id });
   }
@@ -84,8 +82,8 @@ const Groups = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.createGroupContainer} onPress={createGroup}>
-        <Text style={styles.createGroupTitle}>Create Group</Text>
+      <TouchableOpacity style={styles.createGroupButton} onPress={createGroup}>
+        <Text style={styles.createGroupButtonText}>Create Group</Text>
         <Icon name="arrow-forward-circle-outline" size={25}/>
       </TouchableOpacity>
       <FlatList
@@ -109,6 +107,11 @@ const Groups = () => {
             </TouchableOpacity>
           )
         }}
+        ListEmptyComponent={
+          <View>
+            <Text style={styles.noResultsMsg}>No groups found.</Text>
+          </View>
+        }
       />
     </View>
   );
