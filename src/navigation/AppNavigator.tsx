@@ -43,14 +43,13 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       {isSignedIn ? (
-        <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
-          <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false}}/>
+        <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center', headerShown: false}}>
+          <GlobalStack.Screen name="MainTabs" component={BottomTabs}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
-          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} 
-            options={{title: 'Group'}}/>
+          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} options={{title: 'Group'}}/>
           <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
         </GlobalStack.Navigator>
       ) : (
@@ -71,16 +70,15 @@ const BottomTabs = () => {
   }
   const { profileURL } = authContext;
   return(
-    <BottomTab.Navigator>
+    <BottomTab.Navigator screenOptions={{headerShown: false}}>
       <BottomTab.Screen name="Home" component={Home}
         options={{
           lazy: true,
           headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
         }}/>
-      <BottomTab.Screen name="Messaging" component={Messaging} 
+      <BottomTab.Screen name="Messages" component={Messaging} 
         options={{
-          title: 'Messages',
           lazy: true,
           headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
@@ -101,6 +99,7 @@ const BottomTabs = () => {
         options={{
           lazy: true,
           headerTitleAlign:'center',
+          headerShown: true,
           tabBarIcon: () => <ProfilePicture uri={profileURL} size={30}/>,
           headerRight: LogOutButton
         }} />

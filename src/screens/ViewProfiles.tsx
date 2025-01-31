@@ -5,7 +5,7 @@ import ProfilePicture from '../components/ProfilePicture';
 
 const ViewProfiles = ( { route } : any) => {
     const targetUser = route.params?.user;
-    if(!targetUser) return (<View><Text>Error: User not found</Text></View>);
+    if(!targetUser) return (<View><Text style={styles.noResultsMsg}>Error: User not found</Text></View>);
 
     const profileURL = targetUser.profileURL === null ? undefined: targetUser.profileURL;
     const creationDate = targetUser.createdAt ? new Date(targetUser.createdAt).toLocaleDateString() : "unknown";

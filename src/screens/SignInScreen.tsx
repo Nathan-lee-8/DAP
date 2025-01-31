@@ -66,7 +66,7 @@ const SignIn = () => {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.formContainer, {flex: 1}]}>
+      <View style={[styles.formContainer]}>
         <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}

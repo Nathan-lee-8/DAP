@@ -17,9 +17,7 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
     email
     firstname
     lastname
-    phonenumber
     profileURL
-    location
     posts {
       nextToken
       __typename
@@ -55,9 +53,7 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
     email
     firstname
     lastname
-    phonenumber
     profileURL
-    location
     posts {
       nextToken
       __typename
@@ -93,9 +89,7 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
     email
     firstname
     lastname
-    phonenumber
     profileURL
-    location
     posts {
       nextToken
       __typename
@@ -206,9 +200,7 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -250,9 +242,7 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -294,9 +284,7 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -422,9 +410,7 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -464,9 +450,7 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -506,9 +490,7 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -548,9 +530,7 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner
@@ -590,9 +570,7 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
       email
       firstname
       lastname
-      phonenumber
       profileURL
-      location
       createdAt
       updatedAt
       owner

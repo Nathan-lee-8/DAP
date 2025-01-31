@@ -63,7 +63,7 @@ const MessageUsers = () => {
       
     };
     navigation.navigate('CreateChat', { user: user});
-};
+  };
 
   const handleOpenChatRoom = (chatRoom: UserChat) => {
     navigation.navigate('ChatRoom', { userChat: chatRoom });
@@ -102,22 +102,31 @@ const MessageUsers = () => {
               displayURI = part?.profileURL || undefined;
             }
           }
-          
+          let containerStyle = styles.postContainer;
+          if(item.unreadMessageCount && item.unreadMessageCount > 0){
+            containerStyle = styles.unreadMsgContainer;
+          }
+
           return (
             <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>
-              <View style={styles.postContainer}> 
-                  <View style={styles.profileSection}>
-                    <ProfilePicture uri={displayURI} size={50}/>
-                    <View style={styles.textContainer}>
-                      <Text style={styles.postAuthor}>{chatname}</Text>
-                      <Text style={styles.postContact}>Unread Msgs: {item.unreadMessageCount}</Text>
-                      <Text style={styles.postContact}> {item.lastMessage} </Text>
-                    </View>  
-                  </View> 
+              <View style={containerStyle}> 
+                <View style={styles.profileSection}>
+                  <ProfilePicture uri={displayURI} size={50}/>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.postAuthor}>{chatname}</Text>
+                    <Text style={styles.postContact}> {item.lastMessage} </Text>
+                  </View>  
+                </View> 
+                <Text style={styles.postDate}>Unread Msgs: {item.unreadMessageCount}</Text>
               </View>
             </TouchableOpacity>  
           )
         }}
+        ListEmptyComponent={
+          <View>
+            <Text style={styles.noResultsMsg}>No chat rooms found.</Text>
+          </View>
+        }
       />
     </View>
   );

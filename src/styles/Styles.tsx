@@ -7,6 +7,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    paddingVertical: 40,
     backgroundColor: colorBackground,
   },
   title: {
@@ -40,14 +41,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     padding: 10,
   },
-  avatar: {
-    marginLeft: 'auto',
-  },
-  tabView:{
-    backgroundColor: 'black',
-  },
   topTab: {
-    marginTop: 60,
+    backgroundColor: colorBackground,
+    marginTop: 60
+  },
+  noResultsMsg : {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  goBackButton: {
+    position: 'absolute',
+    top: 30,
+    left: 30,
   },
 
   /** Form Styles */
@@ -76,6 +83,7 @@ const styles = StyleSheet.create({
   },
   label: {
     marginBottom: 8,
+    marginLeft: 2,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -147,6 +155,25 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     marginBottom: 5,
   },
+  searchTermContainer: {
+    marginLeft: 10,
+    height: 40,
+    width: 80,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: 'white',
+  },
+  searchTermSelected: {
+    marginLeft: 10,
+    height: 40,
+    width: 80,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: 'grey'
+  },
+
 
   /** Messaging Styles   */
   myMessageContainer: {
@@ -192,7 +219,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: 40,
   },
-  textInput: {
+  msgInput: {
     height: 40,
     width: '85%',
     borderColor: '#ccc',
@@ -201,15 +228,56 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginBottom: 16,
     borderRadius: 5,
+  },  
+  unreadMsgContainer: {
+    padding: 15,
+    backgroundColor: 'lightgrey',
+    borderRadius: 10,
+    marginBottom: 7,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+
+  /** Profile Section */
+  editProfileButton: {
+    position: 'absolute',
+    right: 10,
+    top: 0,
+    borderWidth: 1,
+    borderColor:  '#007BFF',
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 40,
+  },
+  uploadImage: {
+    height: 150,
+    width: 150,
+    borderRadius: 75,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  uploadImageText: {
+    position: 'absolute',
+    fontSize: 20,
+    left: 30,
+    top: 60,
+    fontWeight: '600',
+    color: 'black',
+    opacity: 0.6
   },
 
   /** Groups Section */
-  groupProfile: {
+  groupImg: {
     width: '100%',
     height: 170,
     alignSelf: 'center',
   },
-  groupProfileContainer: {
+  groupImgContainer: {
     position: 'relative',
     width: '100%',
     height: '28%',
@@ -219,21 +287,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 20,
     alignContent:'center',
-    top: 30,
+    top: 50,
     left: 30,
     fontWeight: '600',
     color: 'black'
   },
-  groupContainer: {
-    flexDirection:'row',
-    marginVertical: 15,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  createGroupContainer: {
+  createGroupButton: {
     alignSelf: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -248,21 +307,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '50%',
   },
-  createGroupTitle: {
+  createGroupButtonText: {
     alignSelf: 'center',
     fontSize: 20,
     color: 'black',
     marginRight: 10,
     marginLeft: 10,
-  },
-  addImageContainer: {
-    justifyContent:'center'
-  },
-  uploadImage: {
-    height: 150,
-    width: 150,
-    alignSelf: 'center',
-    marginBottom: 20,
   },
   addImageText: {
     position: 'absolute',
@@ -270,14 +320,9 @@ const styles = StyleSheet.create({
     top: 60,
     left: 150,
     fontWeight: '600',
-    color: 'black'
-  },
-  createPostImage: {
-    height: 150,
-    width: 150,
+    color: 'black',
+    opacity: 0.6
   }
 });
-
-
 
 export default styles;

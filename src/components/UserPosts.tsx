@@ -9,7 +9,7 @@ import { ModelSortDirection } from '../API';
 import moment from 'moment';
 
 const UserPosts = ( { userID } : any ) => {
-  if(!userID) return (<View> <Text>Error retriving posts</Text></View>);
+  if(!userID) return (<View style={styles.noResultsMsg}> <Text>Error retriving posts</Text></View>);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,10 @@ const UserPosts = ( { userID } : any ) => {
     try {
       const response = await client.graphql({
         query: postsByUser,
-        variables: { userID: userID, sortDirection: ModelSortDirection.DESC },
+        variables: { 
+          userID: userID, 
+          sortDirection: ModelSortDirection.DESC 
+        },
       });
       const fetchedPosts = response?.data?.postsByUser?.items || [];
       console.log("fetched post from userposts page");
@@ -75,7 +78,7 @@ const UserPosts = ( { userID } : any ) => {
           }}
           ListEmptyComponent={() => (
             <View>
-              <Text>No posts found</Text>
+              <Text style={styles.noResultsMsg}>No posts found</Text>
             </View>
           )}
           keyExtractor={(item) => item.id}

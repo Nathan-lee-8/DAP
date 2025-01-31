@@ -85,6 +85,32 @@ export const deleteUserGroup = /* GraphQL */ `mutation DeleteUserGroup(
   APITypes.DeleteUserGroupMutationVariables,
   APITypes.DeleteUserGroupMutation
 >;
+export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
+  $input: DeleteGroupInput!
+  $condition: ModelGroupConditionInput
+) {
+  deleteGroup(input: $input, condition: $condition) {
+    id
+    groupName
+    groupURL
+    description
+    createdAt
+    members {
+      nextToken
+      __typename
+    }
+    posts {
+      nextToken
+      __typename
+    }
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteGroupMutationVariables,
+  APITypes.DeleteGroupMutation
+>;
 export const createUser = /* GraphQL */ `mutation CreateUser(
   $input: CreateUserInput!
   $condition: ModelUserConditionInput
@@ -94,9 +120,7 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
     email
     firstname
     lastname
-    phonenumber
     profileURL
-    location
     createdAt
     updatedAt
     owner
@@ -116,9 +140,7 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser(
     email
     firstname
     lastname
-    phonenumber
     profileURL
-    location
     createdAt
     updatedAt
     owner
@@ -138,9 +160,7 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
     email
     firstname
     lastname
-    phonenumber
     profileURL
-    location
     createdAt
     updatedAt
     owner
@@ -418,22 +438,4 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
 ` as GeneratedMutation<
   APITypes.UpdateGroupMutationVariables,
   APITypes.UpdateGroupMutation
->;
-export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
-  $input: DeleteGroupInput!
-  $condition: ModelGroupConditionInput
-) {
-  deleteGroup(input: $input, condition: $condition) {
-    id
-    groupName
-    groupURL
-    description
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.DeleteGroupMutationVariables,
-  APITypes.DeleteGroupMutation
 >;

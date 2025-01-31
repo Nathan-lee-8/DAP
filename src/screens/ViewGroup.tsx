@@ -36,32 +36,27 @@ const ViewGroup = ({route} : any) => {
   }, []);
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  
   const createGroupPost = async () => {
     navigation.navigate('CreatePost', {groupID: groupID});
   }
 
-
   return (
     <View style={styles.container}>
-      <View style={styles.groupProfileContainer}>
+      <View style={styles.groupImgContainer}>
         <ProfilePicture uri={group?.groupURL ? group?.groupURL : undefined} 
-          size={100} 
-          style={styles.groupProfile}
-        />
+          size={100} style={styles.groupImg}/>
       </View>
       <Text style={styles.groupTitle}>{group?.groupName}</Text>
-      <TouchableOpacity onPress={createGroupPost}>
+      <TouchableOpacity onPress={createGroupPost} style={{marginTop: -25}}>
         <View style={{flexDirection: 'row'}}>
           <TextInput
-            style={styles.textInput}
+            style={styles.msgInput}
             placeholder="Post content..."
             editable={false}
           />
           <Icon name="arrow-forward-circle-outline" size={35} style={{marginLeft: 'auto'}}/>
         </View>
       </TouchableOpacity>
-      <Text style={styles.title}>Posts</Text>
       <FlatList
         data={group?.posts?.items}
         renderItem={(item) => {
@@ -74,7 +69,6 @@ const ViewGroup = ({route} : any) => {
                   <Text style={styles.postAuthor}>{item.item?.user?.firstname + " " + item.item?.user?.lastname}</Text>
                 </View>
               </View>
-              
               <Text style={styles.postDate}>{moment(item?.item?.createdAt).fromNow()}</Text>
               <Text style={styles.postTitle}>{item.item?.title}</Text>
               <Text style={styles.postContent}>{item.item?.title}</Text>
@@ -83,7 +77,7 @@ const ViewGroup = ({route} : any) => {
         }}
         ListEmptyComponent={() => (
           <View>
-            <Text>No Posts Available</Text>
+            <Text style={styles.noResultsMsg}>No Posts Available</Text>
           </View>
         )}
       />

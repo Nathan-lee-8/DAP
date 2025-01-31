@@ -35,30 +35,30 @@ const ResetPassword = () => {
 
   return (
     <View style={[styles.container, styles.formContainer]}>
-        <Text style={[styles.title, {marginBottom: 30}]}>Enter the confirmation code sent to: {userEmail} </Text>
-        <TextInput
-            style={styles.input}
-            placeholder="Enter confirmation code"
-            value={code}
-            onChangeText={setCode}
-            keyboardType="numeric"
-            maxLength={6}
-        />
-        <TextInput
-            style={styles.input}
-            placeholder="Enter new password"
-            value={password}
-            onChangeText={setPassword}
-        />
-        <TextInput
-            style={styles.input}
-            placeholder="Re-enter new password"
-            value={password1}
-            onChangeText={setPassword1}
-        />
-        <TouchableOpacity style={styles.buttonCentered} onPress={ confirmPasswordReset }>
-            <Text style={styles.buttonText}>Reset Password</Text>
-        </TouchableOpacity>
+      <Text style={[styles.title, {marginBottom: 30}]}>Enter the confirmation code sent to: {userEmail} </Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter confirmation code"
+        value={code}
+        onChangeText={setCode}
+        keyboardType="numeric"
+        maxLength={6}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Enter new password"
+        value={password}
+        onChangeText={setPassword}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Re-enter new password"
+        value={password1}
+        onChangeText={setPassword1}
+      />
+      <TouchableOpacity style={styles.buttonCentered} onPress={ confirmPasswordReset }>
+        <Text style={styles.buttonText}>Reset Password</Text>
+      </TouchableOpacity>
     </View>
   );
 };
