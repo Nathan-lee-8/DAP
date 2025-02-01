@@ -219,7 +219,7 @@ const ChatRoom = ( { route } : any) => {
                     onChangeText={(text) => setMessage(text)}
                 />
                 <TouchableOpacity style={styles.msgButton} onPress={sendMessage} >
-                    <Text style={styles.buttonText}>Send</Text>
+                    <Icon name="send" size={30} />
                 </TouchableOpacity>
             </View>
         </View>

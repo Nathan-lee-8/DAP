@@ -34,6 +34,10 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
       nextToken
       __typename
     }
+    comments {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -70,6 +74,10 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
       nextToken
       __typename
     }
+    comments {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -103,6 +111,10 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
       __typename
     }
     groups {
+      nextToken
+      __typename
+    }
+    comments {
       nextToken
       __typename
     }
@@ -181,6 +193,141 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
 ` as GeneratedSubscription<
   APITypes.OnDeletePostSubscriptionVariables,
   APITypes.OnDeletePostSubscription
+>;
+export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
+  $filter: ModelSubscriptionCommentFilterInput
+  $owner: String
+) {
+  onCreateComment(filter: $filter, owner: $owner) {
+    id
+    content
+    commentURL
+    userID
+    postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      profileURL
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      title
+      content
+      postURL
+      groupID
+      userID
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userCommentsId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateCommentSubscriptionVariables,
+  APITypes.OnCreateCommentSubscription
+>;
+export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
+  $filter: ModelSubscriptionCommentFilterInput
+  $owner: String
+) {
+  onUpdateComment(filter: $filter, owner: $owner) {
+    id
+    content
+    commentURL
+    userID
+    postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      profileURL
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      title
+      content
+      postURL
+      groupID
+      userID
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userCommentsId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateCommentSubscriptionVariables,
+  APITypes.OnUpdateCommentSubscription
+>;
+export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
+  $filter: ModelSubscriptionCommentFilterInput
+  $owner: String
+) {
+  onDeleteComment(filter: $filter, owner: $owner) {
+    id
+    content
+    commentURL
+    userID
+    postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      profileURL
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      title
+      content
+      postURL
+      groupID
+      userID
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userCommentsId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteCommentSubscriptionVariables,
+  APITypes.OnDeleteCommentSubscription
 >;
 export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
@@ -313,7 +460,6 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat($filter: Mo
     id
     name
     isGroup
-    createdAt
     messages {
       nextToken
       __typename
@@ -322,6 +468,7 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat($filter: Mo
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     __typename
   }
@@ -335,7 +482,6 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat($filter: Mo
     id
     name
     isGroup
-    createdAt
     messages {
       nextToken
       __typename
@@ -344,6 +490,7 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat($filter: Mo
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     __typename
   }
@@ -357,7 +504,6 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat($filter: Mo
     id
     name
     isGroup
-    createdAt
     messages {
       nextToken
       __typename
@@ -366,6 +512,7 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat($filter: Mo
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     __typename
   }
@@ -601,7 +748,6 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup($filter: 
     groupName
     groupURL
     description
-    createdAt
     members {
       nextToken
       __typename
@@ -610,6 +756,7 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup($filter: 
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     __typename
   }
@@ -624,7 +771,6 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup($filter: 
     groupName
     groupURL
     description
-    createdAt
     members {
       nextToken
       __typename
@@ -633,6 +779,7 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup($filter: 
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     __typename
   }
@@ -647,7 +794,6 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup($filter: 
     groupName
     groupURL
     description
-    createdAt
     members {
       nextToken
       __typename
@@ -656,6 +802,7 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup($filter: 
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     __typename
   }

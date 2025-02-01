@@ -33,11 +33,14 @@ const ViewGroup = ({route} : any) => {
  
   useEffect(() => {
     fetchCurrentData();
-  }, []);
+  }, [groupID]);
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  const createGroupPost = async () => {
+  const createGroupPost = () => {
     navigation.navigate('CreatePost', {groupID: groupID});
+  }
+  const clickPost = (currPostID : any) => {
+    navigation.navigate('ViewPost', {postID: currPostID});
   }
 
   return (
@@ -47,22 +50,20 @@ const ViewGroup = ({route} : any) => {
           size={100} style={styles.groupImg}/>
       </View>
       <Text style={styles.groupTitle}>{group?.groupName}</Text>
-      <TouchableOpacity onPress={createGroupPost} style={{marginTop: -25}}>
-        <View style={{flexDirection: 'row'}}>
-          <TextInput
-            style={styles.msgInput}
-            placeholder="Post content..."
-            editable={false}
-          />
-          <Icon name="arrow-forward-circle-outline" size={35} style={{marginLeft: 'auto'}}/>
-        </View>
+      <TouchableOpacity onPress={createGroupPost} style={{flexDirection: 'row', marginTop: -25}}>
+        <TextInput
+          style={styles.msgInput}
+          placeholder="Post content..."
+          editable={false}
+        />
+        <Icon name="send" size={30} style={styles.msgButton}/>
       </TouchableOpacity>
       <FlatList
         data={group?.posts?.items}
         renderItem={(item) => {
           var URL = item.item?.user?.profileURL ? item.item?.user?.profileURL : undefined;
           return(
-            <View style={[styles.postContainer]}>
+            <TouchableOpacity style={[styles.postContainer]} onPress={() => clickPost(item.item?.id)}>
               <View style={styles.profileSection}>
                 <ProfilePicture uri={URL} size={30}/>
                 <View style={styles.textContainer}>
@@ -72,7 +73,8 @@ const ViewGroup = ({route} : any) => {
               <Text style={styles.postDate}>{moment(item?.item?.createdAt).fromNow()}</Text>
               <Text style={styles.postTitle}>{item.item?.title}</Text>
               <Text style={styles.postContent}>{item.item?.title}</Text>
-            </View>
+              <Text>{item.item?.comments?.items.length} comments</Text>
+            </TouchableOpacity>
           )
         }}
         ListEmptyComponent={() => (
