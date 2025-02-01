@@ -96,6 +96,21 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       owner
       __typename
     }
+    comments{
+      items{
+        id
+        content
+        commentURL
+        userID
+        postID
+        createdAt
+        updatedAt
+        owner
+        __typename
+      }
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     userPostsId
@@ -199,6 +214,21 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
       postURL
       groupID
       userID
+      comments{
+        items{
+          id
+          content
+          commentURL
+          userID
+          postID
+          createdAt
+          updatedAt
+          owner
+          __typename
+        }
+        nextToken
+        __typename
+      }
       createdAt
       updatedAt
       userPostsId
@@ -212,6 +242,146 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
 ` as GeneratedQuery<
   APITypes.PostsByUserQueryVariables,
   APITypes.PostsByUserQuery
+>;
+export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
+  getComment(id: $id) {
+    id
+    content
+    commentURL
+    userID
+    postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      profileURL
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      title
+      content
+      postURL
+      groupID
+      userID
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userCommentsId
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetCommentQueryVariables,
+  APITypes.GetCommentQuery
+>;
+export const listComments = /* GraphQL */ `query ListComments(
+  $filter: ModelCommentFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listComments(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      content
+      commentURL
+      userID
+      postID
+      createdAt
+      updatedAt
+      userCommentsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListCommentsQueryVariables,
+  APITypes.ListCommentsQuery
+>;
+export const commentsByUser = /* GraphQL */ `query CommentsByUser(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelCommentFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  commentsByUser(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      content
+      commentURL
+      userID
+      postID
+      createdAt
+      updatedAt
+      userCommentsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CommentsByUserQueryVariables,
+  APITypes.CommentsByUserQuery
+>;
+export const commentsByPost = /* GraphQL */ `query CommentsByPost(
+  $postID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelCommentFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  commentsByPost(
+    postID: $postID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      content
+      commentURL
+      userID
+      postID
+      createdAt
+      updatedAt
+      userCommentsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CommentsByPostQueryVariables,
+  APITypes.CommentsByPostQuery
 >;
 export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
   getUserChat(id: $id) {
@@ -722,6 +892,21 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
               owner
               __typename
             }
+            comments{
+              items{
+                id
+                content
+                commentURL
+                userID
+                postID
+                createdAt
+                updatedAt
+                owner
+                __typename
+              }
+              nextToken
+              __typename
+            }
             createdAt
             updatedAt
             owner
@@ -781,7 +966,6 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     groupName
     groupURL
     description
-    createdAt
     members {
       items{
         id
@@ -825,6 +1009,21 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           owner
           __typename
         }
+        comments{
+          items{
+            id
+            content
+            commentURL
+            userID
+            postID
+            createdAt
+            updatedAt
+            owner
+            __typename
+          }
+          nextToken
+          __typename
+        }
         createdAt
         updatedAt
         userPostsId
@@ -834,6 +1033,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     __typename
   }

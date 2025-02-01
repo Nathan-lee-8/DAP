@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, Touchable, TouchableOpacity } from 'react-native';
 import client from '../client';
 import { postsByUser } from '../graphql/queries';
 import { Post } from '../API';
@@ -7,6 +7,9 @@ import styles from '../styles/Styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ModelSortDirection } from '../API';
 import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { GlobalParamList } from '../types/rootStackParamTypes';
 
 const UserPosts = ( { userID } : any ) => {
   if(!userID) return (<View style={styles.noResultsMsg}> <Text>Error retriving posts</Text></View>);
@@ -60,6 +63,11 @@ const UserPosts = ( { userID } : any ) => {
     return () => {isMounted = false};
   }, [fetchPosts]);
 
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
+  const clickPost = (currPostID: string) => {
+      navigation.navigate('ViewPost', { postID: currPostID });
+  }
+
   return (
     <View>
       {loading? ( 
@@ -69,11 +77,12 @@ const UserPosts = ( { userID } : any ) => {
           data={posts}
           renderItem={({ item }) => {
             return(
-              <View style={styles.postContainer}>
+              <TouchableOpacity style={styles.postContainer} onPress={() => clickPost(item.id)}>
                 <Text style={styles.postTitle}>{item.title}</Text>
                 <Text style={styles.postContent}>{item.content}</Text>
                 <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-              </View>
+                <Text>{item.comments?.items.length} comments</Text>
+              </TouchableOpacity>
             )
           }}
           ListEmptyComponent={() => (

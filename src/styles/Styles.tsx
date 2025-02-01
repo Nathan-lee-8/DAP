@@ -210,11 +210,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   msgButton: {
-    marginLeft: 'auto',
-    borderWidth: 1,
-    borderColor:  '#007BFF',
-    borderRadius: 10,
-    padding: 10,
+    marginLeft: 20,
     alignItems: 'center',
     justifyContent: 'center',
     height: 40,

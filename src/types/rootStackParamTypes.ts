@@ -21,6 +21,8 @@ export type GlobalParamList = {
     CreateGroup: undefined;
     CreatePost: {groupID: string};
     ViewGroup: {groupID: string};
+    ViewPost: {postID: string};
+    EditGroup: undefined;
 }
 
 export type LoggedInParamList = {

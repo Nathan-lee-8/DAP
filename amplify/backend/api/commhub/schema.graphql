@@ -14,6 +14,7 @@ type User @model @auth(
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
   groups: [UserGroup] @hasMany
+  comments: [Comment] @hasMany
 }
 
 type Post @model @auth(
@@ -31,6 +32,24 @@ type Post @model @auth(
   userID: ID! @index(name: "postsByUser", queryField: "postsByUser", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields:["userID"])
   group: Group @belongsTo(fields: ["groupID"])
+  comments: [Comment] @hasMany(indexName:"commentsByPost", fields: ["id"])
+  createdAt: AWSDateTime!
+}
+
+type Comment @model @auth(
+  rules: [
+    {allow: owner},
+    {allow: private, operations: [read]},
+    {allow: public, operations: [read]}
+  ]
+) {
+  id: ID!
+  content: String!
+  commentURL: [String]
+  userID: ID! @index(name:"commentsByUser", queryField: "commentsByUser", sortKeyFields: ["createdAt"])
+  postID: ID! @index(name:"commentsByPost", queryField: "commentsByPost", sortKeyFields: ["createdAt"])
+  user: User @belongsTo(fields:["userID"])
+  post: Post @belongsTo(fields:["postID"])
   createdAt: AWSDateTime!
 }
 
@@ -49,7 +68,6 @@ type UserChat @model @auth(
   userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["createdAt"])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields: ["userID"])
-    @auth(rules: [{ allow: private, operations: [read] }])
   chat: Chat @belongsTo(fields: ["chatID"])
   createdAt: AWSDateTime!
 }
@@ -62,9 +80,9 @@ type Chat @model @auth(
   id: ID!
   name: String!
   isGroup: Boolean!
-  createdAt: AWSDateTime!
   messages: [Message] @hasMany(indexName:"messagesByChat", fields: ["id"])
   participants: [UserChat] @hasMany(indexName:"UserChatByChat", fields: ["id"])
+  createdAt: AWSDateTime!
 }
 
 type Message @model @auth(
@@ -95,7 +113,6 @@ type UserGroup @model @auth(
   groupID: ID! @index(name: "membersByGroup", queryField: "membersByGroup")
   role: String
   user: User @belongsTo(fields: ["userID"])
-    @auth(rules: [{ allow: private, operations: [read] }])
   group: Group @belongsTo(fields: ["groupID"])
   createdAt: AWSDateTime!
 }
@@ -109,7 +126,7 @@ type Group @model @auth(
   groupName: String!
   groupURL: String
   description: String
-  createdAt: AWSDateTime!
   members: [UserGroup] @hasMany(indexName:"membersByGroup", fields: ["id"])
   posts: [Post] @hasMany(indexName:"postsByDate", fields: ["id"])
+  createdAt: AWSDateTime!
 }

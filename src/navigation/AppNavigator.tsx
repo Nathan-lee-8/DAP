@@ -19,12 +19,14 @@ import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
 import CreateGroup from '../screens/CreateGroup';
 import ViewGroup from '../screens/ViewGroup';
+import ViewPost from '../screens/ViewPost';
 import CreatePost from '../screens/CreatePost';
 import Search from '../screens/Search';
 import LogOutButton from '../components/LogOutButton';
 import ProfilePicture from '../components/ProfilePicture';
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../styles/Styles';
+import EditGroup from '../screens/EditGroup';
 
 const SignInStack = createNativeStackNavigator<SignInParamList>();
 const SignInTopTab = createMaterialTopTabNavigator<SignInTopTabParamList>();
@@ -51,6 +53,8 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
           <GlobalStack.Screen name="ViewGroup" component={ViewGroup} options={{title: 'Group'}}/>
           <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
+          <GlobalStack.Screen name="ViewPost" component={ViewPost} options={{title: 'Post'}}/>
+          <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
         </GlobalStack.Navigator>
       ) : (
         <SignInTopTab.Navigator style={styles.topTab}>

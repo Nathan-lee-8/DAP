@@ -49,12 +49,10 @@ const HomeScreen = () => {
         if(error.messsage) console.log('Error fetching user ID', error.message);
         else if(error.errors) console.log('Error fetching user ID', error.errors);
         else console.log('Error fetching user ID', error);
-      } finally{
-        loadNewsFeed();
-      }
+      } 
     };
-    fetchUserId();
-  }, []);
+    if(userId == '') fetchUserId();
+  }, [userEmail]);
 
   useEffect(() => {
     if(userId){
@@ -67,12 +65,12 @@ const HomeScreen = () => {
       const cachedData = await AsyncStorage.getItem('newsFeedCache');
       if (cachedData) {
         const data = JSON.parse(cachedData);
-        //const fiveMin = 5 * 60 * 1000;
-        //if (Date.now() - data.timestamp < fiveMin) {
+        const fiveMin = 5 * 60 * 1000;
+        if (Date.now() - data.timestamp < fiveMin) {
           setNewsFeed(data.posts);
           setLoading(false);
           return;
-        //}
+        }
       }else{
         await fetchNewsFeed();
       }
@@ -82,6 +80,10 @@ const HomeScreen = () => {
   };
 
   const fetchNewsFeed = async () => { 
+    if(userId == '') {
+      console.log("User ID is empty");
+      return;
+    };
     setLoading(true);
     try{
       const res = await client.graphql({
@@ -132,6 +134,10 @@ const HomeScreen = () => {
     }
   }
 
+  const clickPost = (item : string) => {
+    navigation.navigate('ViewPost', { postID: item });
+  }
+
   const getGroupName = ( id : string) => {
     const res = groups.flatMap(group => {
       if(group.id === id){
@@ -159,7 +165,7 @@ const HomeScreen = () => {
             let profileURL = item?.user?.profileURL ? item.user.profileURL : undefined;
             var groupName = getGroupName(item.groupID);
             return (
-              <View style={styles.postContainer}>
+              <TouchableOpacity style={styles.postContainer} onPress={ () => clickPost(item.id)}>
                 <View style={styles.profileSection}> 
                   <TouchableOpacity onPress={() => visitProfile(item)}>
                     <ProfilePicture uri={profileURL} size={35} />
@@ -173,7 +179,8 @@ const HomeScreen = () => {
                 <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
                 <Text style={styles.postTitle}>{item.title}</Text>
                 <Text style={styles.postContent}>{item.content}</Text>
-              </View>
+                <Text style={styles.postContent}>{item.comments?.items.length} comments</Text>
+              </TouchableOpacity>
             )
           }}
           ListEmptyComponent={() => (
