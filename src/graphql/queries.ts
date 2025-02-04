@@ -103,6 +103,17 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
         commentURL
         userID
         postID
+        user {
+          id
+          email
+          firstname
+          lastname
+          profileURL
+          createdAt
+          updatedAt
+          owner
+          __typename
+        }
         createdAt
         updatedAt
         owner

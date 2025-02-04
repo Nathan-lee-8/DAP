@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
 import { Post } from '../API';
 import ProfilePicture from '../components/ProfilePicture';
+import moment from 'moment';
 
 const ViewPost = ( {route} : any) => {
   const postID = route.params.postID;
@@ -22,7 +23,7 @@ const ViewPost = ( {route} : any) => {
         },
         authMode: 'userPool'
       });
-      console.log(data);
+      console.log("fetched from ViewPost");
       setPostData(data.getPost);
     } catch (error) {
       console.error('Error fetching post:', error);
@@ -41,7 +42,7 @@ const ViewPost = ( {route} : any) => {
   const postComment = async () => {
     if(!postData?.userID) return;
     try {
-      const { data } = await client.graphql({
+      await client.graphql({
         query: createComment,
         variables: {
           input: {
@@ -52,7 +53,7 @@ const ViewPost = ( {route} : any) => {
         },
         authMode: 'userPool'
       });
-      console.log(data);
+      console.log("posted Comment");
       setComment("");
       fetchPost();
     } catch (error) {
@@ -62,23 +63,30 @@ const ViewPost = ( {route} : any) => {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>{postData?.title}</Text>
       <TouchableOpacity style={styles.goBackButton} onPress={goBackButton}>
         <Icon name="arrow-back" size={24} />
       </TouchableOpacity>
-      <Text style={styles.title}>{postData?.title}</Text>
-      <Text>{postData?.content}</Text>
-      {postData?.postURL ? (
-        <ProfilePicture 
-          uri={postData?.postURL[0] ? postData?.postURL[0] : undefined} 
-          style={styles.groupImgContainer}
-          size={25}
-        />
-      ):( null )}
+      <View style={styles.viewPostContainer}>
+        <Text>{postData?.content}</Text>
+        {postData?.postURL ? (
+          <ProfilePicture 
+            uri={postData?.postURL[0] ? postData?.postURL[0] : undefined} 
+            style={styles.postImgContainer}
+            size={25}
+          />
+        ):( null )}
+      </View>
       <FlatList
         data={postData?.comments?.items}
         renderItem={(item) => (
-          <View>
-            <Text>{item.item?.content}</Text>
+          <View style={styles.viewPostContainer}>
+            <View style={styles.profileSection}>
+              <ProfilePicture uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : undefined} size={20}/>
+              <Text style={[styles.postAuthor, {marginLeft: 5}]}>{item.item?.user?.firstname} {item.item?.user?.lastname}</Text>
+            </View>
+            <Text style={styles.postDate}>{moment(item.item?.createdAt).fromNow()}</Text>
+            <Text style={styles.postContent}>{item.item?.content}</Text>
           </View>
         )}
         ListEmptyComponent={() => (
@@ -86,6 +94,7 @@ const ViewPost = ( {route} : any) => {
             <Text style={styles.noResultsMsg}>No Comments Available</Text>
           </View>
         )}
+        scrollEnabled
       />
       <View style={{flexDirection: 'row'}}>
         <TextInput

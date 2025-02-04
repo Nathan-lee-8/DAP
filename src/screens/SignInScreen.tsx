@@ -43,13 +43,13 @@ const SignIn = () => {
       navigation.navigate('ResetPassword');
       Alert.alert('Password reset email sent.', 'Please check your email to reset your password.');
     } catch (error : any) {
-      Alert.alert('Error', 'Please enter a valid email.');
+      Alert.alert('Error', 'Invalid email or account does not exist.');
     }
   }
 
   const resetConfirm = async () => {
     if(userEmail === ''){
-      Alert.alert('Please enter a valid email.');
+      Alert.alert('Error', 'Invalid email or account does not exist.');
       return;
     }
     Alert.alert(

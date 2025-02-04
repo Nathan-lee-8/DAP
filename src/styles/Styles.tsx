@@ -11,11 +11,11 @@ const styles = StyleSheet.create({
     backgroundColor: colorBackground,
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginVertical: 10,
-    color: '#333',
+    marginBottom: 20,
+    color: 'black',
   },
   buttonCentered: {
     borderRadius: 10,
@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 30,
     left: 30,
+    zIndex: 1,
   },
 
   /** Form Styles */
@@ -278,15 +279,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '28%',
     alignSelf: 'center',
-  },
-  groupTitle: {
-    position: 'absolute',
-    fontSize: 20,
-    alignContent:'center',
-    top: 50,
-    left: 30,
-    fontWeight: '600',
-    color: 'black'
+    marginTop: 30,
   },
   createGroupButton: {
     alignSelf: 'center',
@@ -318,7 +311,33 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'black',
     opacity: 0.6
-  }
+  },
+  menuTopRightNav: {
+    position: 'absolute',
+    top: 30,
+    right: 30,
+    zIndex: 1,
+  },
+
+/** View Post Section */
+  viewPostContainer: {
+    padding: 15,
+    backgroundColor: '#fff',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    marginBottom: 1,
+    elevation: 2,
+  },
+  postImgContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 200,
+    alignSelf: 'center',
+    marginTop: 30,
+  },
 });
+
 
 export default styles;

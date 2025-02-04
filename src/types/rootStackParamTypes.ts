@@ -1,4 +1,4 @@
-import{ User, UserChat } from '../API';
+import{ User, UserChat, Group } from '../API';
 
 export type SignInParamList = {
     SignIn: undefined;
@@ -22,7 +22,7 @@ export type GlobalParamList = {
     CreatePost: {groupID: string};
     ViewGroup: {groupID: string};
     ViewPost: {postID: string};
-    EditGroup: undefined;
+    EditGroup: {group: Group};
 }
 
 export type LoggedInParamList = {

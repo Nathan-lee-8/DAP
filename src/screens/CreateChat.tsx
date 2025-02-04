@@ -4,30 +4,31 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
 import client from '../client';
-import { createChat, createUserChat, createMessage } from '../graphql/mutations';
+import { createChat, createUserChat, createMessage, deleteChat, deleteMessage,
+    deleteUserChat } from '../graphql/mutations';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+import Icon from '@react-native-vector-icons/ionicons';
 
 //TODO: Add rollback in case of failure, create Loading screen
 const CreateChat = ( { route }: any) => {
+    const targetUser = route.params.user;
+    const [ message, setMessage ] = useState('');
+    const [ loading, setLoading ] = useState(false);
+    const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList, 'ChatRoom'>>();
     const authContext = useContext(AuthContext);
     if(!authContext) {
         console.log("Auth context not defined");
         return null;
     }
     const { userId } = authContext;
-    const targetUser = route.params.user;
-
-    const [ message, setMessage ] = useState('');
-    const [ loading, setLoading ] = useState(false);
-    const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList, 'ChatRoom'>>();
-
-    var targetDisplayName = targetUser.email;
-    if(targetUser.firstname) targetDisplayName = targetUser.firstname;
-    if(targetUser.lastname) targetDisplayName += " " + targetUser.lastname;
 
     const createChatRoom = async () => {
+        var chatID = null;
+        var firstMsgID = null;
+        const addedMembers = [];
+
         try{
             setLoading(true);
             const cognitoID = await getCurrentUser();
@@ -50,6 +51,8 @@ const CreateChat = ( { route }: any) => {
                 authMode: 'userPool'
             });
             console.log("chat created", chat.data.createChat);
+            chatID = chat.data.createChat.id;
+
             const myUserChat = await client.graphql({
                 query: createUserChat,
                 variables:{
@@ -64,6 +67,8 @@ const CreateChat = ( { route }: any) => {
                 authMode: 'userPool'
             })
             console.log("senderChat created", myUserChat.data.createUserChat);
+            addedMembers.push(myUserChat.data.createUserChat.id);
+
             const targetUserChat = await client.graphql({
                 query: createUserChat,
                 variables:{
@@ -78,6 +83,8 @@ const CreateChat = ( { route }: any) => {
                 authMode: 'userPool'
             })
             console.log("recieverChat created", targetUserChat.data.createUserChat);
+            addedMembers.push(targetUserChat.data.createUserChat.id);
+
             const msgData = await client.graphql({
                 query: createMessage,
                 variables:{
@@ -90,6 +97,8 @@ const CreateChat = ( { route }: any) => {
                 authMode: 'userPool'
             })
             console.log("Sent Message:", msgData.data.createMessage)
+            firstMsgID = msgData.data.createMessage.id;
+
             navigation.reset({
                 index: 1,
                 routes: [
@@ -98,16 +107,79 @@ const CreateChat = ( { route }: any) => {
                 }],
             });
         } catch (error: any) {
+            rollBack(addedMembers, chatID, firstMsgID);
             console.log(error);
         } finally {
             setLoading(false);
         }
     }
+
+    const rollBack = async (addedMembers: string[], chatID: string | null, firstMsgID: string | null) => {
+        //Delete Members (Userchats)
+        if(firstMsgID){
+            try{
+                await client.graphql({
+                    query: deleteMessage,
+                    variables: {
+                        input: {
+                            id: firstMsgID
+                        }
+                    },
+                    authMode:'userPool'
+                })
+            } catch (error) {
+                console.log(`Failed to rollback first message ID: ${firstMsgID}:`, error);
+            }
+        }
+
+        if(addedMembers.length > 0){
+            for( const member of addedMembers){
+                try{
+                    await client.graphql({
+                        query: deleteUserChat,
+                        variables: {
+                            input: {
+                                id: member
+                            }
+                        },
+                        authMode:'userPool'
+                    })
+                } catch (error) {
+                    console.log(`Failed to rollback member ID: ${member}:`, error);
+                }
+            }
+        }
+        
+        //delete Chat
+        if(chatID){
+            try{
+                await client.graphql({
+                    query: deleteChat,
+                    variables: {
+                        input: {
+                            id: chatID
+                        }
+                    },
+                    authMode:'userPool'
+                })
+            } catch (error) {
+                console.log(`Failed to rollback chat ID: ${chatID}:`, error);
+            }
+        }
+    }
+
+    const handleGoBack = () => {
+        navigation.goBack();
+    }
+
     if(loading) return <Text style={styles.container}>Loading...</Text>;
 
     return(
         <View style={[styles.container, {justifyContent: "flex-end"}]}> 
-            <Text style={[styles.title, {flex: 1}]}>{targetDisplayName}</Text>
+            <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
+                <Icon name="arrow-back" size={24} />
+            </TouchableOpacity>
+            <Text style={[styles.title, {flex: 1}]}>{targetUser.firstname + " " + targetUser.lastname}</Text>
             <View style={{flexDirection: 'row'}}>
                 <TextInput
                     style={styles.msgInput}
