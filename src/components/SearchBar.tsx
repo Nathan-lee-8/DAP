@@ -25,7 +25,7 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
       });
       const userData = users.data.listUsers.items;
       setData(userData);
-      await AsyncStorage.setItem('usersCache', JSON.stringify({userData: userData}));
+      await AsyncStorage.setItem('usersCache', JSON.stringify(userData));
       console.log('Fetched & cached from searchbar component.');
     } catch (error) {
       console.log('Error fetching users', error);
@@ -37,7 +37,7 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
       try {
         const cachedData = await AsyncStorage.getItem('usersCache');
         if (cachedData) {
-          const parsedData = JSON.parse(cachedData).userData;
+          const parsedData = JSON.parse(cachedData);
           setData(parsedData);
         } else {
           await fetchUsers();

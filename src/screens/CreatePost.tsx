@@ -77,8 +77,15 @@ const CreatePost = ({route}: any) => {
     )
   }
 
+  const handleGoBack = () => { 
+    navigation.goBack();
+  }
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
+        <Icon name="arrow-back" size={24} />
+      </TouchableOpacity>
       {loadingIMG ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (

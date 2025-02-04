@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, FlatList, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, TextInput, TouchableOpacity, Alert } from "react-native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
 import { useEffect } from "react";
@@ -14,7 +14,7 @@ import moment from 'moment';
 
 const ViewGroup = ({route} : any) => {
   const groupID = route.params.groupID;
-  const [group, setGroup] = useState<Group | null>();
+  const [group, setGroup] = useState<Group>();
   const fetchCurrentData = async () => {
     try{
       const currGroup = await client.graphql({
@@ -24,7 +24,11 @@ const ViewGroup = ({route} : any) => {
         },
         authMode:'userPool'
       })
-      console.log(currGroup.data.getGroup);
+      console.log("fetched from viewgroup");
+      if(currGroup.data.getGroup == null) {
+        console.log("Group is null");
+        return;
+      }
       setGroup(currGroup.data.getGroup);
     } catch (error: any) {
       console.log(error);
@@ -43,13 +47,27 @@ const ViewGroup = ({route} : any) => {
     navigation.navigate('ViewPost', {postID: currPostID});
   }
 
+  const handleGoBack = () => {
+    navigation.goBack();
+  }
+
+  const handleEditGroup = () => {
+    if(group) navigation.navigate('EditGroup', {group: group})
+    else Alert.alert("Group cannot be found");
+  }
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
+        <Icon name="arrow-back" size={24} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleEditGroup} style={styles.menuTopRightNav} >
+        <Icon name="ellipsis-horizontal-sharp" size={24} />
+      </TouchableOpacity>
       <View style={styles.groupImgContainer}>
         <ProfilePicture uri={group?.groupURL ? group?.groupURL : undefined} 
           size={100} style={styles.groupImg}/>
       </View>
-      <Text style={styles.groupTitle}>{group?.groupName}</Text>
       <TouchableOpacity onPress={createGroupPost} style={{flexDirection: 'row', marginTop: -25}}>
         <TextInput
           style={styles.msgInput}

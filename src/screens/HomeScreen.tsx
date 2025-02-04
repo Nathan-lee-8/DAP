@@ -20,39 +20,15 @@ import { GlobalParamList, LoggedInParamList } from '../types/rootStackParamTypes
  *    view feed, edit profile, find other users and send messages
  */
 const HomeScreen = () => {
+  const [newsFeed, setNewsFeed] = useState<Post[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loading, setLoading] = useState(true);
   const authContext = useContext(AuthContext);
   if(!authContext) {
     console.log("Auth context not defined");
     return null;
   };
-  const { userId, userEmail, setProfileURL, setUserId, setFirstName, setLastName } = authContext;
-
-  const [newsFeed, setNewsFeed] = useState<Post[]>([]);
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  //Reset Cache if it was cleared but user is still logged in
-  useEffect(() => {
-    const fetchUserId = async () => {
-      try{
-        const data = await client.graphql({
-          query: userByEmail,
-          variables: { email: userEmail.toLowerCase() },
-          authMode: 'userPool'
-        });
-        const user = data.data.userByEmail.items[0];
-        setUserId(user.id);
-        if (user.firstname) setFirstName(user.firstname);
-        if (user.lastname) setLastName(user.lastname);
-        if (user.profileURL) setProfileURL(user.profileURL)
-      } catch (error: any) {
-        if(error.messsage) console.log('Error fetching user ID', error.message);
-        else if(error.errors) console.log('Error fetching user ID', error.errors);
-        else console.log('Error fetching user ID', error);
-      } 
-    };
-    if(userId == '') fetchUserId();
-  }, [userEmail]);
+  const { userId } = authContext;
 
   useEffect(() => {
     if(userId){
@@ -70,6 +46,8 @@ const HomeScreen = () => {
           setNewsFeed(data.posts);
           setLoading(false);
           return;
+        }else{
+          await fetchNewsFeed();
         }
       }else{
         await fetchNewsFeed();

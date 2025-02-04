@@ -1,7 +1,9 @@
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ProfilePicture';
+import Icon from '@react-native-vector-icons/ionicons';
+import { useNavigation } from '@react-navigation/native';
 
 const ViewProfiles = ( { route } : any) => {
     const targetUser = route.params?.user;
@@ -10,9 +12,17 @@ const ViewProfiles = ( { route } : any) => {
     const profileURL = targetUser.profileURL === null ? undefined: targetUser.profileURL;
     const creationDate = targetUser.createdAt ? new Date(targetUser.createdAt).toLocaleDateString() : "unknown";
 
+    const navigation = useNavigation();
+    const handleGoBack = () => {
+        navigation.goBack();
+    }
+    
     return(
         <View style={styles.container}>
-            <View style={[styles.profileSection, {marginBottom: 25}]}>
+            <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
+                <Icon name="arrow-back" size={24} />
+            </TouchableOpacity>
+            <View style={[styles.profileSection, {marginVertical: 35}]}>
                 <ProfilePicture uri={profileURL} size={100} />
                 <View style={styles.textContainer}>
                     <Text style={styles.postAuthor}>{targetUser.firstname} {targetUser.lastname}</Text>

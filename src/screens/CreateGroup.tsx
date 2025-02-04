@@ -11,6 +11,7 @@ import { createUserGroup, createGroup, deleteUserGroup, deleteGroup } from '../g
 import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import { getImgURI } from '../components/addImg';
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * @returns 
@@ -31,7 +32,6 @@ const CreateGroup = () => {
   const { userId } = authContext;
   
   const addGroup = async () => {
-
     var groupID = null;
     const addedMembers = [];
 
@@ -160,6 +160,11 @@ const CreateGroup = () => {
     }
   }
 
+  const navigation = useNavigation();
+  const handleGoBack = () => {
+    navigation.goBack();
+  }
+
   if(loading) {
     return(
       <ActivityIndicator size="large" color="#0000ff" />
@@ -168,6 +173,9 @@ const CreateGroup = () => {
 
   return(
     <View style={styles.container}>
+      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
+        <Icon name="arrow-back" size={24} />
+      </TouchableOpacity>
       {imgLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (

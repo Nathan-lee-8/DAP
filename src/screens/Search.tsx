@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput } from 'react-native';
-import { Group } from '../API';
+import { Group, User } from '../API';
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import { listGroups } from '../graphql/queries';
@@ -10,21 +10,27 @@ import filter from 'lodash/filter';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState('Users');
   const [selected, setSelected] = useState(true);
 
-  const handleSelected = ( item: string) => {
+  const handleSelected = ( item : string) => {
     setSearchTerm(item);
     setSelected(true);
+  }
+
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
+  const handleViewUser = ( user: User) => {
+    navigation.navigate('ViewProfile', {user: user});
   }
 
   return (
     <View style={styles.container}>
       <View style={{flexDirection:'row'}}>
         {searchTerm === 'Users' ? (
-          <SearchBar width={'80%'}/>
+          <SearchBar width={'80%'} userPressed={handleViewUser}/>
         ) : searchTerm === 'Groups' ? (
           <GroupSearch />
         ) : null}
@@ -62,13 +68,27 @@ const GroupSearch = () => {
         authMode:'userPool'
       })
       setData(groups.data.listGroups.items);
-      console.log("fetchedGroups", groups.data.listGroups.items)
+      AsyncStorage.setItem('groupCache', JSON.stringify(groups.data.listGroups.items));
+      console.log("fetchedGroups from search")
     } catch (error) {
       console.log(error);
     }
   }
+
   useEffect(() => {
-    fetchGroups();
+    const initializeCache = async () => { 
+      try{
+        const cachedData = await AsyncStorage.getItem('groupCache');
+        if(cachedData){
+          setData(JSON.parse(cachedData).groupData);
+        } else {
+          fetchGroups();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    initializeCache();
   }, []);
 
   const handleSearch = async (query: string) => {
