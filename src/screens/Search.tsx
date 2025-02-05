@@ -30,13 +30,13 @@ const Search = () => {
     <View style={styles.container}>
       <View style={{flexDirection:'row'}}>
         {searchTerm === 'Users' ? (
-          <SearchBar width={'80%'} userPressed={handleViewUser}/>
+          <SearchBar width={'85%'} userPressed={handleViewUser}/>
         ) : searchTerm === 'Groups' ? (
           <GroupSearch />
         ) : null}
         <View>
           <TouchableOpacity style={styles.searchTermContainer} onPress={() => setSelected(!selected)}>
-            <Text>{searchTerm}</Text>
+            <Text style={{textAlign: 'center'}}>{searchTerm}</Text>
           </TouchableOpacity>
           <FlatList
             data={['Users', 'Groups']}
@@ -46,7 +46,7 @@ const Search = () => {
               if(item === searchTerm) currStyle = styles.searchTermSelected;
               return(
                 <TouchableOpacity style={currStyle} onPress={() => handleSelected(item)}>
-                  <Text>{item}</Text>
+                  <Text style={{textAlign: 'center'}}>{item}</Text>
                 </TouchableOpacity>
             )}}
           />
@@ -80,7 +80,7 @@ const GroupSearch = () => {
       try{
         const cachedData = await AsyncStorage.getItem('groupCache');
         if(cachedData){
-          setData(JSON.parse(cachedData).groupData);
+          setData(JSON.parse(cachedData));
         } else {
           fetchGroups();
         }
@@ -103,7 +103,7 @@ const GroupSearch = () => {
       const id = group.id.toString();
       return name.includes(formattedSearch) || id.includes(formattedSearch);
     });
-    setFilteredData(results)
+    setFilteredData(results);
   }
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -112,7 +112,7 @@ const GroupSearch = () => {
   }
 
   return(
-    <View style={{width: '80%'}}>
+    <View style={{width: '85%'}}>
       <TextInput
         style={styles.input}
         value={search}

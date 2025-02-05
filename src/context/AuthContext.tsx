@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserId(user.id);
         if (user.firstname) setFirstName(user.firstname);
         if (user.lastname) setLastName(user.lastname);
-        if (user.profileURL) setProfileURL(user.profileURL)
+        if (user.profileURL) setProfileURL(user.profileURL);
         setSignedIn(true);
       } catch (error) {
         console.log('Error fetching user attributes:', error);

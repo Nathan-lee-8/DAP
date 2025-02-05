@@ -185,7 +185,7 @@ const CreateGroup = () => {
         </TouchableOpacity>
       )}
       <TextInput
-        style={styles.input}
+        style={[styles.input, {marginTop: -40}]}
         placeholder="Group name"
         autoCapitalize="sentences"
         value={groupName}

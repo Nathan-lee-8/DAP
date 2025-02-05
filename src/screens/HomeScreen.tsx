@@ -14,10 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList, LoggedInParamList } from '../types/rootStackParamTypes';
 
 /**
- * Displays the active HomeScreen for the current user including:
- * The News feed which has the current active news feed for user
- * A tab view at the bottom which allows users to: create a post, 
- *    view feed, edit profile, find other users and send messages
+ * Displays the active News feed for the current user
  */
 const HomeScreen = () => {
   const [newsFeed, setNewsFeed] = useState<Post[]>([]);
@@ -31,9 +28,7 @@ const HomeScreen = () => {
   const { userId } = authContext;
 
   useEffect(() => {
-    if(userId){
-      loadNewsFeed();
-    }
+    loadNewsFeed();
   }, [userId]);
 
   const loadNewsFeed = async () => {
@@ -46,19 +41,16 @@ const HomeScreen = () => {
           setNewsFeed(data.posts);
           setLoading(false);
           return;
-        }else{
-          await fetchNewsFeed();
         }
-      }else{
-        await fetchNewsFeed();
       }
+      await fetchNewsFeed();
     } catch (error) {
       console.log('Error loading cached news feed', error);
     }
   };
 
-  const fetchNewsFeed = async () => { 
-    if(userId == '') {
+  const fetchNewsFeed = async () => {
+    if(userId === '') {
       console.log("User ID is empty");
       return;
     };
@@ -127,7 +119,7 @@ const HomeScreen = () => {
 
   const onRefresh = useCallback(() => {
     fetchNewsFeed();
-  }, []);
+  }, [userId]);
 
   return (
     <View style={styles.container}>
@@ -168,10 +160,10 @@ const HomeScreen = () => {
           )}
           refreshControl={
             <RefreshControl
-                refreshing={loading}
-                onRefresh={onRefresh}
-                colors={['#9Bd35A', '#689F38']}  // Customize loading spinner color
-                progressBackgroundColor="#ffffff" // Background color of the spinner
+              refreshing={loading}
+              onRefresh={onRefresh}
+              colors={['#9Bd35A', '#689F38']}
+              progressBackgroundColor="#ffffff" 
             />
           }
         />

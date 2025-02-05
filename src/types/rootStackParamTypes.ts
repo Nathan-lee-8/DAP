@@ -1,9 +1,8 @@
-import{ User, UserChat, Group } from '../API';
+import{ User, Group } from '../API';
 
 export type SignInParamList = {
     SignIn: undefined;
-    SignUp: undefined;
-    Verify: {password: string};
+    Verify: {password?: string};
     ResetPassword: undefined;
 };
 
@@ -16,7 +15,7 @@ export type GlobalParamList = {
     MainTabs: undefined;
     ViewProfile: {user: User};
     ViewFollowing: {userID: string};
-    ChatRoom: { userChat: UserChat};
+    ChatRoom: { chatID: string};
     CreateChat: { user: User};
     CreateGroup: undefined;
     CreatePost: {groupID: string};

@@ -5,8 +5,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { SignInParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
-import Icon from '@react-native-vector-icons/ionicons'
-import styles from '../styles/Styles'
+import Icon from '@react-native-vector-icons/ionicons';
+import styles from '../styles/Styles';
 
 /**
  * Retrieves the User input email and password. Signs in with Cognito and sets
@@ -27,13 +27,14 @@ const SignIn = () => {
     try{
       const res = await signIn({ username: userEmail, password: password });
       if(!res.isSignedIn){
-        navigation.navigate('Verify', {password: password});
-        Alert.alert('Please verify your email before signing in.');
+        Alert.alert('Error', 'Please verify your email before signing in.',[
+          { text: 'OK', onPress: () => navigation.navigate('Verify', {}) }
+        ]);
         return;
       };
       setSignedIn(true);
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error', 'Invalid email & password or account does not exist.');
     };
   };
 

@@ -586,6 +586,7 @@ export const getChat = /* GraphQL */ `query GetChat(
           id
           firstname
           lastname
+          email
           profileURL
           createdAt
           updatedAt
@@ -595,6 +596,7 @@ export const getChat = /* GraphQL */ `query GetChat(
         chatID
         owner
         createdAt
+        updatedAt
         __typename
       }
       nextToken
@@ -603,13 +605,27 @@ export const getChat = /* GraphQL */ `query GetChat(
     participants {
       items{
         id
+        ownerID
         unreadMessageCount
+        lastMessage
+        lastReadAt
+        isMuted
+        userID
+        chatID
         user{
           id
           firstname
           lastname
+          email
           profileURL
+          createdAt
+          updatedAt
+          owner
+          __typename
         }
+        createdAt
+        updatedAt
+        __typename
         __typename
       }
       nextToken

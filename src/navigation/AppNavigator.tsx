@@ -45,7 +45,7 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       {isSignedIn ? (
-        <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center', headerShown: false}}>
+        <GlobalStack.Navigator screenOptions={{headerShown: false}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
@@ -57,10 +57,11 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
         </GlobalStack.Navigator>
       ) : (
-        <SignInTopTab.Navigator style={styles.topTab}>
-          <SignInTopTab.Screen name="SignInRoute" component={SignInNav} options={{title: 'Sign In'}} />
-          <SignInTopTab.Screen name="SignUpRoute" component={SignUpNav} options={{title: 'Sign Up'}} />
-        </SignInTopTab.Navigator>
+        <SignInStack.Navigator screenOptions={{headerShown: false}}>
+          <SignInStack.Screen name="SignIn" component={SignInTopTabs} options={{title: 'Sign In'}} />
+          <SignInStack.Screen name="Verify" component={Verify}/>
+          <SignInStack.Screen name="ResetPassword" component={ResetPassword} />
+        </SignInStack.Navigator>
       )}
     </NavigationContainer>
   )
@@ -111,25 +112,12 @@ const BottomTabs = () => {
   )
 }
 
-const SignInNav = () => {
+const SignInTopTabs = () => {
   return(
-    <SignInStack.Navigator initialRouteName='SignIn' >
-      <SignInStack.Screen name="SignIn" component={SignIn} 
-        options={{headerShown: false}}/>
-      <SignInStack.Screen name="ResetPassword" component={ResetPassword} 
-        options={{title: 'Reset Password'}}/>
-    </SignInStack.Navigator>
-  )
-}
-
-const SignUpNav = () => {
-  return( 
-    <SignInStack.Navigator initialRouteName='SignUp' >
-      <SignInStack.Screen name="SignUp" component={SignUp} 
-        options={{headerShown: false}}/>
-      <SignInStack.Screen name="Verify" component={Verify} 
-      options={{title: 'Verify'}}/>
-    </SignInStack.Navigator>
+    <SignInTopTab.Navigator style={styles.topTab}>
+      <SignInTopTab.Screen name="SignInRoute" component={SignIn} options={{title: 'Sign In'}} />
+      <SignInTopTab.Screen name="SignUpRoute" component={SignUp} options={{title: 'Sign Up'}} />
+    </SignInTopTab.Navigator>
   )
 }
 

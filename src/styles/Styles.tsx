@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingVertical: 40,
+    paddingVertical: 20,
     backgroundColor: colorBackground,
   },
   title: {
@@ -88,6 +88,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  note: {
+    marginTop: -10,
+    marginBottom: 8,
+    fontSize: 12,
+  },
 
   /** User Posts styles */
   postContainer: {
@@ -143,8 +148,6 @@ const styles = StyleSheet.create({
 
   /** Search User Styles  */
   searchUserContainer: {
-    margin: 5,
-    padding: 5,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
@@ -154,22 +157,25 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 10,
     backgroundColor: 'white',
-    marginBottom: 5,
   },
   searchTermContainer: {
-    marginLeft: 10,
     height: 40,
-    width: 80,
-    padding: 10,
+    width: 60,
+    alignContent:'center',
+    alignItems:'center',
+    justifyContent: 'center',
+    textAlign: 'center',
     borderWidth: 1,
     borderColor: 'black',
     backgroundColor: 'white',
   },
   searchTermSelected: {
-    marginLeft: 10,
     height: 40,
-    width: 80,
-    padding: 10,
+    width: 60,
+    alignContent:'center',
+    alignItems:'center',
+    justifyContent: 'center',
+    textAlign: 'center',
     borderWidth: 1,
     borderColor: 'black',
     backgroundColor: 'grey'
@@ -271,15 +277,20 @@ const styles = StyleSheet.create({
   /** Groups Section */
   groupImg: {
     width: '100%',
-    height: 170,
+    height: 190,
     alignSelf: 'center',
   },
   groupImgContainer: {
-    position: 'relative',
     width: '100%',
-    height: '28%',
+    height: 190,
     alignSelf: 'center',
-    marginTop: 30,
+  },
+  groupMembersContainer: {
+    padding: 5,
+    marginBottom: 20,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderRadius: 10,
   },
   createGroupButton: {
     alignSelf: 'center',
@@ -317,6 +328,18 @@ const styles = StyleSheet.create({
     top: 30,
     right: 30,
     zIndex: 1,
+  },
+  menuTopRightList: {
+    position: 'absolute',
+    top: 60,
+    right: 30,
+    zIndex: 1,
+  },
+  menuTopRightItem: {
+    alignItems: 'flex-end',
+    padding: 5,
+    borderBottomWidth: 1,
+    backgroundColor: 'white'
   },
 
 /** View Post Section */
