@@ -84,7 +84,7 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
   }
   
   return (
-    <View style={{width: width}}>
+    <View style={{width: width, marginBottom: 10}}>
       <TextInput
         style={styles.input}
         value={search}

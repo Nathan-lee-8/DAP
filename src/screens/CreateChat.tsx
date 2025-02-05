@@ -103,7 +103,7 @@ const CreateChat = ( { route }: any) => {
                 index: 1,
                 routes: [
                     { name: 'MainTabs'},
-                    { name: 'ChatRoom', params: { userChat: myUserChat.data.createUserChat } 
+                    { name: 'ChatRoom', params: { chatID: chat.data.createChat.id } 
                 }],
             });
         } catch (error: any) {

@@ -6,8 +6,9 @@ import Icon from '@react-native-vector-icons/ionicons';
 import ProfilePicture from '../components/ProfilePicture';
 import { getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
-import  { updateGroup } from '../graphql/mutations';
+import  { deleteUserGroup, updateGroup } from '../graphql/mutations';
 import client from '../client';
+import { UserChat } from '../API';
 
 const EditGroup = ( {route}: any) => {
   const group = route.params.group;
@@ -17,7 +18,8 @@ const EditGroup = ( {route}: any) => {
   const [ filepath, setFilepath ] = useState<string>(group.groupURL);
   const [ name, setName ] = useState<string>(group.groupName);
   const [ description, setDescription ] = useState<string>(group.description);
-  //const [ members, setMembers ] = useState<string[]>(group.members?.items?.map((member: any) => member.id));
+  const [ members, setMembers ] = useState<UserChat[]>(group.members?.items);
+  const [ removedMembers, setRemovedMembers ] = useState<string[]>([]);
 
   const getFilePath = async () => {
     try{
@@ -50,12 +52,27 @@ const EditGroup = ( {route}: any) => {
         authMode: 'userPool'
       })
       console.log("Group updated successfully");
+      for(const member of removedMembers){
+        await client.graphql({
+          query: deleteUserGroup,
+          variables: {
+            input: { id: member }
+          },
+          authMode: 'userPool'
+        })
+        console.log("Member removed successfully");
+      }
     } catch(error){
       console.log(error);
     } finally{
       setLoading(false);
       handleGoBack();
     }
+  }
+
+  const removeMember = ( item: UserChat) => {
+    setRemovedMembers((removedMembers) => [...removedMembers, item.id]);
+    setMembers(members.filter((member) => member.id !== item.id));
   }
 
   const navigation = useNavigation();
@@ -93,9 +110,9 @@ const EditGroup = ( {route}: any) => {
         placeholder={description ? description : 'No description'}
         onChangeText={setDescription}
       />
-      <Text>{group.members?.items?.length} Members</Text>
+      <Text>{members.length} Members</Text>
       <FlatList
-        data={group?.members?.items}
+        data={members}
         renderItem={(item) => {
           var user = item.item?.user;
           var profileURL = user?.profileURL ? user?.profileURL : undefined;
@@ -105,7 +122,7 @@ const EditGroup = ( {route}: any) => {
               <View style={styles.textContainer}>
                 <Text style={styles.postAuthor}>{user?.firstname + " " + user?.lastname}</Text>
               </View>
-              <TouchableOpacity style={{marginLeft: 'auto'}}>
+              <TouchableOpacity style={{marginLeft: 'auto'}} onPress={() => removeMember(item.item)}>
                 <Icon name="person-remove-outline" size={20}/>
               </TouchableOpacity>
             </View>

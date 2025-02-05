@@ -1,6 +1,6 @@
 
-import { useContext, useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity, FlatList } from 'react-native';
+import { useContext, useEffect, useState, useCallback } from 'react';
+import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
 import styles from '../styles/Styles';
 import client from '../client';
 import { AuthContext } from '../context/AuthContext';
@@ -62,6 +62,10 @@ const Groups = () => {
   useEffect(() => {
     loadGroups();
   }, []);
+
+  const onRefresh = useCallback(() => {
+    fetchGroups();
+  }, []);
   
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const createGroup = () => {
@@ -111,6 +115,14 @@ const Groups = () => {
           <View>
             <Text style={styles.noResultsMsg}>No groups found.</Text>
           </View>
+        }
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={onRefresh}
+            colors={['#9Bd35A', '#689F38']}
+            progressBackgroundColor="#ffffff" 
+          />
         }
       />
     </View>

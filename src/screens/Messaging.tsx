@@ -57,7 +57,7 @@ const MessageUsers = () => {
       const participants = chatRoom.chat?.participants?.items;
       if(participants && participants[0] && participants[1] && 
         (participants[0].user?.owner === user.owner || participants[1].user?.owner === user.owner)){
-        navigation.navigate('ChatRoom', { userChat: chatRoom });
+        navigation.navigate('ChatRoom', { chatID: chatRoom.chatID });
         return;
       }
       
@@ -66,7 +66,7 @@ const MessageUsers = () => {
   };
 
   const handleOpenChatRoom = (chatRoom: UserChat) => {
-    navigation.navigate('ChatRoom', { userChat: chatRoom });
+    navigation.navigate('ChatRoom', { chatID: chatRoom.chatID });
   }
 
   if (loading) {

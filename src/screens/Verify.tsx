@@ -5,6 +5,8 @@ import client from '../client';
 import { createUser } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles'
+import { useNavigation } from '@react-navigation/native';
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Retrieves the email, firstname, and lastname entered from the sign up page and 
@@ -12,20 +14,21 @@ import styles from '../styles/Styles'
  * user is successfully verified through Cognito, the user info is added to dynamodb
  * tables. The user then is navigated to the home page.
  */
-const VerifyScreen = ( route : any) => {
+const VerifyScreen = ( {route} : any ) => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
     console.log("Auth context not defined");
     return null;
   }
   const { userEmail, firstname, lastname, setSignedIn } = authContext;
+  const [password, setPassword] = useState(route.params.password);
   const [code, setCode] = useState('');
+  console.log('pw is: ', password)
 
   const handleVerification = async () => {
     try {
       await confirmSignUp({username: userEmail, confirmationCode: code });
-      const password = route.route.params.password;
-      await signIn({ username: userEmail, password: password });
+      await signIn({username: userEmail, password: password});
       await client.graphql({
         query: createUser,
         variables: {
@@ -53,9 +56,18 @@ const VerifyScreen = ( route : any) => {
     }
   }
 
+  const navigation = useNavigation();
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  }
+
   return (
     <View style={[styles.container, styles.formContainer]}>
-      <Text style={[styles.title, {marginBottom: 35}]}>Email sent to: {userEmail}</Text>
+      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
+        <Icon name="arrow-back" size={24} />
+      </TouchableOpacity>
+      <Text style={styles.label}>Enter verification code sent to {userEmail}</Text>
       <TextInput
         style={styles.input}
         placeholder="Enter verification code"
@@ -64,6 +76,18 @@ const VerifyScreen = ( route : any) => {
         keyboardType="numeric"
         maxLength={6}
       />
+      {!password ? (
+        <View>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter password used at account creation"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+        </View>
+      ) : (null)}
       <View style={{flexDirection: 'row', alignSelf: 'center'}}>
         <TouchableOpacity style={styles.buttonCentered} onPress={ resendSignUp }>
           <Text style={styles.buttonText}>Resend</Text>

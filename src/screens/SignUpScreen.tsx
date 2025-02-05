@@ -25,8 +25,15 @@ const SignUp = () => {
   const handleSignUp = async () => {
     try{
       await signUp({ username: userEmail, password: password });
-      navigation.navigate('Verify', {password: "password"});
+      navigation.navigate('Verify', {password: password});
     } catch (error: any) {
+      if(error.message.includes("User already exists")){
+        Alert.alert('Account exists', 'Verify your account or navigate to Sign-in page.',[
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Verify', onPress: () => navigation.navigate('Verify', {} )},
+        ]);
+        return;
+      }
       Alert.alert('Error', error.message);
     };
   };
@@ -60,6 +67,7 @@ const SignUp = () => {
           onChangeText={setUserEmail}
         />
         <Text style={styles.label}>Password</Text>
+        <Text style={styles.note}>*Note: Password can not be changed until account is verified</Text>
         <TextInput
           style={styles.input}
           placeholder="Password"
