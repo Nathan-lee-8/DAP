@@ -69,11 +69,15 @@ const ChatRoom = ( { route } : any) => {
             });
             const chatData = chat.data.getChat;
             console.log("chat fetched from chatroom");
-            if(chatData?.messages) setMessages( chatData?.messages.items.filter(item => { return item !== null}));
+            if(chatData?.messages){
+                setMessages(
+                    chatData.messages.items.filter((item): item is Message => item !== null)
+                )
+            }
             let parts = chatData?.participants?.items.filter(item => {return item !== null});
             if(parts){
-                setParticipants(parts.filter(item => item.userID !== userId));
-                setMyUserChat(parts.find(item => item.userID === userId));
+                setParticipants(parts.filter((item): item is UserChat => item?.userID !== userId));
+                setMyUserChat(parts.find((item): item is UserChat  => item?.userID === userId));
             }
             setNextToken(chatData?.messages?.nextToken);
         } catch (error: any) {

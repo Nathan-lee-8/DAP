@@ -72,7 +72,7 @@ const HomeScreen = () => {
       });
       setGroups(groupData.filter(group => group !== null))
       let posts = userGroupData.flatMap(userGroup => {
-        return (userGroup.group?.posts?.items || []).filter(post => post !== null);
+        return (userGroup.group?.posts?.items || []).filter((post): post is Post => post !== null);
       })
       posts = posts.sort((a, b) => {
         const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
