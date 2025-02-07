@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingVertical: 20,
+    paddingVertical: 60,
     backgroundColor: colorBackground,
   },
   title: {
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   },
   goBackButton: {
     position: 'absolute',
-    top: 30,
+    top: 50,
     left: 30,
     zIndex: 1,
   },
@@ -325,13 +325,13 @@ const styles = StyleSheet.create({
   },
   menuTopRightNav: {
     position: 'absolute',
-    top: 30,
+    top: 60,
     right: 30,
     zIndex: 1,
   },
   menuTopRightList: {
     position: 'absolute',
-    top: 60,
+    top: 90,
     right: 30,
     zIndex: 1,
   },
