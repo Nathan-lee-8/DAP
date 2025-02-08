@@ -4,10 +4,9 @@ import { createComment } from '../graphql/mutations';
 import { getPost } from '../graphql/queries';
 import client from '../client';
 import styles from '../styles/Styles';
-import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
 import { Post } from '../API';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 import moment from 'moment';
 
 const ViewPost = ( {route} : any) => {
@@ -34,10 +33,6 @@ const ViewPost = ( {route} : any) => {
     fetchPost();
   }, [postID]);
 
-  const navigation = useNavigation();
-  const goBackButton = () => {
-    navigation.goBack();
-  }
 
   const postComment = async () => {
     if(!postData?.userID) return;
@@ -63,17 +58,13 @@ const ViewPost = ( {route} : any) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{postData?.title}</Text>
-      <TouchableOpacity style={styles.goBackButton} onPress={goBackButton}>
-        <Icon name="arrow-back" size={24} />
-      </TouchableOpacity>
+      <Text>{postData?.title}</Text>
       <View style={styles.viewPostContainer}>
         <Text>{postData?.content}</Text>
         {postData?.postURL ? (
           <ProfilePicture 
-            uri={postData?.postURL[0] ? postData?.postURL[0] : undefined} 
+            uri={postData?.postURL[0] ? postData?.postURL[0] : 'defaultUser'} 
             style={styles.postImgContainer}
-            size={25}
           />
         ):( null )}
       </View>
@@ -82,7 +73,7 @@ const ViewPost = ( {route} : any) => {
         renderItem={(item) => (
           <View style={styles.viewPostContainer}>
             <View style={styles.profileSection}>
-              <ProfilePicture uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : undefined} size={20}/>
+              <ProfilePicture uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : 'defaultUser'}/>
               <Text style={[styles.postAuthor, {marginLeft: 5}]}>{item.item?.user?.firstname} {item.item?.user?.lastname}</Text>
             </View>
             <Text style={styles.postDate}>{moment(item.item?.createdAt).fromNow()}</Text>

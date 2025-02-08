@@ -168,18 +168,11 @@ const CreateChat = ( { route }: any) => {
         }
     }
 
-    const handleGoBack = () => {
-        navigation.goBack();
-    }
-
     if(loading) return <Text style={styles.container}>Loading...</Text>;
 
     return(
         <View style={[styles.container, {justifyContent: "flex-end"}]}> 
-            <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
-                <Icon name="arrow-back" size={24} />
-            </TouchableOpacity>
-            <Text style={[styles.title, {flex: 1}]}>{targetUser.firstname + " " + targetUser.lastname}</Text>
+            <Text style={[styles.contentText, {marginBottom: 'auto'}]}>{targetUser.firstname + " " + targetUser.lastname}</Text>
             <View style={{flexDirection: 'row'}}>
                 <TextInput
                     style={styles.msgInput}
@@ -188,7 +181,7 @@ const CreateChat = ( { route }: any) => {
                     onChangeText={setMessage}
                 />
                 <TouchableOpacity style={styles.msgButton} onPress={createChatRoom} >
-                    <Text style={styles.buttonText}>Send</Text>
+                    <Icon name="send" size={30} />
                 </TouchableOpacity>
             </View>
         </View>

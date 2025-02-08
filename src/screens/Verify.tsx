@@ -4,9 +4,7 @@ import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import client from '../client';
 import { createUser } from '../graphql/mutations';
 import { AuthContext } from '../context/AuthContext';
-import styles from '../styles/Styles'
-import { useNavigation } from '@react-navigation/native';
-import Icon from '@react-native-vector-icons/ionicons';
+import styles from '../styles/Styles';
 
 /**
  * Retrieves the email, firstname, and lastname entered from the sign up page and 
@@ -23,7 +21,6 @@ const VerifyScreen = ( {route} : any ) => {
   const { userEmail, firstname, lastname, setSignedIn } = authContext;
   const [password, setPassword] = useState(route.params.password);
   const [code, setCode] = useState('');
-  console.log('pw is: ', password)
 
   const handleVerification = async () => {
     try {
@@ -56,44 +53,36 @@ const VerifyScreen = ( {route} : any ) => {
     }
   }
 
-  const navigation = useNavigation();
-
-  const handleGoBack = () => {
-    navigation.goBack();
-  }
-
   return (
-    <View style={[styles.container, styles.formContainer]}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
-        <Icon name="arrow-back" size={24} />
-      </TouchableOpacity>
-      <Text style={styles.label}>Enter verification code sent to {userEmail}</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter verification code"
-        value={code}
-        onChangeText={setCode}
-        keyboardType="numeric"
-        maxLength={6}
-      />
-      {!password ? (
-        <View>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter password used at account creation"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
-      ) : (null)}
-      <View style={{flexDirection: 'row', alignSelf: 'center'}}>
-        <TouchableOpacity style={styles.buttonCentered} onPress={ resendSignUp }>
-          <Text style={styles.buttonText}>Resend</Text>
+    <View style={styles.container}>
+      <View style={styles.formContainer}>
+        <Text style={styles.contentText}>Verification email sent to:
+          <Text style={{color: "#007BFF"}}> {userEmail}</Text>
+        </Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter verification code"
+          value={code}
+          onChangeText={setCode}
+          keyboardType="numeric"
+          maxLength={6}
+        />
+        {!password ? (
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter password used at account creation"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
+        ) : (null)}
+        <TouchableOpacity style={styles.buttonBlack} onPress={ resendSignUp }>
+          <Text style={styles.buttonTextWhite}>Resend</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonCentered} onPress={ handleVerification }>
-          <Text style={styles.buttonText}>Verify</Text>
+        <TouchableOpacity style={styles.buttonWhite} onPress={ handleVerification }>
+          <Text style={styles.buttonTextBlack}>Verify</Text>
         </TouchableOpacity>
       </View>
     </View>

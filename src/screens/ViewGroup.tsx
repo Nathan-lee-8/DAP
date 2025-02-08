@@ -5,7 +5,7 @@ import { getGroup } from '../graphql/queries';
 import { useEffect } from "react";
 import { Group } from '../API'
 import styles from '../styles/Styles'
-import ProfilePicture from "../components/ProfilePicture";
+import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalParamList } from "../types/rootStackParamTypes";
@@ -48,10 +48,6 @@ const ViewGroup = ({route} : any) => {
   const clickPost = (currPostID : any) => {
     navigation.navigate('ViewPost', {postID: currPostID});
   }
-
-  const handleGoBack = () => {
-    navigation.goBack();
-  }
   
   const handleMenuPress = ( option : string) => {
     if(option === 'Edit Group') handleEditGroup();
@@ -70,10 +66,7 @@ const ViewGroup = ({route} : any) => {
   if(viewMembers){
     return(
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => setViewMembers(false)} style={styles.goBackButton} >
-          <Icon name="arrow-back" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Members</Text>
+        <Text style={styles.contentText}>Members</Text>
           <FlatList
             data={group?.members?.items}
             renderItem={(item) => {
@@ -81,7 +74,7 @@ const ViewGroup = ({route} : any) => {
               var profileURL = user?.profileURL ? user?.profileURL : undefined;
               return(
                 <View style={[styles.postContainer, styles.profileSection]}>
-                  <ProfilePicture uri={profileURL} size={30}/>
+                  <ProfilePicture uri={profileURL ? profileURL : 'defaultUser'}/>
                   <View style={styles.textContainer}>
                     <Text style={styles.postAuthor}>{user?.firstname + " " + user?.lastname}</Text>
                   </View>
@@ -95,11 +88,8 @@ const ViewGroup = ({route} : any) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
-        <Icon name="arrow-back" size={24} />
-      </TouchableOpacity>
       <TouchableOpacity onPress={() => setViewMenu(!viewMenu)} style={styles.menuTopRightNav} >
-        <Icon name="ellipsis-horizontal-sharp" size={24} />
+        <Icon name="ellipsis-horizontal-sharp" size={24} color={'white'}/>
       </TouchableOpacity>
       <FlatList
         data={['Edit Group', 'Leave Group']}
@@ -114,8 +104,7 @@ const ViewGroup = ({route} : any) => {
         style={styles.menuTopRightList}
       />
       <View style={styles.groupImgContainer}>
-        <ProfilePicture uri={group?.groupURL ? group?.groupURL : undefined} 
-          size={100} style={styles.groupImg}/>
+        <ProfilePicture uri={group?.groupURL ? group?.groupURL : 'defaultGroup'} style={styles.groupImg}/>
       </View>
       <View style={styles.groupMembersContainer}>
         <View style={{flexDirection: 'row'}}>
@@ -135,7 +124,7 @@ const ViewGroup = ({route} : any) => {
                 var user = item.item?.user;
                 var profileURL = user?.profileURL ? user?.profileURL : undefined;
                 return(
-                  <ProfilePicture uri={profileURL} size={30}/>
+                  <ProfilePicture uri={profileURL? profileURL : 'defaultUser'}/>
                 )
               }}
               numColumns={5}
@@ -158,7 +147,7 @@ const ViewGroup = ({route} : any) => {
           return(
             <TouchableOpacity style={[styles.postContainer]} onPress={() => clickPost(item.item?.id)}>
               <View style={styles.profileSection}>
-                <ProfilePicture uri={URL} size={30}/>
+                <ProfilePicture uri={URL ? URL : 'defaultUser'}/>
                 <View style={styles.textContainer}>
                   <Text style={styles.postAuthor}>{item.item?.user?.firstname + " " + item.item?.user?.lastname}</Text>
                 </View>

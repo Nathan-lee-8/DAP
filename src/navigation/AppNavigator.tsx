@@ -2,9 +2,7 @@ import { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { SignInParamList, SignInTopTabParamList, LoggedInParamList,
-  } from '../types/rootStackParamTypes';
+import { SignInParamList, LoggedInParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
 import SignIn from '../screens/SignInScreen';
 import SignUp from '../screens/SignUpScreen';
@@ -22,17 +20,15 @@ import ViewGroup from '../screens/ViewGroup';
 import ViewPost from '../screens/ViewPost';
 import CreatePost from '../screens/CreatePost';
 import Search from '../screens/Search';
-import LogOutButton from '../components/LogOutButton';
-import ProfilePicture from '../components/ProfilePicture';
-import Icon from '@react-native-vector-icons/ionicons';
-import styles from '../styles/Styles';
+import Welcome from '../screens/Welcome';
 import EditGroup from '../screens/EditGroup';
+import LogOutButton from '../components/LogOutButton';
+import ImageComponent from '../components/ImgComponent';
+import Icon from '@react-native-vector-icons/ionicons';
 
-const SignInStack = createNativeStackNavigator<SignInParamList>();
-const SignInTopTab = createMaterialTopTabNavigator<SignInTopTabParamList>();
-
+const SignInStack = createNativeStackNavigator();
 const GlobalStack = createNativeStackNavigator();
-const BottomTab = createBottomTabNavigator<LoggedInParamList>();
+const BottomTab = createBottomTabNavigator();
 
 const AppNavigator = () => {
   const authContext = useContext(AuthContext);
@@ -45,8 +41,8 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       {isSignedIn ? (
-        <GlobalStack.Navigator screenOptions={{headerShown: false}}>
-          <GlobalStack.Screen name="MainTabs" component={BottomTabs}/>
+        <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
+          <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
@@ -57,10 +53,12 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
         </GlobalStack.Navigator>
       ) : (
-        <SignInStack.Navigator screenOptions={{headerShown: false}}>
-          <SignInStack.Screen name="SignIn" component={SignInTopTabs} options={{title: 'Sign In'}} />
-          <SignInStack.Screen name="Verify" component={Verify}/>
-          <SignInStack.Screen name="ResetPassword" component={ResetPassword} />
+        <SignInStack.Navigator initialRouteName='Welcome'>
+          <SignInStack.Screen name="Welcome" component={Welcome} options={{headerShown: false}} />
+          <SignInStack.Screen name="SignIn" component={SignIn} options={{title: 'Sign In', headerTitleAlign: 'center'}} />
+          <SignInStack.Screen name="SignUp" component={SignUp} options={{title: 'Sign Up', headerTitleAlign: 'center'}} />
+          <SignInStack.Screen name="Verify" component={Verify} options={{headerTitleAlign: 'center'}}/>
+          <SignInStack.Screen name="ResetPassword" component={ResetPassword} options={{title: 'Reset Password', headerTitleAlign: 'center'}} />
         </SignInStack.Navigator>
       )}
     </NavigationContainer>
@@ -75,7 +73,7 @@ const BottomTabs = () => {
   }
   const { profileURL } = authContext;
   return(
-    <BottomTab.Navigator screenOptions={{headerShown: false}}>
+    <BottomTab.Navigator screenOptions={{headerTitleAlign: 'center'}} >
       <BottomTab.Screen name="Home" component={Home}
         options={{
           lazy: true,
@@ -105,19 +103,10 @@ const BottomTabs = () => {
           lazy: true,
           headerTitleAlign:'center',
           headerShown: true,
-          tabBarIcon: () => <ProfilePicture uri={profileURL} size={30}/>,
+          tabBarIcon: () => <ImageComponent uri={profileURL ? profileURL : 'defaultUser'}/>,
           headerRight: LogOutButton
         }} />
     </BottomTab.Navigator>
-  )
-}
-
-const SignInTopTabs = () => {
-  return(
-    <SignInTopTab.Navigator style={styles.topTab}>
-      <SignInTopTab.Screen name="SignInRoute" component={SignIn} options={{title: 'Sign In'}} />
-      <SignInTopTab.Screen name="SignUpRoute" component={SignUp} options={{title: 'Sign Up'}} />
-    </SignInTopTab.Navigator>
   )
 }
 

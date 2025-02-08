@@ -4,7 +4,7 @@ import { Group, User } from '../API';
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import { listGroups } from '../graphql/queries';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 import client from '../client';
 import filter from 'lodash/filter';
 import { useNavigation } from '@react-navigation/native';
@@ -114,7 +114,7 @@ const GroupSearch = () => {
   return(
     <View style={{width: '85%'}}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, {marginTop: 0}]}
         value={search}
         onChangeText={handleSearch}
         placeholder='Search for groups'
@@ -128,7 +128,7 @@ const GroupSearch = () => {
           <View style={styles.searchUserContainer}>
             <TouchableOpacity onPress={() => handleGroupClick(item) }>
               <View style={styles.listUserContainer}>
-                <ProfilePicture uri={item.groupURL ? item.groupURL : undefined} size={50}/>
+                <ProfilePicture uri={item.groupURL ? item.groupURL : 'defaultUser'} />
                 <View style={styles.textContainer}>
                   <Text style={styles.postAuthor}>{item.groupName}</Text>
                   <Text style={styles.postContact}>{item.description}</Text>

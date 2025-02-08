@@ -10,7 +10,7 @@ import Icon from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Groups = () => {
@@ -86,9 +86,8 @@ const Groups = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.createGroupButton} onPress={createGroup}>
-        <Text style={styles.createGroupButtonText}>Create Group</Text>
-        <Icon name="arrow-forward-circle-outline" size={25}/>
+      <TouchableOpacity style={[styles.buttonBlack, {marginBottom: 20}]} onPress={createGroup}>
+        <Text style={styles.buttonTextWhite}>Create Group</Text>
       </TouchableOpacity>
       <FlatList
         data={group}
@@ -100,7 +99,7 @@ const Groups = () => {
             <TouchableOpacity onPress={() => viewGroup(item)}>
               <View style={styles.postContainer}>
                 <View style={styles.profileSection}>
-                  <ProfilePicture uri={groupURL} size={45}/>
+                  <ProfilePicture uri={groupURL ? groupURL : "defaultGroup"}/>
                   <View style={styles.textContainer}>
                     <Text style={styles.postTitle}>{item.group?.groupName}</Text>
                     <Text style={styles.postContact}>{description}</Text>

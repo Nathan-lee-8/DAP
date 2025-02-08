@@ -5,7 +5,7 @@ import { AuthContext } from '../context/AuthContext';
 import { updateUser } from '../graphql/mutations';
 import client from '../client'
 import styles from '../styles/Styles';
-import ProfilePicture from '../components/ProfilePicture';
+import ImgComponent from '../components/ImgComponent';
 import UserPosts from '../components/UserPosts';
 import { getImgURI } from '../components/addImg';
 import { useNavigation } from '@react-navigation/native';
@@ -87,13 +87,13 @@ const EditProfile = () => {
       ) : !editsOn ? (
         <View>
           <View style={[styles.profileSection, {marginBottom: 25}]}>
-            <ProfilePicture uri={profileURL} size={100} />
+            <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={{height: 100, width: 100, borderRadius: 50}}/>
             <View style={styles.textContainer}>
               <Text style={styles.postAuthor}>{firstname} {lastname} </Text>
               <Text style={styles.postContact}>{userEmail} </Text>
             </View>
             <TouchableOpacity style={styles.editProfileButton} onPress={() => setEditsOn(true)}>
-              <Text style={styles.buttonText}>Edit Profile</Text>
+              <Text style={styles.buttonTextWhite}>Edit Profile</Text>
             </TouchableOpacity>
           </View>
           <UserPosts userID={userId} />
@@ -103,7 +103,7 @@ const EditProfile = () => {
     ) : (
       <View>
         <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-          <ProfilePicture uri={profileURL} size={150}/>
+          <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={{height: 150, width: 150, borderRadius: 75}}/>
           <Text style={styles.uploadImageText}>Edit Image</Text>
         </TouchableOpacity>
         <Text style={styles.label}>First Name</Text>
@@ -121,7 +121,7 @@ const EditProfile = () => {
           onChangeText={setTempLast}
         />
         <TouchableOpacity style={styles.editProfileButton} onPress={saveEdits}>
-          <Text style={styles.buttonText}>Save</Text>
+          <Text style={styles.buttonTextWhite}>Save</Text>
         </TouchableOpacity>
       </View>
     )}

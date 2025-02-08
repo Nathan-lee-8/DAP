@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity } from 'react-native';
-import { signIn, resetPassword } from '@aws-amplify/auth';
+import { signIn } from '@aws-amplify/auth';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { SignInParamList } from '../types/rootStackParamTypes';
@@ -39,26 +39,7 @@ const SignIn = () => {
   };
 
   const resetPw = async () => {
-    try{
-      await resetPassword({username: userEmail});
-      navigation.navigate('ResetPassword');
-      Alert.alert('Password reset email sent.', 'Please check your email to reset your password.');
-    } catch (error : any) {
-      Alert.alert('Error', 'Invalid email or account does not exist.');
-    }
-  }
-
-  const resetConfirm = async () => {
-    if(userEmail === ''){
-      Alert.alert('Error', 'Invalid email or account does not exist.');
-      return;
-    }
-    Alert.alert(
-      'Confirm password reset for: ', userEmail,[
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'OK', onPress: resetPw },
-      ]
-    );
+    navigation.navigate('ResetPassword');
   }
 
   const googleLogin = async () => {
@@ -68,7 +49,6 @@ const SignIn = () => {
   return (
     <View style={styles.container}>
       <View style={[styles.formContainer]}>
-        <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter your email"
@@ -77,7 +57,6 @@ const SignIn = () => {
           value={userEmail}
           onChangeText={ setUserEmail }
         />
-        <Text style={styles.label}>Password</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter your password"
@@ -85,18 +64,19 @@ const SignIn = () => {
           value={password}
           onChangeText={ setPassword }
         />
-        <View style={{flexDirection: 'row', alignSelf: 'center'}} > 
-          <TouchableOpacity style={styles.buttonCentered} onPress={ resetConfirm }>
-            <Text style={styles.buttonText}>Reset Password</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonCentered} onPress={ handleSignIn }>
-            <Text style={styles.buttonText}>Sign In</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={[styles.buttonBlack, {marginTop: 20}]} onPress={ handleSignIn }>
+          <Text style={styles.buttonTextWhite}>Sign In</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.centeredRow}>
+        <Text>Forgot Password? </Text>
+        <TouchableOpacity onPress={ resetPw }>
+          <Text style={{color: "#007BFF"}}>Reset Password</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.iconContainer}>
-        <Text style={[styles.label]}>Login with Social Provider</Text>
+        <Text style={styles.label}>Login with Social Provider</Text>
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
             <Icon name="logo-google" size={35} color="#007BFF"/>

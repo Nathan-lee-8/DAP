@@ -7,58 +7,67 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingVertical: 60,
+    paddingVertical: 20,
     backgroundColor: colorBackground,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  buttonBlack: {
     alignSelf: 'center',
-    marginBottom: 20,
-    color: 'black',
+    width: '100%',
+    height: 50,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    margin: 5,
   },
-  buttonCentered: {
-    borderRadius: 10,
-    borderColor: '#007BFF',
+  buttonWhite: {
+    alignSelf: 'center',
+    width: '100%', 
+    height: 50,
     borderWidth: 1,
-    marginVertical: 5,
-    marginHorizontal: 15,
-    padding: 10,
-    alignSelf: 'center',
-    width: '45%',
+    borderColor: 'black',
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    margin: 5
   },
-  buttonText: { 
+  buttonTextBlack: { 
     fontSize: 14,
     textAlign: 'center',
-    color: '#007BFF'
+    color: 'black'
   },
-  iconContainer: {
-    padding: 20,
-    alignSelf: 'baseline',
-    alignItems: 'center',
+  buttonTextWhite: {
+    fontSize: 14,
+    textAlign: 'center',
+    alignSelf:'center',
+    color: 'white'
   },
-  icon: {
-    marginHorizontal: 10,
-    padding: 10,
+  announcement: {
+    marginTop: 20,
+    fontSize: 60,
+    fontWeight: 'bold'
   },
-  topTab: {
-    backgroundColor: colorBackground,
-    marginTop: 60
+  logo: {
+    width: 30,
+    height: 30,
+    alignSelf: 'center'
   },
+  logoText: {
+    fontWeight: 'bold',
+    fontSize: 30,
+    marginLeft: 10,
+  },  
   noResultsMsg : {
     fontSize: 16,
     color: '#333',
     textAlign: 'center',
     marginTop: 20,
   },
-  goBackButton: {
-    position: 'absolute',
-    top: 50,
-    left: 30,
-    zIndex: 1,
+  
+  /** Sign in and Sign up page */
+  contentText: {
+    fontSize: 24,
+    marginBottom: 80,
+    alignSelf: 'center',
+    textAlign: 'center',
   },
-
-  /** Form Styles */
   formContainer: {
     justifyContent: 'center',
     padding: 20,
@@ -69,7 +78,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     paddingHorizontal: 8,
-    marginBottom: 16,
+    marginVertical: 10,
     borderRadius: 5,
     backgroundColor: 'white'
   },
@@ -82,6 +91,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'white'
   },
+  centeredRow:{
+    flexDirection: 'row',
+    textAlign: 'center',
+    justifyContent: 'center'
+  },
+  iconContainer: {
+    padding: 20,
+    alignSelf: 'baseline',
+    alignItems: 'center',
+  },
+  icon: {
+    marginHorizontal: 10,
+    padding: 10,
+  },
   label: {
     marginBottom: 8,
     marginLeft: 2,
@@ -92,6 +115,12 @@ const styles = StyleSheet.create({
     marginTop: -10,
     marginBottom: 8,
     fontSize: 12,
+  },
+  logoutButton: {
+    backgroundColor: 'black',
+    height: 30,
+    marginRight: 20,
+    padding: 5,
   },
 
   /** User Posts styles */
@@ -247,15 +276,12 @@ const styles = StyleSheet.create({
   /** Profile Section */
   editProfileButton: {
     position: 'absolute',
-    right: 10,
+    right: 0,
     top: 0,
-    borderWidth: 1,
-    borderColor:  '#007BFF',
-    borderRadius: 10,
-    padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
     height: 40,
+    padding: 10,
+    justifyContent: 'center',
+    backgroundColor: 'black',
   },
   uploadImage: {
     height: 150,
@@ -293,26 +319,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   createGroupButton: {
-    alignSelf: 'center',
-    alignItems: 'center',
+    alignSelf:'center',
+    justifyContent: 'center',
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    shadowColor: '#3c4043',
-    shadowOffset: { width: 10, height: 10 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-    borderRadius: 24,
+    backgroundColor: 'black',
     padding: 5,
     marginBottom: 20,
-    width: '50%',
-  },
-  createGroupButtonText: {
-    alignSelf: 'center',
-    fontSize: 20,
-    color: 'black',
-    marginRight: 10,
-    marginLeft: 10,
+    width: '40%',
   },
   addImageText: {
     position: 'absolute',
@@ -325,13 +338,13 @@ const styles = StyleSheet.create({
   },
   menuTopRightNav: {
     position: 'absolute',
-    top: 60,
+    top: 30,
     right: 30,
     zIndex: 1,
   },
   menuTopRightList: {
     position: 'absolute',
-    top: 90,
+    top: 60,
     right: 30,
     zIndex: 1,
   },

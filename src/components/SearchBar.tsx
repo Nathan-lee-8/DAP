@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity,
-  Text, ActivityIndicator } from 'react-native';
+import { View, TextInput, FlatList, TouchableOpacity, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import filter from 'lodash/filter';
 import client  from '../client';
@@ -8,20 +7,20 @@ import { listUsers } from '../graphql/queries';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import { User } from '../API';
-import ProfilePicture from './ProfilePicture';
+import ProfilePicture from './ImgComponent';
 
 const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => {
   const [search, setSearch] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const currUserId = useContext(AuthContext)?.userId;
 
   const fetchUsers = async () => {
     try{
       const users = await client.graphql({
         query: listUsers,
-        variables: { limit: 100 }
+        variables: { limit: 100 },
+        authMode: 'userPool'
       });
       const userData = users.data.listUsers.items;
       setData(userData);
@@ -33,19 +32,15 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
   };
   useEffect(() => {
     const initializeCache = async () => {
-      setLoading(true);
       try {
         const cachedData = await AsyncStorage.getItem('usersCache');
         if (cachedData) {
-          const parsedData = JSON.parse(cachedData);
-          setData(parsedData);
+          setData(JSON.parse(cachedData));
         } else {
-          await fetchUsers();
+          fetchUsers();
         }
       } catch (error) {
         console.log('Error initializing cache', error);
-      } finally {
-        setLoading(false);
       }
     };
     initializeCache();
@@ -59,7 +54,7 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
     }
     const formattedSearch = query.toLowerCase();
     const results = filter(data, (user) => {
-      if(user.id === currUserId){
+      if(!user.id || user.id === currUserId){
         return false;
       }
       const name = user.firstname + " " + user.lastname;
@@ -73,20 +68,11 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
     await AsyncStorage.removeItem('usersCache');
     fetchUsers();
   }
-  
-  if (loading) {
-    return (
-      <View >
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-  
+
   return (
     <View style={{width: width, marginBottom: 10}}>
       <TextInput
-        style={styles.input}
+        style={[styles.input, {marginTop: 0}]}
         value={search}
         onChangeText={handleSearch}
         placeholder="Search for users..."
@@ -96,12 +82,12 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
       />
       <FlatList
         data={filteredData}
-        keyExtractor={(item) => item.email}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.searchUserContainer}>
             <TouchableOpacity onPress={() => { if(userPressed) userPressed(item) }}>
               <View style={styles.listUserContainer}>
-                <ProfilePicture uri={item.profileURL? item.profileURL : undefined} size={50}/>
+                <ProfilePicture uri={item.profileURL? item.profileURL : 'defaultUser'}/>
                 <View style={styles.textContainer}>
                   <Text style={styles.postAuthor}>{item.firstname} {item.lastname}</Text>
                   <Text style={styles.postContact}>{item.email}</Text>
