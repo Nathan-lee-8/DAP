@@ -6,11 +6,10 @@ import { getImgURI } from '../components/addImg';
 import { createPost } from '../graphql/mutations';
 import client from '../client';
 import { AuthContext } from '../context/AuthContext';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
-import Icon from '@react-native-vector-icons/ionicons';
 
 const CreatePost = ({route}: any) => {
   const { groupID } = route.params;
@@ -77,20 +76,13 @@ const CreatePost = ({route}: any) => {
     )
   }
 
-  const handleGoBack = () => { 
-    navigation.goBack();
-  }
-
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
-        <Icon name="arrow-back" size={24} />
-      </TouchableOpacity>
       {loadingIMG ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
-          <ProfilePicture uri={filepath} size={100} style={styles.groupImg}/>
+          <ProfilePicture uri={filepath ? filepath : 'defaultGroup'}  style={styles.groupImg}/>
           <Text style={styles.addImageText}>{addImgText}</Text>
         </TouchableOpacity>
       )}
@@ -109,9 +101,8 @@ const CreatePost = ({route}: any) => {
         value={content}
         onChangeText={setContent}
       />
-      <TouchableOpacity style={[styles.createGroupButton, {marginTop: 'auto'}]} onPress={sendPost}>
-        <Text style={styles.createGroupButtonText}>Create Post</Text>
-        <Icon name="arrow-forward-circle-outline" size={25}/>
+      <TouchableOpacity style={[styles.buttonBlack, {marginTop: 'auto'}]} onPress={sendPost}>
+        <Text style={styles.buttonTextWhite}>Create Post</Text>
       </TouchableOpacity>
     </View>
   )

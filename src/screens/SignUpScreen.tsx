@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SignInParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles'
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Accesses user inputted email, password, first and last name and creates a 
@@ -38,10 +39,13 @@ const SignUp = () => {
     };
   };
 
+  const googleLogin = () => {
+    console.log('Google login not implemented yet.');
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-        <Text style={styles.label}>First name</Text>
         <TextInput
           style={styles.input}
           value={firstname}
@@ -49,7 +53,6 @@ const SignUp = () => {
           autoCapitalize="words"
           placeholder="First Name"
         />
-        <Text style={styles.label}>Last name</Text>
         <TextInput
           style={styles.input}
           value={lastname}
@@ -57,7 +60,6 @@ const SignUp = () => {
           autoCapitalize="words"
           placeholder="Last Name"
         />
-        <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -66,8 +68,6 @@ const SignUp = () => {
           value={userEmail}
           onChangeText={setUserEmail}
         />
-        <Text style={styles.label}>Password</Text>
-        <Text style={styles.note}>*Note: Password can not be changed until account is verified</Text>
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -75,9 +75,27 @@ const SignUp = () => {
           value={password}
           onChangeText={setPassword}
         />
-        <TouchableOpacity style={styles.buttonCentered} onPress={ handleSignUp }>
-          <Text style={styles.buttonText}>Create Account</Text>
+        <Text style={styles.note}>*Note: Password can not be changed until after account is verified</Text>
+        <TouchableOpacity style={[styles.buttonBlack, {marginTop: 20}]} onPress={ handleSignUp }>
+          <Text style={styles.buttonTextWhite}>Create Account</Text>
         </TouchableOpacity>
+      </View>
+      <View style={styles.iconContainer}>
+        <Text style={styles.label}>Login with Social Provider</Text>
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-google" size={35} color="#007BFF"/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-facebook" size={35} color="#007BFF"/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-apple" size={35} color="#007BFF"/>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
+            <Icon name="logo-amazon" size={35} color="#007BFF"/>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

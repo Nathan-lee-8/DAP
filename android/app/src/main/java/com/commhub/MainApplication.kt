@@ -1,4 +1,4 @@
-package com.commhub
+package com.dap
 
 import android.app.Application
 import com.facebook.react.PackageList

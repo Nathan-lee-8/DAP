@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useRef, useContext, useLayoutEffect
+ } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity,
      ActivityIndicator } from 'react-native';
 import styles from '../styles/Styles';
@@ -10,7 +11,7 @@ import  { Message, UserChat } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 
 const ChatRoom = ( { route } : any) => {
     const chatID = route.params.chatID;
@@ -88,6 +89,16 @@ const ChatRoom = ( { route } : any) => {
     };
 
     const navigation = useNavigation();
+    useLayoutEffect(()=> {
+        navigation.setOptions({
+            headerLeft: () => (
+                <TouchableOpacity onPress={handleGoBack} >
+                    <Icon name="arrow-back" size={24} />
+                </TouchableOpacity>
+            ),
+        })
+    })
+
     const handleGoBack = async () => {
         try{
             if(msgSentRef.current){
@@ -176,10 +187,6 @@ const ChatRoom = ( { route } : any) => {
     return(
         <View style={styles.container}>
             {loading && <ActivityIndicator size="small" color="#0000ff" />}
-            <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
-                <Icon name="arrow-back" size={24} />
-            </TouchableOpacity>
-            <Text style={styles.title}></Text>
             <FlatList
                 ref={flatListRef}
                 data={messages}
@@ -189,11 +196,11 @@ const ChatRoom = ( { route } : any) => {
                     return (
                         <View>
                             <View style={getMsgContainerStyle(item?.senderID)}>
-                                {item?.senderID !== userId && <ProfilePicture uri={profURL} size={35}/>}
+                                {item?.senderID !== userId && <ProfilePicture uri={profURL ? profURL : 'defaultUser'}/>}
                                 <View style={getMsgStyle(item?.senderID)}>
                                     <Text>{item?.content}</Text>
                                 </View>
-                                {item?.senderID === userId && <ProfilePicture uri={profURL} size={35}/>}
+                                {item?.senderID === userId && <ProfilePicture uri={profURL ? profURL : 'defaultUser'}/>}
                             </View>
                         </View>
                 )}}

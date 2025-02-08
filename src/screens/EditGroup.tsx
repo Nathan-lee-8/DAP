@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator,
    TextInput, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 import { getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
 import  { deleteUserGroup, updateGroup } from '../graphql/mutations';
@@ -84,26 +84,20 @@ const EditGroup = ( {route}: any) => {
   
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
-        <Icon name="arrow-back" size={24} />
-      </TouchableOpacity>
       {imgLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
-          <ProfilePicture uri={group?.groupURL ? group?.groupURL : undefined} 
-            size={100} style={styles.groupImg}/>
+          <ProfilePicture uri={group?.groupURL ? group?.groupURL : 'defaultGroup'} style={styles.groupImg}/>
           <Text style={styles.addImageText}>{imgText}</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.label}>Group Name: </Text>
       <TextInput
         style={styles.input}
         value={name}
         placeholder={name}
         onChangeText={setName}
       />
-      <Text style={styles.label}>Description: </Text>
       <TextInput
         style={styles.longInput}
         value={description}
@@ -118,7 +112,7 @@ const EditGroup = ( {route}: any) => {
           var profileURL = user?.profileURL ? user?.profileURL : undefined;
           return(
             <View style={[styles.postContainer, styles.profileSection]}>
-              <ProfilePicture uri={profileURL} size={30}/>
+              <ProfilePicture uri={profileURL ? profileURL : 'defaultUser'}/>
               <View style={styles.textContainer}>
                 <Text style={styles.postAuthor}>{user?.firstname + " " + user?.lastname}</Text>
               </View>
@@ -129,9 +123,8 @@ const EditGroup = ( {route}: any) => {
           )
         }}
       />
-      <TouchableOpacity style={styles.createGroupButton} onPress={handleEditGroup}>
-        <Text style={styles.createGroupButtonText}>Save Changes</Text>
-        <Icon name="arrow-forward-circle-outline" size={25}/>
+      <TouchableOpacity style={styles.buttonBlack} onPress={handleEditGroup}>
+        <Text style={styles.buttonTextWhite}>Save Changes</Text>
       </TouchableOpacity>
     </View>
   )

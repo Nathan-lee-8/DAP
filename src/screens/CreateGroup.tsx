@@ -5,13 +5,12 @@ import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
 import { User } from '../API';
-import ProfilePicture from '../components/ProfilePicture';
+import ImgComponent from '../components/ImgComponent';
 import client from '../client';
 import { createUserGroup, createGroup, deleteUserGroup, deleteGroup } from '../graphql/mutations';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import { getImgURI } from '../components/addImg';
-import { useNavigation } from '@react-navigation/native';
 
 /**
  * @returns 
@@ -160,11 +159,6 @@ const CreateGroup = () => {
     }
   }
 
-  const navigation = useNavigation();
-  const handleGoBack = () => {
-    navigation.goBack();
-  }
-
   if(loading) {
     return(
       <ActivityIndicator size="large" color="#0000ff" />
@@ -173,19 +167,16 @@ const CreateGroup = () => {
 
   return(
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.goBackButton} >
-        <Icon name="arrow-back" size={24} />
-      </TouchableOpacity>
       {imgLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
-          <ProfilePicture style={styles.groupImg} size={90}/>
+          <ImgComponent uri={groupURI ? groupURI : 'defaultGroup'} style={styles.groupImg}/>
           <Text style={styles.addImageText}>{addImgText}</Text>
         </TouchableOpacity>
       )}
       <TextInput
-        style={[styles.input, {marginTop: -40}]}
+        style={styles.input}
         placeholder="Group name"
         autoCapitalize="sentences"
         value={groupName}
@@ -200,7 +191,7 @@ const CreateGroup = () => {
         onChangeText={ setDescription }
       />
       
-      <Text style={styles.title}>Members</Text>
+      <Text style={[styles.contentText, {marginBottom: 0}]}>Members</Text>
       <SearchBar userPressed={getUser}/>
       <FlatList
         data={members}
@@ -212,7 +203,7 @@ const CreateGroup = () => {
           return (
             <View style={styles.searchUserContainer}>
               <View style={styles.listUserContainer}>
-                <ProfilePicture uri={userURL} size={50}/>
+                <ImgComponent uri={userURL ? userURL : 'defaultUser'}/>
                 <Text style={[styles.postContent, {marginLeft: 10}]}>{name}</Text>
                 <TouchableOpacity style={{marginLeft: 'auto'}} onPress={()=> removeUser(item)}>
                   <Icon name="remove-circle-outline" size={25}/>
@@ -222,9 +213,8 @@ const CreateGroup = () => {
           )
         }}
       />
-      <TouchableOpacity style={styles.createGroupButton} onPress={addGroup}>
-        <Text style={styles.createGroupButtonText}> Create Group </Text>
-        <Icon name="arrow-forward-circle-outline" size={25}/>
+      <TouchableOpacity style={styles.buttonBlack} onPress={addGroup}>
+        <Text style={styles.buttonTextWhite}> Create Group </Text>
       </TouchableOpacity>
     </View>
   )

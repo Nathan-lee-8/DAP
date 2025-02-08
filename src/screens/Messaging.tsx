@@ -1,5 +1,5 @@
 import { useState, useContext, useCallback } from 'react';
-import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { chatsByUser } from '../graphql/queries';
@@ -9,8 +9,9 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import { User } from '../API';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+import Icon from '@react-native-vector-icons/ionicons';
 
 const MessageUsers = () => {
   const [chatRooms, setChatRooms] = useState<UserChat[]>([])
@@ -24,11 +25,12 @@ const MessageUsers = () => {
 
   const fetchChatRooms = async () => {
     setLoading(true);
+    const userId = authContext.userId;
     try {
       const chatRooms = await client.graphql({
         query: chatsByUser,
         variables: {
-          userID: currUserId,
+          userID: userId,
           sortDirection: ModelSortDirection.DESC,
         },
         authMode: 'userPool'
@@ -69,6 +71,10 @@ const MessageUsers = () => {
     navigation.navigate('ChatRoom', { chatID: chatRoom.chatID });
   }
 
+  const handleCreateMsg = () => {
+    Alert.alert("not implemented yet");
+  }
+
   if (loading) {
     return (
       <View >
@@ -81,6 +87,9 @@ const MessageUsers = () => {
   return (
     <View style={styles.container}>
       <SearchBar userPressed={handleSendMessage}/>
+      <TouchableOpacity style={[styles.buttonBlack, {marginBottom: 20}]} onPress={handleCreateMsg}>
+        <Text style={styles.buttonTextWhite}>Create Chat</Text>
+      </TouchableOpacity>
       <FlatList
         data={chatRooms}
         keyExtractor={(item) => item.id}
@@ -111,7 +120,7 @@ const MessageUsers = () => {
             <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>
               <View style={containerStyle}> 
                 <View style={styles.profileSection}>
-                  <ProfilePicture uri={displayURI} size={50}/>
+                  <ProfilePicture uri={displayURI ? displayURI : 'defaultUser'}/>
                   <View style={styles.textContainer}>
                     <Text style={styles.postAuthor}>{chatname}</Text>
                     <Text style={styles.postContact}> {item.lastMessage} </Text>

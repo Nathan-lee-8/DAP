@@ -7,7 +7,7 @@ import { ModelSortDirection, Post, Group } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
-import ProfilePicture from '../components/ProfilePicture';
+import ProfilePicture from '../components/ImgComponent';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -138,7 +138,7 @@ const HomeScreen = () => {
               <TouchableOpacity style={styles.postContainer} onPress={ () => clickPost(item.id)}>
                 <View style={styles.profileSection}> 
                   <TouchableOpacity onPress={() => visitProfile(item)}>
-                    <ProfilePicture uri={profileURL} size={35} />
+                    <ProfilePicture uri={profileURL ? profileURL : 'defaultUser'}/>
                   </TouchableOpacity>
                   <View style={styles.textContainer}>
                     <Text style={styles.postAuthor}>{firstname + " " + lastname}</Text>
