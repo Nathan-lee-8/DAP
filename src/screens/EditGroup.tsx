@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator,
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
 import ProfilePicture from '../components/ImgComponent';
-import { getImgURI } from '../components/addImg';
+import getImgURI from '../components/addImg';
 import styles from '../styles/Styles';
 import  { deleteUserGroup, updateGroup } from '../graphql/mutations';
 import client from '../client';
@@ -113,7 +113,7 @@ const EditGroup = ( {route}: any) => {
           return(
             <View style={[styles.postContainer, styles.profileSection]}>
               <ProfilePicture uri={profileURL ? profileURL : 'defaultUser'}/>
-              <View style={styles.textContainer}>
+              <View style={styles.userInfoContainer}>
                 <Text style={styles.postAuthor}>{user?.firstname + " " + user?.lastname}</Text>
               </View>
               <TouchableOpacity style={{marginLeft: 'auto'}} onPress={() => removeMember(item.item)}>

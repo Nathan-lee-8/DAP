@@ -7,7 +7,7 @@ import client from '../client'
 import styles from '../styles/Styles';
 import ImgComponent from '../components/ImgComponent';
 import UserPosts from '../components/UserPosts';
-import { getImgURI } from '../components/addImg';
+import getImgURI from '../components/addImg';
 import { useNavigation } from '@react-navigation/native';
 
 //Update to get user data from authContext
@@ -86,14 +86,14 @@ const EditProfile = () => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : !editsOn ? (
         <View>
-          <View style={[styles.profileSection, {marginBottom: 25}]}>
-            <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={{height: 100, width: 100, borderRadius: 50}}/>
-            <View style={styles.textContainer}>
+          <View style={styles.viewUserProfileSection}>
+            <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={styles.viewProfileURL}/>
+            <View style={styles.userInfoContainer}>
               <Text style={styles.postAuthor}>{firstname} {lastname} </Text>
-              <Text style={styles.postContact}>{userEmail} </Text>
+              <Text style={styles.postContent}>{userEmail} </Text>
             </View>
-            <TouchableOpacity style={styles.editProfileButton} onPress={() => setEditsOn(true)}>
-              <Text style={styles.buttonTextWhite}>Edit Profile</Text>
+            <TouchableOpacity style={styles.logoutButton} onPress={() => setEditsOn(true)}>
+              <Text style={styles.buttonTextBlack}>Edit Profile</Text>
             </TouchableOpacity>
           </View>
           <UserPosts userID={userId} />
@@ -103,7 +103,7 @@ const EditProfile = () => {
     ) : (
       <View>
         <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-          <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={{height: 150, width: 150, borderRadius: 75}}/>
+          <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={styles.userInfoContainer}/>
           <Text style={styles.uploadImageText}>Edit Image</Text>
         </TouchableOpacity>
         <Text style={styles.label}>First Name</Text>
@@ -120,7 +120,7 @@ const EditProfile = () => {
           value={tempLast}
           onChangeText={setTempLast}
         />
-        <TouchableOpacity style={styles.editProfileButton} onPress={saveEdits}>
+        <TouchableOpacity style={styles.buttonBlack} onPress={saveEdits}>
           <Text style={styles.buttonTextWhite}>Save</Text>
         </TouchableOpacity>
       </View>

@@ -12,13 +12,13 @@ const ViewProfiles = ( { route } : any) => {
     
     return(
         <View style={styles.container}>
-            <View style={[styles.profileSection, {marginVertical: 35}]}>
-                <ProfilePicture uri={profileURL} />
-                <View style={styles.textContainer}>
+            <View style={styles.viewUserProfileSection}>
+                <ProfilePicture uri={profileURL} style={styles.viewProfileURL}/>
+                <View style={styles.userInfoContainer}>
                     <Text style={styles.postAuthor}>{targetUser.firstname} {targetUser.lastname}</Text>
-                    <Text style={styles.postContact}>{targetUser.email}</Text>
-                    <Text style={styles.postContact}>Phonenumber: {targetUser.phonenumber}</Text>
-                    <Text style={styles.postContact}>User since {creationDate}</Text>
+                    <Text style={styles.userContact}>{targetUser.email}</Text>
+                    <Text style={styles.userContact}>Phonenumber: {targetUser.phonenumber}</Text>
+                    <Text style={styles.userContact}>User since {creationDate}</Text>
                 </View>
             </View>
             <UserPosts userID={targetUser.id} />

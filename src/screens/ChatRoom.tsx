@@ -11,7 +11,7 @@ import  { Message, UserChat } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
-import ProfilePicture from '../components/ImgComponent';
+import ImgComponent from '../components/ImgComponent';
 
 const ChatRoom = ( { route } : any) => {
     const chatID = route.params.chatID;
@@ -21,6 +21,8 @@ const ChatRoom = ( { route } : any) => {
     const [currMessage, setMessage] = useState<string>('');
     const [participants, setParticipants] = useState<UserChat[]>([]);
     const [myUserChat, setMyUserChat] = useState<UserChat>();
+    const [title, setTitle] = useState<string>('default');
+    const [displayURLs, setURLs] = useState<(string | undefined)[]>([]);
 
     const flatListRef = useRef<FlatList<Message>>(null); //for scroll to bottom
     const msgCountRef = useRef<number>(0);
@@ -56,6 +58,13 @@ const ChatRoom = ( { route } : any) => {
         return () => subscription.unsubscribe(); // Clean up the subscription
     }, []);
 
+    useEffect( () => {
+        var temptitle = participants.map((item) => `${item.user?.firstname} ${item.user?.lastname}`)
+        .filter(Boolean)
+        .join(', ');
+        setTitle(temptitle);
+    }, [participants])
+
     const fetchChat = async () => {
         setLoading(true);
         try{
@@ -75,9 +84,14 @@ const ChatRoom = ( { route } : any) => {
                     chatData.messages.items.filter((item): item is Message => item !== null)
                 )
             }
-            let parts = chatData?.participants?.items.filter(item => {return item !== null});
+            let parts = chatData?.participants?.items.filter(item => item !== null);
             if(parts){
-                setParticipants(parts.filter((item): item is UserChat => item?.userID !== userId));
+                let URLs: (string | undefined)[] = [];
+                setParticipants(parts.filter((item): item is UserChat => {
+                    if(item?.userID !== userId) URLs.push(item.user?.profileURL || undefined);
+                    return item?.userID !== userId;
+                }));
+                setURLs(URLs);
                 setMyUserChat(parts.find((item): item is UserChat  => item?.userID === userId));
             }
             setNextToken(chatData?.messages?.nextToken);
@@ -95,7 +109,7 @@ const ChatRoom = ( { route } : any) => {
                 <TouchableOpacity onPress={handleGoBack} >
                     <Icon name="arrow-back" size={24} />
                 </TouchableOpacity>
-            ),
+            )
         })
     })
 
@@ -186,6 +200,34 @@ const ChatRoom = ( { route } : any) => {
 
     return(
         <View style={styles.container}>
+            <View style={styles.messageHeaderContainer}>        
+                <View style={styles.URLSection}>
+                    { displayURLs.length > 1 ? (
+                        displayURLs.slice(0, 2).map((uri, index) => (
+                            <ImgComponent 
+                            key={index} 
+                            uri={uri || 'defaultUser'} 
+                            style={{ 
+                                position: 'absolute', 
+                                top: index * 10 - 10,
+                                left: index * 10 , 
+                                zIndex: displayURLs.length - index,   
+                                height: 26,
+                                width: 26,
+                                borderRadius: 13,
+                            }} 
+                            />
+                        ))
+                        ) : (
+                            <ImgComponent 
+                            uri={displayURLs[0] || 'defaultUser'} 
+                            style={{height: 30, width: 30, borderRadius: 16}} 
+                            />
+                        )}
+                        
+                    </View>
+                <Text style={styles.chatRoomName}>{title}</Text>
+            </View>
             {loading && <ActivityIndicator size="small" color="#0000ff" />}
             <FlatList
                 ref={flatListRef}
@@ -196,11 +238,11 @@ const ChatRoom = ( { route } : any) => {
                     return (
                         <View>
                             <View style={getMsgContainerStyle(item?.senderID)}>
-                                {item?.senderID !== userId && <ProfilePicture uri={profURL ? profURL : 'defaultUser'}/>}
+                                {item?.senderID !== userId && <ImgComponent uri={profURL ? profURL : 'defaultUser'}/>}
                                 <View style={getMsgStyle(item?.senderID)}>
                                     <Text>{item?.content}</Text>
                                 </View>
-                                {item?.senderID === userId && <ProfilePicture uri={profURL ? profURL : 'defaultUser'}/>}
+                                {item?.senderID === userId && <ImgComponent uri={profURL ? profURL : 'defaultUser'}/>}
                             </View>
                         </View>
                 )}}

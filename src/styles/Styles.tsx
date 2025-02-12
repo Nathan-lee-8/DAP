@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     paddingHorizontal: 8,
-    marginVertical: 10,
+    marginBottom: 10,
     borderRadius: 5,
     backgroundColor: 'white'
   },
@@ -117,31 +117,32 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   logoutButton: {
-    backgroundColor: 'black',
-    height: 30,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderRadius: 10,
     marginRight: 20,
-    padding: 5,
+    padding: 10,
   },
 
   /** User Posts styles */
   postContainer: {
-    padding: 15,
     backgroundColor: '#fff',
-    borderRadius: 10,
-    marginBottom: 7,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 2,
+    marginBottom: 5,
+    padding: 10,
   },
   profileSection: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 5,
   },
-  textContainer: {
-    paddingLeft: 10,
+  profileText:{
+    marginLeft: 10
+  },
+  postAuthor: {
+    fontSize: 14,
+    color: 'Black',
+  },
+  contentSection: {
+    marginBottom: 10,
   },
   postTitle: {
     fontSize: 18,
@@ -154,27 +155,32 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 5,
   },
-  postAuthor: {
-    fontSize: 14,
-    color: 'Black',
-  },
-  postContact: {
-    fontSize: 12,
-    color: '#888',
-  },
   postDate: {
     fontSize: 12,
     color: '#888',
     position: 'absolute',
     right: 10,
-    top: 15,
+    top: 10,
   },
-  postGroup: {
-    position: 'absolute',
-    right: 10,
-    bottom: 15,
+  interactSection : {
+    flexDirection: 'row',
   },
-
+  commentSection: {
+    flexDirection: 'row',
+    padding: 5,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    borderColor: 'lightgrey',
+    borderWidth: 1,
+  },
+  shareSection: {
+    borderRadius: 10,
+    borderColor: 'lightgrey',
+    borderWidth: 1,
+    padding: 5,
+    marginLeft: 'auto',
+    paddingHorizontal: 10,
+  },
   /** Search User Styles  */
   searchUserContainer: {
     borderBottomWidth: 1,
@@ -183,9 +189,19 @@ const styles = StyleSheet.create({
   listUserContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 10,
     backgroundColor: 'white',
+    width: '100%'
+  },
+  userTextContainer: {
+    paddingHorizontal: 10,
+  },
+  searchTermList: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
   searchTermContainer: {
     height: 40,
@@ -210,8 +226,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'grey'
   },
 
+  /** List Messages and Groups styles */
+  itemContentSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },  
+  unreadMsgContainer: {
+    backgroundColor: 'lightgrey',
+    marginBottom: 5,
+  },
+  URLSection: {
+    width: 30,
+    paddingVertical: 10,
+  },
 
-  /** Messaging Styles   */
+  /** chatRoom Styles   */
+  messageHeaderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: 'white',
+  },
+  chatRoomName: { 
+    fontSize: 20,
+    color: 'black',
+    padding: 10,
+  },
   myMessageContainer: {
     flexDirection: 'row',
     alignSelf: 'flex-end',
@@ -261,19 +301,32 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 5,
   },  
-  unreadMsgContainer: {
-    padding: 15,
-    backgroundColor: 'lightgrey',
-    borderRadius: 10,
-    marginBottom: 7,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 2,
-  },
 
   /** Profile Section */
+  viewUserProfileSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 10,
+    marginBottom: 40,
+    backgroundColor: 'white'
+  },
+  viewProfileURL: {
+    height: 100, 
+    width: 100, 
+    borderRadius: 50
+  },
+  editProfileURL : { 
+    height: 150, 
+    width: 150, 
+    borderRadius: 75
+  },
+  userContact: {
+    fontSize: 12,
+    color: "#888"
+  },
+  userInfoContainer: {
+    paddingHorizontal: 10,
+  },
   editProfileButton: {
     position: 'absolute',
     right: 0,
@@ -336,16 +389,10 @@ const styles = StyleSheet.create({
     color: 'black',
     opacity: 0.6
   },
-  menuTopRightNav: {
-    position: 'absolute',
-    top: 30,
-    right: 30,
-    zIndex: 1,
-  },
   menuTopRightList: {
     position: 'absolute',
-    top: 60,
-    right: 30,
+    top: 0,
+    right: 0,
     zIndex: 1,
   },
   menuTopRightItem: {

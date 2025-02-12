@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, FlatList } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
@@ -9,14 +9,18 @@ import { createChat, createUserChat, createMessage, deleteChat, deleteMessage,
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+import { User } from '../API';
 import Icon from '@react-native-vector-icons/ionicons';
+import SearchBar from '../components/SearchBar';
 
 //TODO: Add rollback in case of failure, create Loading screen
 const CreateChat = ( { route }: any) => {
-    const targetUser = route.params.user;
+    const initalUser = route.params.user ? [route.params.user] : [];
+    const [ targetUsers, setTargetUsers ] = useState<User[]>(initalUser);
     const [ message, setMessage ] = useState('');
     const [ loading, setLoading ] = useState(false);
-    const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList, 'ChatRoom'>>();
+    const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
+
     const authContext = useContext(AuthContext);
     if(!authContext) {
         console.log("Auth context not defined");
@@ -25,6 +29,11 @@ const CreateChat = ( { route }: any) => {
     const { userId } = authContext;
 
     const createChatRoom = async () => {
+        if(message === '') return;
+        else if( targetUsers.length === 0) {
+            Alert.alert("No target selected.");
+            return;
+        }
         var chatID = null;
         var firstMsgID = null;
         const addedMembers = [];
@@ -32,25 +41,18 @@ const CreateChat = ( { route }: any) => {
         try{
             setLoading(true);
             const cognitoID = await getCurrentUser();
-            let cognitoIDs = [cognitoID.userId];
-            let targetOwnerID = targetUser.owner;
-            if(!targetOwnerID) {
-                console.log("No taget owner ID");
-                Alert.alert("Error no ownerID");
-                return;
-            }
-            cognitoIDs.push(targetOwnerID);
+
             const chat = await client.graphql({
                 query: createChat,
                 variables: {
                     input: {
                         name: "default",
-                        isGroup: false,
+                        isGroup: targetUsers.length > 1,
                     }
                 },
                 authMode: 'userPool'
             });
-            console.log("chat created", chat.data.createChat);
+            console.log("chat created");
             chatID = chat.data.createChat.id;
 
             const myUserChat = await client.graphql({
@@ -66,24 +68,28 @@ const CreateChat = ( { route }: any) => {
                 },
                 authMode: 'userPool'
             })
-            console.log("senderChat created", myUserChat.data.createUserChat);
+            console.log("senderChat created");
             addedMembers.push(myUserChat.data.createUserChat.id);
 
-            const targetUserChat = await client.graphql({
-                query: createUserChat,
-                variables:{
-                    input:{
-                        userID: targetUser.id,
-                        chatID: chat.data.createChat.id,
-                        ownerID: targetOwnerID,
-                        unreadMessageCount: 1,
-                        lastMessage: message
-                    }
-                },
-                authMode: 'userPool'
+            targetUsers.map(async (user : User) => {
+                let targetOwnerID = user.owner;
+                if(!targetOwnerID ) return;
+                const targetUserChat = await client.graphql({
+                    query: createUserChat,
+                    variables:{
+                        input:{
+                            userID: user.id,
+                            chatID: chat.data.createChat.id,
+                            ownerID: targetOwnerID,
+                            unreadMessageCount: 1,
+                            lastMessage: message
+                        }
+                    },
+                    authMode: 'userPool'
+                })
+                console.log(user.firstname + " chat created");
+                addedMembers.push(targetUserChat.data.createUserChat.id);
             })
-            console.log("recieverChat created", targetUserChat.data.createUserChat);
-            addedMembers.push(targetUserChat.data.createUserChat.id);
 
             const msgData = await client.graphql({
                 query: createMessage,
@@ -96,13 +102,13 @@ const CreateChat = ( { route }: any) => {
                 },
                 authMode: 'userPool'
             })
-            console.log("Sent Message:", msgData.data.createMessage)
+            console.log("Msg sent")
             firstMsgID = msgData.data.createMessage.id;
 
             navigation.reset({
                 index: 1,
                 routes: [
-                    { name: 'MainTabs'},
+                    { name: 'MainTabs', params: {screen: 'Messages'} },
                     { name: 'ChatRoom', params: { chatID: chat.data.createChat.id } 
                 }],
             });
@@ -168,11 +174,33 @@ const CreateChat = ( { route }: any) => {
         }
     }
 
+    const handleUserSelected = ( user: User) => {
+        if(targetUsers.includes(user))return;
+        setTargetUsers([...targetUsers, user]);
+    }
+
+    const handleRemoveUser = (userID: string) => {
+        setTargetUsers(targetUsers.filter((user) => user.id !== userID));
+    }
+
     if(loading) return <Text style={styles.container}>Loading...</Text>;
 
     return(
         <View style={[styles.container, {justifyContent: "flex-end"}]}> 
-            <Text style={[styles.contentText, {marginBottom: 'auto'}]}>{targetUser.firstname + " " + targetUser.lastname}</Text>
+            <SearchBar userPressed={handleUserSelected}/>
+            <FlatList
+                data={targetUsers}
+                keyExtractor={(item) => item.id}
+                renderItem={(item) => (
+                    <View style={{flexDirection: 'row', marginBottom: 10}}>
+                        <Text>{item.item.firstname} {item.item.lastname} </Text>
+                        <TouchableOpacity onPress={() => handleRemoveUser(item.item.id)}>
+                            <Icon name="remove-circle-outline" size={20}/>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            />
+            <Text style={[styles.contentText, {marginBottom: 'auto'}]}></Text>
             <View style={{flexDirection: 'row'}}>
                 <TextInput
                     style={styles.msgInput}

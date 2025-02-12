@@ -1,22 +1,22 @@
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import { View, Text, FlatList, TextInput, TouchableOpacity, Alert } from "react-native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
 import { useEffect } from "react";
-import { Group } from '../API'
+import { Group, Post } from '../API'
 import styles from '../styles/Styles'
 import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { GlobalParamList } from "../types/rootStackParamTypes";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import moment from 'moment';
+import FormatPost from "../components/FormatPost";
 
 const ViewGroup = ({route} : any) => {
   const groupID = route.params.groupID;
   const [group, setGroup] = useState<Group>();
+  const [post, setPosts] = useState<Post[]>([]);
   const [viewMenu, setViewMenu] = useState(false);
-  const [ viewMembers, setViewMembers ] = useState(false);
   const fetchCurrentData = async () => {
     try{
       const currGroup = await client.graphql({
@@ -32,6 +32,13 @@ const ViewGroup = ({route} : any) => {
         return;
       }
       setGroup(currGroup.data.getGroup);
+      var posts = currGroup.data.getGroup.posts?.items
+      posts = posts?.sort((a, b) => {
+        const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+      if(posts) setPosts(posts?.filter((item) => item !== null));
     } catch (error: any) {
       console.log(error);
     }
@@ -42,11 +49,23 @@ const ViewGroup = ({route} : any) => {
   }, [groupID]);
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
+  useLayoutEffect(()=> {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => setViewMenu(!viewMenu)} >
+          <Icon name="ellipsis-horizontal-sharp" size={30} color={'black'}/>
+        </TouchableOpacity>
+      ),
+    })
+  })
+
   const createGroupPost = () => {
     navigation.navigate('CreatePost', {groupID: groupID});
   }
-  const clickPost = (currPostID : any) => {
-    navigation.navigate('ViewPost', {postID: currPostID});
+
+  const handleViewMembers = () => {
+    if(group?.members) navigation.navigate('ViewMembers', {userData: group?.members.items});
+    else Alert.alert("Unable to Retrieve member data");
   }
   
   const handleMenuPress = ( option : string) => {
@@ -63,100 +82,71 @@ const ViewGroup = ({route} : any) => {
     else Alert.alert("Group not found");
   }
 
-  if(viewMembers){
-    return(
-      <View style={styles.container}>
-        <Text style={styles.contentText}>Members</Text>
-          <FlatList
-            data={group?.members?.items}
-            renderItem={(item) => {
-              var user = item.item?.user;
-              var profileURL = user?.profileURL ? user?.profileURL : undefined;
-              return(
-                <View style={[styles.postContainer, styles.profileSection]}>
-                  <ProfilePicture uri={profileURL ? profileURL : 'defaultUser'}/>
-                  <View style={styles.textContainer}>
-                    <Text style={styles.postAuthor}>{user?.firstname + " " + user?.lastname}</Text>
-                  </View>
-                </View>
-              )
-            }}
+  const headerComp = () => {
+    return( 
+      <View>
+        <View style={styles.groupImgContainer}>
+          <ProfilePicture uri={group?.groupURL ? group?.groupURL : 'defaultGroup'} style={styles.groupImg}/>
+        </View>
+        <View style={styles.groupMembersContainer}>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.label}>{group?.groupName}</Text>
+            <TouchableOpacity style={{marginLeft: 'auto', flexDirection: 'row'}} onPress={handleViewMembers}>
+              <Text>{group?.members?.items.length} members </Text>
+              <Icon name="arrow-forward" size={25}/>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text>{group?.description}</Text>
+            <View style={{marginLeft: 'auto'}}>
+              <FlatList
+                key={group?.members?.items.length}
+                data={group?.members?.items ? group?.members?.items.slice(0,5) : []}
+                renderItem={(item) => {
+                  var user = item.item?.user;
+                  var profileURL = user?.profileURL ? user?.profileURL : undefined;
+                  return(
+                    <ProfilePicture uri={profileURL? profileURL : 'defaultUser'}/>
+                  )
+                }}
+                numColumns={5}
+              />
+            </View>
+          </View>
+        </View>
+        <TouchableOpacity onPress={createGroupPost} style={{flexDirection: 'row'}}>
+          <TextInput
+            style={styles.msgInput}
+            placeholder="Post content..."
+            editable={false}
           />
+          <Icon name="send" size={30} style={styles.msgButton}/>
+        </TouchableOpacity>
       </View>
     )
   }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => setViewMenu(!viewMenu)} style={styles.menuTopRightNav} >
-        <Icon name="ellipsis-horizontal-sharp" size={24} color={'white'}/>
-      </TouchableOpacity>
       <FlatList
-        data={['Edit Group', 'Leave Group']}
-        renderItem={(item)=>{
-          if(!viewMenu) return null;
-          return(
-            <TouchableOpacity style={styles.menuTopRightItem} onPress={() => handleMenuPress(item.item)}>
-              <Text style={{fontSize:18}}>{item.item}</Text>
-            </TouchableOpacity>
-          )
-        }}
-        style={styles.menuTopRightList}
-      />
-      <View style={styles.groupImgContainer}>
-        <ProfilePicture uri={group?.groupURL ? group?.groupURL : 'defaultGroup'} style={styles.groupImg}/>
-      </View>
-      <View style={styles.groupMembersContainer}>
-        <View style={{flexDirection: 'row'}}>
-          <Text style={styles.label}>{group?.groupName}</Text>
-          <TouchableOpacity style={{marginLeft: 'auto', flexDirection: 'row'}} onPress={() => setViewMembers(true)}>
-            <Text>{group?.members?.items.length} members </Text>
-            <Icon name="arrow-forward" size={25}/>
-          </TouchableOpacity>
-        </View>
-        <View style={{flexDirection: 'row'}}>
-          <Text>{group?.description}</Text>
-          <View style={{marginLeft: 'auto'}}>
-            <FlatList
-              key={group?.members?.items.length}
-              data={group?.members?.items ? group?.members?.items.slice(0,5) : []}
-              renderItem={(item) => {
-                var user = item.item?.user;
-                var profileURL = user?.profileURL ? user?.profileURL : undefined;
-                return(
-                  <ProfilePicture uri={profileURL? profileURL : 'defaultUser'}/>
-                )
-              }}
-              numColumns={5}
-            />
-          </View>
-        </View>
-      </View>
-      <TouchableOpacity onPress={createGroupPost} style={{flexDirection: 'row'}}>
-        <TextInput
-          style={styles.msgInput}
-          placeholder="Post content..."
-          editable={false}
+          data={['Edit Group', 'Leave Group']}
+          renderItem={(item)=>{
+            if(!viewMenu) return null;
+            return(
+              <TouchableOpacity style={styles.menuTopRightItem} onPress={() => handleMenuPress(item.item)}>
+                <Text style={{fontSize:18}}>{item.item}</Text>
+              </TouchableOpacity>
+            )
+          }}
+          style={styles.menuTopRightList}
         />
-        <Icon name="send" size={30} style={styles.msgButton}/>
-      </TouchableOpacity>
       <FlatList
-        data={group?.posts?.items}
+        ListHeaderComponent={headerComp}
+        data={post}
         renderItem={(item) => {
-          var URL = item.item?.user?.profileURL ? item.item?.user?.profileURL : undefined;
+          if(item.item === null) return <View></View>
           return(
-            <TouchableOpacity style={[styles.postContainer]} onPress={() => clickPost(item.item?.id)}>
-              <View style={styles.profileSection}>
-                <ProfilePicture uri={URL ? URL : 'defaultUser'}/>
-                <View style={styles.textContainer}>
-                  <Text style={styles.postAuthor}>{item.item?.user?.firstname + " " + item.item?.user?.lastname}</Text>
-                </View>
-              </View>
-              <Text style={styles.postDate}>{moment(item?.item?.createdAt).fromNow()}</Text>
-              <Text style={styles.postTitle}>{item.item?.title}</Text>
-              <Text style={styles.postContent}>{item.item?.title}</Text>
-              <Text>{item.item?.comments?.items.length} comments</Text>
-            </TouchableOpacity>
+            <FormatPost item={item.item} />
           )
         }}
         ListEmptyComponent={() => (

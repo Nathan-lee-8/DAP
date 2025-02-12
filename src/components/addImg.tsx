@@ -1,7 +1,7 @@
 import { launchImageLibrary } from "react-native-image-picker";
 import { uploadData } from "@aws-amplify/storage";
 
-export const getImgURI = async ( filename: string) => {
+const getImgURI = async ( filename: string) => {
     try {
       const result = await launchImageLibrary({
         mediaType: 'photo',
@@ -41,3 +41,5 @@ export const getImgURI = async ( filename: string) => {
       return null;
     }
 };
+
+export default getImgURI;

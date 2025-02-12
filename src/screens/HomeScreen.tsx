@@ -1,17 +1,12 @@
 import { useEffect, useState, useContext, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl,
-  TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import client from '../client';
-import { groupsByUser, userByEmail } from '../graphql/queries';
+import { groupsByUser } from '../graphql/queries';
 import { ModelSortDirection, Post, Group } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
-import ProfilePicture from '../components/ImgComponent';
-import moment from 'moment';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GlobalParamList, LoggedInParamList } from '../types/rootStackParamTypes';
+import FormatPost from '../components/FormatPost';
 
 /**
  * Displays the active News feed for the current user
@@ -36,12 +31,12 @@ const HomeScreen = () => {
       const cachedData = await AsyncStorage.getItem('newsFeedCache');
       if (cachedData) {
         const data = JSON.parse(cachedData);
-        const fiveMin = 5 * 60 * 1000;
-        if (Date.now() - data.timestamp < fiveMin) {
+        // const fiveMin = 5 * 60 * 1000;
+        // if (Date.now() - data.timestamp < fiveMin) {
           setNewsFeed(data.posts);
           setLoading(false);
           return;
-        }
+       // }
       }
       await fetchNewsFeed();
     } catch (error) {
@@ -94,29 +89,6 @@ const HomeScreen = () => {
     }
   };
 
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  const nav2 = useNavigation<NativeStackNavigationProp<LoggedInParamList>>();
-  const visitProfile = (item : any) => {
-    if(item.user.id === userId){
-      nav2.navigate('Profile');
-    }else{
-      navigation.navigate('ViewProfile', { user: item.user });
-    }
-  }
-
-  const clickPost = (item : string) => {
-    navigation.navigate('ViewPost', { postID: item });
-  }
-
-  const getGroupName = ( id : string) => {
-    const res = groups.flatMap(group => {
-      if(group.id === id){
-        return group.groupName;
-      }
-    })
-    return res;
-  }
-
   const onRefresh = useCallback(() => {
     fetchNewsFeed();
   }, [userId]);
@@ -129,29 +101,7 @@ const HomeScreen = () => {
         <FlatList
           data={newsFeed}
           renderItem={({ item }) => {
-            let firstname = item?.user?.firstname ? item.user.firstname : undefined;
-            let lastname = item?.user?.lastname ? item.user.lastname: undefined;
-            let displayEmail = item?.user?.email ? item.user.email : undefined ;
-            let profileURL = item?.user?.profileURL ? item.user.profileURL : undefined;
-            var groupName = getGroupName(item.groupID);
-            return (
-              <TouchableOpacity style={styles.postContainer} onPress={ () => clickPost(item.id)}>
-                <View style={styles.profileSection}> 
-                  <TouchableOpacity onPress={() => visitProfile(item)}>
-                    <ProfilePicture uri={profileURL ? profileURL : 'defaultUser'}/>
-                  </TouchableOpacity>
-                  <View style={styles.textContainer}>
-                    <Text style={styles.postAuthor}>{firstname + " " + lastname}</Text>
-                    <Text style={styles.postContact}>{displayEmail}</Text>
-                  </View>
-                </View>
-                <Text style={styles.postGroup}> {groupName}</Text>
-                <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-                <Text style={styles.postTitle}>{item.title}</Text>
-                <Text style={styles.postContent}>{item.content}</Text>
-                <Text style={styles.postContent}>{item.comments?.items.length} comments</Text>
-              </TouchableOpacity>
-            )
+            return <FormatPost item={item} groupData={groups}/>
           }}
           ListEmptyComponent={() => (
             <View>

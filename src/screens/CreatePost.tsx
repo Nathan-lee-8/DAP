@@ -2,7 +2,7 @@ import { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert,
   ActivityIndicator} from 'react-native';
 import styles from '../styles/Styles';
-import { getImgURI } from '../components/addImg';
+import getImgURI from '../components/addImg';
 import { createPost } from '../graphql/mutations';
 import client from '../client';
 import { AuthContext } from '../context/AuthContext';

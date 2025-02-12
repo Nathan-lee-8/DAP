@@ -10,6 +10,7 @@ import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+import FormatPost from './FormatPost';
 
 const UserPosts = ( { userID } : any ) => {
   if(!userID) return (<View style={styles.noResultsMsg}> <Text>Error retriving posts</Text></View>);
@@ -77,12 +78,7 @@ const UserPosts = ( { userID } : any ) => {
           data={posts}
           renderItem={({ item }) => {
             return(
-              <TouchableOpacity style={styles.postContainer} onPress={() => clickPost(item.id)}>
-                <Text style={styles.postTitle}>{item.title}</Text>
-                <Text style={styles.postContent}>{item.content}</Text>
-                <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-                <Text>{item.comments?.items.length} comments</Text>
-              </TouchableOpacity>
+              <FormatPost item={item}/>
             )
           }}
           ListEmptyComponent={() => (

@@ -10,7 +10,7 @@ import client from '../client';
 import { createUserGroup, createGroup, deleteUserGroup, deleteGroup } from '../graphql/mutations';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
-import { getImgURI } from '../components/addImg';
+import getImgURI from '../components/addImg';
 
 /**
  * @returns 
