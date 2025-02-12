@@ -40,7 +40,7 @@ const ResetPassword = () => {
 
   const handleResetPassword = async () => {
     try {
-      //await resetPassword({ username: email });
+      await resetPassword({ username: email });
       setHasReset(true);
       setUserEmail(email);
     } catch (error: any) {

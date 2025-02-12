@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SignInParamList, LoggedInParamList } from '../types/rootStackParamTypes';
 import { AuthContext } from '../context/AuthContext';
 import SignIn from '../screens/SignInScreen';
 import SignUp from '../screens/SignUpScreen';
@@ -22,6 +21,7 @@ import CreatePost from '../screens/CreatePost';
 import Search from '../screens/Search';
 import Welcome from '../screens/Welcome';
 import EditGroup from '../screens/EditGroup';
+import ViewMembers from '../screens/ViewMembers';
 import LogOutButton from '../components/LogOutButton';
 import ImageComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
@@ -51,6 +51,7 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
           <GlobalStack.Screen name="ViewPost" component={ViewPost} options={{title: 'Post'}}/>
           <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
+          <GlobalStack.Screen name="ViewMembers" component={ViewMembers} options={{title: 'View Members'}}/>
         </GlobalStack.Navigator>
       ) : (
         <SignInStack.Navigator initialRouteName='Welcome'>

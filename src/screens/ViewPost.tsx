@@ -6,8 +6,8 @@ import client from '../client';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import { Post } from '../API';
-import ProfilePicture from '../components/ImgComponent';
 import moment from 'moment';
+import ImgComponent from '../components/ImgComponent';
 
 const ViewPost = ( {route} : any) => {
   const postID = route.params.postID;
@@ -58,22 +58,28 @@ const ViewPost = ( {route} : any) => {
 
   return (
     <View style={styles.container}>
-      <Text>{postData?.title}</Text>
-      <View style={styles.viewPostContainer}>
-        <Text>{postData?.content}</Text>
-        {postData?.postURL ? (
-          <ProfilePicture 
-            uri={postData?.postURL[0] ? postData?.postURL[0] : 'defaultUser'} 
-            style={styles.postImgContainer}
-          />
-        ):( null )}
+      <View style={styles.postContainer}>
+        <View style={styles.profileSection}>
+          <ImgComponent uri={postData?.user?.profileURL ? postData?.user?.profileURL : 'defaultUser'}/>
+          <View style={styles.profileText}>
+            <Text style={styles.postAuthor}> {postData?.user?.firstname} {postData?.user?.lastname} </Text>
+          </View>
+        </View>
+        <Text style={styles.postDate}> {moment(postData?.createdAt).fromNow()}</Text>
+        <View style={styles.contentSection}>
+          <Text style={styles.postTitle}>{postData?.title}</Text>
+          <Text style={styles.postContent}>{postData?.content}</Text>
+          {postData?.postURL && postData?.postURL[0] &&
+            <ImgComponent uri={postData?.postURL[0]} style={styles.postImgContainer} />
+          }
+        </View>
       </View>
       <FlatList
         data={postData?.comments?.items}
         renderItem={(item) => (
           <View style={styles.viewPostContainer}>
             <View style={styles.profileSection}>
-              <ProfilePicture uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : 'defaultUser'}/>
+              <ImgComponent uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : 'defaultUser'}/>
               <Text style={[styles.postAuthor, {marginLeft: 5}]}>{item.item?.user?.firstname} {item.item?.user?.lastname}</Text>
             </View>
             <Text style={styles.postDate}>{moment(item.item?.createdAt).fromNow()}</Text>

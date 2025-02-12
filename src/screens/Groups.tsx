@@ -6,12 +6,11 @@ import client from '../client';
 import { AuthContext } from '../context/AuthContext';
 import { groupsByUser } from '../graphql/queries';
 import { UserGroup } from '../API';
-import Icon from '@react-native-vector-icons/ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
-import ProfilePicture from '../components/ImgComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImgComponent from '../components/ImgComponent';
 
 const Groups = () => {
   const [group, setGroup] = useState<UserGroup[]>([]);
@@ -98,11 +97,12 @@ const Groups = () => {
           return (
             <TouchableOpacity onPress={() => viewGroup(item)}>
               <View style={styles.postContainer}>
-                <View style={styles.profileSection}>
-                  <ProfilePicture uri={groupURL ? groupURL : "defaultGroup"}/>
-                  <View style={styles.textContainer}>
+                <View style={styles.itemContentSection}>
+                  <ImgComponent uri={groupURL ? groupURL : "defaultGroup"} 
+                    style={{height: 40, width: 40, borderRadius: 20}} />
+                  <View style={styles.userInfoContainer}>
                     <Text style={styles.postTitle}>{item.group?.groupName}</Text>
-                    <Text style={styles.postContact}>{description}</Text>
+                    <Text style={styles.postContent}>{description}</Text>
                   </View>
                 </View>
                 <Text style={styles.postDate}>{members} members</Text>

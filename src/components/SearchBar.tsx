@@ -70,9 +70,9 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
   }
 
   return (
-    <View style={{width: width, marginBottom: 10}}>
+    <View style={{width: '100%'}}>
       <TextInput
-        style={[styles.input, {marginTop: 0}]}
+        style={[styles.input, {width: width}]}
         value={search}
         onChangeText={handleSearch}
         placeholder="Search for users..."
@@ -88,9 +88,9 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
             <TouchableOpacity onPress={() => { if(userPressed) userPressed(item) }}>
               <View style={styles.listUserContainer}>
                 <ProfilePicture uri={item.profileURL? item.profileURL : 'defaultUser'}/>
-                <View style={styles.textContainer}>
+                <View style={styles.userInfoContainer}>
                   <Text style={styles.postAuthor}>{item.firstname} {item.lastname}</Text>
-                  <Text style={styles.postContact}>{item.email}</Text>
+                  <Text style={styles.postContent}>{item.email}</Text>
                 </View>
               </View>
             </TouchableOpacity>

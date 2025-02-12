@@ -34,7 +34,7 @@ const Search = () => {
         ) : searchTerm === 'Groups' ? (
           <GroupSearch />
         ) : null}
-        <View>
+        <View style={styles.searchTermList}>
           <TouchableOpacity style={styles.searchTermContainer} onPress={() => setSelected(!selected)}>
             <Text style={{textAlign: 'center'}}>{searchTerm}</Text>
           </TouchableOpacity>
@@ -112,9 +112,9 @@ const GroupSearch = () => {
   }
 
   return(
-    <View style={{width: '85%'}}>
+    <View style={{width: '100%'}}>
       <TextInput
-        style={[styles.input, {marginTop: 0}]}
+        style={[styles.input,{ width: '85%'}]}
         value={search}
         onChangeText={handleSearch}
         placeholder='Search for groups'
@@ -129,9 +129,9 @@ const GroupSearch = () => {
             <TouchableOpacity onPress={() => handleGroupClick(item) }>
               <View style={styles.listUserContainer}>
                 <ProfilePicture uri={item.groupURL ? item.groupURL : 'defaultUser'} />
-                <View style={styles.textContainer}>
+                <View style={styles.userInfoContainer}>
                   <Text style={styles.postAuthor}>{item.groupName}</Text>
-                  <Text style={styles.postContact}>{item.description}</Text>
+                  <Text style={styles.postContent}>{item.description}</Text>
                 </View>
               </View>
               <Text style={styles.postDate}>{item.members?.items.length} members</Text>
