@@ -11,6 +11,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImgComponent from '../components/ImgComponent';
+import Icon from '@react-native-vector-icons/ionicons';
 
 const Groups = () => {
   const [group, setGroup] = useState<UserGroup[]>([]);
@@ -85,9 +86,6 @@ const Groups = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={[styles.buttonBlack, {marginBottom: 20}]} onPress={createGroup}>
-        <Text style={styles.buttonTextWhite}>Create Group</Text>
-      </TouchableOpacity>
       <FlatList
         data={group}
         renderItem={({ item }) => {
@@ -101,11 +99,11 @@ const Groups = () => {
                   <ImgComponent uri={groupURL ? groupURL : "defaultGroup"} 
                     style={{height: 40, width: 40, borderRadius: 20}} />
                   <View style={styles.userInfoContainer}>
-                    <Text style={styles.postTitle}>{item.group?.groupName}</Text>
-                    <Text style={styles.postContent}>{description}</Text>
+                    <Text style={styles.postAuthor}>{item.group?.groupName}</Text>
+                    <Text style={styles.postDate}>{description}</Text>
                   </View>
+                  <Text style={styles.memberText}>{members} members</Text>
                 </View>
-                <Text style={styles.postDate}>{members} members</Text>
               </View>
             </TouchableOpacity>
           )
@@ -124,6 +122,10 @@ const Groups = () => {
           />
         }
       />
+      
+      <TouchableOpacity onPress={createGroup}>
+        <Icon name="add-circle-outline" style={{alignSelf: 'center'}} size={50}/>
+      </TouchableOpacity>
     </View>
   );
 };

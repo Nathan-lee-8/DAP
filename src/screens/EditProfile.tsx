@@ -93,7 +93,7 @@ const EditProfile = () => {
               <Text style={styles.postContent}>{userEmail} </Text>
             </View>
             <TouchableOpacity style={styles.logoutButton} onPress={() => setEditsOn(true)}>
-              <Text style={styles.buttonTextBlack}>Edit Profile</Text>
+              <Text style={styles.buttonTextBlack}>Edit</Text>
             </TouchableOpacity>
           </View>
           <UserPosts userID={userId} />
@@ -103,7 +103,7 @@ const EditProfile = () => {
     ) : (
       <View>
         <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-          <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={styles.userInfoContainer}/>
+          <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={styles.uploadImage}/>
           <Text style={styles.uploadImageText}>Edit Image</Text>
         </TouchableOpacity>
         <Text style={styles.label}>First Name</Text>

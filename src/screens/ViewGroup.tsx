@@ -32,13 +32,13 @@ const ViewGroup = ({route} : any) => {
         return;
       }
       setGroup(currGroup.data.getGroup);
-      var posts = currGroup.data.getGroup.posts?.items
+      let posts = currGroup.data.getGroup.posts?.items?.filter((item): item is Post => item !== null);
       posts = posts?.sort((a, b) => {
         const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
         return dateB - dateA;
       });
-      if(posts) setPosts(posts?.filter((item) => item !== null));
+      if(posts) setPosts(posts);
     } catch (error: any) {
       console.log(error);
     }

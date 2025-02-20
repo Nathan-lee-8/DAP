@@ -10,6 +10,7 @@ import ProfilePicture from '../components/ImgComponent';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+import Icon from '@react-native-vector-icons/ionicons';
 
 const CreatePost = ({route}: any) => {
   const { groupID } = route.params;
@@ -101,8 +102,8 @@ const CreatePost = ({route}: any) => {
         value={content}
         onChangeText={setContent}
       />
-      <TouchableOpacity style={[styles.buttonBlack, {marginTop: 'auto'}]} onPress={sendPost}>
-        <Text style={styles.buttonTextWhite}>Create Post</Text>
+      <TouchableOpacity onPress={sendPost} style={{marginTop: 'auto'}}>
+        <Icon name="add-circle-outline" style={{alignSelf: 'center'}} size={50}/>
       </TouchableOpacity>
     </View>
   )

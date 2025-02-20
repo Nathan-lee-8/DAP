@@ -42,7 +42,7 @@ const AppNavigator = () => {
     <NavigationContainer>
       {isSignedIn ? (
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
-          <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false}}/>
+          <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
@@ -79,25 +79,25 @@ const BottomTabs = () => {
         options={{
           lazy: true,
           headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="home-outline" size={30} color="grey" />
+          tabBarIcon: () => <Icon name="home-outline" size={30} />
         }}/>
       <BottomTab.Screen name="Messages" component={Messaging} 
         options={{
           lazy: true,
           headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} color="grey" />
+          tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} />
           }} />
       <BottomTab.Screen name="Groups" component={Groups} 
         options={{
           lazy: true,
           headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="people-outline" size={30} color="grey" />
+          tabBarIcon: () => <Icon name="people-outline" size={30} />
           }} />
       <BottomTab.Screen name="Search" component={Search} 
         options={{
           lazy: true,
           headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="search-outline" size={30} color="grey" />
+          tabBarIcon: () => <Icon name="search-outline" size={30} />
           }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
         options={{

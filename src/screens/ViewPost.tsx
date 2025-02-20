@@ -8,10 +8,11 @@ import Icon from '@react-native-vector-icons/ionicons';
 import { Post } from '../API';
 import moment from 'moment';
 import ImgComponent from '../components/ImgComponent';
+import FormatPost from '../components/FormatPost';
 
 const ViewPost = ( {route} : any) => {
   const postID = route.params.postID;
-  const [postData, setPostData] = useState<Post | null>();
+  const [postData, setPostData] = useState<Post>();
   const [comment, setComment] = useState<string>("");
   const fetchPost = async () => {
     try {
@@ -23,7 +24,8 @@ const ViewPost = ( {route} : any) => {
         authMode: 'userPool'
       });
       console.log("fetched from ViewPost");
-      setPostData(data.getPost);
+
+      if(data.getPost) setPostData(data.getPost);
     } catch (error) {
       console.error('Error fetching post:', error);
     }
@@ -60,29 +62,29 @@ const ViewPost = ( {route} : any) => {
     <View style={styles.container}>
       <View style={styles.postContainer}>
         <View style={styles.profileSection}>
-          <ImgComponent uri={postData?.user?.profileURL ? postData?.user?.profileURL : 'defaultUser'}/>
+          <ImgComponent uri={postData?.user?.profileURL ? postData?.user?.profileURL : 'defaultUser'} style={styles.postProfileImg}/>
           <View style={styles.profileText}>
             <Text style={styles.postAuthor}> {postData?.user?.firstname} {postData?.user?.lastname} </Text>
+          <Text style={styles.postDate}> {moment(postData?.createdAt).fromNow()}</Text>
           </View>
         </View>
-        <Text style={styles.postDate}> {moment(postData?.createdAt).fromNow()}</Text>
-        <View style={styles.contentSection}>
-          <Text style={styles.postTitle}>{postData?.title}</Text>
           <Text style={styles.postContent}>{postData?.content}</Text>
           {postData?.postURL && postData?.postURL[0] &&
             <ImgComponent uri={postData?.postURL[0]} style={styles.postImgContainer} />
           }
-        </View>
       </View>
       <FlatList
         data={postData?.comments?.items}
         renderItem={(item) => (
-          <View style={styles.viewPostContainer}>
+          <View style={styles.postContainer}>
             <View style={styles.profileSection}>
-              <ImgComponent uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : 'defaultUser'}/>
-              <Text style={[styles.postAuthor, {marginLeft: 5}]}>{item.item?.user?.firstname} {item.item?.user?.lastname}</Text>
+              <ImgComponent uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : 'defaultUser'} style={styles.postProfileImg}/>
+              <View style={styles.profileText}>
+              <Text style={styles.postAuthor}>{item?.item?.user?.firstname + " " + item?.item?.user?.lastname}</Text>
+            <Text style={styles.postDate}>{moment(item?.item?.createdAt).fromNow()}</Text>
+          </View>
             </View>
-            <Text style={styles.postDate}>{moment(item.item?.createdAt).fromNow()}</Text>
+            
             <Text style={styles.postContent}>{item.item?.content}</Text>
           </View>
         )}
@@ -93,16 +95,16 @@ const ViewPost = ( {route} : any) => {
         )}
         scrollEnabled
       />
-      <View style={{flexDirection: 'row'}}>
+      <View style={styles.addCommentSection}>
         <TextInput
-          style={styles.msgInput}
+          style={styles.commentInput}
           placeholder="Add a comment"
           multiline={true}
           numberOfLines={4}
           value={comment}
           onChangeText={setComment}
         />
-        <TouchableOpacity onPress={postComment} style={styles.msgButton}>
+        <TouchableOpacity onPress={postComment} style={styles.commentButton}>
           <Icon name="send" size={30} />
         </TouchableOpacity>
       </View>

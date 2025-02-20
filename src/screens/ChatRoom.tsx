@@ -48,7 +48,7 @@ const ChatRoom = ( { route } : any) => {
                 const newMessage = value?.data.onCreateMessage;
                 setMessages((prev) => {
                     if(!newMessage || prev.find((msg) => msg?.id === newMessage?.id)) return prev;
-                    return [...prev, newMessage];
+                    return [newMessage, ...prev];
                 });
                 scrollToBottom();
             },
@@ -88,7 +88,7 @@ const ChatRoom = ( { route } : any) => {
             if(parts){
                 let URLs: (string | undefined)[] = [];
                 setParticipants(parts.filter((item): item is UserChat => {
-                    if(item?.userID !== userId) URLs.push(item.user?.profileURL || undefined);
+                    if(item?.userID !== userId) URLs.push(item?.user?.profileURL || undefined);
                     return item?.userID !== userId;
                 }));
                 setURLs(URLs);
@@ -132,8 +132,10 @@ const ChatRoom = ( { route } : any) => {
                     
                 }
             }
+
             if(myUserChat){
                 const myUnread = myUserChat?.unreadMessageCount ? myUserChat.unreadMessageCount : 0;
+                console.log(myUserChat);
                 if(myUnread === 0 && messages[0].content === myUserChat.lastMessage) {
                     navigation.goBack();
                     return;

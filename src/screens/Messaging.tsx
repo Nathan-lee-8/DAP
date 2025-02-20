@@ -10,6 +10,7 @@ import styles from '../styles/Styles';
 import { GlobalParamList } from '../types/rootStackParamTypes';
 import ImgComponent from '../components/ImgComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from '@react-native-vector-icons/ionicons';
 
 const MessageUsers = () => {
   const [chatRooms, setChatRooms] = useState<UserChat[]>([])
@@ -61,7 +62,7 @@ const MessageUsers = () => {
 
   useFocusEffect(
     useCallback(() => {
-      loadChatRooms();
+      fetchChatRooms();
     }, [])
   );
 
@@ -86,9 +87,6 @@ const MessageUsers = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={[styles.buttonBlack, {marginBottom: 20}]} onPress={handleCreateMsg}>
-        <Text style={styles.buttonTextWhite}>Create Chat</Text>
-      </TouchableOpacity>
       <FlatList
         data={chatRooms}
         keyExtractor={(item) => item.id}
@@ -140,8 +138,10 @@ const MessageUsers = () => {
                     <Text style={styles.postAuthor}>{chatname}</Text>
                     <Text style={styles.postContent}>{item.lastMessage} </Text>
                   </View>  
+                  {item.unreadMessageCount && item.unreadMessageCount > 0 ? (
+                    <Text style={styles.memberText}>{item.unreadMessageCount}</Text>
+                  ) : ( null )}
                 </View> 
-                <Text style={styles.postDate}>Unread Msgs: {item.unreadMessageCount}</Text>
               </View>
             </TouchableOpacity>  
           )
@@ -152,6 +152,9 @@ const MessageUsers = () => {
           </View>
         }
       />
+      <TouchableOpacity onPress={handleCreateMsg}>
+        <Icon name="add-circle-outline" style={{alignSelf: 'center'}} size={50}/>
+      </TouchableOpacity>
     </View>
   );
 };
