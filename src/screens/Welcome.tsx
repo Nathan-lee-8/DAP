@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import { SignInParamList } from '../types/rootStackParamTypes';
 import styles from '../styles/Styles';
 import ImgComponent from '../components/ImgComponent';
@@ -17,7 +17,7 @@ const Welcome = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {padding: 20, paddingTop: Platform.OS === 'ios' ? 70 : 0}]}>
       <View style={{flexDirection: 'row'}}>
         <ImgComponent uri="logo" style={styles.logo}/>
         <Text style={styles.logoText}> DAP </Text>

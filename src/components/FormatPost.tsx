@@ -7,7 +7,7 @@ import { GlobalParamList, LoggedInParamList } from "../types/rootStackParamTypes
 import { Post, Group } from "../API";
 import moment from "moment";
 import styles from "../styles/Styles";
-import ImgComponent  from "./ImgComponent";
+import ImgComponent from "./ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 
 const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
@@ -41,37 +41,37 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   
   return (
     <View style={styles.postContainer}>
-      <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
       {item?.user?.firstname ? (
         <View style={styles.profileSection}> 
-        <TouchableOpacity onPress={() => visitProfile(item)}>
-          <ImgComponent uri={item?.user?.profileURL ? item.user.profileURL : 'defaultUser'}/>
-        </TouchableOpacity>
-        <View style={styles.profileText}>
-          {groupData ? (
-            <Text style={styles.postAuthor}>
-              {item?.user?.firstname + " " + item?.user?.lastname} posted in {getGroupName(item.groupID)}
-            </Text>
-          ) : (
-            <Text>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
-          )}
+          <TouchableOpacity onPress={() => visitProfile(item)}>
+            <ImgComponent uri={item?.user?.profileURL ? item.user.profileURL : 'defaultUser'} style={styles.postProfileImg}/>
+          </TouchableOpacity>
+          <View style={styles.profileText}>
+            {groupData ? (
+              <Text style={styles.postAuthor}>
+                <Text style={styles.bold}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+                <Text> posted in </Text>
+                <Text style={styles.bold}>{getGroupName(item.groupID)}</Text>
+              </Text>
+            ) : (
+              <Text>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+            )}
+            <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
+          </View>
         </View>
-      </View>
       ) : null}
       
       <TouchableOpacity  onPress={ () => clickPost(item.id)}>
-        <View style={styles.contentSection}> 
-          <Text style={styles.postTitle}>{item.title}</Text>
-          <Text style={styles.postContent}>{item.content.slice(0, 100)}{item.content.length >= 100 && <Text>... view more</Text>}</Text>
+        <Text style={styles.postContent}>{item.content.slice(0, 300)}{item.content.length >= 300 && <Text>... view more</Text>}</Text>
+        {item.postURL && item.postURL[0] && <ImgComponent uri={item.postURL[0]} style={styles.postImgContainer} />}
 
-        </View>
         <View style={styles.interactSection}>
           <View style={styles.commentSection}>
-            <Icon name="chatbubble-outline" size={20}/>
+            <Icon name="chatbubble-outline" size={15}/>
             <Text> {item.comments?.items.length}</Text>
           </View>
           <View style={styles.shareSection}>
-            <Icon name="arrow-redo-outline" size={20}/>
+            <Icon name="arrow-redo-outline" size={15}/>
           </View>
         </View>
 
