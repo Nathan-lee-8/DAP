@@ -34,6 +34,7 @@ const HomeScreen = () => {
         // const fiveMin = 5 * 60 * 1000;
         // if (Date.now() - data.timestamp < fiveMin) {
           setNewsFeed(data.posts);
+          setGroups(data.groupData);
           setLoading(false);
           return;
        // }
@@ -65,7 +66,8 @@ const HomeScreen = () => {
       let groupData = userGroupData.flatMap(group => {
         return (group.group  || []);
       });
-      setGroups(groupData.filter(group => group !== null))
+      groupData = groupData.filter(group => group !== null);
+      setGroups(groupData);
       let posts = userGroupData.flatMap(userGroup => {
         return (userGroup.group?.posts?.items || []).filter((post): post is Post => post !== null);
       })
@@ -78,6 +80,7 @@ const HomeScreen = () => {
       
       await AsyncStorage.setItem('newsFeedCache', JSON.stringify({
         posts,
+        groupData,
         timestamp: Date.now(),
       }));
     } catch (error: any) {

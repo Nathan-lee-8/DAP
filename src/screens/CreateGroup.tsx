@@ -10,7 +10,7 @@ import client from '../client';
 import { createUserGroup, createGroup, deleteUserGroup, deleteGroup } from '../graphql/mutations';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
-import getImgURI from '../components/addImg';
+import { imagePicker, getImgURI } from '../components/addImg';
 
 /**
  * @returns 
@@ -19,10 +19,9 @@ const CreateGroup = () => {
   const [groupName, setGroupName] = useState('');
   const [description, setDescription] = useState('');
   const [members, setMembers] = useState<User[]>([]);
-  const [groupURI, setGroupURL] = useState<string | null>(null);
+  const [groupURI, setGroupURL] = useState<string>('defaultGroup');
   const [imgLoading, setImgLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [addImgText, setAddImgText] = useState("Add Img");
   const authContext = useContext(AuthContext);
   if(!authContext){
     console.log("Auth context not defined");
@@ -42,13 +41,16 @@ const CreateGroup = () => {
         variables: {
           input: {
             groupName: groupName,
-            groupURL: groupURI
+            groupURL: `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/groupPictures/${groupID}/profile/${Date.now()}.jpg`
           }
         },
         authMode:'userPool'
       })
       console.log("Group created Successfully");
       groupID = groupData.data.createGroup.id;
+
+      //upload image to s3
+      await getImgURI(groupURI, `public/groupPictures/${groupID}/${Date.now()}.jpg`);
 
       //Add Members 
       for(const member of members){
@@ -143,17 +145,15 @@ const CreateGroup = () => {
       setMembers(members.filter((member) => member !== user));
     }
   }
-
+  
   const getFilePath = async () => {
     try{
       setImgLoading(true);
-      var path = await getImgURI(`groupProfile/${userId}/${Date.now()}.jpg`);
-      if(path){
-        setGroupURL("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + path);      
-        setAddImgText('');
-      }
-    } catch(error){
-      console.log(error);
+      var uri = await imagePicker();
+      if(uri === null) throw new Error('Image not selected');
+      setGroupURL(uri);
+    } catch(error: any){
+      console.log(error.message);
     }finally{
       setImgLoading(false);
     }
@@ -171,8 +171,8 @@ const CreateGroup = () => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
-          <ImgComponent uri={groupURI ? groupURI : 'defaultGroup'} style={styles.groupImg}/>
-          <Text style={styles.addImageText}>{addImgText}</Text>
+          <ImgComponent uri={groupURI} style={styles.groupImg}/>
+          <Text style={styles.addImageText}>add Image</Text>
         </TouchableOpacity>
       )}
       <TextInput
@@ -196,15 +196,11 @@ const CreateGroup = () => {
       <FlatList
         data={members}
         renderItem={({ item }) => {
-          let user = item;
-          let name = user?.firstname + ' ' + user?.lastname;
-          let userURL = user?.profileURL || undefined;
-
           return (
             <View style={styles.searchUserContainer}>
               <View style={styles.listUserContainer}>
-                <ImgComponent uri={userURL ? userURL : 'defaultUser'}/>
-                <Text style={[styles.postContent, {marginLeft: 10}]}>{name}</Text>
+                <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
+                <Text style={[styles.postContent, {marginLeft: 10}]}>{item?.firstname + ' ' + item?.lastname}</Text>
                 <TouchableOpacity style={{marginLeft: 'auto'}} onPress={()=> removeUser(item)}>
                   <Icon name="remove-circle-outline" size={25}/>
                 </TouchableOpacity>
@@ -213,8 +209,8 @@ const CreateGroup = () => {
           )
         }}
       />
-      <TouchableOpacity style={styles.buttonBlack} onPress={addGroup}>
-        <Text style={styles.buttonTextWhite}> Create Group </Text>
+      <TouchableOpacity onPress={addGroup}>
+        <Icon name="add-circle-outline" style={styles.createButton} size={50}/>
       </TouchableOpacity>
     </View>
   )

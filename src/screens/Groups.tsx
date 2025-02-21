@@ -100,10 +100,11 @@ const Groups = () => {
                     style={{height: 40, width: 40, borderRadius: 20}} />
                   <View style={styles.userInfoContainer}>
                     <Text style={styles.postAuthor}>{item.group?.groupName}</Text>
-                    <Text style={styles.postDate}>{description}</Text>
+                    <Text style={styles.postDate} numberOfLines={1}>{description}</Text>
                   </View>
-                  <Text style={styles.memberText}>{members} members</Text>
                 </View>
+                
+                <Text style={styles.memberText}>{members} members</Text>
               </View>
             </TouchableOpacity>
           )
@@ -124,7 +125,7 @@ const Groups = () => {
       />
       
       <TouchableOpacity onPress={createGroup}>
-        <Icon name="add-circle-outline" style={{alignSelf: 'center'}} size={50}/>
+        <Icon name="add-circle-outline" style={styles.createButton} size={50}/>
       </TouchableOpacity>
     </View>
   );

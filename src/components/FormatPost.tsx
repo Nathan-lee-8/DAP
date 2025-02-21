@@ -44,17 +44,17 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
       {item?.user?.firstname ? (
         <View style={styles.profileSection}> 
           <TouchableOpacity onPress={() => visitProfile(item)}>
-            <ImgComponent uri={item?.user?.profileURL ? item.user.profileURL : 'defaultUser'} style={styles.postProfileImg}/>
+            <ImgComponent uri={item.user.profileURL} style={styles.postProfileImg}/>
           </TouchableOpacity>
           <View style={styles.profileText}>
             {groupData ? (
               <Text style={styles.postAuthor}>
-                <Text style={styles.bold}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+                <Text style={styles.bold}>{item.user.firstname + " " + item.user.lastname}</Text>
                 <Text> posted in </Text>
                 <Text style={styles.bold}>{getGroupName(item.groupID)}</Text>
               </Text>
             ) : (
-              <Text>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+              <Text>{item.user.firstname + " " + item.user.lastname}</Text>
             )}
             <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
           </View>
@@ -62,7 +62,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
       ) : null}
       
       <TouchableOpacity  onPress={ () => clickPost(item.id)}>
-        <Text style={styles.postContent}>{item.content.slice(0, 300)}{item.content.length >= 300 && <Text>... view more</Text>}</Text>
+        <Text style={styles.postContent} numberOfLines={5}>{item.content}</Text>
         {item.postURL && item.postURL[0] && <ImgComponent uri={item.postURL[0]} style={styles.postImgContainer} />}
 
         <View style={styles.interactSection}>

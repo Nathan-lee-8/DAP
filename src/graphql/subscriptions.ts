@@ -134,7 +134,6 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
 ) {
   onCreatePost(filter: $filter, owner: $owner) {
     id
-    title
     content
     postURL
     groupID
@@ -156,7 +155,6 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
 ) {
   onUpdatePost(filter: $filter, owner: $owner) {
     id
-    title
     content
     postURL
     groupID
@@ -178,7 +176,6 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
 ) {
   onDeletePost(filter: $filter, owner: $owner) {
     id
-    title
     content
     postURL
     groupID
@@ -217,7 +214,6 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
     }
     post {
       id
-      title
       content
       postURL
       groupID
@@ -262,7 +258,6 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
     }
     post {
       id
-      title
       content
       postURL
       groupID
@@ -307,7 +302,6 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
     }
     post {
       id
-      title
       content
       postURL
       groupID

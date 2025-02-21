@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect } from "react";
-import { View, Text, FlatList, TextInput, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
 import { useEffect } from "react";
@@ -17,6 +17,8 @@ const ViewGroup = ({route} : any) => {
   const [group, setGroup] = useState<Group>();
   const [post, setPosts] = useState<Post[]>([]);
   const [viewMenu, setViewMenu] = useState(false);
+  const [loading, setLoading ] = useState(true);
+
   const fetchCurrentData = async () => {
     try{
       const currGroup = await client.graphql({
@@ -41,6 +43,8 @@ const ViewGroup = ({route} : any) => {
       if(posts) setPosts(posts);
     } catch (error: any) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
  
@@ -124,6 +128,9 @@ const ViewGroup = ({route} : any) => {
         </TouchableOpacity>
       </View>
     )
+  }
+  if(loading){
+    return <ActivityIndicator size="large" color="#0000ff" />
   }
 
   return (

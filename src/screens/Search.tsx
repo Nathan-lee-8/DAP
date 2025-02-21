@@ -133,8 +133,9 @@ const GroupSearch = () => {
                   <Text style={styles.postAuthor}>{item.groupName}</Text>
                   <Text style={styles.postContent}>{item.description}</Text>
                 </View>
+                
+                <Text style={styles.memberText}>{item.members?.items.length} members</Text>
               </View>
-              <Text style={styles.postDate}>{item.members?.items.length} members</Text>
             </TouchableOpacity>
           </View>
         )}

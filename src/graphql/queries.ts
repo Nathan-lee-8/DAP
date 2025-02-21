@@ -80,7 +80,6 @@ export const userByEmail = /* GraphQL */ `query UserByEmail(
 export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
   getPost(id: $id) {
     id
-    title
     content
     postURL
     groupID
@@ -122,6 +121,15 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       nextToken
       __typename
     }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      createdAt
+      updatedAt
+      __typename
+    }
     createdAt
     updatedAt
     userPostsId
@@ -138,7 +146,6 @@ export const listPosts = /* GraphQL */ `query ListPosts(
   listPosts(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      title
       content
       postURL
       groupID
@@ -172,7 +179,6 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
   ) {
     items {
       id
-      title
       content
       postURL
       groupID
@@ -220,7 +226,6 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
   ) {
     items {
       id
-      title
       content
       postURL
       groupID
@@ -274,7 +279,6 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
     }
     post {
       id
-      title
       content
       postURL
       groupID
@@ -463,7 +467,7 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
 >;
 export const chatsByUser = /* GraphQL */ `query ChatsByUser(
   $userID: ID!
-  $createdAt: ModelStringKeyConditionInput
+  $updatedAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserChatFilterInput
   $limit: Int
@@ -471,7 +475,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
 ) {
   chatsByUser(
     userID: $userID
-    createdAt: $createdAt
+    updatedAt: $updatedAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -486,7 +490,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       isMuted
       userID
       chatID
-      chat{
+       chat{
         id
         name
         isGroup
@@ -586,7 +590,6 @@ export const getChat = /* GraphQL */ `query GetChat(
           id
           firstname
           lastname
-          email
           profileURL
           createdAt
           updatedAt
@@ -602,7 +605,7 @@ export const getChat = /* GraphQL */ `query GetChat(
       nextToken
       __typename
     }
-    participants {
+   participants {
       items{
         id
         ownerID
@@ -903,7 +906,6 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
         posts{
           items {
             id
-            title
             content
             postURL
             groupID
@@ -1020,7 +1022,6 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     posts {
       items {
         id
-        title
         content
         postURL
         groupID
@@ -1048,12 +1049,12 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
             owner
             __typename
           }
-          nextToken
-          __typename
-        }
-        createdAt
-        updatedAt
-        userPostsId
+      nextToken
+      __typename
+    }
+    createdAt
+    updatedAt
+    userPostsId
         owner
         __typename
       }

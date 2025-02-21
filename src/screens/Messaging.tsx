@@ -11,6 +11,7 @@ import { GlobalParamList } from '../types/rootStackParamTypes';
 import ImgComponent from '../components/ImgComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from '@react-native-vector-icons/ionicons';
+import moment from "moment";
 
 const MessageUsers = () => {
   const [chatRooms, setChatRooms] = useState<UserChat[]>([])
@@ -76,6 +77,19 @@ const MessageUsers = () => {
     navigation.navigate('CreateChat', {});
   }
 
+  const formatDate = (dateString : string) => {
+    const date = moment(dateString);
+    const now = moment();
+    
+    if (date.isSame(now, 'day')) {
+      return date.format('h:mm A');
+    } else if (date.isSame(now, 'week')) {
+      return date.format('dddd');
+    } else {
+      return date.format('M/DD/YY');
+    }
+  };
+
   if (loading) {
     return (
       <View >
@@ -98,8 +112,7 @@ const MessageUsers = () => {
               return `${item?.user?.firstname} ${item?.user?.lastname}`
             })
             .filter(Boolean)
-            .join(', ')
-            .slice(0, 30);
+            .join(', ');
           if(item?.chat?.name !== 'default') chatname = item?.chat?.name;
 
           let containerStyle = (item.unreadMessageCount && item.unreadMessageCount > 0) ? 
@@ -108,6 +121,9 @@ const MessageUsers = () => {
           return (
             <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>
               <View style={containerStyle}> 
+                {item.unreadMessageCount && item.unreadMessageCount > 0 ? (
+                  <Icon name="ellipse-sharp" color="blue" size={12} style={styles.unreadMsgdot}/>
+                ) : ( null )}
                 <View style={styles.itemContentSection}>
                   <View style={styles.URLSection}>
                     {displayURIs.length > 1 ? (
@@ -135,13 +151,11 @@ const MessageUsers = () => {
                     
                   </View>
                   <View style={styles.userInfoContainer}>
-                    <Text style={styles.postAuthor}>{chatname}</Text>
-                    <Text style={styles.postContent}>{item.lastMessage} </Text>
+                    <Text style={styles.postAuthor} numberOfLines={1}>{chatname}</Text>
+                    <Text style={styles.postContent} numberOfLines={1}>{item.lastMessage} </Text>
                   </View>  
-                  {item.unreadMessageCount && item.unreadMessageCount > 0 ? (
-                    <Text style={styles.memberText}>{item.unreadMessageCount}</Text>
-                  ) : ( null )}
                 </View> 
+                  <Text style={styles.memberText}>{formatDate(item.updatedAt)}</Text>
               </View>
             </TouchableOpacity>  
           )
@@ -153,7 +167,7 @@ const MessageUsers = () => {
         }
       />
       <TouchableOpacity onPress={handleCreateMsg}>
-        <Icon name="add-circle-outline" style={{alignSelf: 'center'}} size={50}/>
+        <Icon name="add-circle-outline" style={styles.createButton} size={50}/>
       </TouchableOpacity>
     </View>
   );
