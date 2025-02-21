@@ -87,7 +87,7 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
           <View style={styles.searchUserContainer}>
             <TouchableOpacity onPress={() => { if(userPressed) userPressed(item) }}>
               <View style={styles.listUserContainer}>
-                <ProfilePicture uri={item.profileURL? item.profileURL : 'defaultUser'}/>
+                <ProfilePicture uri={item.profileURL}/>
                 <View style={styles.userInfoContainer}>
                   <Text style={styles.postAuthor}>{item.firstname} {item.lastname}</Text>
                   <Text style={styles.postContent}>{item.email}</Text>

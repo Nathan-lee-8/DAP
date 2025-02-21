@@ -1,12 +1,13 @@
 import { StyleSheet } from 'react-native';
 
 const colorBackground = '#f2f7f7';
+const colorPrimary = 'white';
 
 const styles = StyleSheet.create({
+
   /**Overall App styles */
   container: {
     flex: 1,
-    paddingVertical: 20,
     backgroundColor: colorBackground,
   },
   buttonBlack: {
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginBottom: 10,
     borderRadius: 5,
-    backgroundColor: 'white'
+    backgroundColor: colorPrimary
   },
   longInput: {
     height: 100,
@@ -88,7 +89,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginBottom: 16,
     borderRadius: 5,
-    backgroundColor: 'white'
+    textAlignVertical: 'top',
+    backgroundColor: colorPrimary
   },
   centeredRow:{
     flexDirection: 'row',
@@ -116,7 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   logoutButton: {
-    backgroundColor: 'white',
+    backgroundColor: colorPrimary,
     borderWidth: 1,
     borderRadius: 10,
     marginRight: 20,
@@ -125,7 +127,7 @@ const styles = StyleSheet.create({
 
   /** User Posts styles */
   postContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: colorPrimary,
     marginBottom: 5,
     padding: 10,
     paddingHorizontal: 20,
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
     width: '80%',
     borderColor: '#ccc',
     borderWidth: 1,
-    backgroundColor: 'white',
+    backgroundColor: colorPrimary,
     margin: 20,
     borderRadius: 5,
     padding: 7,
@@ -209,6 +211,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
+  /** Create Post Styles*/
+  contentInput: {
+    height: 120,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginTop: 40,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    textAlignVertical: 'top',
+    backgroundColor: colorPrimary
+  },
+  postImages: {
+    
+  },
 
   /** List Messages and Groups styles */
   itemContentSection: {
@@ -219,9 +235,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgrey',
     marginBottom: 5,
     padding: 10,
+    paddingHorizontal: 20,
+  },
+  unreadMsgdot : {
+    position: 'absolute',
+    top: 25,
+    left: 5,
   },
   URLSection: {
     width: 30,
+    height: 40,
     paddingVertical: 10,
   },
   memberText: {
@@ -229,7 +252,12 @@ const styles = StyleSheet.create({
     color: '#888',
     position: 'absolute',
     top: 10,
-    right: 0,
+    right: 10,
+  },
+  createButton: {
+    alignSelf: 'center',
+    marginBottom: 20,
+    marginTop: 'auto'
   },
 
   /** chatRoom Styles   */
@@ -237,7 +265,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: colorPrimary,
   },
   chatRoomName: { 
     fontSize: 20,
@@ -288,107 +316,10 @@ const styles = StyleSheet.create({
     width: '85%',
     borderColor: '#ccc',
     borderWidth: 1,
-    backgroundColor: 'white',
+    backgroundColor: colorPrimary,
     paddingHorizontal: 8,
-    marginBottom: 16,
     borderRadius: 5,
   }, 
-
-  /** Search User Styles  */
-  searchUserContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  listUserContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 10,
-    backgroundColor: 'white',
-    width: '100%'
-  },
-  userTextContainer: {
-    paddingHorizontal: 10,
-  },
-  searchTermList: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-  },
-  searchTermContainer: {
-    height: 40,
-    width: 60,
-    alignContent:'center',
-    alignItems:'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    borderWidth: 1,
-    borderColor: 'black',
-    backgroundColor: 'white',
-  },
-  searchTermSelected: {
-    height: 40,
-    width: 60,
-    alignContent:'center',
-    alignItems:'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    borderWidth: 1,
-    borderColor: 'black',
-    backgroundColor: 'grey'
-  },
-
-  /** Profile Section */
-  viewUserProfileSection: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 10,
-    marginBottom: 20,
-    backgroundColor: 'white'
-  },
-  viewProfileURL: {
-    height: 100, 
-    width: 100, 
-    borderRadius: 50
-  },
-  editProfileURL : { 
-    height: 150, 
-    width: 150, 
-    borderRadius: 75
-  },
-  userContact: {
-    fontSize: 12,
-    color: "#888"
-  },
-  userInfoContainer: {
-    paddingHorizontal: 10,
-  },
-  editProfileButton: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    height: 40,
-    padding: 10,
-    justifyContent: 'center',
-    backgroundColor: 'black',
-  },
-  uploadImage: {
-    height: 150,
-    width: 150,
-    borderRadius: 75,
-    alignSelf: 'center',
-    marginBottom: 20,
-  },
-  uploadImageText: {
-    position: 'absolute',
-    fontSize: 20,
-    left: 30,
-    top: 60,
-    fontWeight: '600',
-    color: 'black',
-    opacity: 0.6
-  },
 
   /** Groups Section */
   groupImg: {
@@ -404,7 +335,7 @@ const styles = StyleSheet.create({
   groupMembersContainer: {
     padding: 5,
     marginBottom: 10,
-    backgroundColor: 'white',
+    backgroundColor: colorPrimary,
   },
   createGroupButton: {
     alignSelf:'center',
@@ -434,9 +365,95 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     padding: 5,
     borderBottomWidth: 1,
-    backgroundColor: 'white'
+    backgroundColor: colorPrimary
   },
 
+  /** Search User Styles  */
+  searchUserContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  listUserContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+    backgroundColor: colorPrimary,
+    width: '100%'
+  },
+  userTextContainer: {
+    paddingHorizontal: 10,
+  },
+  searchTermList: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+  },
+  searchTermContainer: {
+    height: 40,
+    width: 60,
+    alignContent:'center',
+    alignItems:'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: colorPrimary,
+  },
+  searchTermSelected: {
+    height: 40,
+    width: 60,
+    alignContent:'center',
+    alignItems:'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: 'black',
+    backgroundColor: 'grey'
+  },
+
+  /** Profile Section */
+  viewUserProfileSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: 10,
+    marginBottom: 20,
+    backgroundColor: colorPrimary
+  },
+  viewProfileURL: {
+    height: 100, 
+    width: 100, 
+    borderRadius: 50
+  },
+  editProfileURL : { 
+    height: 150, 
+    width: 150, 
+    borderRadius: 75
+  },
+  userContact: {
+    fontSize: 12,
+    color: "#888"
+  },
+  userInfoContainer: {
+    paddingHorizontal: 10,
+  },
+  uploadImage: {
+    height: 150,
+    width: 150,
+    borderRadius: 75,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  uploadImageText: {
+    position: 'absolute',
+    fontSize: 20,
+    left: 30,
+    top: 60,
+    fontWeight: '600',
+    color: 'black',
+    opacity: 0.6
+  },
 
 });
 

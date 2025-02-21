@@ -1,15 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Touchable, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import client from '../client';
 import { postsByUser } from '../graphql/queries';
 import { Post } from '../API';
 import styles from '../styles/Styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ModelSortDirection } from '../API';
-import moment from 'moment';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GlobalParamList } from '../types/rootStackParamTypes';
 import FormatPost from './FormatPost';
 
 const UserPosts = ( { userID } : any ) => {
@@ -63,11 +59,6 @@ const UserPosts = ( { userID } : any ) => {
     loadPosts();
     return () => {isMounted = false};
   }, [fetchPosts]);
-
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  const clickPost = (currPostID: string) => {
-      navigation.navigate('ViewPost', { postID: currPostID });
-  }
 
   return (
     <View>

@@ -101,7 +101,6 @@ const BottomTabs = () => {
           }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
         options={{
-          lazy: true,
           headerTitleAlign:'center',
           headerShown: true,
           tabBarIcon: () => <ImageComponent uri={profileURL ? profileURL : 'defaultUser'}/>,

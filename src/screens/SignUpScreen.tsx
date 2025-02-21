@@ -24,6 +24,19 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
 
   const handleSignUp = async () => {
+    if(firstname === '') {
+      Alert.alert('Error', 'Please enter your first name.');
+      return;
+    }else if(lastname === '') {
+      Alert.alert('Error', 'Please enter your last name.');
+      return;
+    }else if(userEmail === '') {
+      Alert.alert('Error', 'Please enter an email.');
+      return;
+    }else if(password === '') {
+      Alert.alert('Error', 'Please enter a password.');
+      return;
+    }
     try{
       await signUp({ username: userEmail, password: password });
       navigation.navigate('Verify', {password: password});

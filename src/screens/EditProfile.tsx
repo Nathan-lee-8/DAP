@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator,
   TextInput } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
@@ -7,15 +7,15 @@ import client from '../client'
 import styles from '../styles/Styles';
 import ImgComponent from '../components/ImgComponent';
 import UserPosts from '../components/UserPosts';
-import getImgURI from '../components/addImg';
-import { useNavigation } from '@react-navigation/native';
+import { imagePicker, getImgURI } from '../components/addImg';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 //Update to get user data from authContext
 const EditProfile = () => {
-  const [loading, setLoading] = useState(false);
-  const [imgLoading, setImgLoading] = useState(false);
-  const [editsOn, setEditsOn] = useState(false);
-  const [hasChanged, setHasChanged ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
+  const [ imgLoading, setImgLoading ] = useState(false);
+  const [ editsOn, setEditsOn ] = useState(false);
+  const [ hasChanged, setHasChanged ] = useState(false);
   const navigation = useNavigation();
   const authContext = useContext(AuthContext);
   if(!authContext) {
@@ -26,18 +26,19 @@ const EditProfile = () => {
     setLastName, setProfileURL } = authContext;
     
   //use temp values to hold names until user saves data
-  const [tempFirst, setTempFirst] = useState(firstname);
-  const [tempLast, setTempLast] = useState(lastname);
+  const [ tempFirst, setTempFirst ] = useState(firstname);
+  const [ tempLast, setTempLast ] = useState(lastname);
+  const [ tempURL , setTempURL ] =  useState(profileURL);
 
   const addProfileImg = async () => {
     try {
       setImgLoading(true);
-      const profileURI = await getImgURI(`profilePictures/${userId}/${Date.now()}.jpg`);
-      setProfileURL("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + profileURI);
+      const uri = await imagePicker();
+      if(uri === null) throw new Error('No Image Selected');
+      setTempURL(uri);
       setHasChanged(true);
-      Alert.alert('Success');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to upload profile picture.');
+    } catch (error: any) {
+       Alert.alert('Error', error.message);
     } finally{
       setImgLoading(false);
     }
@@ -49,6 +50,11 @@ const EditProfile = () => {
       return
     };
     try{
+      setLoading(true);
+      if(!tempURL) throw new Error('Url unavailable');
+      const filepath = await getImgURI(tempURL, `public/profilePictures/${userId}/${Date.now()}.jpg`)
+      if(filepath === null) throw new Error('Upload failed')
+      setProfileURL("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath);
       setLoading(true);
       await client.graphql({
         query: updateUser,
@@ -65,8 +71,8 @@ const EditProfile = () => {
       setFirstName(tempFirst);
       setLastName(tempLast);
       console.log("Updated user to graphql");
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update profile.');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
     } finally {
       setEditsOn(false);
       setLoading(false);
@@ -78,7 +84,16 @@ const EditProfile = () => {
       setEditsOn(false);
     });
     return unsubscribe;
-  }, [navigation])
+  }, [navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // This will reset the state when the screen loses focus
+      return () => {
+        setTempURL(profileURL); // Reset state to initial value when leaving the page
+      };
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
@@ -87,7 +102,7 @@ const EditProfile = () => {
       ) : !editsOn ? (
         <View>
           <View style={styles.viewUserProfileSection}>
-            <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={styles.viewProfileURL}/>
+            <ImgComponent uri={profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
             <View style={styles.userInfoContainer}>
               <Text style={styles.postAuthor}>{firstname} {lastname} </Text>
               <Text style={styles.postContent}>{userEmail} </Text>
@@ -103,7 +118,7 @@ const EditProfile = () => {
     ) : (
       <View>
         <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-          <ImgComponent uri={profileURL ? profileURL : 'defaultUser'} style={styles.uploadImage}/>
+          <ImgComponent uri={tempURL || 'defaultUser' } style={styles.uploadImage}/>
           <Text style={styles.uploadImageText}>Edit Image</Text>
         </TouchableOpacity>
         <Text style={styles.label}>First Name</Text>

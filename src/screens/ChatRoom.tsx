@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef, useContext, useLayoutEffect
- } from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity,
-     ActivityIndicator } from 'react-native';
+import { useEffect, useState, useRef, useContext, useLayoutEffect} from 'react';
+import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator 
+    } from 'react-native';
 import styles from '../styles/Styles';
 import client from '../client';
 import { getChat } from '../graphql/queries';
@@ -135,12 +134,10 @@ const ChatRoom = ( { route } : any) => {
 
             if(myUserChat){
                 const myUnread = myUserChat?.unreadMessageCount ? myUserChat.unreadMessageCount : 0;
-                console.log(myUserChat);
                 if(myUnread === 0 && messages[0].content === myUserChat.lastMessage) {
                     navigation.goBack();
                     return;
                 };
-                console.log("nn")
                 await client.graphql({
                     query: updateUserChat, // GraphQL mutation to update last message
                     variables: {
@@ -236,15 +233,14 @@ const ChatRoom = ( { route } : any) => {
                 data={messages}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => {
-                    let profURL = item?.sender?.profileURL ? item?.sender?.profileURL: undefined;
                     return (
                         <View>
                             <View style={getMsgContainerStyle(item?.senderID)}>
-                                {item?.senderID !== userId && <ImgComponent uri={profURL ? profURL : 'defaultUser'}/>}
+                                {item?.senderID !== userId && <ImgComponent uri={item?.sender?.profileURL || 'defaultUser'}/>}
                                 <View style={getMsgStyle(item?.senderID)}>
                                     <Text>{item?.content}</Text>
                                 </View>
-                                {item?.senderID === userId && <ImgComponent uri={profURL ? profURL : 'defaultUser'}/>}
+                                {item?.senderID === userId && <ImgComponent uri={item?.sender?.profileURL || 'defaultUser'}/>}
                             </View>
                         </View>
                 )}}
@@ -254,7 +250,7 @@ const ChatRoom = ( { route } : any) => {
                 onEndReachedThreshold={0.4}
                 inverted
             />
-            <View style={{flexDirection: 'row'}}> 
+            <View style={{flexDirection: 'row', marginBottom: 0}}> 
                 <TextInput
                     style={styles.msgInput}
                     placeholder={'Type a message'}

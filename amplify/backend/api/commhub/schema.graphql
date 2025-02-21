@@ -7,9 +7,9 @@ type User @model @auth(
 ) {
   id: ID!
   email: AWSEmail! @index(name: "byEmail", queryField: "userByEmail")
-  firstname: String
-  lastname: String
-  profileURL: String
+  firstname: String!
+  lastname: String!
+  profileURL: String!
   posts: [Post] @hasMany
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
@@ -25,7 +25,6 @@ type Post @model @auth(
   ]
 ) { 
   id: ID!
-  title: String!
   content: String!
   postURL: [String]
   groupID: ID! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
@@ -65,16 +64,17 @@ type UserChat @model @auth(
   lastMessage: String
   lastReadAt: AWSDateTime
   isMuted: Boolean
-  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["createdAt"])
+  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["updatedAt"])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields: ["userID"])
   chat: Chat @belongsTo(fields: ["chatID"])
   createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type Chat @model @auth(
   rules: [
-      { allow: private, operations: [create, read] }
+      { allow: private }
     ]
 ) { 
   id: ID!
@@ -104,7 +104,7 @@ type Message @model @auth(
 type UserGroup @model @auth(
   rules: [
     { allow: owner, ownerField: "ownerID" },
-    { allow: private}
+    { allow: private }
   ]
 ) {
   id: ID!

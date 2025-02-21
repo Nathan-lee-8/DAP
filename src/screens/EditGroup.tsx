@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator,
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert,
    TextInput, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
-import ProfilePicture from '../components/ImgComponent';
-import getImgURI from '../components/addImg';
+import ImgComponent from '../components/ImgComponent';
+import { imagePicker, getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
 import  { deleteUserGroup, updateGroup } from '../graphql/mutations';
 import client from '../client';
@@ -12,9 +12,8 @@ import { UserChat } from '../API';
 
 const EditGroup = ( {route}: any) => {
   const group = route.params.group;
-  const [imgLoading, setImgLoading] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [imgText, setImgText] = useState("Add Img");
+  const [ imgLoading, setImgLoading ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
   const [ filepath, setFilepath ] = useState<string>(group.groupURL);
   const [ name, setName ] = useState<string>(group.groupName);
   const [ description, setDescription ] = useState<string>(group.description);
@@ -24,13 +23,11 @@ const EditGroup = ( {route}: any) => {
   const getFilePath = async () => {
     try{
       setImgLoading(true);
-      var path = await getImgURI(`groupProfile/${group.id}/${Date.now()}_profile.jpg`);
-      if(path){
-        setFilepath("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + path);      
-        setImgText('');
-      }
-    } catch(error){
-      console.log(error);
+      var uri = await imagePicker();
+      if(uri === null) throw new Error('No image selected');
+      setFilepath(uri);      
+    } catch(error: any){
+      Alert.alert(error.message);
     }finally{
       setImgLoading(false);
     }
@@ -39,6 +36,8 @@ const EditGroup = ( {route}: any) => {
   const handleEditGroup = async () => {
     try{
       setLoading(true);
+      var currURI = await getImgURI( filepath, 
+        `public/groupProfile/${group.id}/${Date.now()}_profile.jpg`);
       await client.graphql({
         query: updateGroup,
         variables: {
@@ -46,7 +45,7 @@ const EditGroup = ( {route}: any) => {
             id: group.id,
             groupName: name,
             description: description,
-            groupURL: filepath
+            groupURL: 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + currURI
           }
         },
         authMode: 'userPool'
@@ -88,8 +87,8 @@ const EditGroup = ( {route}: any) => {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
-          <ProfilePicture uri={group?.groupURL ? group?.groupURL : 'defaultGroup'} style={styles.groupImg}/>
-          <Text style={styles.addImageText}>{imgText}</Text>
+          <ImgComponent uri={filepath} style={styles.groupImg}/>
+          <Text style={styles.addImageText}>Add Img</Text>
         </TouchableOpacity>
       )}
       <TextInput
@@ -112,7 +111,7 @@ const EditGroup = ( {route}: any) => {
           var profileURL = user?.profileURL ? user?.profileURL : undefined;
           return(
             <View style={[styles.postContainer, styles.profileSection]}>
-              <ProfilePicture uri={profileURL ? profileURL : 'defaultUser'}/>
+              <ImgComponent uri={profileURL ? profileURL : 'defaultUser'}/>
               <View style={styles.userInfoContainer}>
                 <Text style={styles.postAuthor}>{user?.firstname + " " + user?.lastname}</Text>
               </View>

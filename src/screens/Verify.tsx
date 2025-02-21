@@ -32,7 +32,8 @@ const VerifyScreen = ( {route} : any ) => {
           input: { 
             email: userEmail.toLowerCase(), 
             firstname: firstname.trim(), 
-            lastname: lastname.trim(), 
+            lastname: lastname.trim(),
+            profileURL: 'defaultUser'
           },
         },
         authMode: 'userPool'
