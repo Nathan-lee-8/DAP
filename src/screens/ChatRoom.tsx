@@ -11,6 +11,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
+import moment from 'moment';
 
 const ChatRoom = ( { route } : any) => {
     const chatID = route.params.chatID;
@@ -123,6 +124,7 @@ const ChatRoom = ( { route } : any) => {
                             input: {
                                 id: part.id,
                                 lastMessage: messages[0].content,
+                                lastMessageAt: messages[0].createdAt,
                                 unreadMessageCount: numUnread + msgCountRef.current,
                             },
                         },
@@ -134,7 +136,8 @@ const ChatRoom = ( { route } : any) => {
 
             if(myUserChat){
                 const myUnread = myUserChat?.unreadMessageCount ? myUserChat.unreadMessageCount : 0;
-                if(myUnread === 0 && messages[0].content === myUserChat.lastMessage) {
+                const msgChanged = messages[0].content !== myUserChat.lastMessage;
+                if(myUnread === 0 && !msgChanged) {
                     navigation.goBack();
                     return;
                 };
@@ -144,7 +147,8 @@ const ChatRoom = ( { route } : any) => {
                         input: {
                             id: myUserChat?.id,
                             lastMessage: messages[0].content, // You may need to adjust based on your schema
-                            unreadMessageCount: 0
+                            lastMessageAt: messages[0].createdAt,
+                            unreadMessageCount: 0,
                         },
                     },
                     authMode: 'userPool'

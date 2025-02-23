@@ -8,6 +8,7 @@ export type CreateUserInput = {
   firstname: string,
   lastname: string,
   profileURL: string,
+  description?: string | null,
 };
 
 export type ModelUserConditionInput = {
@@ -15,6 +16,7 @@ export type ModelUserConditionInput = {
   firstname?: ModelStringInput | null,
   lastname?: ModelStringInput | null,
   profileURL?: ModelStringInput | null,
+  description?: ModelStringInput | null,
   and?: Array< ModelUserConditionInput | null > | null,
   or?: Array< ModelUserConditionInput | null > | null,
   not?: ModelUserConditionInput | null,
@@ -70,6 +72,7 @@ export type User = {
   firstname: string,
   lastname: string,
   profileURL: string,
+  description?: string | null,
   posts?: ModelPostConnection | null,
   chats?: ModelUserChatConnection | null,
   messages?: ModelMessageConnection | null,
@@ -108,10 +111,12 @@ export type Group = {
   groupName: string,
   groupURL?: string | null,
   description?: string | null,
+  isPublic?: boolean | null,
   members?: ModelUserGroupConnection | null,
   posts?: ModelPostConnection | null,
   createdAt: string,
   updatedAt: string,
+  owner?: string | null,
 };
 
 export type ModelUserGroupConnection = {
@@ -132,6 +137,7 @@ export type UserGroup = {
   createdAt: string,
   updatedAt: string,
   userGroupsId?: string | null,
+  owner?: string | null,
 };
 
 export type ModelCommentConnection = {
@@ -167,7 +173,8 @@ export type UserChat = {
   ownerID: string,
   unreadMessageCount?: number | null,
   lastMessage?: string | null,
-  lastReadAt?: string | null,
+  lastMessageAt: string,
+  role?: string | null,
   isMuted?: boolean | null,
   userID: string,
   chatID: string,
@@ -176,6 +183,7 @@ export type UserChat = {
   createdAt: string,
   updatedAt: string,
   userChatsId?: string | null,
+  owner?: string | null,
 };
 
 export type Chat = {
@@ -187,6 +195,7 @@ export type Chat = {
   participants?: ModelUserChatConnection | null,
   createdAt: string,
   updatedAt: string,
+  owner?: string | null,
 };
 
 export type ModelMessageConnection = {
@@ -216,6 +225,7 @@ export type UpdateUserInput = {
   firstname?: string | null,
   lastname?: string | null,
   profileURL?: string | null,
+  description?: string | null,
 };
 
 export type DeleteUserInput = {
@@ -319,7 +329,8 @@ export type CreateUserChatInput = {
   ownerID: string,
   unreadMessageCount?: number | null,
   lastMessage?: string | null,
-  lastReadAt?: string | null,
+  lastMessageAt: string,
+  role?: string | null,
   isMuted?: boolean | null,
   userID: string,
   chatID: string,
@@ -332,7 +343,8 @@ export type ModelUserChatConditionInput = {
   ownerID?: ModelIDInput | null,
   unreadMessageCount?: ModelIntInput | null,
   lastMessage?: ModelStringInput | null,
-  lastReadAt?: ModelStringInput | null,
+  lastMessageAt?: ModelStringInput | null,
+  role?: ModelStringInput | null,
   isMuted?: ModelBooleanInput | null,
   userID?: ModelIDInput | null,
   chatID?: ModelIDInput | null,
@@ -342,6 +354,7 @@ export type ModelUserChatConditionInput = {
   or?: Array< ModelUserChatConditionInput | null > | null,
   not?: ModelUserChatConditionInput | null,
   userChatsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelIntInput = {
@@ -368,7 +381,8 @@ export type UpdateUserChatInput = {
   ownerID?: string | null,
   unreadMessageCount?: number | null,
   lastMessage?: string | null,
-  lastReadAt?: string | null,
+  lastMessageAt?: string | null,
+  role?: string | null,
   isMuted?: boolean | null,
   userID?: string | null,
   chatID?: string | null,
@@ -396,6 +410,7 @@ export type ModelChatConditionInput = {
   or?: Array< ModelChatConditionInput | null > | null,
   not?: ModelChatConditionInput | null,
   updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type UpdateChatInput = {
@@ -468,6 +483,7 @@ export type ModelUserGroupConditionInput = {
   not?: ModelUserGroupConditionInput | null,
   updatedAt?: ModelStringInput | null,
   userGroupsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type UpdateUserGroupInput = {
@@ -489,6 +505,7 @@ export type CreateGroupInput = {
   groupName: string,
   groupURL?: string | null,
   description?: string | null,
+  isPublic?: boolean | null,
   createdAt?: string | null,
 };
 
@@ -496,11 +513,13 @@ export type ModelGroupConditionInput = {
   groupName?: ModelStringInput | null,
   groupURL?: ModelStringInput | null,
   description?: ModelStringInput | null,
+  isPublic?: ModelBooleanInput | null,
   createdAt?: ModelStringInput | null,
   and?: Array< ModelGroupConditionInput | null > | null,
   or?: Array< ModelGroupConditionInput | null > | null,
   not?: ModelGroupConditionInput | null,
   updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type UpdateGroupInput = {
@@ -508,6 +527,7 @@ export type UpdateGroupInput = {
   groupName?: string | null,
   groupURL?: string | null,
   description?: string | null,
+  isPublic?: boolean | null,
   createdAt?: string | null,
 };
 
@@ -521,6 +541,7 @@ export type ModelUserFilterInput = {
   firstname?: ModelStringInput | null,
   lastname?: ModelStringInput | null,
   profileURL?: ModelStringInput | null,
+  description?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelUserFilterInput | null > | null,
@@ -586,7 +607,8 @@ export type ModelUserChatFilterInput = {
   ownerID?: ModelIDInput | null,
   unreadMessageCount?: ModelIntInput | null,
   lastMessage?: ModelStringInput | null,
-  lastReadAt?: ModelStringInput | null,
+  lastMessageAt?: ModelStringInput | null,
+  role?: ModelStringInput | null,
   isMuted?: ModelBooleanInput | null,
   userID?: ModelIDInput | null,
   chatID?: ModelIDInput | null,
@@ -596,6 +618,7 @@ export type ModelUserChatFilterInput = {
   or?: Array< ModelUserChatFilterInput | null > | null,
   not?: ModelUserChatFilterInput | null,
   userChatsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelChatFilterInput = {
@@ -607,6 +630,7 @@ export type ModelChatFilterInput = {
   and?: Array< ModelChatFilterInput | null > | null,
   or?: Array< ModelChatFilterInput | null > | null,
   not?: ModelChatFilterInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelChatConnection = {
@@ -642,6 +666,7 @@ export type ModelUserGroupFilterInput = {
   or?: Array< ModelUserGroupFilterInput | null > | null,
   not?: ModelUserGroupFilterInput | null,
   userGroupsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelGroupFilterInput = {
@@ -649,11 +674,13 @@ export type ModelGroupFilterInput = {
   groupName?: ModelStringInput | null,
   groupURL?: ModelStringInput | null,
   description?: ModelStringInput | null,
+  isPublic?: ModelBooleanInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
   and?: Array< ModelGroupFilterInput | null > | null,
   or?: Array< ModelGroupFilterInput | null > | null,
   not?: ModelGroupFilterInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelGroupConnection = {
@@ -668,6 +695,7 @@ export type ModelSubscriptionUserFilterInput = {
   firstname?: ModelSubscriptionStringInput | null,
   lastname?: ModelSubscriptionStringInput | null,
   profileURL?: ModelSubscriptionStringInput | null,
+  description?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionUserFilterInput | null > | null,
@@ -740,7 +768,8 @@ export type ModelSubscriptionUserChatFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   unreadMessageCount?: ModelSubscriptionIntInput | null,
   lastMessage?: ModelSubscriptionStringInput | null,
-  lastReadAt?: ModelSubscriptionStringInput | null,
+  lastMessageAt?: ModelSubscriptionStringInput | null,
+  role?: ModelSubscriptionStringInput | null,
   isMuted?: ModelSubscriptionBooleanInput | null,
   userID?: ModelSubscriptionIDInput | null,
   chatID?: ModelSubscriptionIDInput | null,
@@ -748,6 +777,7 @@ export type ModelSubscriptionUserChatFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionUserChatFilterInput | null > | null,
   or?: Array< ModelSubscriptionUserChatFilterInput | null > | null,
+  owner?: ModelStringInput | null,
   ownerID?: ModelStringInput | null,
 };
 
@@ -776,6 +806,7 @@ export type ModelSubscriptionChatFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionChatFilterInput | null > | null,
   or?: Array< ModelSubscriptionChatFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionMessageFilterInput = {
@@ -800,6 +831,7 @@ export type ModelSubscriptionUserGroupFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionUserGroupFilterInput | null > | null,
   or?: Array< ModelSubscriptionUserGroupFilterInput | null > | null,
+  owner?: ModelStringInput | null,
   ownerID?: ModelStringInput | null,
 };
 
@@ -808,10 +840,12 @@ export type ModelSubscriptionGroupFilterInput = {
   groupName?: ModelSubscriptionStringInput | null,
   groupURL?: ModelSubscriptionStringInput | null,
   description?: ModelSubscriptionStringInput | null,
+  isPublic?: ModelSubscriptionBooleanInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionGroupFilterInput | null > | null,
   or?: Array< ModelSubscriptionGroupFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type CreateUserMutationVariables = {
@@ -827,6 +861,7 @@ export type CreateUserMutation = {
     firstname: string,
     lastname: string,
     profileURL: string,
+    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -846,6 +881,7 @@ export type UpdateUserMutation = {
     firstname: string,
     lastname: string,
     profileURL: string,
+    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -865,6 +901,7 @@ export type DeleteUserMutation = {
     firstname: string,
     lastname: string,
     profileURL: string,
+    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -1003,13 +1040,15 @@ export type CreateUserChatMutation = {
     ownerID: string,
     unreadMessageCount?: number | null,
     lastMessage?: string | null,
-    lastReadAt?: string | null,
+    lastMessageAt: string,
+    role?: string | null,
     isMuted?: boolean | null,
     userID: string,
     chatID: string,
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1025,13 +1064,15 @@ export type UpdateUserChatMutation = {
     ownerID: string,
     unreadMessageCount?: number | null,
     lastMessage?: string | null,
-    lastReadAt?: string | null,
+    lastMessageAt: string,
+    role?: string | null,
     isMuted?: boolean | null,
     userID: string,
     chatID: string,
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1047,13 +1088,15 @@ export type DeleteUserChatMutation = {
     ownerID: string,
     unreadMessageCount?: number | null,
     lastMessage?: string | null,
-    lastReadAt?: string | null,
+    lastMessageAt: string,
+    role?: string | null,
     isMuted?: boolean | null,
     userID: string,
     chatID: string,
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1070,6 +1113,7 @@ export type CreateChatMutation = {
     isGroup: boolean,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1086,6 +1130,7 @@ export type UpdateChatMutation = {
     isGroup: boolean,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1102,6 +1147,7 @@ export type DeleteChatMutation = {
     isGroup: boolean,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1181,6 +1227,7 @@ export type CreateUserGroupMutation = {
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1200,6 +1247,7 @@ export type UpdateUserGroupMutation = {
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1219,6 +1267,7 @@ export type DeleteUserGroupMutation = {
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1234,8 +1283,10 @@ export type CreateGroupMutation = {
     groupName: string,
     groupURL?: string | null,
     description?: string | null,
+    isPublic?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1251,8 +1302,10 @@ export type UpdateGroupMutation = {
     groupName: string,
     groupURL?: string | null,
     description?: string | null,
+    isPublic?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1268,8 +1321,10 @@ export type DeleteGroupMutation = {
     groupName: string,
     groupURL?: string | null,
     description?: string | null,
+    isPublic?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1285,6 +1340,7 @@ export type GetUserQuery = {
     firstname: string,
     lastname: string,
     profileURL: string,
+    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -1307,6 +1363,7 @@ export type ListUsersQuery = {
       firstname: string,
       lastname: string,
       profileURL: string,
+      description?: string | null,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -1333,6 +1390,7 @@ export type UserByEmailQuery = {
       firstname: string,
       lastname: string,
       profileURL: string,
+      description?: string | null,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -1360,6 +1418,7 @@ export type GetPostQuery = {
       firstname: string,
       lastname: string,
       profileURL: string,
+      description?: string | null,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -1396,8 +1455,10 @@ export type GetPostQuery = {
       groupName: string,
       groupURL?: string | null,
       description?: string | null,
+      isPublic?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -1457,6 +1518,7 @@ export type PostsByDateQuery = {
         firstname: string,
         lastname: string,
         profileURL: string,
+        description?: string | null,
         createdAt: string,
         updatedAt: string,
         owner?: string | null,
@@ -1532,6 +1594,7 @@ export type GetCommentQuery = {
       firstname: string,
       lastname: string,
       profileURL: string,
+      description?: string | null,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -1647,7 +1710,8 @@ export type GetUserChatQuery = {
     ownerID: string,
     unreadMessageCount?: number | null,
     lastMessage?: string | null,
-    lastReadAt?: string | null,
+    lastMessageAt: string,
+    role?: string | null,
     isMuted?: boolean | null,
     userID: string,
     chatID: string,
@@ -1658,6 +1722,7 @@ export type GetUserChatQuery = {
       firstname: string,
       lastname: string,
       profileURL: string,
+      description?: string | null,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -1669,10 +1734,12 @@ export type GetUserChatQuery = {
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -1691,13 +1758,15 @@ export type ListUserChatsQuery = {
       ownerID: string,
       unreadMessageCount?: number | null,
       lastMessage?: string | null,
-      lastReadAt?: string | null,
+      lastMessageAt: string,
+      role?: string | null,
       isMuted?: boolean | null,
       userID: string,
       chatID: string,
       createdAt: string,
       updatedAt: string,
       userChatsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1705,7 +1774,7 @@ export type ListUserChatsQuery = {
 
 export type ChatsByUserQueryVariables = {
   userID: string,
-  updatedAt?: ModelStringKeyConditionInput | null,
+  lastMessageAt?: ModelStringKeyConditionInput | null,
   sortDirection?: ModelSortDirection | null,
   filter?: ModelUserChatFilterInput | null,
   limit?: number | null,
@@ -1721,7 +1790,8 @@ export type ChatsByUserQuery = {
       ownerID: string,
       unreadMessageCount?: number | null,
       lastMessage?: string | null,
-      lastReadAt?: string | null,
+      lastMessageAt: string,
+      role?: string | null,
       isMuted?: boolean | null,
       userID: string,
       chatID: string,
@@ -1736,6 +1806,8 @@ export type ChatsByUserQuery = {
             __typename: "UserChat",
             id: string,
             ownerID: string,
+            unreadMessageCount?: number | null,
+            lastMessageAt: string,
             userID: string,
             user?:  {
               __typename: "User",
@@ -1744,6 +1816,7 @@ export type ChatsByUserQuery = {
               firstname: string,
               lastname: string,
               profileURL: string,
+              description?: string | null,
               createdAt: string,
               updatedAt: string,
               owner?: string | null,
@@ -1751,14 +1824,17 @@ export type ChatsByUserQuery = {
             chatID: string,
             createdAt: string,
             updatedAt: string,
+            owner?: string | null,
           } | null >,
         } | null,
         createdAt: string,
         updatedAt: string,
+        owner?: string | null,
       } | null,
       createdAt: string,
       updatedAt: string,
       userChatsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1782,13 +1858,15 @@ export type UserChatsByChatIDAndCreatedAtQuery = {
       ownerID: string,
       unreadMessageCount?: number | null,
       lastMessage?: string | null,
-      lastReadAt?: string | null,
+      lastMessageAt: string,
+      role?: string | null,
       isMuted?: boolean | null,
       userID: string,
       chatID: string,
       createdAt: string,
       updatedAt: string,
       userChatsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1820,6 +1898,7 @@ export type GetChatQuery = {
           firstname: string,
           lastname: string,
           profileURL: string,
+          description?: string | null,
           createdAt: string,
           updatedAt: string,
           owner?: string | null,
@@ -1839,7 +1918,8 @@ export type GetChatQuery = {
         ownerID: string,
         unreadMessageCount?: number | null,
         lastMessage?: string | null,
-        lastReadAt?: string | null,
+        lastMessageAt: string,
+        role?: string | null,
         isMuted?: boolean | null,
         userID: string,
         chatID: string,
@@ -1850,16 +1930,19 @@ export type GetChatQuery = {
           lastname: string,
           email: string,
           profileURL: string,
+          description?: string | null,
           createdAt: string,
           updatedAt: string,
           owner?: string | null,
         } | null,
         createdAt: string,
         updatedAt: string,
+        owner?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -1879,6 +1962,7 @@ export type ListChatsQuery = {
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1903,6 +1987,7 @@ export type GetMessageQuery = {
       firstname: string,
       lastname: string,
       profileURL: string,
+      description?: string | null,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -1914,6 +1999,7 @@ export type GetMessageQuery = {
       isGroup: boolean,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -2021,6 +2107,7 @@ export type GetUserGroupQuery = {
       groupName: string,
       groupURL?: string | null,
       description?: string | null,
+      isPublic?: boolean | null,
       members?:  {
         __typename: "ModelUserGroupConnection",
         items:  Array< {
@@ -2032,15 +2119,18 @@ export type GetUserGroupQuery = {
           role?: string | null,
           createdAt: string,
           updatedAt: string,
+          owner?: string | null,
         } | null >,
         nextToken?: string | null,
       } | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null,
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
@@ -2063,6 +2153,7 @@ export type ListUserGroupsQuery = {
       createdAt: string,
       updatedAt: string,
       userGroupsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2095,8 +2186,11 @@ export type GroupsByUserQuery = {
         id: string,
         groupName: string,
         groupURL?: string | null,
+        description?: string | null,
+        isPublic?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        owner?: string | null,
         members?:  {
           __typename: "ModelUserGroupConnection",
           items:  Array< {
@@ -2108,6 +2202,7 @@ export type GroupsByUserQuery = {
             role?: string | null,
             createdAt: string,
             updatedAt: string,
+            owner?: string | null,
           } | null >,
           nextToken?: string | null,
         } | null,
@@ -2127,6 +2222,7 @@ export type GroupsByUserQuery = {
               firstname: string,
               lastname: string,
               profileURL: string,
+              description?: string | null,
               createdAt: string,
               updatedAt: string,
               owner?: string | null,
@@ -2153,6 +2249,7 @@ export type GroupsByUserQuery = {
           nextToken?: string | null,
         } | null,
       } | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2179,6 +2276,7 @@ export type MembersByGroupQuery = {
       createdAt: string,
       updatedAt: string,
       userGroupsId?: string | null,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2195,6 +2293,7 @@ export type GetGroupQuery = {
     groupName: string,
     groupURL?: string | null,
     description?: string | null,
+    isPublic?: boolean | null,
     members?:  {
       __typename: "ModelUserGroupConnection",
       items:  Array< {
@@ -2211,11 +2310,14 @@ export type GetGroupQuery = {
           firstname: string,
           lastname: string,
           profileURL: string,
+          description?: string | null,
           createdAt: string,
           updatedAt: string,
+          owner?: string | null,
         } | null,
         createdAt: string,
         updatedAt: string,
+        owner?: string | null,
       } | null >,
       nextToken?: string | null,
     } | null,
@@ -2235,6 +2337,7 @@ export type GetGroupQuery = {
           firstname: string,
           lastname: string,
           profileURL: string,
+          description?: string | null,
           createdAt: string,
           updatedAt: string,
           owner?: string | null,
@@ -2263,6 +2366,7 @@ export type GetGroupQuery = {
     } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -2281,6 +2385,7 @@ export type ListGroupsQuery = {
       groupName: string,
       groupURL?: string | null,
       description?: string | null,
+      isPublic?: boolean | null,
       members?:  {
         __typename: "ModelUserGroupConnection",
         items:  Array< {
@@ -2297,16 +2402,19 @@ export type ListGroupsQuery = {
             firstname: string,
             lastname: string,
             profileURL: string,
+            description?: string | null,
             createdAt: string,
             updatedAt: string,
           } | null,
           createdAt: string,
           updatedAt: string,
+          owner?: string | null,
         } | null >,
         nextToken?: string | null,
       } | null,
       createdAt: string,
       updatedAt: string,
+      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2325,26 +2433,7 @@ export type OnCreateUserSubscription = {
     firstname: string,
     lastname: string,
     profileURL: string,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
-    chats?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    groups?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    comments?:  {
-      __typename: "ModelCommentConnection",
-      nextToken?: string | null,
-    } | null,
+    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -2364,26 +2453,7 @@ export type OnUpdateUserSubscription = {
     firstname: string,
     lastname: string,
     profileURL: string,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
-    chats?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    groups?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    comments?:  {
-      __typename: "ModelCommentConnection",
-      nextToken?: string | null,
-    } | null,
+    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -2403,26 +2473,7 @@ export type OnDeleteUserSubscription = {
     firstname: string,
     lastname: string,
     profileURL: string,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
-    chats?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    groups?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    comments?:  {
-      __typename: "ModelCommentConnection",
-      nextToken?: string | null,
-    } | null,
+    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -2502,29 +2553,6 @@ export type OnCreateCommentSubscription = {
     commentURL?: Array< string | null > | null,
     userID: string,
     postID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    post?:  {
-      __typename: "Post",
-      id: string,
-      content: string,
-      postURL?: Array< string | null > | null,
-      groupID: string,
-      userID: string,
-      createdAt: string,
-      updatedAt: string,
-      userPostsId?: string | null,
-      owner?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userCommentsId?: string | null,
@@ -2545,29 +2573,6 @@ export type OnUpdateCommentSubscription = {
     commentURL?: Array< string | null > | null,
     userID: string,
     postID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    post?:  {
-      __typename: "Post",
-      id: string,
-      content: string,
-      postURL?: Array< string | null > | null,
-      groupID: string,
-      userID: string,
-      createdAt: string,
-      updatedAt: string,
-      userPostsId?: string | null,
-      owner?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userCommentsId?: string | null,
@@ -2588,29 +2593,6 @@ export type OnDeleteCommentSubscription = {
     commentURL?: Array< string | null > | null,
     userID: string,
     postID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    post?:  {
-      __typename: "Post",
-      id: string,
-      content: string,
-      postURL?: Array< string | null > | null,
-      groupID: string,
-      userID: string,
-      createdAt: string,
-      updatedAt: string,
-      userPostsId?: string | null,
-      owner?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userCommentsId?: string | null,
@@ -2620,6 +2602,7 @@ export type OnDeleteCommentSubscription = {
 
 export type OnCreateUserChatSubscriptionVariables = {
   filter?: ModelSubscriptionUserChatFilterInput | null,
+  owner?: string | null,
   ownerID?: string | null,
 };
 
@@ -2630,37 +2613,21 @@ export type OnCreateUserChatSubscription = {
     ownerID: string,
     unreadMessageCount?: number | null,
     lastMessage?: string | null,
-    lastReadAt?: string | null,
+    lastMessageAt: string,
+    role?: string | null,
     isMuted?: boolean | null,
     userID: string,
     chatID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    chat?:  {
-      __typename: "Chat",
-      id: string,
-      name: string,
-      isGroup: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateUserChatSubscriptionVariables = {
   filter?: ModelSubscriptionUserChatFilterInput | null,
+  owner?: string | null,
   ownerID?: string | null,
 };
 
@@ -2671,37 +2638,21 @@ export type OnUpdateUserChatSubscription = {
     ownerID: string,
     unreadMessageCount?: number | null,
     lastMessage?: string | null,
-    lastReadAt?: string | null,
+    lastMessageAt: string,
+    role?: string | null,
     isMuted?: boolean | null,
     userID: string,
     chatID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    chat?:  {
-      __typename: "Chat",
-      id: string,
-      name: string,
-      isGroup: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteUserChatSubscriptionVariables = {
   filter?: ModelSubscriptionUserChatFilterInput | null,
+  owner?: string | null,
   ownerID?: string | null,
 };
 
@@ -2712,37 +2663,21 @@ export type OnDeleteUserChatSubscription = {
     ownerID: string,
     unreadMessageCount?: number | null,
     lastMessage?: string | null,
-    lastReadAt?: string | null,
+    lastMessageAt: string,
+    role?: string | null,
     isMuted?: boolean | null,
     userID: string,
     chatID: string,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    chat?:  {
-      __typename: "Chat",
-      id: string,
-      name: string,
-      isGroup: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userChatsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnCreateChatSubscriptionVariables = {
   filter?: ModelSubscriptionChatFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateChatSubscription = {
@@ -2751,21 +2686,15 @@ export type OnCreateChatSubscription = {
     id: string,
     name: string,
     isGroup: boolean,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    participants?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateChatSubscriptionVariables = {
   filter?: ModelSubscriptionChatFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateChatSubscription = {
@@ -2774,21 +2703,15 @@ export type OnUpdateChatSubscription = {
     id: string,
     name: string,
     isGroup: boolean,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    participants?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteChatSubscriptionVariables = {
   filter?: ModelSubscriptionChatFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteChatSubscription = {
@@ -2797,16 +2720,9 @@ export type OnDeleteChatSubscription = {
     id: string,
     name: string,
     isGroup: boolean,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    participants?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -2843,25 +2759,6 @@ export type OnUpdateMessageSubscription = {
     msgURL?: Array< string | null > | null,
     senderID: string,
     chatID: string,
-    sender?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    chat?:  {
-      __typename: "Chat",
-      id: string,
-      name: string,
-      isGroup: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
@@ -2882,25 +2779,6 @@ export type OnDeleteMessageSubscription = {
     msgURL?: Array< string | null > | null,
     senderID: string,
     chatID: string,
-    sender?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    chat?:  {
-      __typename: "Chat",
-      id: string,
-      name: string,
-      isGroup: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userMessagesId?: string | null,
@@ -2910,6 +2788,7 @@ export type OnDeleteMessageSubscription = {
 
 export type OnCreateUserGroupSubscriptionVariables = {
   filter?: ModelSubscriptionUserGroupFilterInput | null,
+  owner?: string | null,
   ownerID?: string | null,
 };
 
@@ -2921,34 +2800,16 @@ export type OnCreateUserGroupSubscription = {
     userID: string,
     groupID: string,
     role?: string | null,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    group?:  {
-      __typename: "Group",
-      id: string,
-      groupName: string,
-      groupURL?: string | null,
-      description?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateUserGroupSubscriptionVariables = {
   filter?: ModelSubscriptionUserGroupFilterInput | null,
+  owner?: string | null,
   ownerID?: string | null,
 };
 
@@ -2960,34 +2821,16 @@ export type OnUpdateUserGroupSubscription = {
     userID: string,
     groupID: string,
     role?: string | null,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    group?:  {
-      __typename: "Group",
-      id: string,
-      groupName: string,
-      groupURL?: string | null,
-      description?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteUserGroupSubscriptionVariables = {
   filter?: ModelSubscriptionUserGroupFilterInput | null,
+  owner?: string | null,
   ownerID?: string | null,
 };
 
@@ -2999,34 +2842,16 @@ export type OnDeleteUserGroupSubscription = {
     userID: string,
     groupID: string,
     role?: string | null,
-    user?:  {
-      __typename: "User",
-      id: string,
-      email: string,
-      firstname: string,
-      lastname: string,
-      profileURL: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null,
-    group?:  {
-      __typename: "Group",
-      id: string,
-      groupName: string,
-      groupURL?: string | null,
-      description?: string | null,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
     createdAt: string,
     updatedAt: string,
     userGroupsId?: string | null,
+    owner?: string | null,
   } | null,
 };
 
 export type OnCreateGroupSubscriptionVariables = {
   filter?: ModelSubscriptionGroupFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateGroupSubscription = {
@@ -3036,21 +2861,16 @@ export type OnCreateGroupSubscription = {
     groupName: string,
     groupURL?: string | null,
     description?: string | null,
-    members?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
+    isPublic?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateGroupSubscriptionVariables = {
   filter?: ModelSubscriptionGroupFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateGroupSubscription = {
@@ -3060,21 +2880,16 @@ export type OnUpdateGroupSubscription = {
     groupName: string,
     groupURL?: string | null,
     description?: string | null,
-    members?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
+    isPublic?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteGroupSubscriptionVariables = {
   filter?: ModelSubscriptionGroupFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteGroupSubscription = {
@@ -3084,15 +2899,9 @@ export type OnDeleteGroupSubscription = {
     groupName: string,
     groupURL?: string | null,
     description?: string | null,
-    members?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
+    isPublic?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };

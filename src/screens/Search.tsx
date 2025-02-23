@@ -114,7 +114,7 @@ const GroupSearch = () => {
   return(
     <View style={{width: '100%'}}>
       <TextInput
-        style={[styles.input,{ width: '85%'}]}
+        style={[styles.searchInput,{ width: '85%'}]}
         value={search}
         onChangeText={handleSearch}
         placeholder='Search for groups'

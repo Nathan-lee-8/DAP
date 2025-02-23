@@ -61,7 +61,7 @@ const EditProfile = () => {
         variables: {
           input: {
             id: userId,
-            profileURL: profileURL,
+            profileURL: "https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath,
             firstname: tempFirst,
             lastname: tempLast
           },
@@ -82,6 +82,7 @@ const EditProfile = () => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       setEditsOn(false);
+      setHasChanged(false);
     });
     return unsubscribe;
   }, [navigation]);

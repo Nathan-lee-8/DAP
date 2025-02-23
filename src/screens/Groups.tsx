@@ -5,7 +5,7 @@ import styles from '../styles/Styles';
 import client from '../client';
 import { AuthContext } from '../context/AuthContext';
 import { groupsByUser } from '../graphql/queries';
-import { UserGroup } from '../API';
+import { UserGroup, ModelSortDirection } from '../API';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
@@ -45,7 +45,10 @@ const Groups = () => {
     try{
       const groups = await client.graphql({
         query: groupsByUser,
-        variables: { userID: userId },
+        variables: { 
+          userID: userId,
+          sortDirection: ModelSortDirection.DESC
+        },
         authMode: 'userPool'
       });
       const groupData = groups.data.groupsByUser.items;
@@ -89,22 +92,19 @@ const Groups = () => {
       <FlatList
         data={group}
         renderItem={({ item }) => {
-          var groupURL = item.group?.groupURL ? item.group?.groupURL : undefined;
-          var members = item.group?.members?.items.length;
-          var description = item.group?.description ? item.group?.description : "No description";
           return (
             <TouchableOpacity onPress={() => viewGroup(item)}>
               <View style={styles.postContainer}>
                 <View style={styles.itemContentSection}>
-                  <ImgComponent uri={groupURL ? groupURL : "defaultGroup"} 
+                  <ImgComponent uri={item.group?.groupURL || "defaultGroup"} 
                     style={{height: 40, width: 40, borderRadius: 20}} />
                   <View style={styles.userInfoContainer}>
                     <Text style={styles.postAuthor}>{item.group?.groupName}</Text>
-                    <Text style={styles.postDate} numberOfLines={1}>{description}</Text>
+                    <Text style={styles.postDate} numberOfLines={1}>{item.group?.description || "No description"}</Text>
                   </View>
                 </View>
                 
-                <Text style={styles.memberText}>{members} members</Text>
+                <Text style={styles.memberText}>{item.group?.members?.items.length  || 0} members</Text>
               </View>
             </TouchableOpacity>
           )

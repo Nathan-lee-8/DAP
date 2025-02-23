@@ -319,6 +319,7 @@ const styles = StyleSheet.create({
     backgroundColor: colorPrimary,
     paddingHorizontal: 8,
     borderRadius: 5,
+    marginBottom: 5,
   }, 
 
   /** Groups Section */
@@ -353,7 +354,7 @@ const styles = StyleSheet.create({
     left: 150,
     fontWeight: '600',
     color: 'black',
-    opacity: 0.6
+    opacity: 0.8
   },
   menuTopRightList: {
     position: 'absolute',
@@ -369,6 +370,14 @@ const styles = StyleSheet.create({
   },
 
   /** Search User Styles  */
+  searchInput: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    backgroundColor: colorPrimary
+  },
   searchUserContainer: {
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',

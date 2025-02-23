@@ -12,6 +12,7 @@ import { GlobalParamList } from '../types/rootStackParamTypes';
 import { User } from '../API';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
+import moment from 'moment';
 
 //TODO: Add rollback in case of failure, create Loading screen
 const CreateChat = ( { route }: any) => {
@@ -41,6 +42,7 @@ const CreateChat = ( { route }: any) => {
         try{
             setLoading(true);
             const cognitoID = await getCurrentUser();
+            const currTime = moment(Date.now()).format();
 
             const chat = await client.graphql({
                 query: createChat,
@@ -63,6 +65,7 @@ const CreateChat = ( { route }: any) => {
                         chatID: chat.data.createChat.id,
                         ownerID: cognitoID.userId,
                         unreadMessageCount: 0,
+                        lastMessageAt: currTime,
                         lastMessage: message
                     }
                 },
@@ -82,6 +85,7 @@ const CreateChat = ( { route }: any) => {
                             chatID: chat.data.createChat.id,
                             ownerID: targetOwnerID,
                             unreadMessageCount: 1,
+                            lastMessageAt: currTime,
                             lastMessage: message
                         }
                     },
@@ -187,18 +191,19 @@ const CreateChat = ( { route }: any) => {
 
     return(
         <View style={[styles.container, {justifyContent: "flex-end"}]}> 
-            <SearchBar userPressed={handleUserSelected}/>
+            <SearchBar userPressed={handleUserSelected} remove={targetUsers}/>
             <FlatList
                 data={targetUsers}
                 keyExtractor={(item) => item.id}
                 renderItem={(item) => (
-                    <View style={{flexDirection: 'row', marginBottom: 10}}>
+                    <View style={{flexDirection: 'row', margin: 3}}>
                         <Text>{item.item.firstname} {item.item.lastname} </Text>
                         <TouchableOpacity onPress={() => handleRemoveUser(item.item.id)}>
                             <Icon name="remove-circle-outline" size={20}/>
                         </TouchableOpacity>
                     </View>
                 )}
+                numColumns={3}
             />
             <Text style={[styles.contentText, {marginBottom: 'auto'}]}></Text>
             <View style={{flexDirection: 'row'}}>
