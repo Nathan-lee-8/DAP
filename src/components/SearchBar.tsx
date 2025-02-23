@@ -9,7 +9,7 @@ import styles from '../styles/Styles';
 import { User } from '../API';
 import ProfilePicture from './ImgComponent';
 
-const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => {
+const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:any, remove?: any}) => {
   const [search, setSearch] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
@@ -54,7 +54,7 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
     }
     const formattedSearch = query.toLowerCase();
     const results = filter(data, (user) => {
-      if(!user.id || user.id === currUserId){
+      if(!user.id || user.id === currUserId || remove?.includes(user)){
         return false;
       }
       const name = user.firstname + " " + user.lastname;
@@ -69,10 +69,15 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
     fetchUsers();
   }
 
+  const handleOnPress = (user: User) => {
+    if(remove) setFilteredData(filteredData.filter((item) => item !== user));
+    if(userPressed) userPressed(user);
+  }
+
   return (
     <View style={{width: '100%'}}>
       <TextInput
-        style={[styles.input, {width: width}]}
+        style={[styles.searchInput, {width: width}]}
         value={search}
         onChangeText={handleSearch}
         placeholder="Search for users..."
@@ -85,7 +90,7 @@ const SearchBar = ( { userPressed, width } : {userPressed?:any, width?:any}) => 
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.searchUserContainer}>
-            <TouchableOpacity onPress={() => { if(userPressed) userPressed(item) }}>
+            <TouchableOpacity onPress={() => handleOnPress(item)}>
               <View style={styles.listUserContainer}>
                 <ProfilePicture uri={item.profileURL}/>
                 <View style={styles.userInfoContainer}>

@@ -76,35 +76,24 @@ const BottomTabs = () => {
   return(
     <BottomTab.Navigator screenOptions={{headerTitleAlign: 'center'}} >
       <BottomTab.Screen name="Home" component={Home}
-        options={{
-          lazy: true,
-          headerTitleAlign:'center',
+        options={{ lazy: true, headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="home-outline" size={30} />
         }}/>
       <BottomTab.Screen name="Messages" component={Messaging} 
-        options={{
-          lazy: true,
-          headerTitleAlign:'center',
+        options={{ lazy: true, headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} />
-          }} />
+        }} />
       <BottomTab.Screen name="Groups" component={Groups} 
-        options={{
-          lazy: true,
-          headerTitleAlign:'center',
+        options={{ lazy: true, headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="people-outline" size={30} />
-          }} />
+        }} />
       <BottomTab.Screen name="Search" component={Search} 
-        options={{
-          lazy: true,
-          headerTitleAlign:'center',
+        options={{ lazy: true, headerTitleAlign:'center',
           tabBarIcon: () => <Icon name="search-outline" size={30} />
-          }} />
+        }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
-        options={{
-          headerTitleAlign:'center',
-          headerShown: true,
-          tabBarIcon: () => <ImageComponent uri={profileURL ? profileURL : 'defaultUser'}/>,
-          headerRight: LogOutButton
+        options={{  headerTitleAlign:'center', headerRight: LogOutButton,
+          tabBarIcon: () => <ImageComponent uri={profileURL || 'defaultUser'}/>
         }} />
     </BottomTab.Navigator>
   )

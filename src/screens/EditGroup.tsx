@@ -36,8 +36,7 @@ const EditGroup = ( {route}: any) => {
   const handleEditGroup = async () => {
     try{
       setLoading(true);
-      var currURI = await getImgURI( filepath, 
-        `public/groupProfile/${group.id}/${Date.now()}_profile.jpg`);
+      var currURI = await getImgURI( filepath, `public/groupPictures/${group.id}/profile/${Date.now()}.jpg`);
       await client.graphql({
         query: updateGroup,
         variables: {

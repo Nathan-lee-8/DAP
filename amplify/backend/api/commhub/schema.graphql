@@ -1,8 +1,8 @@
 type User @model @auth(
   rules: [
     { allow: owner },
-    { allow: private, operations: [read]},
-    { allow: public, operations: [read]}
+    { allow: private, operations: [read] },
+    { allow: public, operations: [read] }
   ]
 ) {
   id: ID!
@@ -10,6 +10,7 @@ type User @model @auth(
   firstname: String!
   lastname: String!
   profileURL: String!
+  description: String
   posts: [Post] @hasMany
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
@@ -20,7 +21,7 @@ type User @model @auth(
 type Post @model @auth(
   rules: [
     { allow: owner },
-    { allow: private, operations: [read]},
+    { allow: private, operations: [read, update] },
     { allow: public, operations: [read] }
   ]
 ) { 
@@ -37,9 +38,9 @@ type Post @model @auth(
 
 type Comment @model @auth(
   rules: [
-    {allow: owner},
-    {allow: private, operations: [read]},
-    {allow: public, operations: [read]}
+    { allow: owner},
+    { allow: private, operations: [read, update] },
+    { allow: public, operations: [read] }
   ]
 ) {
   id: ID!
@@ -54,17 +55,19 @@ type Comment @model @auth(
 
 type UserChat @model @auth(
   rules: [
+    { allow: owner },
     { allow: owner, ownerField: "ownerID" },
-    { allow: private }
+    { allow: private, operations: [read, update] }
   ]
 ) {
   id: ID!
   ownerID: ID!
   unreadMessageCount: Int 
   lastMessage: String
-  lastReadAt: AWSDateTime
+  lastMessageAt: AWSDateTime!
+  role: String
   isMuted: Boolean
-  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["updatedAt"])
+  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["lastMessageAt"])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields: ["userID"])
   chat: Chat @belongsTo(fields: ["chatID"])
@@ -74,6 +77,7 @@ type UserChat @model @auth(
 
 type Chat @model @auth(
   rules: [
+      { allow: owner },
       { allow: private }
     ]
 ) { 
@@ -88,7 +92,7 @@ type Chat @model @auth(
 type Message @model @auth(
   rules: [
     { allow: owner },
-    { allow: private, operations: [ read] }
+    { allow: private, operations: [read] }
   ]
 ) {
   id: ID!
@@ -103,8 +107,9 @@ type Message @model @auth(
 
 type UserGroup @model @auth(
   rules: [
+    { allow: owner },
     { allow: owner, ownerField: "ownerID" },
-    { allow: private }
+    { allow: private, operations: [read, update] }
   ]
 ) {
   id: ID!
@@ -119,13 +124,15 @@ type UserGroup @model @auth(
 
 type Group @model @auth(
   rules: [
-    { allow: private}
+    { allow: owner },
+    { allow: private }
   ]
 ) {
   id: ID!
   groupName: String!
   groupURL: String
   description: String
+  isPublic: Boolean
   members: [UserGroup] @hasMany(indexName:"membersByGroup", fields: ["id"])
   posts: [Post] @hasMany(indexName:"postsByDate", fields: ["id"])
   createdAt: AWSDateTime!

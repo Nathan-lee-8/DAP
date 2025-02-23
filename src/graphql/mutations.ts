@@ -18,6 +18,7 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
     firstname
     lastname
     profileURL
+    description
     createdAt
     updatedAt
     owner
@@ -38,6 +39,7 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser(
     firstname
     lastname
     profileURL
+    description
     createdAt
     updatedAt
     owner
@@ -58,6 +60,7 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
     firstname
     lastname
     profileURL
+    description
     createdAt
     updatedAt
     owner
@@ -203,13 +206,15 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
     ownerID
     unreadMessageCount
     lastMessage
-    lastReadAt
+    lastMessageAt
+    role
     isMuted
     userID
     chatID
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -226,13 +231,15 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
     ownerID
     unreadMessageCount
     lastMessage
-    lastReadAt
+    lastMessageAt
+    role
     isMuted
     userID
     chatID
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -249,13 +256,15 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
     ownerID
     unreadMessageCount
     lastMessage
-    lastReadAt
+    lastMessageAt
+    role
     isMuted
     userID
     chatID
     createdAt
     updatedAt
     userChatsId
+    owner
     __typename
   }
 }
@@ -273,6 +282,7 @@ export const createChat = /* GraphQL */ `mutation CreateChat(
     isGroup
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -290,6 +300,7 @@ export const updateChat = /* GraphQL */ `mutation UpdateChat(
     isGroup
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -307,6 +318,7 @@ export const deleteChat = /* GraphQL */ `mutation DeleteChat(
     isGroup
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -390,6 +402,7 @@ export const createUserGroup = /* GraphQL */ `mutation CreateUserGroup(
     createdAt
     updatedAt
     userGroupsId
+    owner
     __typename
   }
 }
@@ -410,6 +423,7 @@ export const updateUserGroup = /* GraphQL */ `mutation UpdateUserGroup(
     createdAt
     updatedAt
     userGroupsId
+    owner
     __typename
   }
 }
@@ -430,6 +444,7 @@ export const deleteUserGroup = /* GraphQL */ `mutation DeleteUserGroup(
     createdAt
     updatedAt
     userGroupsId
+    owner
     __typename
   }
 }
@@ -446,8 +461,10 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
     groupName
     groupURL
     description
+    isPublic
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -464,8 +481,10 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
     groupName
     groupURL
     description
+    isPublic
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -482,8 +501,10 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
     groupName
     groupURL
     description
+    isPublic
     createdAt
     updatedAt
+    owner
     __typename
   }
 }

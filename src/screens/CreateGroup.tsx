@@ -1,16 +1,20 @@
 import { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList,
-  ActivityIndicator } from 'react-native'
+  ActivityIndicator, Alert} from 'react-native'
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
 import { User } from '../API';
 import ImgComponent from '../components/ImgComponent';
 import client from '../client';
-import { createUserGroup, createGroup, deleteUserGroup, deleteGroup } from '../graphql/mutations';
+import { createUserGroup, createGroup, deleteUserGroup, deleteGroup,
+  updateGroup } from '../graphql/mutations';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import { imagePicker, getImgURI } from '../components/addImg';
+import { useNavigation } from '@react-navigation/native';
+import { GlobalParamList } from '../types/rootStackParamTypes';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 /**
  * @returns 
@@ -28,6 +32,7 @@ const CreateGroup = () => {
     return;
   }
   const { userId } = authContext;
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   
   const addGroup = async () => {
     var groupID = null;
@@ -35,22 +40,21 @@ const CreateGroup = () => {
 
     try{
       setLoading(true);
+
       //Create Group
       const groupData = await client.graphql({
         query: createGroup,
         variables: {
           input: {
             groupName: groupName,
-            groupURL: `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/groupPictures/${groupID}/profile/${Date.now()}.jpg`
+            description: description,
+            groupURL: groupURI
           }
         },
         authMode:'userPool'
       })
       console.log("Group created Successfully");
       groupID = groupData.data.createGroup.id;
-
-      //upload image to s3
-      await getImgURI(groupURI, `public/groupPictures/${groupID}/${Date.now()}.jpg`);
 
       //Add Members 
       for(const member of members){
@@ -61,6 +65,7 @@ const CreateGroup = () => {
             input: {
               ownerID: member.owner,
               userID: member.id,
+              role: "Member",
               groupID: groupID
             }
           },
@@ -78,6 +83,7 @@ const CreateGroup = () => {
           input: {
             ownerID: cogID.userId,
             userID: userId,
+            role: "Owner",
             groupID: groupID
           }
         },
@@ -85,11 +91,43 @@ const CreateGroup = () => {
       })
       console.log("Self added successfully");
       addedMembers.push(selfData.data.createUserGroup.id);
+
+      if(groupURI !== 'defaultGroup') handleUploadImage(groupID);
+
+      console.log("async running")
+
+      navigation.reset({
+        index: 1,
+        routes: [
+            { name: 'MainTabs', params: {screen: 'Groups'} },
+            { name: 'ViewGroup', params: { groupID: groupID } 
+        }],
+    });
     } catch (error) {
       console.log(error);
       rollBack(addedMembers, groupID);
     } finally {
       setLoading(false);
+    }
+  }
+
+  const handleUploadImage = async (groupID: string) => {
+    //upload image to s3
+    try{
+      const uri = await getImgURI(groupURI, `public/groupPictures/${groupID}/${Date.now()}.jpg`);
+      client.graphql({
+        query: updateGroup,
+        variables: {
+          input: {
+            id: groupID,
+            groupURL: 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri
+          }
+        },
+        authMode:'userPool'
+      })
+      console.log("updated Group Image")
+    } catch {
+      Alert.alert('Error', "error uploading Image");
     }
   }
 
@@ -192,7 +230,7 @@ const CreateGroup = () => {
       />
       
       <Text style={[styles.contentText, {marginBottom: 0}]}>Members</Text>
-      <SearchBar userPressed={getUser}/>
+      <SearchBar userPressed={getUser} remove={members}/>
       <FlatList
         data={members}
         renderItem={({ item }) => {
@@ -208,6 +246,8 @@ const CreateGroup = () => {
             </View>
           )
         }}
+        
+        style={{marginTop: 20}}
       />
       <TouchableOpacity onPress={addGroup}>
         <Icon name="add-circle-outline" style={styles.createButton} size={50}/>
