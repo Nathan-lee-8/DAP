@@ -51,16 +51,18 @@ const ResetPassword = () => {
   if(!hasReset){
     return (
       <View style={styles.container}>
-        <Text style={styles.contentText}>Enter your email to reset your password:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder='Enter email'
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TouchableOpacity style={styles.buttonBlack} onPress={ handleResetPassword}>
-          <Text style={styles.buttonTextWhite}>Reset Password</Text>
-        </TouchableOpacity>
+        <View style={styles.formContainer}>
+          <Text style={styles.contentText}>Enter your email to reset your password:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder='Enter email'
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TouchableOpacity style={styles.buttonBlack} onPress={ handleResetPassword}>
+            <Text style={styles.buttonTextWhite}>Reset Password</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     )
   }

@@ -21,11 +21,11 @@ const getImgURI = async ( fileURI: string, filename: string) => {
   try{
     const fileType = 'image/jpeg';
     const response = await fetch(fileURI);
-    const arrayBuffer = await response.arrayBuffer();
+    const blob = await response.blob(); 
 
     const uploadResult = await uploadData({
       path: filename,
-      data: arrayBuffer,
+      data: blob,
       options: {
         contentType: fileType,
       },

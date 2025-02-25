@@ -12,12 +12,14 @@ interface AuthContextType {
   firstname: string;
   lastname: string;
   profileURL: string | undefined;
+  description: string;
   setSignedIn: (value: boolean) => void;
   setUserId: (id: string) => void;
   setUserEmail: (email: string) => void;
   setFirstName: (firstname: string) => void;
   setLastName: (lastname: string) => void;
   setProfileURL: (url: string) => void;
+  setDescription: (desc: string) => void;
   logout: () => void;
 }
 
@@ -30,6 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [firstname, setFirstName] = useState<string>('');
   const [lastname, setLastName] = useState<string>('');
   const [profileURL, setProfileURL] = useState<string | undefined>(undefined);
+  const [description, setDescription] = useState<string>('');
 
   const logout = async () => {
     setSignedIn(false);
@@ -38,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setFirstName('');
     setLastName('');
     setProfileURL(undefined);
+    setDescription('');
     AsyncStorage.clear();
   }
 
@@ -65,9 +69,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
         const user = data.data.userByEmail.items[0];
         setUserId(user.id);
-        if (user.firstname) setFirstName(user.firstname);
-        if (user.lastname) setLastName(user.lastname);
-        if (user.profileURL) setProfileURL(user.profileURL);
+        setFirstName(user.firstname);
+        setLastName(user.lastname);
+        setProfileURL(user.profileURL);
+        setDescription(user.description || '');
         setSignedIn(true);
       } catch (error) {
         console.log('Error fetching user attributes:', error);
@@ -78,8 +83,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ 
-        isSignedIn, userId, userEmail, firstname, lastname, profileURL, setProfileURL,
-        setSignedIn, setUserId, setUserEmail, setFirstName, setLastName, logout,
+        isSignedIn, userId, userEmail, firstname, lastname, profileURL, description,
+        setProfileURL,setSignedIn, setUserId, setUserEmail, setFirstName, setLastName, 
+        setDescription, logout
       }}>
       {children}
     </AuthContext.Provider>

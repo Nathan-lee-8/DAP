@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     paddingHorizontal: 8,
-    marginBottom: 16,
+    marginBottom: 10,
     borderRadius: 5,
     textAlignVertical: 'top',
     backgroundColor: colorPrimary
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   iconContainer: {
+    width: '100%',
     padding: 20,
     alignSelf: 'baseline',
     alignItems: 'center',
@@ -222,8 +223,9 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: colorPrimary
   },
-  postImages: {
-    
+  postImageContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap'
   },
 
   /** List Messages and Groups styles */
@@ -368,6 +370,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     backgroundColor: colorPrimary
   },
+  addMemberText: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 15,
+    right: 10,
+    alignItems: 'center'
+  },
 
   /** Search User Styles  */
   searchInput: {
@@ -436,9 +445,9 @@ const styles = StyleSheet.create({
     borderRadius: 50
   },
   editProfileURL : { 
-    height: 150, 
-    width: 150, 
-    borderRadius: 75
+    height: 150,
+    width: 150,
+    borderRadius: 75,
   },
   userContact: {
     fontSize: 12,
@@ -452,7 +461,7 @@ const styles = StyleSheet.create({
     width: 150,
     borderRadius: 75,
     alignSelf: 'center',
-    marginBottom: 20,
+    margin: 10,
   },
   uploadImageText: {
     position: 'absolute',
@@ -462,6 +471,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'black',
     opacity: 0.6
+  },
+  editProfileButton: {
+    backgroundColor: colorPrimary,
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    width: 'auto',
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
   },
 
 });

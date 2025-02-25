@@ -17,7 +17,7 @@ const Welcome = () => {
   }
 
   return (
-    <View style={[styles.container, {padding: 20, paddingTop: Platform.OS === 'ios' ? 70 : 0}]}>
+    <View style={[styles.container, {padding: 20, paddingTop: Platform.OS === 'ios' ? 70 : 10}]}>
       <View style={{flexDirection: 'row'}}>
         <ImgComponent uri="logo" style={styles.logo}/>
         <Text style={styles.logoText}> DAP </Text>

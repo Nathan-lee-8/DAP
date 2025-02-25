@@ -1,6 +1,6 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList,
-  ActivityIndicator, Alert} from 'react-native'
+  ActivityIndicator, Alert } from 'react-native'
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
@@ -24,8 +24,8 @@ const CreateGroup = () => {
   const [description, setDescription] = useState('');
   const [members, setMembers] = useState<User[]>([]);
   const [groupURI, setGroupURL] = useState<string>('defaultGroup');
-  const [imgLoading, setImgLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [ addMembers, setAddMembers ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext){
     console.log("Auth context not defined");
@@ -33,6 +33,7 @@ const CreateGroup = () => {
   }
   const { userId } = authContext;
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
+  const flatListRef = useRef<FlatList<User>>(null); 
   
   const addGroup = async () => {
     var groupID = null;
@@ -94,15 +95,13 @@ const CreateGroup = () => {
 
       if(groupURI !== 'defaultGroup') handleUploadImage(groupID);
 
-      console.log("async running")
-
       navigation.reset({
         index: 1,
         routes: [
             { name: 'MainTabs', params: {screen: 'Groups'} },
             { name: 'ViewGroup', params: { groupID: groupID } 
         }],
-    });
+      });
     } catch (error) {
       console.log(error);
       rollBack(addedMembers, groupID);
@@ -114,7 +113,7 @@ const CreateGroup = () => {
   const handleUploadImage = async (groupID: string) => {
     //upload image to s3
     try{
-      const uri = await getImgURI(groupURI, `public/groupPictures/${groupID}/${Date.now()}.jpg`);
+      const uri = await getImgURI(groupURI, `public/groupPictures/${groupID}/profile/${Date.now()}.jpg`);
       client.graphql({
         query: updateGroup,
         variables: {
@@ -186,52 +185,62 @@ const CreateGroup = () => {
   
   const getFilePath = async () => {
     try{
-      setImgLoading(true);
       var uri = await imagePicker();
       if(uri === null) throw new Error('Image not selected');
       setGroupURL(uri);
     } catch(error: any){
       console.log(error.message);
-    }finally{
-      setImgLoading(false);
     }
   }
+
+  const scrollToEnd = () => {
+    // Scroll to the last item
+    flatListRef.current?.scrollToIndex({
+      index: members.length - 1, // The last item's index
+      animated: true, // Smooth scroll
+    });
+    console.log('scrolled')
+  };
 
   if(loading) {
     return(
       <ActivityIndicator size="large" color="#0000ff" />
     )
   }
-
-  return(
-    <View style={styles.container}>
-      {imgLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
+  
+  const pageContent = () => {
+    return (
+      <View>
         <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
           <ImgComponent uri={groupURI} style={styles.groupImg}/>
           <Text style={styles.addImageText}>add Image</Text>
         </TouchableOpacity>
-      )}
-      <TextInput
-        style={styles.input}
-        placeholder="Group name"
-        autoCapitalize="sentences"
-        value={groupName}
-        onChangeText={ setGroupName }
-      />
-      <TextInput
-        style={styles.longInput}
-        placeholder="Description"
-        multiline={true}
-        autoCapitalize="sentences"
-        value={description}
-        onChangeText={ setDescription }
-      />
-      
-      <Text style={[styles.contentText, {marginBottom: 0}]}>Members</Text>
-      <SearchBar userPressed={getUser} remove={members}/>
+        <TextInput
+          style={styles.input}
+          placeholder="Group name"
+          autoCapitalize="words"
+          value={groupName}
+          onChangeText={ setGroupName }
+        />
+        <TextInput
+          style={styles.longInput}
+          placeholder="Description"
+          multiline={true}
+          autoCapitalize="sentences"
+          value={description}
+          onChangeText={ setDescription }
+        />
+        <TouchableOpacity onPress={scrollToEnd}>
+          <SearchBar userPressed={getUser} remove={members}/>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  return(
+    <View style={styles.container}>
       <FlatList
+        ref={flatListRef}
         data={members}
         renderItem={({ item }) => {
           return (
@@ -246,11 +255,10 @@ const CreateGroup = () => {
             </View>
           )
         }}
-        
-        style={{marginTop: 20}}
+        ListHeaderComponent={pageContent}
       />
-      <TouchableOpacity onPress={addGroup}>
-        <Icon name="add-circle-outline" style={styles.createButton} size={50}/>
+      <TouchableOpacity onPress={addGroup} style={styles.buttonBlack}>
+        <Text style={styles.buttonTextWhite}>Save</Text>
       </TouchableOpacity>
     </View>
   )
