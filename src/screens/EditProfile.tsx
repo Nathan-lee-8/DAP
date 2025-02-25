@@ -22,9 +22,9 @@ const EditProfile = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { userId, userEmail, firstname, lastname, profileURL, setFirstName,
-    setLastName, setProfileURL } = authContext;
-    
+  const { userId, userEmail, firstname, lastname, profileURL, description,
+    setFirstName, setLastName, setProfileURL, setDescription } = authContext;
+     
   //use temp values to hold names until user saves data
   const [ tempFirst, setTempFirst ] = useState(firstname);
   const [ tempLast, setTempLast ] = useState(lastname);
@@ -63,7 +63,8 @@ const EditProfile = () => {
             id: userId,
             profileURL: "https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath,
             firstname: tempFirst,
-            lastname: tempLast
+            lastname: tempLast,
+            description: description
           },
         },
         authMode: 'userPool'
@@ -108,7 +109,7 @@ const EditProfile = () => {
               <Text style={styles.postAuthor}>{firstname} {lastname} </Text>
               <Text style={styles.postContent}>{userEmail} </Text>
             </View>
-            <TouchableOpacity style={styles.logoutButton} onPress={() => setEditsOn(true)}>
+            <TouchableOpacity style={styles.editProfileButton} onPress={() => setEditsOn(true)}>
               <Text style={styles.buttonTextBlack}>Edit</Text>
             </TouchableOpacity>
           </View>
@@ -119,8 +120,11 @@ const EditProfile = () => {
     ) : (
       <View>
         <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-          <ImgComponent uri={tempURL || 'defaultUser' } style={styles.uploadImage}/>
+          <ImgComponent uri={tempURL || 'defaultUser' } style={styles.editProfileURL}/>
           <Text style={styles.uploadImageText}>Edit Image</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setEditsOn(false)} style={styles.editProfileButton}>
+          <Text style={styles.buttonTextBlack}>Cancel</Text>
         </TouchableOpacity>
         <Text style={styles.label}>First Name</Text>
         <TextInput
@@ -135,6 +139,13 @@ const EditProfile = () => {
           placeholder={"Last Name"}
           value={tempLast}
           onChangeText={setTempLast}
+        />
+        <Text style={styles.label}>Profile Description</Text>
+        <TextInput
+          style={styles.longInput}
+          placeholder={"About you..."}
+          value={description}
+          onChangeText={setDescription}
         />
         <TouchableOpacity style={styles.buttonBlack} onPress={saveEdits}>
           <Text style={styles.buttonTextWhite}>Save</Text>

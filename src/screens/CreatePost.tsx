@@ -16,7 +16,6 @@ const CreatePost = ({route}: any) => {
   const { groupID } = route.params;
   const [ content, setContent ] = useState('');
   const [ filepaths, setFilepaths ] = useState<string[]>([]);
-  const [ loadingIMG, setLoadingIMG ] = useState(false);
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) return null;
@@ -24,14 +23,11 @@ const CreatePost = ({route}: any) => {
 
   const getFilePath = async () => {
     try{
-      setLoadingIMG(true);
       var uri = await imagePicker();
       if(uri === null) throw new Error('No image selected');
       setFilepaths([...filepaths.filter((item) => item !== null), uri]);
     } catch(error : any){
       Alert.alert('Error', error.message);
-    }finally{
-      setLoadingIMG(false);
     }
   }
 
@@ -39,6 +35,7 @@ const CreatePost = ({route}: any) => {
 
   const sendPost = async () => {
     setLoading(true);
+    const newPaths = await handleUploadFilepaths();
     try{
       await client.graphql({
         query: createPost,
@@ -46,7 +43,7 @@ const CreatePost = ({route}: any) => {
           input: {
             content: content,
             groupID: groupID,
-            postURL: filepaths,
+            postURL: newPaths,
             userID: userId
           }
         },
@@ -66,6 +63,21 @@ const CreatePost = ({route}: any) => {
     }
   }
 
+  const handleUploadFilepaths = async () => {
+    try{
+      const newPaths = await Promise.all(
+        filepaths.map(async (item, index) => {
+          const uri = await getImgURI(item, `public/groupPictures/${groupID}/${Date.now()}_${index}.jpg`);
+          console.log(uri);
+          return uri ? 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri : null;
+        })
+      )
+      return newPaths.filter((path) => path !== null);
+    } catch (error) {
+      console.error('Error Uploading images', error)
+    }
+  }
+
   if(loading) {
     return(
       <ActivityIndicator size="large" color="#0000ff" />
@@ -77,7 +89,7 @@ const CreatePost = ({route}: any) => {
       <Text style={styles.noResultsMsg}>What's on your mind?</Text>
       <TextInput 
         style={styles.contentInput} 
-        placeholder="Content"
+        placeholder="Post content..."
         multiline={true}
         autoCapitalize='sentences'
         value={content}
@@ -88,16 +100,24 @@ const CreatePost = ({route}: any) => {
           <Icon name="image-outline" size={30} color={"blue"}/>
         </TouchableOpacity>
       </View>
-      {loadingIMG ? (
+      <View style={styles.postImageContainer}>
         <FlatList
           data={filepaths}
-          renderItem={({ item }) => {
-            return (
-              <ImgComponent uri={item} />
-            )
-          }}
-        />
-      ) : ( null )}
+          horizontal
+          keyExtractor={(index) => index.toString()}
+          renderItem={({ item }) => (
+            <ImgComponent 
+              uri={item || 'defaultUser'} 
+              style={{ 
+                height: 100,
+                width: 100,
+                marginRight: 10, 
+              }} 
+            />
+          )}
+        />     
+      </View>
+      
       <TouchableOpacity onPress={sendPost} style={styles.createButton}>
         <Icon name="add-circle-outline" style={{alignSelf: 'center'}} size={50}/>
       </TouchableOpacity>    
