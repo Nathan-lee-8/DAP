@@ -22,13 +22,16 @@ const CreatePost = ({route}: any) => {
   const { userId } = authContext;
 
   const getFilePath = async () => {
-    try{
-      var uri = await imagePicker();
-      if(uri === null) throw new Error('No image selected');
-      setFilepaths([...filepaths.filter((item) => item !== null), uri]);
-    } catch(error : any){
-      Alert.alert('Error', error.message);
+    if(filepaths.length > 12){
+      Alert.alert('Max 12 images uploaded at once');
+      return;
     }
+    var uri = await imagePicker();
+    if(uri === null){
+      Alert.alert('No image selected')
+      return;
+    };
+    setFilepaths([...filepaths.filter((item) => item !== null), uri]);
   }
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -68,7 +71,6 @@ const CreatePost = ({route}: any) => {
       const newPaths = await Promise.all(
         filepaths.map(async (item, index) => {
           const uri = await getImgURI(item, `public/groupPictures/${groupID}/${Date.now()}_${index}.jpg`);
-          console.log(uri);
           return uri ? 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri : null;
         })
       )
@@ -76,6 +78,10 @@ const CreatePost = ({route}: any) => {
     } catch (error) {
       console.error('Error Uploading images', error)
     }
+  }
+
+  const handleRemoveItem = (uri: string) => {
+    setFilepaths(filepaths.filter((item) => item !== uri));
   }
 
   if(loading) {
@@ -100,27 +106,27 @@ const CreatePost = ({route}: any) => {
           <Icon name="image-outline" size={30} color={"blue"}/>
         </TouchableOpacity>
       </View>
-      <View style={styles.postImageContainer}>
+      <View style={{paddingLeft: 10}}>
         <FlatList
           data={filepaths}
-          horizontal
+          numColumns={4}
           keyExtractor={(index) => index.toString()}
           renderItem={({ item }) => (
-            <ImgComponent 
-              uri={item || 'defaultUser'} 
-              style={{ 
-                height: 100,
-                width: 100,
-                marginRight: 10, 
-              }} 
-            />
+            <View style={styles.postImageContainer}>
+              <ImgComponent uri={item || 'defaultUser'} 
+                style={{height: 90, width: 90}} 
+              />
+              <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveItem(item)}>
+                <Icon name="remove-circle-outline" size={20}/>
+              </TouchableOpacity>
+            </View>
           )}
-        />     
+        />
       </View>
       
-      <TouchableOpacity onPress={sendPost} style={styles.createButton}>
-        <Icon name="add-circle-outline" style={{alignSelf: 'center'}} size={50}/>
-      </TouchableOpacity>    
+      <TouchableOpacity onPress={sendPost} style={[styles.buttonBlack, {marginTop: 'auto', marginBottom: 30}]}>
+        <Text style={styles.buttonTextWhite}>Create</Text>
+      </TouchableOpacity>
 
     </View>
   )

@@ -52,7 +52,7 @@ const MessageUsers = () => {
       });
       const chatRoomData = chatRooms.data.chatsByUser.items;
       setChatRooms(chatRoomData);
-      AsyncStorage.setItem('ChatRoomData', JSON.stringify(chatRoomData));
+      //AsyncStorage.setItem('ChatRoomData', JSON.stringify(chatRoomData));
       console.log('Fetched Chat rooms from Messaging.');
     } catch (error) {
       console.log('Error fetching chat rooms', error);

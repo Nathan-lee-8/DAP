@@ -1,13 +1,13 @@
-import { useState, useLayoutEffect } from "react";
-import { View, Text, FlatList, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { useState, useLayoutEffect, useCallback } from "react";
+import { View, Text, FlatList, TextInput, TouchableOpacity, 
+  Alert, ActivityIndicator } from "react-native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
-import { useEffect } from "react";
 import { Group, Post } from '../API'
 import styles from '../styles/Styles'
 import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
-import { useNavigation } from "@react-navigation/native";
 import { GlobalParamList } from "../types/rootStackParamTypes";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import FormatPost from "../components/FormatPost";
@@ -47,11 +47,13 @@ const ViewGroup = ({route} : any) => {
       setLoading(false);
     }
   }
- 
-  useEffect(() => {
-    fetchCurrentData();
-  }, [groupID]);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchCurrentData();
+    }, [])
+  );
+ 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   useLayoutEffect(()=> {
     navigation.setOptions({
@@ -105,14 +107,10 @@ const ViewGroup = ({route} : any) => {
             <View style={{marginLeft: 'auto'}}>
               <FlatList
                 key={group?.members?.items.length}
-                data={group?.members?.items ? group?.members?.items.slice(0,5) : []}
-                renderItem={(item) => {
-                  var user = item.item?.user;
-                  var profileURL = user?.profileURL ? user?.profileURL : undefined;
-                  return(
-                    <ProfilePicture uri={profileURL? profileURL : 'defaultUser'}/>
-                  )
-                }}
+                data={group?.members?.items ? group?.members?.items.slice(0,4) : []}
+                renderItem={({ item }) => 
+                  <ProfilePicture uri={item?.user?.profileURL ||'defaultUser'}/>
+                }
                 numColumns={5}
               />
             </View>

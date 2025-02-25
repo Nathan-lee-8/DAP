@@ -25,7 +25,6 @@ const CreateGroup = () => {
   const [members, setMembers] = useState<User[]>([]);
   const [groupURI, setGroupURL] = useState<string>('defaultGroup');
   const [loading, setLoading] = useState(false);
-  const [ addMembers, setAddMembers ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext){
     console.log("Auth context not defined");
@@ -178,6 +177,10 @@ const CreateGroup = () => {
 
   //Removes user from group onPress
   const removeUser = (user: User) => {
+    flatListRef.current?.scrollToIndex({
+      index: members.length - 1, // The last item's index
+      animated: true, // Smooth scroll
+    });
     if(members.includes(user)){
       setMembers(members.filter((member) => member !== user));
     }
@@ -192,15 +195,6 @@ const CreateGroup = () => {
       console.log(error.message);
     }
   }
-
-  const scrollToEnd = () => {
-    // Scroll to the last item
-    flatListRef.current?.scrollToIndex({
-      index: members.length - 1, // The last item's index
-      animated: true, // Smooth scroll
-    });
-    console.log('scrolled')
-  };
 
   if(loading) {
     return(
@@ -230,15 +224,14 @@ const CreateGroup = () => {
           value={description}
           onChangeText={ setDescription }
         />
-        <TouchableOpacity onPress={scrollToEnd}>
-          <SearchBar userPressed={getUser} remove={members}/>
-        </TouchableOpacity>
+        <Text style={[styles.contentText, {marginBottom: 0}]}>Members</Text>
       </View>
     )
   }
 
   return(
     <View style={styles.container}>
+      <SearchBar userPressed={getUser} remove={members}/>
       <FlatList
         ref={flatListRef}
         data={members}
@@ -257,7 +250,7 @@ const CreateGroup = () => {
         }}
         ListHeaderComponent={pageContent}
       />
-      <TouchableOpacity onPress={addGroup} style={styles.buttonBlack}>
+      <TouchableOpacity onPress={addGroup} style={[styles.buttonBlack, {marginBottom: 20}]}>
         <Text style={styles.buttonTextWhite}>Save</Text>
       </TouchableOpacity>
     </View>
