@@ -70,7 +70,7 @@ const ViewPost = ( {route} : any) => {
         </View>
           <Text style={styles.postContent}>{postData?.content}</Text>
           {postData?.postURL && postData?.postURL[0] &&
-            <ImgComponent uri={postData?.postURL[0]} style={styles.postImgContainer} />
+            <ImgComponent uri={postData?.postURL[0]} style={styles.postImg} />
           }
       </View>
       <FlatList

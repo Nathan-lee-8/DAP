@@ -105,16 +105,14 @@ const EditGroup = ( {route}: any) => {
       <Text>{members.length} Members</Text>
       <FlatList
         data={members}
-        renderItem={(item) => {
-          var user = item.item?.user;
-          var profileURL = user?.profileURL ? user?.profileURL : undefined;
+        renderItem={({ item }) => {
           return(
             <View style={[styles.postContainer, styles.profileSection]}>
-              <ImgComponent uri={profileURL ? profileURL : 'defaultUser'}/>
+              <ImgComponent uri={item?.user?.profileURL || 'defaultUser'}/>
               <View style={styles.userInfoContainer}>
-                <Text style={styles.postAuthor}>{user?.firstname + " " + user?.lastname}</Text>
+                <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
               </View>
-              <TouchableOpacity style={{marginLeft: 'auto'}} onPress={() => removeMember(item.item)}>
+              <TouchableOpacity style={{marginLeft: 'auto'}} onPress={() => removeMember(item)}>
                 <Icon name="person-remove-outline" size={20}/>
               </TouchableOpacity>
             </View>

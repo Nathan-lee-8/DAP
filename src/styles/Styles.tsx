@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: 18
   },
   profileText:{
-    marginLeft: 10
+    marginLeft: 10,
   },
   postAuthor: {
     fontSize: 14,
@@ -156,22 +156,28 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   bold: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   postContent: {
     fontSize: 14,
     color: '#333',
     marginBottom: 5,
   },
-  postImgContainer: {
-    position: 'relative',
+  postImg: {
     width: '100%',
     height: 200,
     alignSelf: 'center',
     marginBottom: 10,
   },
+  postImgContainer:{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    pointerEvents: 'none'
+  },
   interactSection : {
     flexDirection: 'row',
+    marginTop: 5
   },
   commentSection: {
     flexDirection: 'row',
@@ -188,7 +194,25 @@ const styles = StyleSheet.create({
     padding: 5,
     marginLeft: 'auto',
     paddingHorizontal: 10,
-  },  
+  },    
+  paginationContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    margin: 3,
+    backgroundColor: 'lightgrey',
+  },
+  activeDot: {
+    backgroundColor: 'gray', // Change this color for active dot
+  },
 
   /** View Post Section */
   addCommentSection: {
@@ -224,8 +248,13 @@ const styles = StyleSheet.create({
     backgroundColor: colorPrimary
   },
   postImageContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap'
+    paddingRight: 10,
+    paddingTop:10,
+  },
+  removeIcon: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
   },
 
   /** List Messages and Groups styles */

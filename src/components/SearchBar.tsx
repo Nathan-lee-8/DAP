@@ -54,7 +54,8 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
     }
     const formattedSearch = query.toLowerCase();
     const results = filter(data, (user) => {
-      if(!user.id || user.id === currUserId || remove?.includes(user)){
+      if(!user.id || user.id === currUserId
+        || remove.some((removedUser: User) => removedUser.id === user.id)){
         return false;
       }
       const name = user.firstname + " " + user.lastname;

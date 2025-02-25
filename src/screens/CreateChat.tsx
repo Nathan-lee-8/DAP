@@ -195,10 +195,10 @@ const CreateChat = ( { route }: any) => {
             <FlatList
                 data={targetUsers}
                 keyExtractor={(item) => item.id}
-                renderItem={(item) => (
+                renderItem={({item}) => (
                     <View style={{flexDirection: 'row', margin: 3}}>
-                        <Text>{item.item.firstname} {item.item.lastname} </Text>
-                        <TouchableOpacity onPress={() => handleRemoveUser(item.item.id)}>
+                        <Text>{item.firstname} {item.lastname} </Text>
+                        <TouchableOpacity onPress={() => handleRemoveUser(item.id)}>
                             <Icon name="remove-circle-outline" size={20}/>
                         </TouchableOpacity>
                     </View>
