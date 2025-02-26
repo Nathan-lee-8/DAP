@@ -116,13 +116,9 @@ const ViewGroup = ({route} : any) => {
             </View>
           </View>
         </View>
-        <TouchableOpacity onPress={createGroupPost} style={{flexDirection: 'row'}}>
-          <TextInput
-            style={styles.msgInput}
-            placeholder="Post content..."
-            editable={false}
-          />
-          <Icon name="send" size={30} style={styles.msgButton}/>
+        <TouchableOpacity onPress={createGroupPost} style={styles.postContentTouchable}>
+          <Text style={styles.postContentInput}>Post Content...</Text>
+          <Icon name="send" size={30} style={styles.postContentButton}/>
         </TouchableOpacity>
       </View>
     )

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useContext, useLayoutEffect} from 'react';
-import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator 
-    } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
+    KeyboardAvoidingView, Platform} from 'react-native';
 import styles from '../styles/Styles';
 import client from '../client';
 import { getChat } from '../graphql/queries';
@@ -254,18 +254,22 @@ const ChatRoom = ( { route } : any) => {
                 onEndReachedThreshold={0.4}
                 inverted
             />
-            <View style={{flexDirection: 'row', marginBottom: 0}}> 
+            <KeyboardAvoidingView 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.addCommentSection}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            > 
                 <TextInput
-                    style={styles.msgInput}
+                    style={styles.commentInput}
                     placeholder={'Type a message'}
                     value={currMessage}
                     autoCapitalize='sentences'
                     onChangeText={(text) => setMessage(text)}
                 />
-                <TouchableOpacity style={styles.msgButton} onPress={sendMessage} >
+                <TouchableOpacity style={styles.commentButton} onPress={sendMessage} >
                     <Icon name="send" size={30} />
                 </TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         </View>
     )
 }

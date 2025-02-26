@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, TextInput, 
+  KeyboardAvoidingView, Platform } from 'react-native';
 import { createComment } from '../graphql/mutations';
 import { getPost } from '../graphql/queries';
 import client from '../client';
@@ -60,32 +61,19 @@ const ViewPost = ( {route} : any) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.postContainer}>
-        <View style={styles.profileSection}>
-          <ImgComponent uri={postData?.user?.profileURL ? postData?.user?.profileURL : 'defaultUser'} style={styles.postProfileImg}/>
-          <View style={styles.profileText}>
-            <Text style={styles.postAuthor}> {postData?.user?.firstname} {postData?.user?.lastname} </Text>
-          <Text style={styles.postDate}> {moment(postData?.createdAt).fromNow()}</Text>
-          </View>
-        </View>
-          <Text style={styles.postContent}>{postData?.content}</Text>
-          {postData?.postURL && postData?.postURL[0] &&
-            <ImgComponent uri={postData?.postURL[0]} style={styles.postImg} />
-          }
-      </View>
+      {postData && <FormatPost item={postData} groupData={postData?.group ? [postData.group] : []}/>}
       <FlatList
         data={postData?.comments?.items}
-        renderItem={(item) => (
+        renderItem={({ item }) => (
           <View style={styles.postContainer}>
             <View style={styles.profileSection}>
-              <ImgComponent uri={item.item?.user?.profileURL ? item.item?.user?.profileURL : 'defaultUser'} style={styles.postProfileImg}/>
+              <ImgComponent uri={item?.user?.profileURL || 'defaultUser'} style={styles.postProfileImg}/>
               <View style={styles.profileText}>
-              <Text style={styles.postAuthor}>{item?.item?.user?.firstname + " " + item?.item?.user?.lastname}</Text>
-            <Text style={styles.postDate}>{moment(item?.item?.createdAt).fromNow()}</Text>
+              <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+            <Text style={styles.postDate}>{moment(item?.createdAt).fromNow()}</Text>
           </View>
-            </View>
-            
-            <Text style={styles.postContent}>{item.item?.content}</Text>
+          </View>
+            <Text style={styles.postContent}>{item?.content}</Text>
           </View>
         )}
         ListEmptyComponent={() => (
@@ -95,7 +83,11 @@ const ViewPost = ( {route} : any) => {
         )}
         scrollEnabled
       />
-      <View style={styles.addCommentSection}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.addCommentSection}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      > 
         <TextInput
           style={styles.commentInput}
           placeholder="Add a comment"
@@ -107,7 +99,7 @@ const ViewPost = ( {route} : any) => {
         <TouchableOpacity onPress={postComment} style={styles.commentButton}>
           <Icon name="send" size={30} />
         </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </View>
   )
 }

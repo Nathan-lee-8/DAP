@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 
 const colorBackground = '#f2f7f7';
 const colorPrimary = 'white';
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     padding: 10,
     paddingHorizontal: 20,
+    flexShrink: 1
   },
   profileSection: {
     flexDirection: 'row',
@@ -175,9 +176,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     pointerEvents: 'none'
   },
-  interactSection : {
+  interactSection: {
     flexDirection: 'row',
-    marginTop: 5
+    marginTop: 5,
   },
   commentSection: {
     flexDirection: 'row',
@@ -217,23 +218,19 @@ const styles = StyleSheet.create({
   /** View Post Section */
   addCommentSection: {
     flexDirection: 'row',
-    alignContent: 'center',
-    justifyContent: 'center',
-    alignItems: 'center'
+    marginBottom: Platform.OS === 'ios' ? 40 : 0,
   },
   commentInput: {
     height: 35,
-    width: '80%',
+    width: '90%',
     borderColor: '#ccc',
     borderWidth: 1,
     backgroundColor: colorPrimary,
-    margin: 20,
     borderRadius: 5,
     padding: 7,
   },
   commentButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginLeft: 10,
   },
 
   /** Create Post Styles*/
@@ -336,22 +333,6 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     margin: 5,
   },
-  msgButton: {
-    marginLeft: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-  },
-  msgInput: {
-    height: 40,
-    width: '85%',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    backgroundColor: colorPrimary,
-    paddingHorizontal: 8,
-    borderRadius: 5,
-    marginBottom: 5,
-  }, 
 
   /** Groups Section */
   groupImg: {
@@ -366,9 +347,30 @@ const styles = StyleSheet.create({
   },
   groupMembersContainer: {
     padding: 5,
-    marginBottom: 10,
     backgroundColor: colorPrimary,
   },
+  postContentTouchable: {
+    flexDirection: 'row',
+    padding: 5,
+    justifyContent: 'center'
+  },
+  postContentButton: {
+    marginLeft: 10,
+  },
+  postContentInput: {
+    height: 35,
+    width: '90%',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    backgroundColor: colorPrimary,
+    paddingHorizontal: 8,
+    borderRadius: 5,
+    textAlignVertical: 'center',
+    alignSelf: 'center',
+    lineHeight: 35,
+    fontSize: 14,
+    color: '#ccc'
+  }, 
   createGroupButton: {
     alignSelf:'center',
     justifyContent: 'center',

@@ -1,5 +1,6 @@
 import { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, FlatList,
+    KeyboardAvoidingView, Platform } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
@@ -206,17 +207,21 @@ const CreateChat = ( { route }: any) => {
                 numColumns={3}
             />
             <Text style={[styles.contentText, {marginBottom: 'auto'}]}></Text>
-            <View style={{flexDirection: 'row'}}>
+            <KeyboardAvoidingView 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.addCommentSection}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            > 
                 <TextInput
-                    style={styles.msgInput}
+                    style={styles.commentInput}
                     placeholder="Type a message..."
                     value={message}
                     onChangeText={setMessage}
                 />
-                <TouchableOpacity style={styles.msgButton} onPress={createChatRoom} >
+                <TouchableOpacity style={styles.commentButton} onPress={createChatRoom} >
                     <Icon name="send" size={30} />
                 </TouchableOpacity>
-            </View>
+            </KeyboardAvoidingView>
         </View>
     )
 }
