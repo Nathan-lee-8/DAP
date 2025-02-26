@@ -22,9 +22,9 @@ const UserPosts = ( { userID } : any ) => {
           userID: userID, 
           sortDirection: ModelSortDirection.DESC 
         },
+        authMode: 'userPool'
       });
       const fetchedPosts = response?.data?.postsByUser?.items || [];
-      console.log("fetched post from userposts page");
       setPosts(fetchedPosts);
       await AsyncStorage.setItem(
         `${userID}PostsCache`, 
@@ -67,11 +67,9 @@ const UserPosts = ( { userID } : any ) => {
       ) : (
         <FlatList
           data={posts}
-          renderItem={({ item }) => {
-            return(
-              <FormatPost item={item}/>
-            )
-          }}
+          renderItem={({ item }) => 
+            <FormatPost item={item} groupData={item?.group ? [item?.group] : []}/>
+          }
           ListEmptyComponent={() => (
             <View>
               <Text style={styles.noResultsMsg}>No posts found</Text>

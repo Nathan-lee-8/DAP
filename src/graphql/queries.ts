@@ -252,6 +252,17 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
         nextToken
         __typename
       }
+      group {
+        id
+        groupName
+        groupURL
+        description
+        isPublic
+        createdAt
+        updatedAt
+        owner
+        __typename
+      }
       createdAt
       updatedAt
       userPostsId

@@ -25,6 +25,7 @@ import ViewMembers from '../screens/ViewMembers';
 import LogOutButton from '../components/LogOutButton';
 import ImageComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
+import styles from '../styles/Styles';
 
 const SignInStack = createNativeStackNavigator();
 const GlobalStack = createNativeStackNavigator();

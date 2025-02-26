@@ -124,7 +124,7 @@ const CreatePost = ({route}: any) => {
         />
       </View>
       
-      <TouchableOpacity onPress={sendPost} style={[styles.buttonBlack, {marginTop: 'auto', marginBottom: 30}]}>
+      <TouchableOpacity onPress={sendPost} style={[styles.buttonBlack, {marginTop: 'auto'}]}>
         <Text style={styles.buttonTextWhite}>Create</Text>
       </TouchableOpacity>
 

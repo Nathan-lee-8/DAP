@@ -10,7 +10,7 @@ const ViewProfiles = ( { route } : any) => {
     return(
         <View style={styles.container}>
             <View style={styles.viewUserProfileSection}>
-                <ProfilePicture uri={targetUser.profileURL ? targetUser.profileURL : 'defaultUser'} style={styles.viewProfileURL}/>
+                <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
                 <View style={styles.userInfoContainer}>
                     <Text style={styles.postAuthor}>{targetUser.firstname} {targetUser.lastname}</Text>
                     <Text style={styles.userContact}>{targetUser.email}</Text>
@@ -18,7 +18,7 @@ const ViewProfiles = ( { route } : any) => {
                     <Text style={styles.userContact}>{targetUser.description || "No bio available"}</Text>
                 </View>
             </View>
-            <UserPosts userID={targetUser.id} />
+            <UserPosts userID={targetUser.id}/>
         </View>
         
     )
