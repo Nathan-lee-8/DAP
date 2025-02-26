@@ -1,7 +1,8 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, Dimensions } from 'react-native';
 
 const colorBackground = '#f2f7f7';
 const colorPrimary = 'white';
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
 
@@ -130,7 +131,8 @@ const styles = StyleSheet.create({
   postContainer: {
     backgroundColor: colorPrimary,
     marginBottom: 5,
-    padding: 10,
+    padding: 5,
+    paddingTop: 10,
     paddingHorizontal: 20,
     flexShrink: 1
   },
@@ -151,6 +153,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'Black',
     flexDirection: 'row',
+    width: width * 0.65
   },
   postDate: {
     fontSize: 12,
@@ -214,6 +217,56 @@ const styles = StyleSheet.create({
   activeDot: {
     backgroundColor: 'gray', // Change this color for active dot
   },
+  postOptions: {
+    position: 'absolute',
+    top: 5,
+    right: 20,
+    zIndex: 1,
+    padding: 2,
+  },
+
+  /** Modal styles */
+  modelOverlay:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: 300,
+    backgroundColor: 'white',
+    padding: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  closeButton: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: 'red',
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  optionButton: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+    width: '100%',
+    alignItems: 'center',
+  },
+  optionText: {
+    color: 'white',
+    fontSize: 16,
+  },
 
   /** View Post Section */
   addCommentSection: {
@@ -271,7 +324,8 @@ const styles = StyleSheet.create({
     left: 5,
   },
   URLSection: {
-    width: 30,
+    justifyContent: 'center',
+    width: 40,
     height: 40,
     paddingVertical: 10,
   },
@@ -294,11 +348,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: colorPrimary,
+    borderWidth: 1,
+    borderColor: '#888'
   },
   chatRoomName: { 
     fontSize: 20,
     color: 'black',
     padding: 10,
+    width: width * 0.8
   },
   myMessageContainer: {
     flexDirection: 'row',
@@ -388,18 +445,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'black',
     opacity: 0.8
-  },
-  menuTopRightList: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    zIndex: 1,
-  },
-  menuTopRightItem: {
-    alignItems: 'flex-end',
-    padding: 5,
-    borderBottomWidth: 1,
-    backgroundColor: colorPrimary
   },
   addMemberText: {
     flexDirection: 'row',

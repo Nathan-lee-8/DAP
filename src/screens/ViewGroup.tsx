@@ -1,6 +1,6 @@
 import { useState, useLayoutEffect, useCallback } from "react";
-import { View, Text, FlatList, TextInput, TouchableOpacity, 
-  Alert, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, Modal,
+  ActivityIndicator } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
@@ -14,10 +14,11 @@ import FormatPost from "../components/FormatPost";
 
 const ViewGroup = ({route} : any) => {
   const groupID = route.params.groupID;
-  const [group, setGroup] = useState<Group>();
-  const [post, setPosts] = useState<Post[]>([]);
-  const [viewMenu, setViewMenu] = useState(false);
-  const [loading, setLoading ] = useState(true);
+  const [ group, setGroup ] = useState<Group>();
+  const [ post, setPosts ] = useState<Post[]>([]);
+  const [ loading, setLoading ] = useState(true);
+  const [ modalVisible, setModalVisible ] = useState(false);
+  const options = ["Edit Group", "Create Chat", "Leave Group"];
 
   const fetchCurrentData = async () => {
     try{
@@ -58,7 +59,7 @@ const ViewGroup = ({route} : any) => {
   useLayoutEffect(()=> {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={() => setViewMenu(!viewMenu)} >
+        <TouchableOpacity onPress={() => setModalVisible(true)} >
           <Icon name="ellipsis-horizontal-sharp" size={30} color={'black'}/>
         </TouchableOpacity>
       ),
@@ -73,26 +74,32 @@ const ViewGroup = ({route} : any) => {
     if(group?.members) navigation.navigate('ViewMembers', {userData: group?.members.items});
     else Alert.alert("Unable to Retrieve member data");
   }
-  
-  const handleMenuPress = ( option : string) => {
-    if(option === 'Edit Group') handleEditGroup();
-    else if(option === 'Leave Group'){
-      Alert.alert('Confirm', 'Are you sure you want to leave this group?',
-        [ { text: 'Cancel' }, { text: 'OK'} ]
-      );
-    };
+
+  const handleOptionPress = (option: string) => {
+    setModalVisible(false);
+    if(option === "Edit Group"){
+      if(group) navigation.navigate('EditGroup', {group: group})
+      else Alert.alert("Group not found");
+    }else if( option === "Leave Group"){
+      Alert.alert("Confirm", `Are you sure you want to leave ${group?.groupName}?`,
+        [{text: 'Cancel'},{ text: 'Leave', onPress: leaveGroup}]
+      )
+    }
   }
 
-  const handleEditGroup = () => {
-    if(group) navigation.navigate('EditGroup', {group: group})
-    else Alert.alert("Group not found");
+  const leaveGroup = () => {
+    Alert.alert("Not implemented yet");
+  }
+
+  if(loading){
+    return <ActivityIndicator size="large" color="#0000ff" />
   }
 
   const headerComp = () => {
     return( 
       <View>
         <View style={styles.groupImgContainer}>
-          <ProfilePicture uri={group?.groupURL ? group?.groupURL : 'defaultGroup'} style={styles.groupImg}/>
+          <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
         </View>
         <View style={styles.groupMembersContainer}>
           <View style={{flexDirection: 'row'}}>
@@ -123,24 +130,9 @@ const ViewGroup = ({route} : any) => {
       </View>
     )
   }
-  if(loading){
-    return <ActivityIndicator size="large" color="#0000ff" />
-  }
 
   return (
     <View style={styles.container}>
-      <FlatList
-          data={['Edit Group', 'Leave Group']}
-          renderItem={(item)=>{
-            if(!viewMenu) return null;
-            return(
-              <TouchableOpacity style={styles.menuTopRightItem} onPress={() => handleMenuPress(item.item)}>
-                <Text style={{fontSize:18}}>{item.item}</Text>
-              </TouchableOpacity>
-            )
-          }}
-          style={styles.menuTopRightList}
-        />
       <FlatList
         ListHeaderComponent={headerComp}
         data={post}
@@ -156,6 +148,27 @@ const ViewGroup = ({route} : any) => {
           </View>
         )}
       />
+      <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modelOverlay}>
+          <View style={styles.modalContainer}>
+            <FlatList
+              data={options}
+              keyExtractor={(option) => option}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity 
+                  style={[styles.buttonWhite, {flex: 1}]} 
+                  onPress={() => handleOptionPress(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity style={styles.buttonBlack} onPress={() => setModalVisible(false)}>
+              <Text style={styles.buttonTextWhite}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }

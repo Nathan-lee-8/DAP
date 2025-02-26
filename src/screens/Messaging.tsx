@@ -1,5 +1,6 @@
 import { useState, useContext, useCallback } from 'react';
-import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator
+  } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { chatsByUser } from '../graphql/queries';
@@ -134,7 +135,7 @@ const MessageUsers = () => {
                           style={{ 
                             position: 'absolute', 
                             top: index * 10,
-                            left: index * 10, 
+                            left: index * 10 , 
                             zIndex: displayURIs.length - index,   
                             height: 26,
                             width: 26,
@@ -143,12 +144,11 @@ const MessageUsers = () => {
                         />
                       ))
                     ) : (
-                        <ImgComponent 
-                          uri={displayURIs[0] || 'defaultUser'} 
-                          style={{height: 30, width: 30, borderRadius: 15}} 
-                        />
+                      <ImgComponent 
+                        uri={displayURIs[0] || 'defaultUser'} 
+                        style={{height: 40, width: 40, borderRadius: 20}} 
+                      />
                     )}
-                    
                   </View>
                   <View style={styles.userInfoContainer}>
                     <Text style={styles.postAuthor} numberOfLines={1}>{chatname}</Text>
