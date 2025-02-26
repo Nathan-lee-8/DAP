@@ -108,6 +108,7 @@ const EditProfile = () => {
             <View style={styles.userInfoContainer}>
               <Text style={styles.postAuthor}>{firstname} {lastname} </Text>
               <Text style={styles.postContent}>{userEmail} </Text>
+              <Text style={styles.postContent}>{description}</Text>
             </View>
             <TouchableOpacity style={styles.editProfileButton} onPress={() => setEditsOn(true)}>
               <Text style={styles.buttonTextBlack}>Edit</Text>
