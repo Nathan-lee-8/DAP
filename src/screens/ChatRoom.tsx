@@ -27,6 +27,7 @@ const ChatRoom = ( { route } : any) => {
   const flatListRef = useRef<FlatList<Message>>(null); //for scroll to bottom
   const msgCountRef = useRef<number>(0);
   const msgSentRef = useRef<boolean>(false);
+
   const options = ["Edit", "Leave", "Delete"];
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
@@ -240,9 +241,18 @@ const ChatRoom = ( { route } : any) => {
         ref={flatListRef}
         data={messages}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
+          const currTime = moment(item.createdAt);
+          const prevItem = index < messages.length - 1 ? messages[index + 1] : null;
+          const prevTime = prevItem ? moment(prevItem.createdAt) : null;
+          const shouldShowDate = !prevTime || !currTime.isSame(prevTime, 'day');
           return (
             <View>
+              {shouldShowDate && (
+                <Text style={{ textAlign: 'center' }}>
+                  {currTime.format('MMM D, YYYY')}
+                </Text>
+              )}
               <View style={getMsgContainerStyle(item?.senderID)}>
                 {item?.senderID !== currUser.id && 
                   <ImgComponent uri={item?.sender?.profileURL || 'defaultUser'}/>
