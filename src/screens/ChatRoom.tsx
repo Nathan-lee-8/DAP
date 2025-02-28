@@ -24,18 +24,13 @@ const ChatRoom = ( { route } : any) => {
   const [ title, setTitle ] = useState<string>('default');
   const [ displayURLs, setURLs ] = useState<(string | undefined)[]>([]);
   const [ modalVisible, setModalVisible ] = useState(false);
-
   const flatListRef = useRef<FlatList<Message>>(null); //for scroll to bottom
   const msgCountRef = useRef<number>(0);
   const msgSentRef = useRef<boolean>(false);
   const options = ["Edit", "Leave", "Delete"];
-
   const authContext = useContext(AuthContext);
-  if(!authContext){
-    console.log("Auth context not defined");
-    return;
-  }
-  const userId = authContext.userId;
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
 
   useEffect(() => {
     fetchChat();
@@ -90,11 +85,11 @@ const ChatRoom = ( { route } : any) => {
       if(parts){
         let URLs: (string | undefined)[] = [];
         setParticipants(parts.filter((item): item is UserChat => {
-          if(item?.userID !== userId) URLs.push(item?.user?.profileURL || undefined);
-          return item?.userID !== userId;
+          if(item?.userID !== currUser.id) URLs.push(item?.user?.profileURL || undefined);
+          return item?.userID !== currUser?.id;
         }));
         setURLs(URLs);
-        setMyUserChat(parts.find((item): item is UserChat  => item?.userID === userId));
+        setMyUserChat(parts.find((item): item is UserChat  => item?.userID === currUser.id));
       }
       setNextToken(chatData?.messages?.nextToken);
     } catch (error: any) {
@@ -167,15 +162,15 @@ const ChatRoom = ( { route } : any) => {
   }
 
   const sendMessage = async () => {
-    if(currMessage === '' || !myUserChat?.chatID) return;
+    if(currMessage === '' || !myUserChat ) return;
     try {
       const msgData = await client.graphql({
         query: createMessage,
         variables: {
           input: {
-            senderID: userId,
+            senderID: currUser.id,
             content: currMessage,
-            chatID: myUserChat?.chatID,
+            chatID: myUserChat.chatID,
           },
         },
         authMode: 'userPool'
@@ -198,12 +193,12 @@ const ChatRoom = ( { route } : any) => {
   };
 
   const getMsgStyle = (id: string) => {
-    if(id === userId) return styles.myMessage;
+    if(id === currUser.id) return styles.myMessage;
     return styles.otherMessage;
   }
 
   const getMsgContainerStyle = (id: string) => {
-    if(id === userId) return styles.myMessageContainer;
+    if(id === currUser.id) return styles.myMessageContainer;
     return styles.otherMessageContainer;
   }
   
@@ -249,13 +244,13 @@ const ChatRoom = ( { route } : any) => {
           return (
             <View>
               <View style={getMsgContainerStyle(item?.senderID)}>
-                {item?.senderID !== userId && 
+                {item?.senderID !== currUser.id && 
                   <ImgComponent uri={item?.sender?.profileURL || 'defaultUser'}/>
                 }
                 <View style={getMsgStyle(item?.senderID)}>
                   <Text>{item?.content}</Text>
                 </View>
-                {item?.senderID === userId && 
+                {item?.senderID === currUser.id && 
                   <ImgComponent uri={item?.sender?.profileURL || 'defaultUser'}/>
                 }
               </View>

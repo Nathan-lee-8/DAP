@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert,
-   TextInput, FlatList } from 'react-native';
+   TextInput, FlatList, Platform, KeyboardAvoidingView, ScrollView
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
@@ -79,31 +80,39 @@ const EditGroup = ( {route}: any) => {
   }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
+
+  const header = () => { 
+    return (
+      <View>
+        {imgLoading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
+            <ImgComponent uri={filepath} style={styles.groupImg}/>
+            <Text style={styles.addImageText}>Add Img</Text>
+          </TouchableOpacity>
+        )}
+        <TextInput
+          style={styles.input}
+          value={name}
+          placeholder={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          style={styles.longInput}
+          value={description}
+          multiline={true}
+          placeholder={description || 'No description'}
+          onChangeText={setDescription}
+        />
+        <Text>{members.length} Members</Text>
+      </View>
+    )
+  }
   
   return (
     <View style={styles.container}>
-      {imgLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
-          <ImgComponent uri={filepath} style={styles.groupImg}/>
-          <Text style={styles.addImageText}>Add Img</Text>
-        </TouchableOpacity>
-      )}
-      <TextInput
-        style={styles.input}
-        value={name}
-        placeholder={name}
-        onChangeText={setName}
-      />
-      <TextInput
-        style={styles.longInput}
-        value={description}
-        placeholder={description ? description : 'No description'}
-        onChangeText={setDescription}
-      />
-      <Text>{members.length} Members</Text>
-      <FlatList
+    <FlatList
         data={members}
         renderItem={({ item }) => {
           return(
@@ -118,10 +127,16 @@ const EditGroup = ( {route}: any) => {
             </View>
           )
         }}
+        ListHeaderComponent={header()}
       />
-      <TouchableOpacity style={styles.buttonBlack} onPress={handleEditGroup}>
-        <Text style={styles.buttonTextWhite}>Save Changes</Text>
-      </TouchableOpacity>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      >   
+        <TouchableOpacity style={styles.buttonBlack} onPress={handleEditGroup}>
+          <Text style={styles.buttonTextWhite}>Save Changes</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </View>
   )
 }

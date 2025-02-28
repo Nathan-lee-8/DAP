@@ -18,11 +18,8 @@ const MessageUsers = () => {
   const [chatRooms, setChatRooms] = useState<UserChat[]>([])
   const [loading, setLoading] = useState<boolean>(true);
   const authContext = useContext(AuthContext);
-  if(!authContext){
-    console.log("Auth context not defined");
-    return;
-  }
-  const currUserId = authContext.userId;
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
 
   const loadChatRooms = async () => {
     try{
@@ -41,12 +38,13 @@ const MessageUsers = () => {
 
   const fetchChatRooms = async () => {
     setLoading(true);
-    const userId = authContext.userId;
+    const currUser = authContext?.currUser;
+    if(!currUser) return;
     try {
       const chatRooms = await client.graphql({
         query: chatsByUser,
         variables: {
-          userID: userId,
+          userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
         },
         authMode: 'userPool'
@@ -107,7 +105,7 @@ const MessageUsers = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           let displayURIs: (string | undefined)[] = [];
-          var chatname = item.chat?.participants?.items.filter((item) => item?.userID !== currUserId)
+          var chatname = item.chat?.participants?.items.filter((item) => item?.userID !== currUser.id)
             .map((item) => {
               displayURIs.push(item?.user?.profileURL || undefined);
               return `${item?.user?.firstname} ${item?.user?.lastname}`

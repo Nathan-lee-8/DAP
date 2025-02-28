@@ -16,15 +16,11 @@ const HomeScreen = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
   const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  };
-  const { userId } = authContext;
+  const currUser = authContext?.currUser;
 
   useEffect(() => {
     loadNewsFeed();
-  }, [userId]);
+  }, [currUser]);
 
   const loadNewsFeed = async () => {
     try {
@@ -42,11 +38,13 @@ const HomeScreen = () => {
       await fetchNewsFeed();
     } catch (error) {
       console.log('Error loading cached news feed', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchNewsFeed = async () => {
-    if(userId === '') {
+    if(!currUser) {
       console.log("User ID is empty");
       return;
     };
@@ -55,7 +53,7 @@ const HomeScreen = () => {
       const res = await client.graphql({
         query: groupsByUser,
         variables: {
-          userID: userId,
+          userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
         },
         authMode: 'userPool'
@@ -94,7 +92,7 @@ const HomeScreen = () => {
 
   const onRefresh = useCallback(() => {
     fetchNewsFeed();
-  }, [userId]);
+  }, [currUser]);
 
   return (
     <View style={styles.container}>

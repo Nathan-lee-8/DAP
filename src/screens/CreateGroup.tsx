@@ -1,6 +1,7 @@
 import { useState, useContext, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList,
-  ActivityIndicator, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, FlatList, Platform,
+  ActivityIndicator, Alert, KeyboardAvoidingView, Keyboard,
+  TouchableWithoutFeedback} from 'react-native'
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
@@ -25,16 +26,17 @@ const CreateGroup = () => {
   const [members, setMembers] = useState<User[]>([]);
   const [groupURI, setGroupURL] = useState<string>('defaultGroup');
   const [loading, setLoading] = useState(false);
-  const authContext = useContext(AuthContext);
-  if(!authContext){
-    console.log("Auth context not defined");
-    return;
-  }
-  const { userId } = authContext;
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  const flatListRef = useRef<FlatList<User>>(null); 
+  const flatListRef = useRef<FlatList<User>>(null);
+  const authContext = useContext(AuthContext);
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
   
   const addGroup = async () => {
+    if(groupName.trim() === ''){
+      Alert.alert('Error', 'Please enter a group name before creating a group');
+      return;
+    }
     var groupID = null;
     const addedMembers = [];
 
@@ -82,7 +84,7 @@ const CreateGroup = () => {
         variables: { 
           input: {
             ownerID: cogID.userId,
-            userID: userId,
+            userID: currUser.id,
             role: "Owner",
             groupID: groupID
           }
@@ -113,6 +115,7 @@ const CreateGroup = () => {
     //upload image to s3
     try{
       const uri = await getImgURI(groupURI, `public/groupPictures/${groupID}/profile/${Date.now()}.jpg`);
+      if(!uri) throw new Error('Image not selected');
       client.graphql({
         query: updateGroup,
         variables: {
@@ -124,8 +127,8 @@ const CreateGroup = () => {
         authMode:'userPool'
       })
       console.log("updated Group Image")
-    } catch {
-      Alert.alert('Error', "error uploading Image");
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
     }
   }
 
@@ -173,7 +176,14 @@ const CreateGroup = () => {
       return;
     }
     setMembers([...members, user]);
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100)
   }
+
+  const scrollToBottom = () => {
+    flatListRef.current?.scrollToEnd({ animated: true });
+  };
 
   //Removes user from group onPress
   const removeUser = (user: User) => {
@@ -231,28 +241,43 @@ const CreateGroup = () => {
 
   return(
     <View style={styles.container}>
-      <SearchBar userPressed={getUser} remove={members}/>
-      <FlatList
-        ref={flatListRef}
-        data={members}
-        renderItem={({ item }) => {
-          return (
-            <View style={styles.searchUserContainer}>
-              <View style={styles.listUserContainer}>
-                <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
-                <Text style={[styles.postContent, {marginLeft: 10}]}>{item?.firstname + ' ' + item?.lastname}</Text>
-                <TouchableOpacity style={{marginLeft: 'auto'}} onPress={()=> removeUser(item)}>
-                  <Icon name="remove-circle-outline" size={25}/>
-                </TouchableOpacity>
+      <TouchableWithoutFeedback 
+        onPress={(e) => {
+          if (e.target === e.currentTarget) {
+            Keyboard.dismiss(); 
+          }
+        }} 
+        accessible={false}>
+        <SearchBar userPressed={getUser} remove={members}/>
+      </TouchableWithoutFeedback>
+        <FlatList
+          ref={flatListRef}
+          data={members}
+          renderItem={({ item }) => {
+            return (
+              <View style={styles.searchUserContainer}>
+                <View style={styles.listUserContainer}>
+                  <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
+                  <Text style={[styles.postContent, {marginLeft: 10}]}>{item?.firstname + ' ' + item?.lastname}</Text>
+                  <TouchableOpacity style={{marginLeft: 'auto'}} onPress={()=> removeUser(item)}>
+                    <Icon name="remove-circle-outline" size={25}/>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )
-        }}
-        ListHeaderComponent={pageContent}
-      />
-      <TouchableOpacity onPress={addGroup} style={[styles.buttonBlack, {marginBottom: 20}]}>
-        <Text style={styles.buttonTextWhite}>Save</Text>
-      </TouchableOpacity>
+            )
+          }}
+          ListHeaderComponent={pageContent()}
+          keyboardShouldPersistTaps="always"
+        />
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{marginBottom: Platform.OS === 'ios' ? 40 : 0}}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      >   
+        <TouchableOpacity onPress={addGroup} style={styles.buttonBlack}>
+          <Text style={styles.buttonTextWhite}>Save</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </View>
   )
 }

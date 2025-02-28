@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert,
-  ActivityIndicator, FlatList} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Platform,
+  ActivityIndicator, FlatList, KeyboardAvoidingView, Keyboard,
+  TouchableWithoutFeedback} from 'react-native';
 import styles from '../styles/Styles';
 import { imagePicker, getImgURI } from '../components/addImg';
 import { createPost } from '../graphql/mutations';
@@ -18,8 +19,8 @@ const CreatePost = ({route}: any) => {
   const [ filepaths, setFilepaths ] = useState<string[]>([]);
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
-  if(!authContext) return null;
-  const { userId } = authContext;
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
 
   const getFilePath = async () => {
     if(filepaths.length > 12){
@@ -47,7 +48,7 @@ const CreatePost = ({route}: any) => {
             content: content,
             groupID: groupID,
             postURL: newPaths,
-            userID: userId
+            userID: currUser.id
           }
         },
         authMode: 'userPool'
@@ -91,44 +92,50 @@ const CreatePost = ({route}: any) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.noResultsMsg}>What's on your mind?</Text>
-      <TextInput 
-        style={styles.contentInput} 
-        placeholder="Post content..."
-        multiline={true}
-        autoCapitalize='sentences'
-        value={content}
-        onChangeText={setContent}
-      />
-      <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity onPress={getFilePath} style={{marginLeft: 'auto'}}>
-          <Icon name="image-outline" size={30} color={"blue"}/>
-        </TouchableOpacity>
-      </View>
-      <View style={{paddingLeft: 10}}>
-        <FlatList
-          data={filepaths}
-          numColumns={4}
-          keyExtractor={(index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.postImageContainer}>
-              <ImgComponent uri={item || 'defaultUser'} 
-                style={{height: 90, width: 90}} 
-              />
-              <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveItem(item)}>
-                <Icon name="remove-circle-outline" size={20}/>
-              </TouchableOpacity>
-            </View>
-          )}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Text style={styles.noResultsMsg}>What's on your mind?</Text>
+        <TextInput 
+          style={[styles.contentInput]} 
+          placeholder="Post content..."
+          multiline={true}
+          autoCapitalize='sentences'
+          value={content}
+          onChangeText={setContent}
         />
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity onPress={getFilePath} style={{marginLeft: 'auto'}}>
+            <Icon name="image-outline" size={30} color={"blue"}/>
+          </TouchableOpacity>
+        </View>
+        <View style={{paddingLeft: 10}}>
+          <FlatList
+            data={filepaths}
+            numColumns={4}
+            keyExtractor={(index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.postImageContainer}>
+                <ImgComponent uri={item || 'defaultUser'} 
+                  style={{height: 90, width: 90}} 
+                />
+                <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveItem(item)}>
+                  <Icon name="remove-circle-outline" size={20}/>
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+        </View>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >   
+          <TouchableOpacity onPress={sendPost} style={styles.buttonBlack}>
+            <Text style={styles.buttonTextWhite}>Create</Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </View>
-      
-      <TouchableOpacity onPress={sendPost} style={[styles.buttonBlack, {marginTop: 'auto'}]}>
-        <Text style={styles.buttonTextWhite}>Create</Text>
-      </TouchableOpacity>
-
-    </View>
+    </TouchableWithoutFeedback>
   )
 }
 

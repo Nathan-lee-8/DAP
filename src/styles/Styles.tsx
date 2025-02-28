@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   /** Sign in and Sign up page */
   contentText: {
     fontSize: 24,
-    marginBottom: 80,
+    marginBottom: 60,
     alignSelf: 'center',
     textAlign: 'center',
   },
@@ -123,7 +123,9 @@ const styles = StyleSheet.create({
     backgroundColor: colorPrimary,
     borderWidth: 1,
     borderRadius: 10,
-    marginRight: 20,
+    height: 40,
+    marginRight: 10,
+    marginBottom: 10,
     padding: 10,
   },
 
@@ -483,6 +485,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 0,
+    zIndex: 1
   },
   searchTermContainer: {
     height: 40,
@@ -494,6 +497,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
     backgroundColor: colorPrimary,
+    zIndex: 1
   },
   searchTermSelected: {
     height: 40,
@@ -504,7 +508,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     borderWidth: 1,
     borderColor: 'black',
-    backgroundColor: 'grey'
+    backgroundColor: 'grey',
+    zIndex: 1
   },
 
   /** Profile Section */
