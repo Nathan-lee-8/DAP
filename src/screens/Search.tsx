@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, TextInput, Keyboard,
+  TouchableWithoutFeedback } from 'react-native';
 import { Group, User } from '../API';
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
@@ -49,9 +50,14 @@ const Search = () => {
                   <Text style={{textAlign: 'center'}}>{item}</Text>
                 </TouchableOpacity>
             )}}
+            keyboardShouldPersistTaps="always"
           />
         </View>
       </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={{flex: 1}}>
+          </View>
+      </TouchableWithoutFeedback>
     </View>
   )
 }
@@ -139,6 +145,7 @@ const GroupSearch = () => {
             </TouchableOpacity>
           </View>
         )}
+        keyboardShouldPersistTaps="always"
       />
     </View>
     

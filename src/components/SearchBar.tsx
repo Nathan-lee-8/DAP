@@ -13,7 +13,8 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
   const [search, setSearch] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
   const [filteredData, setFilteredData] = useState<User[]>([]);
-  const currUserId = useContext(AuthContext)?.userId;
+  const currUser = useContext(AuthContext)?.currUser;
+  if(!currUser) return;
 
   const fetchUsers = async () => {
     try{
@@ -54,7 +55,7 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
     }
     const formattedSearch = query.toLowerCase();
     const results = filter(data, (user) => {
-      if(!user.id || user.id === currUserId){
+      if(!user.id || user.id === currUser.id){
         return false;
       }
       if(remove && remove.some((removedUser: User) => removedUser.id === user.id)) return false;
@@ -102,6 +103,7 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
             </TouchableOpacity>
           </View>
         )}
+        keyboardShouldPersistTaps="always"
       />
     </View>
   );

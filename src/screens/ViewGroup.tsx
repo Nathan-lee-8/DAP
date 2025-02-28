@@ -18,7 +18,7 @@ const ViewGroup = ({route} : any) => {
   const [ post, setPosts ] = useState<Post[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ modalVisible, setModalVisible ] = useState(false);
-  const options = ["Edit Group", "Create Chat", "Leave Group"];
+  const options = ["Invite Member", "Edit Group", "Create Chat", "Leave Group"];
 
   const fetchCurrentData = async () => {
     try{

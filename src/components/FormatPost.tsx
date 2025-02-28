@@ -14,22 +14,19 @@ import Icon from "@react-native-vector-icons/ionicons";
 const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const nav2 = useNavigation<NativeStackNavigationProp<LoggedInParamList>>();
-  const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  };
-  const { userId } = authContext;
   const { width } = Dimensions.get('window');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const options = ["Report", "Edit", "Delete"];
+  const authContext = useContext(AuthContext);
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
 
   const clickPost = (item : string) => {
     navigation.navigate('ViewPost', { postID: item });
   }
   const visitProfile = (item : any) => {
-    if(item.user.id === userId){
+    if(item.user.id === currUser.id){
       nav2.navigate('Profile');
     }else{
       navigation.navigate('ViewProfile', { user: item.user });

@@ -1,6 +1,7 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator,
-  TextInput } from 'react-native';
+  TextInput, Platform, KeyboardAvoidingView, ScrollView,
+} from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { updateUser } from '../graphql/mutations';
 import client from '../client'
@@ -13,54 +14,53 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 //Update to get user data from authContext
 const EditProfile = () => {
   const [ loading, setLoading ] = useState(false);
-  const [ imgLoading, setImgLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
-  const [ hasChanged, setHasChanged ] = useState(false);
-  const navigation = useNavigation();
   const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
+  if(!authContext){
+    Alert.alert('Error', 'Internal Error');
+    return;
   }
-  const { userId, userEmail, firstname, lastname, profileURL, description,
-    setFirstName, setLastName, setProfileURL, setDescription } = authContext;
+  const  { currUser, setCurrUser } = authContext;
+  if(!currUser) return;
      
-  //use temp values to hold names until user saves data
-  const [ tempFirst, setTempFirst ] = useState(firstname);
-  const [ tempLast, setTempLast ] = useState(lastname);
-  const [ tempURL , setTempURL ] =  useState(profileURL);
+  //use temp values to hold data until user saves
+  const [ tempFirst, setTempFirst ] = useState(currUser.firstname);
+  const [ tempLast, setTempLast ] = useState(currUser.lastname);
+  const [ tempURL , setTempURL ] =  useState(currUser.profileURL);
+  const [ description, setDescription ] = useState<string | undefined>(currUser.description || undefined);
 
   const addProfileImg = async () => {
     try {
-      setImgLoading(true);
+      setLoading(true);
       const uri = await imagePicker();
       if(uri === null) throw new Error('No Image Selected');
       setTempURL(uri);
-      setHasChanged(true);
     } catch (error: any) {
        Alert.alert('Error', error.message);
     } finally{
-      setImgLoading(false);
+      setLoading(false);
     }
   };
   
   const saveEdits = async() => {
-    if(firstname === tempFirst && lastname === tempLast && !hasChanged) {
+    if(currUser.firstname === tempFirst && currUser.lastname === tempLast && 
+      tempURL !== currUser.profileURL
+    ) {
       setEditsOn(false);
-      return
+      return;
     };
     try{
       setLoading(true);
       if(!tempURL) throw new Error('Url unavailable');
-      const filepath = await getImgURI(tempURL, `public/profilePictures/${userId}/${Date.now()}.jpg`)
+      const filepath = await getImgURI(tempURL, `public/profilePictures/${currUser.id}/${Date.now()}.jpg`)
       if(filepath === null) throw new Error('Upload failed')
-      setProfileURL("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath);
+      setTempURL("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath);
       setLoading(true);
-      await client.graphql({
+      const data = await client.graphql({
         query: updateUser,
         variables: {
           input: {
-            id: userId,
+            id: currUser.id,
             profileURL: "https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath,
             firstname: tempFirst,
             lastname: tempLast,
@@ -69,9 +69,8 @@ const EditProfile = () => {
         },
         authMode: 'userPool'
       });
-      setFirstName(tempFirst);
-      setLastName(tempLast);
-      console.log("Updated user to graphql");
+      setCurrUser(data.data.updateUser);
+      console.log("Updated user to graphql", data);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -80,19 +79,12 @@ const EditProfile = () => {
     }
   }
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setEditsOn(false);
-      setHasChanged(false);
-    });
-    return unsubscribe;
-  }, [navigation]);
-
   useFocusEffect(
     React.useCallback(() => {
       // This will reset the state when the screen loses focus
       return () => {
-        setTempURL(profileURL); // Reset state to initial value when leaving the page
+        setTempURL(currUser.profileURL); // Reset state to initial value when leaving the page
+        setEditsOn(false);
       };
     }, [])
   );
@@ -104,53 +96,61 @@ const EditProfile = () => {
       ) : !editsOn ? (
         <View>
           <View style={styles.viewUserProfileSection}>
-            <ImgComponent uri={profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
+            <ImgComponent uri={currUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
             <View style={styles.userInfoContainer}>
-              <Text style={styles.postAuthor}>{firstname} {lastname} </Text>
-              <Text style={styles.postContent}>{userEmail} </Text>
-              <Text style={styles.postContent}>{description}</Text>
+              <Text style={styles.postAuthor}>{currUser.firstname} {currUser.lastname} </Text>
+              <Text style={styles.postContent}>{currUser.email} </Text>
+              <Text style={styles.postContent}>{currUser.description}</Text>
             </View>
             <TouchableOpacity style={styles.editProfileButton} onPress={() => setEditsOn(true)}>
               <Text style={styles.buttonTextBlack}>Edit</Text>
             </TouchableOpacity>
           </View>
-          <UserPosts userID={userId} />
+          <UserPosts userID={currUser.id} />
         </View>
-    ) : imgLoading ? (
-      <ActivityIndicator size="large" color="#0000ff" />
     ) : (
-      <View>
-        <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-          <ImgComponent uri={tempURL || 'defaultUser' } style={styles.editProfileURL}/>
-          <Text style={styles.uploadImageText}>Edit Image</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setEditsOn(false)} style={styles.editProfileButton}>
-          <Text style={styles.buttonTextBlack}>Cancel</Text>
-        </TouchableOpacity>
-        <Text style={styles.label}>First Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder={"First Name"}
-          value={tempFirst}
-          onChangeText={setTempFirst}
-        />
-        <Text style={styles.label}>Last Name</Text>
-        <TextInput 
-          style={styles.input}
-          placeholder={"Last Name"}
-          value={tempLast}
-          onChangeText={setTempLast}
-        />
-        <Text style={styles.label}>Profile Description</Text>
-        <TextInput
-          style={styles.longInput}
-          placeholder={"About you..."}
-          value={description}
-          onChangeText={setDescription}
-        />
-        <TouchableOpacity style={styles.buttonBlack} onPress={saveEdits}>
-          <Text style={styles.buttonTextWhite}>Save</Text>
-        </TouchableOpacity>
+      <View style={{flex: 1}}>
+        <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}} 
+          keyboardShouldPersistTaps='handled'
+        >
+          <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
+            <ImgComponent uri={tempURL || 'defaultUser' } style={styles.editProfileURL}/>
+            <Text style={styles.uploadImageText}>Edit Image</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setEditsOn(false)} style={styles.editProfileButton}>
+            <Text style={styles.buttonTextBlack}>Cancel</Text>
+          </TouchableOpacity>
+          <Text style={styles.label}>First Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder={"First Name"}
+            value={tempFirst}
+            onChangeText={setTempFirst}
+          />
+          <Text style={styles.label}>Last Name</Text>
+          <TextInput 
+            style={styles.input}
+            placeholder={"Last Name"}
+            value={tempLast}
+            onChangeText={setTempLast}
+          />
+          <Text style={styles.label}>Profile Description</Text>
+          <TextInput
+            style={styles.longInput}
+            placeholder={"About you..."}
+            multiline={true}
+            value={description}
+            onChangeText={setDescription}
+          />
+        </ScrollView>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >   
+          <TouchableOpacity style={[styles.buttonBlack, {marginTop: 'auto'}]} onPress={saveEdits}>
+            <Text style={styles.buttonTextWhite}>Save</Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </View>
     )}
     </View>

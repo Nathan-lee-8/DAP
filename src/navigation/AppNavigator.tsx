@@ -3,14 +3,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from '../context/AuthContext';
-import SignIn from '../screens/SignInScreen';
-import SignUp from '../screens/SignUpScreen';
+import Icon from '@react-native-vector-icons/ionicons';
+
+import Welcome from '../screens/signInScreens/Welcome';
+import SignIn from '../screens/signInScreens/SignInScreen';
+import SignUp from '../screens/signInScreens/SignUpScreen';
+import Verify from '../screens/signInScreens/Verify';
+import ResetPassword from '../screens/signInScreens/ResetPassword';
+
 import Home from '../screens/HomeScreen';
-import Verify from '../screens/Verify';
 import Groups from '../screens/Groups';
 import Messaging from '../screens/Messaging';
 import EditProfile from '../screens/EditProfile';
-import ResetPassword from '../screens/ResetPassword';
 import ChatRoom from '../screens/ChatRoom';
 import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
@@ -19,13 +23,10 @@ import ViewGroup from '../screens/ViewGroup';
 import ViewPost from '../screens/ViewPost';
 import CreatePost from '../screens/CreatePost';
 import Search from '../screens/Search';
-import Welcome from '../screens/Welcome';
 import EditGroup from '../screens/EditGroup';
 import ViewMembers from '../screens/ViewMembers';
 import LogOutButton from '../components/LogOutButton';
 import ImageComponent from '../components/ImgComponent';
-import Icon from '@react-native-vector-icons/ionicons';
-import styles from '../styles/Styles';
 
 const SignInStack = createNativeStackNavigator();
 const GlobalStack = createNativeStackNavigator();
@@ -69,11 +70,9 @@ const AppNavigator = () => {
 
 const BottomTabs = () => {
   const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  }
-  const { profileURL } = authContext;
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
+
   return(
     <BottomTab.Navigator screenOptions={{headerTitleAlign: 'center'}} >
       <BottomTab.Screen name="Home" component={Home}
@@ -94,7 +93,7 @@ const BottomTabs = () => {
         }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
         options={{  headerTitleAlign:'center', headerRight: LogOutButton,
-          tabBarIcon: () => <ImageComponent uri={profileURL || 'defaultUser'}/>
+          tabBarIcon: () => <ImageComponent uri={currUser.profileURL || 'defaultUser'}/>
         }} />
     </BottomTab.Navigator>
   )

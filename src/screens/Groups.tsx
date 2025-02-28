@@ -17,11 +17,8 @@ const Groups = () => {
   const [group, setGroup] = useState<UserGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  }
-  const { userId } = authContext;
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
 
   const loadGroups = async () => {
     try{
@@ -46,7 +43,7 @@ const Groups = () => {
       const groups = await client.graphql({
         query: groupsByUser,
         variables: { 
-          userID: userId,
+          userID: currUser.id,
           sortDirection: ModelSortDirection.DESC
         },
         authMode: 'userPool'
