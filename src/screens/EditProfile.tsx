@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator,
   TextInput, Platform, KeyboardAvoidingView, ScrollView,
 } from 'react-native';
@@ -9,7 +9,7 @@ import styles from '../styles/Styles';
 import ImgComponent from '../components/ImgComponent';
 import UserPosts from '../components/UserPosts';
 import { imagePicker, getImgURI } from '../components/addImg';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 
 //Update to get user data from authContext
 const EditProfile = () => {
@@ -44,7 +44,7 @@ const EditProfile = () => {
   
   const saveEdits = async() => {
     if(currUser.firstname === tempFirst && currUser.lastname === tempLast && 
-      tempURL !== currUser.profileURL
+      tempURL === currUser.profileURL && description === currUser.description
     ) {
       setEditsOn(false);
       return;
@@ -55,7 +55,6 @@ const EditProfile = () => {
       const filepath = await getImgURI(tempURL, `public/profilePictures/${currUser.id}/${Date.now()}.jpg`)
       if(filepath === null) throw new Error('Upload failed')
       setTempURL("https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath);
-      setLoading(true);
       const data = await client.graphql({
         query: updateUser,
         variables: {

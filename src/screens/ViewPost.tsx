@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, 
   KeyboardAvoidingView, Platform } from 'react-native';
 import { createComment } from '../graphql/mutations';
@@ -10,11 +10,16 @@ import { Post } from '../API';
 import moment from 'moment';
 import ImgComponent from '../components/ImgComponent';
 import FormatPost from '../components/FormatPost';
+import { AuthContext } from '../context/AuthContext';
 
 const ViewPost = ( {route} : any) => {
   const postID = route.params.postID;
   const [postData, setPostData] = useState<Post>();
   const [comment, setComment] = useState<string>("");
+  const authContext = useContext(AuthContext);
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
+
   const fetchPost = async () => {
     try {
       const { data } = await client.graphql({
@@ -38,7 +43,6 @@ const ViewPost = ( {route} : any) => {
 
 
   const postComment = async () => {
-    if(!postData?.userID) return;
     try {
       await client.graphql({
         query: createComment,
@@ -46,7 +50,7 @@ const ViewPost = ( {route} : any) => {
           input: {
             content: comment,
             postID: postID,
-            userID: postData?.userID
+            userID: currUser.id
           }
         },
         authMode: 'userPool'
