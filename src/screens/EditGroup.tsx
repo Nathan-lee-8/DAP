@@ -112,7 +112,7 @@ const EditGroup = ( {route}: any) => {
   
   return (
     <View style={styles.container}>
-    <FlatList
+      <FlatList
         data={members}
         renderItem={({ item }) => {
           return(

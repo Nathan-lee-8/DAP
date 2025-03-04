@@ -1,14 +1,17 @@
-import { useEffect, useState, useRef, useContext, useLayoutEffect} from 'react';
+import { useEffect, useState, useRef, useContext, useLayoutEffect } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
-    KeyboardAvoidingView, Platform, Modal} from 'react-native';
-import styles from '../styles/Styles';
-import client from '../client';
+    KeyboardAvoidingView, Platform, Alert, AppState
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { GlobalParamList } from '../types/rootStackParamTypes';
+import { AuthContext } from '../context/AuthContext';
 import { getChat } from '../graphql/queries';
 import { createMessage, updateUserChat } from '../graphql/mutations';
 import { onCreateMessage } from '../graphql/subscriptions';
-import  { Message, UserChat } from '../API';
-import { AuthContext } from '../context/AuthContext';
-import { useNavigation } from '@react-navigation/native';
+import  { Message, UserChat, Chat } from '../API';
+import styles from '../styles/Styles';
+import client from '../client';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
 import moment from 'moment';
@@ -21,18 +24,25 @@ const ChatRoom = ( { route } : any) => {
   const [ currMessage, setMessage ] = useState<string>('');
   const [ participants, setParticipants ] = useState<UserChat[]>([]);
   const [ myUserChat, setMyUserChat ] = useState<UserChat>();
+  const [ chat, setChat ] = useState<Chat>();
   const [ title, setTitle ] = useState<string>('default');
   const [ displayURLs, setURLs ] = useState<(string | undefined)[]>([]);
-  const [ modalVisible, setModalVisible ] = useState(false);
-  const flatListRef = useRef<FlatList<Message>>(null); //for scroll to bottom
+
+  const flatListRef = useRef<FlatList<Message>>(null);
   const msgCountRef = useRef<number>(0);
   const msgSentRef = useRef<boolean>(false);
+  const lastMsgRef = useRef(messages[0]);
 
-  const options = ["Edit", "Leave", "Delete"];
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
+  //Updates last message anytime messages changes
+  useEffect(() => {
+    lastMsgRef.current = messages[0];
+  }, [messages]);
+
+  //retrieve chat data and update data anytime a chat is sent
   useEffect(() => {
     fetchChat();
     const subscription = client.graphql({
@@ -46,24 +56,27 @@ const ChatRoom = ( { route } : any) => {
         const newMessage = value?.data.onCreateMessage;
         setMessages((prev) => {
           if(!newMessage || prev.find((msg) => msg?.id === newMessage?.id)) return prev;
+          lastMsgRef.current = newMessage;
           return [newMessage, ...prev];
         });
         scrollToBottom();
       },
       error: (err: any) => console.error("Subscription error:", err),
     });
-
     return () => subscription.unsubscribe(); // Clean up the subscription
-  }, []);
+  }, [chatID]);
 
+  //update title anytime participants changes
   useEffect( () => {
     var temptitle = participants.map((item) => `${item.user?.firstname} ${item.user?.lastname}`)
     .filter(Boolean)
     .join(', ');
     setTitle(temptitle);
-  }, [participants])
+  }, [participants]);
 
+  //get Chat data
   const fetchChat = async () => {
+    if(loading) return;
     setLoading(true);
     try{
       const chat = await client.graphql({
@@ -76,6 +89,7 @@ const ChatRoom = ( { route } : any) => {
         authMode: 'userPool'
       });
       const chatData = chat.data.getChat;
+      if(chatData) setChat(chatData);
       console.log("chat fetched from chatroom");
       if(chatData?.messages){
         setMessages(
@@ -100,42 +114,19 @@ const ChatRoom = ( { route } : any) => {
     }
   };
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   useLayoutEffect(()=> {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity onPress={handleGoBack} >
           <Icon name="arrow-back" size={24} />
         </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Icon name="ellipsis-horizontal-sharp" size={24}/>
-        </TouchableOpacity>
-    )
+      )
     })
   })
 
   const handleGoBack = async () => {
     try{
-      if(msgSentRef.current){
-        for(const part of participants){
-          const numUnread = part?.unreadMessageCount || 0;
-          await client.graphql({
-            query: updateUserChat, // GraphQL mutation to update last message
-            variables: {
-              input: {
-                id: part.id,
-                lastMessage: messages[0].content,
-                lastMessageAt: messages[0].createdAt,
-                unreadMessageCount: numUnread + msgCountRef.current,
-              },
-            },
-            authMode: 'userPool'
-          });
-        }
-      }
-
       if(myUserChat){
         const myUnread = myUserChat?.unreadMessageCount || 0;
         const msgChanged = messages[0].content !== myUserChat.lastMessage;
@@ -155,6 +146,26 @@ const ChatRoom = ( { route } : any) => {
           },
           authMode: 'userPool'
         });
+        console.log('updated my chat');
+      }
+
+      if(msgSentRef.current){
+        for(const part of participants){
+          const numUnread = part?.unreadMessageCount || 0;
+          await client.graphql({
+            query: updateUserChat,
+            variables: {
+              input: {
+                id: part.id,
+                lastMessage: lastMsgRef.current.content,
+                lastMessageAt: lastMsgRef.current.createdAt,
+                unreadMessageCount: numUnread + msgCountRef.current,
+              },
+            },
+            authMode: 'userPool'
+          });
+        }
+        console.log("updated participant chats");
       }
     } catch (error) {
       console.error("Error updating last message:", error);
@@ -162,10 +173,19 @@ const ChatRoom = ( { route } : any) => {
     navigation.goBack();
   }
 
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'background' || state === 'inactive') {
+        handleGoBack();
+      }
+    });
+    return () => subscription.remove();
+  }, [handleGoBack]);
+
   const sendMessage = async () => {
     if(currMessage === '' || !myUserChat ) return;
     try {
-      const msgData = await client.graphql({
+      await client.graphql({
         query: createMessage,
         variables: {
           input: {
@@ -176,9 +196,7 @@ const ChatRoom = ( { route } : any) => {
         },
         authMode: 'userPool'
       });
-      setMessages((prev) => [msgData.data.createMessage, ...prev]);
       setMessage('');
-      scrollToBottom();
       msgCountRef.current = msgCountRef.current + 1;
       msgSentRef.current = true;
     } catch (error) {
@@ -193,6 +211,14 @@ const ChatRoom = ( { route } : any) => {
     });
   };
 
+  const handleViewMembers = () => {
+    if(!myUserChat){
+      Alert.alert("Error", 'unknown error');
+      return;
+    }
+    navigation.navigate('ViewChatMembers', {chatData: chat, userChats: [myUserChat, ...participants]});
+  }
+
   const getMsgStyle = (id: string) => {
     if(id === currUser.id) return styles.myMessage;
     return styles.otherMessage;
@@ -203,13 +229,14 @@ const ChatRoom = ( { route } : any) => {
     return styles.otherMessageContainer;
   }
   
-  const handleOptionButton = (option: string) => {
-    console.log(option);
+  const getUserURL = (userID: string) => {
+    const uri = participants.find((part) => part.userID === userID);
+    return uri?.user?.profileURL || 'defaultUser';
   }
 
   return(
     <View style={styles.container}>
-      <View style={styles.messageHeaderContainer}>        
+      <TouchableOpacity style={styles.messageHeaderContainer} onPress={handleViewMembers}>        
         <View style={styles.URLSection}>
           {displayURLs.length > 1 ? (
             displayURLs.slice(0, 2).map((uri, index) => (
@@ -235,7 +262,7 @@ const ChatRoom = ( { route } : any) => {
           }
         </View>
         <Text style={styles.chatRoomName} numberOfLines={1}>{title}</Text>
-      </View>
+      </TouchableOpacity>
       {loading && <ActivityIndicator size="small" color="#0000ff" />}
       <FlatList
         ref={flatListRef}
@@ -255,13 +282,13 @@ const ChatRoom = ( { route } : any) => {
               )}
               <View style={getMsgContainerStyle(item?.senderID)}>
                 {item?.senderID !== currUser.id && 
-                  <ImgComponent uri={item?.sender?.profileURL || 'defaultUser'}/>
+                  <ImgComponent uri={getUserURL(item?.senderID)}/>
                 }
                 <View style={getMsgStyle(item?.senderID)}>
                   <Text>{item?.content}</Text>
                 </View>
                 {item?.senderID === currUser.id && 
-                  <ImgComponent uri={item?.sender?.profileURL || 'defaultUser'}/>
+                  <ImgComponent uri={currUser.profileURL}/>
                 }
               </View>
             </View>
@@ -289,24 +316,6 @@ const ChatRoom = ( { route } : any) => {
           <Icon name="send" size={30} />
         </TouchableOpacity>
       </KeyboardAvoidingView>
-      <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modelOverlay}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={options}
-              keyExtractor={(option) => option}
-              renderItem={({ item: option }) => (
-                <TouchableOpacity style={[styles.buttonWhite]} onPress={() => handleOptionButton(option)}>
-                  <Text style={styles.buttonTextBlack}>{option}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity style={styles.buttonBlack} onPress={() => setModalVisible(false)}>
-              <Text style={styles.buttonTextWhite}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   )
 }

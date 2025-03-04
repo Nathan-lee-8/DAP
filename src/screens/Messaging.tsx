@@ -10,7 +10,6 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import { GlobalParamList } from '../types/rootStackParamTypes';
 import ImgComponent from '../components/ImgComponent';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from '@react-native-vector-icons/ionicons';
 import moment from "moment";
 
@@ -20,21 +19,6 @@ const MessageUsers = () => {
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
-
-  const loadChatRooms = async () => {
-    try{
-      const cachedData = await AsyncStorage.getItem('ChatRoomData');
-      if(cachedData){
-        setChatRooms(JSON.parse(cachedData));
-        return;
-      }
-      await fetchChatRooms();
-    } catch (error) {
-      console.log(error);
-    }finally {
-      setLoading( false);
-    }
-  }
 
   const fetchChatRooms = async () => {
     setLoading(true);
@@ -51,7 +35,6 @@ const MessageUsers = () => {
       });
       const chatRoomData = chatRooms.data.chatsByUser.items;
       setChatRooms(chatRoomData);
-      //AsyncStorage.setItem('ChatRoomData', JSON.stringify(chatRoomData));
       console.log('Fetched Chat rooms from Messaging.');
     } catch (error) {
       console.log('Error fetching chat rooms', error);

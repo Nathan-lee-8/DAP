@@ -17,8 +17,6 @@ const ViewGroup = ({route} : any) => {
   const [ group, setGroup ] = useState<Group>();
   const [ post, setPosts ] = useState<Post[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const [ modalVisible, setModalVisible ] = useState(false);
-  const options = ["Invite Member", "Edit Group", "Create Chat", "Leave Group"];
 
   const fetchCurrentData = async () => {
     try{
@@ -54,45 +52,52 @@ const ViewGroup = ({route} : any) => {
       fetchCurrentData();
     }, [])
   );
- 
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  useLayoutEffect(()=> {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={() => setModalVisible(true)} >
-          <Icon name="ellipsis-horizontal-sharp" size={30} color={'black'}/>
-        </TouchableOpacity>
-      ),
-    })
-  })
 
+  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const createGroupPost = () => {
     navigation.navigate('CreatePost', {groupID: groupID});
   }
 
   const handleViewMembers = () => {
-    if(group?.members) navigation.navigate('ViewMembers', {userData: group?.members.items});
+    if(group?.members) navigation.navigate('ViewMembers', {userData: group?.members.items, group: group});
     else Alert.alert("Unable to Retrieve member data");
-  }
-
-  const handleOptionPress = (option: string) => {
-    setModalVisible(false);
-    if(option === "Edit Group"){
-      if(group) navigation.navigate('EditGroup', {group: group})
-      else Alert.alert("Group not found");
-    }else if( option === "Leave Group"){
-      Alert.alert("Confirm", `Are you sure you want to leave ${group?.groupName}?`,
-        [{text: 'Cancel'},{ text: 'Leave', onPress: leaveGroup}]
-      )
-    }
-  }
-
-  const leaveGroup = () => {
-    Alert.alert("Not implemented yet");
   }
 
   if(loading){
     return <ActivityIndicator size="large" color="#0000ff" />
+  }
+
+  if(group?.isPublic !== null && !group?.isPublic){
+    return (
+      <View style={styles.container}>
+        <View style={styles.groupImgContainer}>
+          <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
+        </View>
+        <View style={styles.groupMembersContainer}>
+          <View style={{flexDirection: 'row'}}>
+            <Text style={styles.label}>{group?.groupName}</Text>
+            <TouchableOpacity style={{marginLeft: 'auto', flexDirection: 'row'}} onPress={handleViewMembers}>
+              <Text>{group?.members?.items.length} members </Text>
+              <Icon name="arrow-forward" size={25}/>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row'}}>
+            <Text>{group?.description}</Text>
+            <View style={{marginLeft: 'auto'}}>
+              <FlatList
+                key={group?.members?.items.length}
+                data={group?.members?.items ? group?.members?.items.slice(0,4) : []}
+                renderItem={({ item }) => 
+                  <ProfilePicture uri={item?.user?.profileURL ||'defaultUser'}/>
+                }
+                numColumns={5}
+              />
+            </View>
+          </View>
+        </View>
+        <Text style={styles.contentText}>Private Group</Text>
+      </View>
+    )
   }
 
   const headerComp = () => {
@@ -148,27 +153,6 @@ const ViewGroup = ({route} : any) => {
           </View>
         )}
       />
-      <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modelOverlay}>
-          <View style={styles.modalContainer}>
-            <FlatList
-              data={options}
-              keyExtractor={(option) => option}
-              renderItem={({ item: option }) => (
-                <TouchableOpacity 
-                  style={[styles.buttonWhite, {flex: 1}]} 
-                  onPress={() => handleOptionPress(option)}
-                >
-                  <Text style={styles.buttonTextBlack}>{option}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity style={styles.buttonBlack} onPress={() => setModalVisible(false)}>
-              <Text style={styles.buttonTextWhite}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   )
 }
