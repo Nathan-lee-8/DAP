@@ -61,6 +61,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
   },
+  title: {
+    fontSize: 24,
+    color: '#333',
+    margin: 20,
+    textAlign: 'center'
+  },
   
   /** Sign in and Sign up page */
   contentText: {
@@ -351,7 +357,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colorPrimary,
     borderWidth: 1,
-    borderColor: '#888'
+    borderColor: '#333'
   },
   chatRoomName: { 
     fontSize: 20,
@@ -362,7 +368,8 @@ const styles = StyleSheet.create({
   myMessageContainer: {
     flexDirection: 'row',
     alignSelf: 'flex-end',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginRight: 5,
   },
   myMessage: {
     alignSelf: 'flex-end',
@@ -375,7 +382,8 @@ const styles = StyleSheet.create({
   otherMessageContainer: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
+    marginLeft: 5,
   },
   otherMessage: {
     alignSelf: 'flex-start',
@@ -454,6 +462,23 @@ const styles = StyleSheet.create({
     top: 15,
     right: 10,
     alignItems: 'center'
+  },
+  roleContainer: {
+    borderWidth: 1,
+    borderColor: '#888',
+    padding: 5,
+    width: width * 0.15
+  },
+  roleText: {
+    fontSize: 12,
+    color: '#888',
+    marginLeft: 'auto'
+  },
+  removeChatIcon: {
+    position: 'absolute',
+    top: 15,
+    right: 5,
+    zIndex: 1
   },
 
   /** Search User Styles  */
@@ -536,6 +561,7 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     paddingHorizontal: 10,
+    width: width * 0.65
   },
   uploadImage: {
     height: 150,

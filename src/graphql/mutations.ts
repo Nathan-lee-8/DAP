@@ -279,6 +279,7 @@ export const createChat = /* GraphQL */ `mutation CreateChat(
   createChat(input: $input, condition: $condition) {
     id
     name
+    url
     isGroup
     createdAt
     updatedAt
@@ -297,6 +298,7 @@ export const updateChat = /* GraphQL */ `mutation UpdateChat(
   updateChat(input: $input, condition: $condition) {
     id
     name
+    url
     isGroup
     createdAt
     updatedAt
@@ -315,6 +317,7 @@ export const deleteChat = /* GraphQL */ `mutation DeleteChat(
   deleteChat(input: $input, condition: $condition) {
     id
     name
+    url
     isGroup
     createdAt
     updatedAt

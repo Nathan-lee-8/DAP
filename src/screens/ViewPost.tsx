@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, 
-  KeyboardAvoidingView, Platform } from 'react-native';
+  KeyboardAvoidingView, Platform, 
+  Alert} from 'react-native';
 import { createComment } from '../graphql/mutations';
 import { getPost } from '../graphql/queries';
 import client from '../client';
@@ -43,6 +44,10 @@ const ViewPost = ( {route} : any) => {
 
 
   const postComment = async () => {
+    if(comment === ""){
+      Alert.alert("Alert", "Please enter a message.");
+      return;
+    }
     try {
       await client.graphql({
         query: createComment,

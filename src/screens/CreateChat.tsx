@@ -1,16 +1,13 @@
 import { useContext, useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity, Alert, FlatList,
+import { View, Text, TextInput, TouchableOpacity, Alert, FlatList,
   KeyboardAvoidingView, Platform
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
 import client from '../client';
-import {
-  createChat, createUserChat, createMessage, deleteChat, deleteMessage,
-  deleteUserChat
-} from '../graphql/mutations';
+import { createChat, createUserChat, createMessage, deleteChat, deleteMessage,
+  deleteUserChat } from '../graphql/mutations';
 import { useNavigation } from '@react-navigation/native';
 import { getCurrentUser } from '@aws-amplify/auth';
 import { GlobalParamList } from '../types/rootStackParamTypes';
@@ -69,7 +66,8 @@ const CreateChat = ({ route }: any) => {
             ownerID: cognitoID.userId,
             unreadMessageCount: 0,
             lastMessageAt: currTime,
-            lastMessage: message
+            lastMessage: message,
+            role: 'Owner'
           }
         },
         authMode: 'userPool'
@@ -89,7 +87,8 @@ const CreateChat = ({ route }: any) => {
               ownerID: targetOwnerID,
               unreadMessageCount: 1,
               lastMessageAt: currTime,
-              lastMessage: message
+              lastMessage: message,
+              role: 'Member'
             }
           },
           authMode: 'userPool'

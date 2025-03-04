@@ -65,7 +65,7 @@ type UserChat @model @auth(
   unreadMessageCount: Int 
   lastMessage: String
   lastMessageAt: AWSDateTime!
-  role: String
+  role: String!
   isMuted: Boolean
   userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["lastMessageAt"])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["createdAt"])
@@ -83,6 +83,7 @@ type Chat @model @auth(
 ) { 
   id: ID!
   name: String!
+  url: String
   isGroup: Boolean!
   messages: [Message] @hasMany(indexName:"messagesByChat", fields: ["id"])
   participants: [UserChat] @hasMany(indexName:"UserChatByChat", fields: ["id"])

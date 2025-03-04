@@ -443,6 +443,7 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
     chat {
       id
       name
+      url
       isGroup
       createdAt
       updatedAt
@@ -519,6 +520,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       chat{
         id
         name
+        url
         isGroup
         participants{
           items{
@@ -613,6 +615,7 @@ export const getChat = /* GraphQL */ `query GetChat(
   getChat(id: $id) {
     id
     name
+    url
     isGroup
     createdAt
     messages (limit: $messagesLimit, nextToken: $messagesNextToken, sortDirection: DESC) {
@@ -624,6 +627,7 @@ export const getChat = /* GraphQL */ `query GetChat(
           id
           firstname
           lastname
+          email
           profileURL
           description
           createdAt
@@ -686,6 +690,7 @@ export const listChats = /* GraphQL */ `query ListChats(
     items {
       id
       name
+      url
       isGroup
       createdAt
       updatedAt
@@ -719,6 +724,7 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
     chat {
       id
       name
+      url
       isGroup
       createdAt
       updatedAt

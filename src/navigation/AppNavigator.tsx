@@ -25,6 +25,9 @@ import CreatePost from '../screens/CreatePost';
 import Search from '../screens/Search';
 import EditGroup from '../screens/EditGroup';
 import ViewMembers from '../screens/ViewMembers';
+import ViewChatMembers from '../screens/ViewChatMembers';
+import EditPost from '../screens/EditPost';
+
 import LogOutButton from '../components/LogOutButton';
 import ImageComponent from '../components/ImgComponent';
 
@@ -54,6 +57,8 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="ViewPost" component={ViewPost} options={{title: 'Post'}}/>
           <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
           <GlobalStack.Screen name="ViewMembers" component={ViewMembers} options={{title: 'View Members'}}/>
+          <GlobalStack.Screen name="EditPost" component={EditPost} options={{title: 'Edit Post'}}/>
+          <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers} options={{title: 'Members'}}/>
         </GlobalStack.Navigator>
       ) : (
         <SignInStack.Navigator initialRouteName='Welcome'>

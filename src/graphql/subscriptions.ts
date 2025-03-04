@@ -282,6 +282,7 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat(
   onCreateChat(filter: $filter, owner: $owner) {
     id
     name
+    url
     isGroup
     createdAt
     updatedAt
@@ -300,6 +301,7 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat(
   onUpdateChat(filter: $filter, owner: $owner) {
     id
     name
+    url
     isGroup
     createdAt
     updatedAt
@@ -318,6 +320,7 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat(
   onDeleteChat(filter: $filter, owner: $owner) {
     id
     name
+    url
     isGroup
     createdAt
     updatedAt
@@ -338,10 +341,21 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     content
     msgURL
     senderID
+    sender{
+      id
+      email
+      firstname
+      lastname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     chatID
     createdAt
     updatedAt
-    userMessagesId
     owner
     __typename
   }

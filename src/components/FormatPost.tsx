@@ -10,6 +10,8 @@ import moment from "moment";
 import styles from "../styles/Styles";
 import ImgComponent from "./ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
+import { deletePost, deleteComment } from "../graphql/mutations";
+import client from "../client";
 
 const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -17,10 +19,14 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   const { width } = Dimensions.get('window');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const options = ["Report", "Edit", "Delete"];
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
+
+  var options = ["Report"];
+  if(item.userID === currUser.id){
+    options = ["Report", "Edit", "Delete"];
+  }
 
   const clickPost = (item : string) => {
     navigation.navigate('ViewPost', { postID: item });
@@ -44,7 +50,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
 
   const onScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.floor(contentOffsetX / width); // Calculate the index of the current image
+    const index = Math.floor(contentOffsetX / (width * 0.88)); // Calculate the index of the current image
     setCurrentIndex(index);
   };
 
@@ -52,8 +58,57 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
     Alert.alert('Not implemented')
   }
 
-  const handleOptionButton = (option: string) => { 
-    console.log(option);
+  //delete all post and comments
+  const handleDelete = async () => {
+    if(item.comments){
+      item.comments.items.map( async (comment: any) => {
+        try{
+          await client.graphql({
+            query: deleteComment,
+            variables: {
+              input: {
+                id: comment.id
+              }
+            },
+            authMode: 'userPool'
+          });
+          console.log(comment.id, "successfully deleted");
+        }catch (error : any){
+          console.log(error);
+        }
+      })
+    }
+    if(item){
+      try{
+        await client.graphql({
+          query: deletePost,
+          variables: {
+            input: {
+              id: item.id
+            }
+          },
+          authMode: 'userPool'
+        });
+        console.log(item.id, "successfully deleted");
+      }catch (error : any){
+        console.log(error);
+      }
+    }
+  }
+
+  const handleOptionButton = (option: string) => {
+    setModalVisible(false);
+    if(option === "Edit"){
+      navigation.navigate('EditPost', { currPost: item});
+    }else if(option === "Delete"){
+      Alert.alert('Alert','Are you sure you would like to delete this', [
+        { text: 'Cancel' },
+        { text: 'OK', onPress: () => handleDelete() }
+      ])
+    }
+    else{
+      Alert.alert(option, "not implemented");
+    }
   }
   
   return (  
@@ -103,7 +158,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               <View>
                 <ImgComponent uri={item || 'defautUser'} 
                   style={{
-                    width: width,
+                    width: width * 0.90,
                     height: 200,
                     marginRight: 10,
                   }} 
@@ -117,7 +172,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
             showsHorizontalScrollIndicator={false}
           />
           <View style={styles.paginationContainer}>
-            {item.postURL && item?.postURL.map((_, index) => (
+            {item.postURL.length > 1 && item?.postURL.map((_, index) => (
               <View key={index} style={[ styles.dot, currentIndex === index && styles.activeDot ]}>
               </View>
             ))}
