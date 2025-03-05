@@ -136,8 +136,8 @@ const GroupSearch = () => {
               <View style={styles.listUserContainer}>
                 <ProfilePicture uri={item.groupURL ? item.groupURL : 'defaultUser'} />
                 <View style={styles.userInfoContainer}>
-                  <Text style={styles.postAuthor}>{item.groupName}</Text>
-                  <Text style={styles.postContent}>{item.description}</Text>
+                  <Text style={styles.postAuthor} numberOfLines={1}>{item.groupName}</Text>
+                  <Text style={styles.postContent} numberOfLines={1}>{item.description}</Text>
                 </View>
                 
                 <Text style={styles.memberText}>{item.members?.items.length} members</Text>

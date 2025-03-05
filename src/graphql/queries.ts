@@ -527,7 +527,10 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
             id
             ownerID
             unreadMessageCount
+            lastMessage
             lastMessageAt
+            role
+            isMuted
             userID
             user {
               id

@@ -236,6 +236,12 @@ const styles = StyleSheet.create({
   /** Modal styles */
   modelOverlay:{
     flex: 1,
+    backgroundColor: 'white',
+  },
+  searchModalContainer: {
+    flex: 1,
+    width: width,
+    height: '80%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -248,19 +254,15 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    margin: 15,
   },
   closeButton: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: 'red',
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
+    position: 'absolute',
+    top: 15,
+    left: 10,
   },
   closeButtonText: {
-    color: 'white',
+    color: 'blue',
     fontSize: 16,
   },
   optionButton: {
@@ -400,6 +402,18 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     margin: 5,
   },
+  editNameContainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    marginLeft: 20
+  },
+  chatNameText: {
+    fontSize: 20,
+    color: 'black',
+    backgroundColor: 'white',
+  },
 
   /** Groups Section */
   groupImg: {
@@ -412,9 +426,32 @@ const styles = StyleSheet.create({
     height: 190,
     alignSelf: 'center',
   },
-  groupMembersContainer: {
+  groupInfoContainer: {
     padding: 5,
     backgroundColor: colorPrimary,
+    flexDirection: 'row',
+  },
+  groupTextSection: {
+    width: width * 0.74
+  },
+  groupMembersContainer: {
+    width: width * 0.25,
+  }, 
+  joinButton: {
+    padding: 5,
+    width: width * 0.22,
+    borderWidth: 1,
+    borderColor: '#888',
+    marginTop: 10,
+    backgroundColor: '#f2f7f7'
+  },
+  groupNameText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  groupDescriptionText: {
+    fontSize: 14,
+    color: '#888',
   },
   postContentTouchable: {
     flexDirection: 'row',
@@ -463,15 +500,24 @@ const styles = StyleSheet.create({
     right: 10,
     alignItems: 'center'
   },
+  listMemberContainer: {
+    flexDirection: 'row',
+    backgroundColor: colorPrimary,
+    alignItems: 'center',
+    marginBottom: 5,
+    padding: 10,
+  },
   roleContainer: {
     borderWidth: 1,
-    borderColor: '#888',
+    borderColor: 'black',
     padding: 5,
-    width: width * 0.15
+    width: width * 0.14,
+    marginLeft: 'auto'
   },
   roleText: {
     fontSize: 12,
-    color: '#888',
+    color: 'black',
+    textAlign: 'center',
     marginLeft: 'auto'
   },
   removeChatIcon: {
@@ -564,9 +610,6 @@ const styles = StyleSheet.create({
     width: width * 0.65
   },
   uploadImage: {
-    height: 150,
-    width: 150,
-    borderRadius: 75,
     alignSelf: 'center',
     margin: 10,
   },

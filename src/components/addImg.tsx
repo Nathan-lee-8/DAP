@@ -4,6 +4,7 @@ import { uploadData } from "@aws-amplify/storage";
 const imagePicker = async () => { 
   const result = await launchImageLibrary({
     mediaType: 'photo',
+    presentationStyle:'fullScreen',
     quality: 0.8,
   });
 

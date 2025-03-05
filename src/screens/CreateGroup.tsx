@@ -13,21 +13,17 @@ import { createUserGroup, createGroup, deleteUserGroup, deleteGroup,
 import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import { imagePicker, getImgURI } from '../components/addImg';
-import { useNavigation } from '@react-navigation/native';
-import { GlobalParamList } from '../types/rootStackParamTypes';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 /**
  * @returns 
  */
-const CreateGroup = () => {
+const CreateGroup = ( {navigation} : any) => {
   const [groupName, setGroupName] = useState('');
   const [description, setDescription] = useState('');
   const [members, setMembers] = useState<User[]>([]);
   const [groupURI, setGroupURL] = useState<string>('defaultGroup');
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  const flatListRef = useRef<FlatList<User>>(null);
+  const [goNext, setGoNext] = useState(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -42,6 +38,7 @@ const CreateGroup = () => {
 
     try{
       setLoading(true);
+      setGoNext(false);
 
       //Create Group
       const groupData = await client.graphql({
@@ -176,21 +173,10 @@ const CreateGroup = () => {
       return;
     }
     setMembers([...members, user]);
-    setTimeout(() => {
-      scrollToBottom();
-    }, 100)
   }
-
-  const scrollToBottom = () => {
-    flatListRef.current?.scrollToEnd({ animated: true });
-  };
 
   //Removes user from group onPress
   const removeUser = (user: User) => {
-    flatListRef.current?.scrollToIndex({
-      index: members.length - 1, // The last item's index
-      animated: true, // Smooth scroll
-    });
     if(members.includes(user)){
       setMembers(members.filter((member) => member !== user));
     }
@@ -211,71 +197,81 @@ const CreateGroup = () => {
       <ActivityIndicator size="large" color="#0000ff" />
     )
   }
-  
-  const pageContent = () => {
-    return (
-      <View>
-        <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
-          <ImgComponent uri={groupURI} style={styles.groupImg}/>
-          <Text style={styles.addImageText}>add Image</Text>
-        </TouchableOpacity>
-        <TextInput
-          style={styles.input}
-          placeholder="Group name"
-          autoCapitalize="words"
-          value={groupName}
-          onChangeText={ setGroupName }
+
+  if(goNext) {
+    return(
+      <View style={styles.container}>
+        <FlatList
+          data={members}
+          renderItem={({ item }) => {
+            return (
+              <View style={styles.searchUserContainer}>
+                <View style={styles.listUserContainer}>
+                <TouchableOpacity style={{marginRight: 10}} onPress={()=> removeUser(item)}>
+                    <Icon name="remove-circle-outline" size={25}/>
+                  </TouchableOpacity>
+                  <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
+                  <Text style={[styles.postContent, {marginLeft: 10}]}>{item?.firstname + ' ' + item?.lastname}</Text>
+                  <Text style={styles.memberText}>Member</Text>
+                </View>
+              </View>
+            )
+          }}
+          ListHeaderComponent={
+            <View>
+              <SearchBar userPressed={getUser} remove={members}/>
+              <Text style={styles.title}>Add Members</Text>
+            </View>
+          }
+          ListEmptyComponent={
+            <Text style={[styles.noResultsMsg, {marginTop: 0}]}>No members</Text>
+          }
+          keyboardShouldPersistTaps="handled"
         />
-        <TextInput
-          style={styles.longInput}
-          placeholder="Description"
-          multiline={true}
-          autoCapitalize="sentences"
-          value={description}
-          onChangeText={ setDescription }
-        />
-        <Text style={[styles.contentText, {marginBottom: 0}]}>Members</Text>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >   
+          <TouchableOpacity style={styles.buttonWhite} onPress={() => setGoNext(false)}>
+            <Text style={styles.buttonTextBlack}>Back</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonBlack} onPress={addGroup}>
+            <Text style={styles.buttonTextWhite}>Save</Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </View>
     )
   }
 
   return(
     <View style={styles.container}>
-      <TouchableWithoutFeedback 
-        onPress={(e) => {
-          if (e.target === e.currentTarget) {
-            Keyboard.dismiss(); 
-          }
-        }} 
-        accessible={false}>
-        <SearchBar userPressed={getUser} remove={members}/>
-      </TouchableWithoutFeedback>
-        <FlatList
-          ref={flatListRef}
-          data={members}
-          renderItem={({ item }) => {
-            return (
-              <View style={styles.searchUserContainer}>
-                <View style={styles.listUserContainer}>
-                  <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
-                  <Text style={[styles.postContent, {marginLeft: 10}]}>{item?.firstname + ' ' + item?.lastname}</Text>
-                  <TouchableOpacity style={{marginLeft: 'auto'}} onPress={()=> removeUser(item)}>
-                    <Icon name="remove-circle-outline" size={25}/>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )
-          }}
-          ListHeaderComponent={pageContent()}
-          keyboardShouldPersistTaps="always"
-        />
+      <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
+        <ImgComponent uri={groupURI} style={styles.groupImg}/>
+        <Text style={styles.addImageText}>add Image</Text>
+      </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        placeholder="Group name"
+        autoCapitalize="words"
+        value={groupName}
+        onChangeText={ setGroupName }
+      />
+      <TextInput
+        style={styles.longInput}
+        placeholder="Description"
+        multiline={true}
+        autoCapitalize="sentences"
+        value={description}
+        onChangeText={ setDescription }
+      />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{marginBottom: Platform.OS === 'ios' ? 40 : 0}}
+        style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >   
-        <TouchableOpacity onPress={addGroup} style={styles.buttonBlack}>
-          <Text style={styles.buttonTextWhite}>Save</Text>
+        <TouchableOpacity style={styles.buttonBlack} onPress={() => setGoNext(true)}>
+          <Text style={styles.buttonTextWhite}>Next</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
