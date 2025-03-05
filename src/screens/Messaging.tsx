@@ -1,19 +1,17 @@
 import { useState, useContext, useCallback } from 'react';
 import { View, FlatList, TouchableOpacity, Text, ActivityIndicator
   } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { chatsByUser } from '../graphql/queries';
 import { ModelSortDirection, UserChat } from '../API';
 import client  from '../client';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
-import { GlobalParamList } from '../types/rootStackParamTypes';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 import moment from "moment";
 
-const MessageUsers = () => {
+const MessageUsers = ( {navigation} : any) => {
   const [chatRooms, setChatRooms] = useState<UserChat[]>([])
   const [loading, setLoading] = useState<boolean>(true);
   const authContext = useContext(AuthContext);
@@ -49,8 +47,6 @@ const MessageUsers = () => {
     }, [])
   );
 
-  //Handles when user wants to message a user: checks if chatroom exists before creating new one
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const handleOpenChatRoom = (chatRoom: UserChat) => {
     navigation.navigate('ChatRoom', { chatID: chatRoom.chatID });
   }
@@ -95,7 +91,7 @@ const MessageUsers = () => {
             })
             .filter(Boolean)
             .join(', ');
-          if(item?.chat?.name !== 'default') chatname = item?.chat?.name;
+          if(item?.chat?.name !== 'Chat name') chatname = item?.chat?.name;
 
           let containerStyle = (item.unreadMessageCount && item.unreadMessageCount > 0) ? 
             styles.unreadMsgContainer : styles.postContainer;
@@ -124,7 +120,12 @@ const MessageUsers = () => {
                           }} 
                         />
                       ))
-                    ) : (
+                    ) : item?.chat?.url !== null ? (
+                      <ImgComponent 
+                        uri={item?.chat?.url || 'defaultUser'} 
+                        style={{height: 40, width: 40, borderRadius: 20}} 
+                      />
+                    ) :  (
                       <ImgComponent 
                         uri={displayURIs[0] || 'defaultUser'} 
                         style={{height: 40, width: 40, borderRadius: 20}} 

@@ -12,16 +12,17 @@ export type GlobalParamList = {
     MainTabs: undefined;
     ViewProfile: {user: User};
     ViewFollowing: {userID: string};
-    ChatRoom: { chatID: string};
-    CreateChat: { user?: User};
+    ChatRoom: {chatID: string};
+    CreateChat: {user?: User};
     CreateGroup: undefined;
     CreatePost: {groupID: string};
     ViewGroup: {groupID: string};
     ViewPost: {postID: string};
     EditGroup: {group: Group};
-    ViewMembers: {userData: (UserGroup | null)[], group: Group};
+    ViewMembers: {group: Group};
     ViewChatMembers: {chatData: Chat | undefined, userChats: UserChat[]};
-    EditPost: { currPost: Post};
+    EditPost: {currPost: Post};
+    EditChat: {currChat: Chat};
 }
 
 export type LoggedInParamList = {

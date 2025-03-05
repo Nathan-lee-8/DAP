@@ -21,7 +21,7 @@ type User @model @auth(
 type Post @model @auth(
   rules: [
     { allow: owner },
-    { allow: private, operations: [read, update] },
+    { allow: private, operations: [read, update, delete] },
     { allow: public, operations: [read] }
   ]
 ) { 
@@ -57,7 +57,7 @@ type UserChat @model @auth(
   rules: [
     { allow: owner },
     { allow: owner, ownerField: "ownerID" },
-    { allow: private, operations: [read, update] }
+    { allow: private, operations: [read, update, delete] }
   ]
 ) {
   id: ID!
@@ -93,7 +93,7 @@ type Chat @model @auth(
 type Message @model @auth(
   rules: [
     { allow: owner },
-    { allow: private, operations: [read] }
+    { allow: private, operations: [read, delete] }
   ]
 ) {
   id: ID!
@@ -110,7 +110,7 @@ type UserGroup @model @auth(
   rules: [
     { allow: owner },
     { allow: owner, ownerField: "ownerID" },
-    { allow: private, operations: [read, update] }
+    { allow: private, operations: [read, update, delete] }
   ]
 ) {
   id: ID!

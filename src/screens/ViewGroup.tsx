@@ -1,22 +1,27 @@
-import { useState, useLayoutEffect, useCallback } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, Modal,
+import { useState, useCallback, useContext } from "react";
+import { View, Text, FlatList, TouchableOpacity, Alert,
   ActivityIndicator } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
+import { createUserGroup } from "../graphql/mutations";
 import { Group, Post } from '../API'
+import { getCurrentUser } from '@aws-amplify/auth';
 import styles from '../styles/Styles'
 import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
-import { GlobalParamList } from "../types/rootStackParamTypes";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import FormatPost from "../components/FormatPost";
+import { AuthContext } from "../context/AuthContext";
 
-const ViewGroup = ({route} : any) => {
+const ViewGroup = ( {route, navigation} : any) => {
   const groupID = route.params.groupID;
   const [ group, setGroup ] = useState<Group>();
   const [ post, setPosts ] = useState<Post[]>([]);
   const [ loading, setLoading ] = useState(true);
+  const [ isMember, setIsMember ] = useState(false);
+  const authContext = useContext(AuthContext);
+  const currUser = authContext?.currUser;
+  if(!currUser) return;
 
   const fetchCurrentData = async () => {
     try{
@@ -40,6 +45,8 @@ const ViewGroup = ({route} : any) => {
         return dateB - dateA;
       });
       if(posts) setPosts(posts);
+      if(currGroup.data.getGroup.members?.items?.some((member) => member?.user?.id === currUser.id))
+        setIsMember(true);
     } catch (error: any) {
       console.log(error);
     } finally {
@@ -53,51 +60,47 @@ const ViewGroup = ({route} : any) => {
     }, [])
   );
 
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const createGroupPost = () => {
     navigation.navigate('CreatePost', {groupID: groupID});
   }
 
   const handleViewMembers = () => {
-    if(group?.members) navigation.navigate('ViewMembers', {userData: group?.members.items, group: group});
+    if(group?.members) navigation.navigate('ViewMembers', {group: group});
     else Alert.alert("Unable to Retrieve member data");
   }
+  
+  const handleJoinGroup = async () => {
+    if(isMember) return;
+
+    if(group?.isPublic === null || group?.isPublic){
+      try{
+        const cogID = await getCurrentUser();
+        await client.graphql({
+          query: createUserGroup,
+          variables: {
+            input: {
+              ownerID: cogID.userId,
+              userID: currUser.id,
+              role: "Member",
+              groupID: groupID
+            }
+          },
+          authMode: 'userPool'
+        })
+        Alert.alert('Success', 'Group joined successfully.');
+        fetchCurrentData();
+      } catch (error){ 
+        console.log('Error', error);
+      }
+    }else{
+      //request to join
+      Alert.alert('not implemented yet');
+    }
+  }
+
 
   if(loading){
     return <ActivityIndicator size="large" color="#0000ff" />
-  }
-
-  if(group?.isPublic !== null && !group?.isPublic){
-    return (
-      <View style={styles.container}>
-        <View style={styles.groupImgContainer}>
-          <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
-        </View>
-        <View style={styles.groupMembersContainer}>
-          <View style={{flexDirection: 'row'}}>
-            <Text style={styles.label}>{group?.groupName}</Text>
-            <TouchableOpacity style={{marginLeft: 'auto', flexDirection: 'row'}} onPress={handleViewMembers}>
-              <Text>{group?.members?.items.length} members </Text>
-              <Icon name="arrow-forward" size={25}/>
-            </TouchableOpacity>
-          </View>
-          <View style={{flexDirection: 'row'}}>
-            <Text>{group?.description}</Text>
-            <View style={{marginLeft: 'auto'}}>
-              <FlatList
-                key={group?.members?.items.length}
-                data={group?.members?.items ? group?.members?.items.slice(0,4) : []}
-                renderItem={({ item }) => 
-                  <ProfilePicture uri={item?.user?.profileURL ||'defaultUser'}/>
-                }
-                numColumns={5}
-              />
-            </View>
-          </View>
-        </View>
-        <Text style={styles.contentText}>Private Group</Text>
-      </View>
-    )
   }
 
   const headerComp = () => {
@@ -106,32 +109,48 @@ const ViewGroup = ({route} : any) => {
         <View style={styles.groupImgContainer}>
           <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
         </View>
-        <View style={styles.groupMembersContainer}>
-          <View style={{flexDirection: 'row'}}>
-            <Text style={styles.label}>{group?.groupName}</Text>
-            <TouchableOpacity style={{marginLeft: 'auto', flexDirection: 'row'}} onPress={handleViewMembers}>
-              <Text>{group?.members?.items.length} members </Text>
-              <Icon name="arrow-forward" size={25}/>
-            </TouchableOpacity>
+        <View style={styles.groupInfoContainer}>
+          <View style={styles.groupTextSection}>
+            <Text style={styles.groupNameText}>{group?.groupName}</Text>
+            <Text style={styles.groupDescriptionText}>{group?.description}</Text>
           </View>
-          <View style={{flexDirection: 'row'}}>
-            <Text>{group?.description}</Text>
-            <View style={{marginLeft: 'auto'}}>
-              <FlatList
-                key={group?.members?.items.length}
-                data={group?.members?.items ? group?.members?.items.slice(0,4) : []}
-                renderItem={({ item }) => 
-                  <ProfilePicture uri={item?.user?.profileURL ||'defaultUser'}/>
-                }
-                numColumns={5}
-              />
-            </View>
+          <View style={styles.groupMembersContainer}>
+            <TouchableOpacity style={{flexDirection: 'row'}} onPress={handleViewMembers}>
+              <Text>{group?.members?.items.length} members </Text>
+              <Icon name="arrow-forward" size={20}/>
+            </TouchableOpacity>
+            <FlatList
+              key={group?.members?.items.length}
+              data={group?.members?.items ? group?.members?.items.slice(0,3) : []}
+              renderItem={({ item }) => 
+                <ProfilePicture uri={item?.user?.profileURL ||'defaultUser'}/>
+              }
+              numColumns={5}
+            />
+            <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
+              {isMember ? (
+                <Text style={{textAlign: 'center'}}>Joined</Text>
+              ) : group?.isPublic !== null && !group?.isPublic ? (
+                <Text style={{textAlign: 'center'}}>Request Join</Text>
+              ) : (
+                <Text style={{textAlign: 'center'}}>Join Group</Text>
+              )}
+            </TouchableOpacity>
           </View>
         </View>
         <TouchableOpacity onPress={createGroupPost} style={styles.postContentTouchable}>
           <Text style={styles.postContentInput}>Post Content...</Text>
           <Icon name="send" size={30} style={styles.postContentButton}/>
         </TouchableOpacity>
+      </View>
+    )
+  }
+  
+  if(group?.isPublic !== null && !group?.isPublic && !isMember){
+    return (
+      <View style={styles.container}>
+        {headerComp()}
+        <Text style={styles.contentText}>Private Group</Text>
       </View>
     )
   }

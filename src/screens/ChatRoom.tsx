@@ -1,10 +1,8 @@
-import { useEffect, useState, useRef, useContext, useLayoutEffect } from 'react';
+import { useEffect, useState, useRef, useContext, useLayoutEffect, useCallback
+ } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
-    KeyboardAvoidingView, Platform, Alert, AppState
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GlobalParamList } from '../types/rootStackParamTypes';
+    KeyboardAvoidingView, Platform, Alert, AppState } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { getChat } from '../graphql/queries';
 import { createMessage, updateUserChat } from '../graphql/mutations';
@@ -16,7 +14,7 @@ import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
 import moment from 'moment';
 
-const ChatRoom = ( { route } : any) => {
+const ChatRoom = ( { route, navigation } : any) => {
   const chatID = route.params.chatID;
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const [ loading, setLoading ] = useState<boolean>(false);
@@ -42,39 +40,41 @@ const ChatRoom = ( { route } : any) => {
     lastMsgRef.current = messages[0];
   }, [messages]);
 
-  //retrieve chat data and update data anytime a chat is sent
-  useEffect(() => {
-    fetchChat();
-    const subscription = client.graphql({
-      query: onCreateMessage,
-      variables: {
-          filter: { chatID: { eq: chatID } }, // Scope to the current chat
-      },
-      authMode: 'userPool'
-    }).subscribe({
-      next: (value : any) => {
-        const newMessage = value?.data.onCreateMessage;
-        setMessages((prev) => {
-          if(!newMessage || prev.find((msg) => msg?.id === newMessage?.id)) return prev;
-          lastMsgRef.current = newMessage;
-          return [newMessage, ...prev];
-        });
-        scrollToBottom();
-      },
-      error: (err: any) => console.error("Subscription error:", err),
-    });
-    return () => subscription.unsubscribe(); // Clean up the subscription
-  }, [chatID]);
-
   //update title anytime participants changes
   useEffect( () => {
-    var temptitle = participants.map((item) => `${item.user?.firstname} ${item.user?.lastname}`)
-    .filter(Boolean)
-    .join(', ');
+    var temptitle = participants.map((item) => 
+      `${item.user?.firstname} ${item.user?.lastname}`).filter(Boolean).join(', ');
     setTitle(temptitle);
   }, [participants]);
 
-  //get Chat data
+  //get Chat data when gain focus and clean subscription when losing focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchChat();
+      const subscription = client.graphql({
+        query: onCreateMessage,
+        variables: {
+            filter: { chatID: { eq: chatID } },
+        },
+        authMode: 'userPool'
+      }).subscribe({
+        next: (value : any) => {
+          const newMessage = value?.data.onCreateMessage;
+          setMessages((prev) => {
+            if(!newMessage || prev.find((msg) => msg?.id === newMessage?.id)){
+              return prev;
+            }
+            lastMsgRef.current = newMessage;
+            return [newMessage, ...prev];
+          });
+          scrollToBottom();
+        },
+        error: (err: any) => console.error("Subscription error:", err),
+      });
+      return () => subscription.unsubscribe();
+    }, [chatID])
+  );
+
   const fetchChat = async () => {
     if(loading) return;
     setLoading(true);
@@ -100,11 +100,13 @@ const ChatRoom = ( { route } : any) => {
       if(parts){
         let URLs: (string | undefined)[] = [];
         setParticipants(parts.filter((item): item is UserChat => {
-          if(item?.userID !== currUser.id) URLs.push(item?.user?.profileURL || undefined);
+          if(item?.userID !== currUser.id){ 
+            URLs.push(item?.user?.profileURL || undefined)
+          }
           return item?.userID !== currUser?.id;
         }));
         setURLs(URLs);
-        setMyUserChat(parts.find((item): item is UserChat  => item?.userID === currUser.id));
+        setMyUserChat(parts.find((item): item is UserChat => item?.userID === currUser.id));
       }
       setNextToken(chatData?.messages?.nextToken);
     } catch (error: any) {
@@ -114,7 +116,6 @@ const ChatRoom = ( { route } : any) => {
     }
   };
 
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   useLayoutEffect(()=> {
     navigation.setOptions({
       headerLeft: () => (
@@ -131,15 +132,14 @@ const ChatRoom = ( { route } : any) => {
         const myUnread = myUserChat?.unreadMessageCount || 0;
         const msgChanged = messages[0].content !== myUserChat.lastMessage;
         if(myUnread === 0 && !msgChanged) {
-            navigation.goBack();
             return;
         };
         await client.graphql({
-          query: updateUserChat, // GraphQL mutation to update last message
+          query: updateUserChat,
           variables: {
             input: {
               id: myUserChat?.id,
-              lastMessage: messages[0].content, // You may need to adjust based on your schema
+              lastMessage: messages[0].content, 
               lastMessageAt: messages[0].createdAt,
               unreadMessageCount: 0,
             },
@@ -169,18 +169,10 @@ const ChatRoom = ( { route } : any) => {
       }
     } catch (error) {
       console.error("Error updating last message:", error);
+    } finally{
+      navigation.goBack();
     }
-    navigation.goBack();
   }
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'background' || state === 'inactive') {
-        handleGoBack();
-      }
-    });
-    return () => subscription.remove();
-  }, [handleGoBack]);
 
   const sendMessage = async () => {
     if(currMessage === '' || !myUserChat ) return;
@@ -216,7 +208,8 @@ const ChatRoom = ( { route } : any) => {
       Alert.alert("Error", 'unknown error');
       return;
     }
-    navigation.navigate('ViewChatMembers', {chatData: chat, userChats: [myUserChat, ...participants]});
+    navigation.navigate('ViewChatMembers', 
+      {chatData: chat, userChats: [myUserChat, ...participants]});
   }
 
   const getMsgStyle = (id: string) => {
@@ -236,7 +229,9 @@ const ChatRoom = ( { route } : any) => {
 
   return(
     <View style={styles.container}>
-      <TouchableOpacity style={styles.messageHeaderContainer} onPress={handleViewMembers}>        
+      <TouchableOpacity style={styles.messageHeaderContainer}
+        onPress={handleViewMembers}
+      >        
         <View style={styles.URLSection}>
           {displayURLs.length > 1 ? (
             displayURLs.slice(0, 2).map((uri, index) => (

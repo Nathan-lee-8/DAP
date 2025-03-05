@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert,
-   TextInput, FlatList, Platform, KeyboardAvoidingView, ScrollView
+   TextInput, FlatList, Platform, KeyboardAvoidingView
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
 import { imagePicker, getImgURI } from '../components/addImg';
@@ -11,9 +10,8 @@ import  { deleteUserGroup, updateGroup } from '../graphql/mutations';
 import client from '../client';
 import { UserChat } from '../API';
 
-const EditGroup = ( {route}: any) => {
+const EditGroup = ( {route, navigation} : any ) => {
   const group = route.params.group;
-  const [ imgLoading, setImgLoading ] = useState(false);
   const [ loading, setLoading ] = useState(false);
   const [ filepath, setFilepath ] = useState<string>(group.groupURL);
   const [ name, setName ] = useState<string>(group.groupName);
@@ -23,14 +21,14 @@ const EditGroup = ( {route}: any) => {
 
   const getFilePath = async () => {
     try{
-      setImgLoading(true);
+      setLoading(true);
       var uri = await imagePicker();
       if(uri === null) throw new Error('No image selected');
       setFilepath(uri);      
     } catch(error: any){
       Alert.alert(error.message);
     }finally{
-      setImgLoading(false);
+      setLoading(false);
     }
   }
 
@@ -68,13 +66,16 @@ const EditGroup = ( {route}: any) => {
       handleGoBack();
     }
   }
+  
+  const updateRole = (userChat: any) => {
+    console.log(userChat);
+  }
 
   const removeMember = ( item: UserChat) => {
     setRemovedMembers((removedMembers) => [...removedMembers, item.id]);
     setMembers(members.filter((member) => member.id !== item.id));
   }
 
-  const navigation = useNavigation();
   const handleGoBack = () => { 
     navigation.goBack();
   }
@@ -84,14 +85,10 @@ const EditGroup = ( {route}: any) => {
   const header = () => { 
     return (
       <View>
-        {imgLoading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
-            <ImgComponent uri={filepath} style={styles.groupImg}/>
-            <Text style={styles.addImageText}>Add Img</Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
+          <ImgComponent uri={filepath} style={styles.groupImg}/>
+          <Text style={styles.addImageText}>Add Img</Text>
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           value={name}
@@ -105,7 +102,6 @@ const EditGroup = ( {route}: any) => {
           placeholder={description || 'No description'}
           onChangeText={setDescription}
         />
-        <Text>{members.length} Members</Text>
       </View>
     )
   }
@@ -116,13 +112,16 @@ const EditGroup = ( {route}: any) => {
         data={members}
         renderItem={({ item }) => {
           return(
-            <View style={[styles.postContainer, styles.profileSection]}>
+            <View style={styles.listMemberContainer}>
+              <TouchableOpacity style={{marginRight: 10}} onPress={() => removeMember(item)}>
+                <Icon name="person-remove-outline" size={18}/>
+              </TouchableOpacity>
               <ImgComponent uri={item?.user?.profileURL || 'defaultUser'}/>
               <View style={styles.userInfoContainer}>
                 <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
               </View>
-              <TouchableOpacity style={{marginLeft: 'auto'}} onPress={() => removeMember(item)}>
-                <Icon name="person-remove-outline" size={20}/>
+              <TouchableOpacity style={styles.roleContainer} onPress={() => updateRole(item)}>
+                <Text style={styles.roleText}>{item.role}</Text>
               </TouchableOpacity>
             </View>
           )

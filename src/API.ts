@@ -1829,7 +1829,10 @@ export type ChatsByUserQuery = {
             id: string,
             ownerID: string,
             unreadMessageCount?: number | null,
+            lastMessage?: string | null,
             lastMessageAt: string,
+            role: string,
+            isMuted?: boolean | null,
             userID: string,
             user?:  {
               __typename: "User",

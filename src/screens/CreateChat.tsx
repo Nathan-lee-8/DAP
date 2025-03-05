@@ -22,6 +22,7 @@ const CreateChat = ({ route }: any) => {
   const [targetUsers, setTargetUsers] = useState<User[]>(initalUser);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [chatname, setChatname] = useState('Chat name');
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
@@ -48,7 +49,7 @@ const CreateChat = ({ route }: any) => {
         query: createChat,
         variables: {
           input: {
-            name: "default",
+            name: chatname,
             isGroup: targetUsers.length > 1,
           }
         },
@@ -195,6 +196,15 @@ const CreateChat = ({ route }: any) => {
   return (
     <View style={[styles.container, { justifyContent: "flex-end" }]}>
       <SearchBar userPressed={handleUserSelected} remove={targetUsers} />
+      <View style={styles.editNameContainer}>
+        <TextInput
+          style={styles.chatNameText}
+          value={chatname}
+          placeholder={chatname}
+          onChangeText={setChatname}
+        />
+        <Icon name="pencil-outline" style={{marginLeft: 5}} size={18}/>
+      </View>
       <FlatList
         data={targetUsers}
         keyExtractor={(item) => item.id}

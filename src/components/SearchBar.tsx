@@ -72,7 +72,7 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
   }
 
   const handleOnPress = (user: User) => {
-    if(remove) setFilteredData(filteredData.filter((item) => item !== user));
+    if(remove) setFilteredData([]);
     if(userPressed) userPressed(user);
   }
 
@@ -96,8 +96,8 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
               <View style={styles.listUserContainer}>
                 <ProfilePicture uri={item.profileURL}/>
                 <View style={styles.userInfoContainer}>
-                  <Text style={styles.postAuthor}>{item.firstname} {item.lastname}</Text>
-                  <Text style={styles.postContent}>{item.email}</Text>
+                  <Text style={styles.postAuthor} numberOfLines={1}>{item.firstname} {item.lastname}</Text>
+                  <Text style={styles.postContent} numberOfLines={1}>{item.email}</Text>
                 </View>
               </View>
             </TouchableOpacity>
