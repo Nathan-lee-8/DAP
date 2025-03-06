@@ -24,7 +24,7 @@ const LogOutButton = () => {
 
   return (
     <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
-        <Text>Log Out</Text>
+        <Text style={styles.buttonTextBlue}>Log Out</Text>
     </TouchableOpacity>
   );
 };

@@ -190,8 +190,8 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
         </TouchableOpacity>
       </TouchableOpacity>
       <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modelOverlay}>
-          <View style={styles.modalContainer}>
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
             <FlatList
               data={options}
               keyExtractor={(option) => option}

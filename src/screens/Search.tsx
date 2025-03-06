@@ -13,7 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Search = () => {
+const Search = ( {navigation} : any) => {
   const [searchTerm, setSearchTerm] = useState('Users');
   const [selected, setSelected] = useState(true);
 
@@ -22,7 +22,6 @@ const Search = () => {
     setSelected(true);
   }
 
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const handleViewUser = ( user: User) => {
     navigation.navigate('ViewProfile', {user: user});
   }

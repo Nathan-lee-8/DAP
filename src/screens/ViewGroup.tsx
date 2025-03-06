@@ -5,8 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
 import { createUserGroup } from "../graphql/mutations";
-import { Group, Post } from '../API'
-import { getCurrentUser } from '@aws-amplify/auth';
+import { Group, Post, UserGroup } from '../API'
 import styles from '../styles/Styles'
 import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
@@ -18,7 +17,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ group, setGroup ] = useState<Group>();
   const [ post, setPosts ] = useState<Post[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const [ isMember, setIsMember ] = useState(false);
+  const [ myUserGroup, setMyUserGroup ] = useState<UserGroup>()
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -32,21 +31,22 @@ const ViewGroup = ( {route, navigation} : any) => {
         },
         authMode:'userPool'
       })
+      const groupData = currGroup.data.getGroup;
       console.log("fetched from viewgroup");
-      if(currGroup.data.getGroup == null) {
-        console.log("Group is null");
+      if(groupData == null) {
+        console.log('error', 'Group is null');
         return;
       }
-      setGroup(currGroup.data.getGroup);
-      let posts = currGroup.data.getGroup.posts?.items?.filter((item): item is Post => item !== null);
+      setGroup(groupData);
+      let posts = groupData.posts?.items?.filter((item): item is Post => item !== null);
       posts = posts?.sort((a, b) => {
         const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
         return dateB - dateA;
       });
       if(posts) setPosts(posts);
-      if(currGroup.data.getGroup.members?.items?.some((member) => member?.user?.id === currUser.id))
-        setIsMember(true);
+      const myUserGroup = groupData.members?.items?.find((member) => member?.user?.id === currUser.id)
+      if(myUserGroup) setMyUserGroup(myUserGroup);
     } catch (error: any) {
       console.log(error);
     } finally {
@@ -70,16 +70,14 @@ const ViewGroup = ( {route, navigation} : any) => {
   }
   
   const handleJoinGroup = async () => {
-    if(isMember) return;
+    if(myUserGroup !== undefined) return;
 
     if(group?.isPublic === null || group?.isPublic){
       try{
-        const cogID = await getCurrentUser();
         await client.graphql({
           query: createUserGroup,
           variables: {
             input: {
-              ownerID: cogID.userId,
               userID: currUser.id,
               role: "Member",
               groupID: groupID
@@ -128,7 +126,7 @@ const ViewGroup = ( {route, navigation} : any) => {
               numColumns={5}
             />
             <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
-              {isMember ? (
+              {myUserGroup !== undefined ? (
                 <Text style={{textAlign: 'center'}}>Joined</Text>
               ) : group?.isPublic !== null && !group?.isPublic ? (
                 <Text style={{textAlign: 'center'}}>Request Join</Text>
@@ -146,7 +144,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     )
   }
   
-  if(group?.isPublic !== null && !group?.isPublic && !isMember){
+  if(group?.isPublic !== null && !group?.isPublic && myUserGroup === undefined){
     return (
       <View style={styles.container}>
         {headerComp()}

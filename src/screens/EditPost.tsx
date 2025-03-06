@@ -1,19 +1,15 @@
 import { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Platform,
-  ActivityIndicator, FlatList, KeyboardAvoidingView, Keyboard,
-  TouchableWithoutFeedback} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, Keyboard,
+  ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 import styles from '../styles/Styles';
 import { imagePicker, getImgURI } from '../components/addImg';
 import { updatePost } from '../graphql/mutations';
 import client from '../client';
 import { AuthContext } from '../context/AuthContext';
 import ImgComponent from '../components/ImgComponent';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GlobalParamList } from '../types/rootStackParamTypes';
 import Icon from '@react-native-vector-icons/ionicons';
 
-const EditPost = ( {route} : any ) => {
+const EditPost = ( {route, navigation} : any ) => {
   const { currPost } = route.params;
   const [ content, setContent ] = useState(currPost.content);
   const [ filepaths, setFilepaths ] = useState<string[]>(currPost.postURL);
@@ -35,9 +31,16 @@ const EditPost = ( {route} : any ) => {
     setFilepaths([...filepaths.filter((item) => item !== null), uri]);
   }
 
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-
   const sendPost = async () => {
+    if(content === currPost.content && filepaths === currPost.postURL) {
+      Alert.alert('Success','Post updated successfully!', [{
+        text: 'OK',
+        onPress: () => {
+          navigation.goBack();
+        }
+      }])
+      return;
+    };
     setLoading(true);
     const newPaths = await handleUploadFilepaths();
     try{
@@ -54,17 +57,22 @@ const EditPost = ( {route} : any ) => {
         },
         authMode: 'userPool'
       })
-      console.log('Post created successfully');
-    } catch (error: any) {
-      console.log('Error creating post', error);
-    } finally {
-      setLoading(false);
       Alert.alert('Success','Post updated successfully!', [{
         text: 'OK',
         onPress: () => {
           navigation.goBack();
         }
       }])
+    } catch (error: any) {
+      console.log('Error creating post', error);
+      Alert.alert('Error','Error updating post', [{
+        text: 'OK',
+        onPress: () => {
+          navigation.goBack();
+        }
+      }])
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -72,7 +80,9 @@ const EditPost = ( {route} : any ) => {
     try{
       const newPaths = await Promise.all(
         filepaths.map(async (item, index) => {
+          if(item.startsWith('https')) return item;
           const uri = await getImgURI(item, `public/groupPictures/${currPost.groupID}/${Date.now()}_${index}.jpg`);
+          console.log('running getimguri');
           return uri ? 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri : null;
         })
       )
@@ -132,7 +142,7 @@ const EditPost = ( {route} : any ) => {
           keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >   
           <TouchableOpacity onPress={sendPost} style={styles.buttonBlack}>
-            <Text style={styles.buttonTextWhite}>Update</Text>
+            <Text style={styles.buttonTextWhite}>Save</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </View>

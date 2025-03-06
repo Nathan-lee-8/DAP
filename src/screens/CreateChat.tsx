@@ -2,28 +2,23 @@ import { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, FlatList,
   KeyboardAvoidingView, Platform
 } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
 import client from '../client';
 import { createChat, createUserChat, createMessage, deleteChat, deleteMessage,
   deleteUserChat } from '../graphql/mutations';
-import { useNavigation } from '@react-navigation/native';
-import { getCurrentUser } from '@aws-amplify/auth';
-import { GlobalParamList } from '../types/rootStackParamTypes';
 import { User } from '../API';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
 import moment from 'moment';
 
 //TODO: Add rollback in case of failure, create Loading screen
-const CreateChat = ({ route }: any) => {
+const CreateChat = ({ route, navigation }: any) => {
   const initalUser = route.params.user ? [route.params.user] : [];
   const [targetUsers, setTargetUsers] = useState<User[]>(initalUser);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [chatname, setChatname] = useState('Chat name');
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -42,7 +37,6 @@ const CreateChat = ({ route }: any) => {
 
     try {
       setLoading(true);
-      const cognitoID = await getCurrentUser();
       const currTime = moment(Date.now()).format();
 
       const chat = await client.graphql({
@@ -64,7 +58,6 @@ const CreateChat = ({ route }: any) => {
           input: {
             userID: currUser.id,
             chatID: chat.data.createChat.id,
-            ownerID: cognitoID.userId,
             unreadMessageCount: 0,
             lastMessageAt: currTime,
             lastMessage: message,
@@ -77,15 +70,12 @@ const CreateChat = ({ route }: any) => {
       addedMembers.push(myUserChat.data.createUserChat.id);
 
       targetUsers.map(async (user: User) => {
-        let targetOwnerID = user.owner;
-        if (!targetOwnerID) return;
         const targetUserChat = await client.graphql({
           query: createUserChat,
           variables: {
             input: {
               userID: user.id,
               chatID: chat.data.createChat.id,
-              ownerID: targetOwnerID,
               unreadMessageCount: 1,
               lastMessageAt: currTime,
               lastMessage: message,

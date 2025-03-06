@@ -200,11 +200,9 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
 export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
   $owner: String
-  $ownerID: String
 ) {
-  onCreateUserChat(filter: $filter, owner: $owner, ownerID: $ownerID) {
+  onCreateUserChat(filter: $filter, owner: $owner) {
     id
-    ownerID
     unreadMessageCount
     lastMessage
     lastMessageAt
@@ -226,11 +224,9 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
 export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
   $owner: String
-  $ownerID: String
 ) {
-  onUpdateUserChat(filter: $filter, owner: $owner, ownerID: $ownerID) {
+  onUpdateUserChat(filter: $filter, owner: $owner) {
     id
-    ownerID
     unreadMessageCount
     lastMessage
     lastMessageAt
@@ -252,11 +248,9 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
 export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
   $owner: String
-  $ownerID: String
 ) {
-  onDeleteUserChat(filter: $filter, owner: $owner, ownerID: $ownerID) {
+  onDeleteUserChat(filter: $filter, owner: $owner) {
     id
-    ownerID
     unreadMessageCount
     lastMessage
     lastMessageAt
@@ -409,11 +403,9 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
 export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
   $filter: ModelSubscriptionUserGroupFilterInput
   $owner: String
-  $ownerID: String
 ) {
-  onCreateUserGroup(filter: $filter, owner: $owner, ownerID: $ownerID) {
+  onCreateUserGroup(filter: $filter, owner: $owner) {
     id
-    ownerID
     userID
     groupID
     role
@@ -431,11 +423,9 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
 export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
   $filter: ModelSubscriptionUserGroupFilterInput
   $owner: String
-  $ownerID: String
 ) {
-  onUpdateUserGroup(filter: $filter, owner: $owner, ownerID: $ownerID) {
+  onUpdateUserGroup(filter: $filter, owner: $owner) {
     id
-    ownerID
     userID
     groupID
     role
@@ -453,11 +443,9 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
 export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
   $filter: ModelSubscriptionUserGroupFilterInput
   $owner: String
-  $ownerID: String
 ) {
-  onDeleteUserGroup(filter: $filter, owner: $owner, ownerID: $ownerID) {
+  onDeleteUserGroup(filter: $filter, owner: $owner) {
     id
-    ownerID
     userID
     groupID
     role

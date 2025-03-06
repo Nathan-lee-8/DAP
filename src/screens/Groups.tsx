@@ -1,19 +1,17 @@
 
 import { useContext, useEffect, useState, useCallback } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl } from 'react-native';
-import styles from '../styles/Styles';
-import client from '../client';
+import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl
+ } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { groupsByUser } from '../graphql/queries';
 import { UserGroup, ModelSortDirection } from '../API';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GlobalParamList } from '../types/rootStackParamTypes';
+import client from '../client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
+import styles from '../styles/Styles';
 
-const Groups = () => {
+const Groups = ( {navigation} : any ) => {
   const [group, setGroup] = useState<UserGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const authContext = useContext(AuthContext);
@@ -67,7 +65,6 @@ const Groups = () => {
     fetchGroups();
   }, []);
   
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const createGroup = () => {
     navigation.navigate('CreateGroup');
   }

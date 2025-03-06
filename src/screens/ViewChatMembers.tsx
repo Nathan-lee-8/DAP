@@ -1,22 +1,49 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, Modal } from "react-native";
 import styles from '../styles/Styles';
-import { deleteUserChat, deleteMessage, deleteChat } from "../graphql/mutations";
+import { deleteUserChat, deleteMessage, deleteChat, createUserChat 
+ } from "../graphql/mutations";
 import { User } from "../API";
 import client from "../client";
 import ImgComponent from "../components/ImgComponent";
 import SearchBar from "../components/SearchBar";
+import Icon from "@react-native-vector-icons/ionicons";
 
 const ChatMembers = ( {route, navigation} : any ) => {
   const chatData = route.params.chatData;
   const userChats = route.params.userChats;
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
+  const flatListRef = useRef<FlatList>(null);
+  const users = userChats.map((item: any) => item.user);
   const myChat = userChats[0];
 
-  const handleInvite = () => {
+  const handleInvite = async () => {
     setModalVisible(false);
-    //take addedMembers and create UserChat for each member
+    const userIDs = addedMembers.map((item: any) => item.id);
+    try{
+      for(const userID of userIDs){
+        await client.graphql({
+          query: createUserChat,
+          variables: {
+            input: {
+              userID: userID,
+              chatID: chatData.id,
+              unreadMessageCount: 0,
+              lastMessageAt: myChat.lastMessageAt,
+              lastMessage: myChat.lastMessage,
+              role: 'Member'
+            }
+          },
+          authMode: 'userPool'
+        });
+        console.log('userAdded');
+      }
+    } catch (error){
+      console.log(error);
+    } 
+    navigation.goBack();
+    Alert.alert('Success', 'User(s) successfully added');
   }
 
   const handleEditChat = () => {
@@ -144,9 +171,25 @@ const ChatMembers = ( {route, navigation} : any ) => {
     });
   }
 
-  const handleAddMember = async (user: User) => {
+  const handleAddMember = (user: User) => {
     setAddedMembers([...addedMembers, user]);
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
   }
+
+  const removeMember = (user: User) => {
+    setAddedMembers(addedMembers => addedMembers.filter(item => item !== user));
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  }
+
+  const scrollToBottom = () => {
+    flatListRef.current?.scrollToEnd({
+      animated: true,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -192,28 +235,33 @@ const ChatMembers = ( {route, navigation} : any ) => {
         onRequestClose={() => setModalVisible(false)}
         animationType="slide"
       >
-        <View style={styles.modelOverlay}>
-          <View style={ {alignItems: 'center', height: 50}}>
+        <View style={styles.searchModalOverlay}>
+          <View style={styles.searchModalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Cancel</Text>
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Search User</Text>
           </View>
           <View style={styles.searchModalContainer}>
-            <SearchBar userPressed={handleAddMember} remove={addedMembers}/>
-            
-            <FlatList
-              data={addedMembers}
-              horizontal
-              renderItem={({item}) => {
-                return (
-                  <View>
-                    <ImgComponent uri={item.profileURL || 'defaultUser'} />
-                  </View>
-                )
-              }}
-              contentContainerStyle={{marginTop: 'auto'}}
-            />
+            <SearchBar userPressed={handleAddMember} remove={[...addedMembers, ...users]}/>
+            <View style={{marginTop: 'auto'}}>
+              <FlatList
+                ref={flatListRef}
+                data={addedMembers}
+                horizontal
+                renderItem={({item}) => {
+                  return (
+                    <View>
+                      <TouchableOpacity style={styles.removeIcon} onPress={() => removeMember(item)}>
+                        <Icon name="remove-circle-outline" size={25}/>
+                      </TouchableOpacity>
+                      <ImgComponent style={styles.addedUserImg} uri={item.profileURL || 'defaultUser'}/>
+                    </View>
+                  )
+                }}
+                keyboardShouldPersistTaps='handled'
+              />
+            </View>
             <TouchableOpacity style={styles.buttonBlack} onPress={handleInvite}>
               <Text style={styles.buttonTextWhite}>Invite</Text>
             </TouchableOpacity>

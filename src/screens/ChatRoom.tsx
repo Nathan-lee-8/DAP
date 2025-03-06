@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useContext, useLayoutEffect, useCallback
  } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
-    KeyboardAvoidingView, Platform, Alert, AppState } from 'react-native';
+    KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { AuthContext } from '../context/AuthContext';
 import { getChat } from '../graphql/queries';
@@ -249,12 +249,11 @@ const ChatRoom = ( { route, navigation } : any) => {
                 }} 
               />
             ))
-            ) : (
-              <ImgComponent uri={displayURLs[0] || 'defaultUser'} 
-                style={{height: 40, width: 40, borderRadius: 20}} 
-              />
-            )
-          }
+          ) : (
+            <ImgComponent uri={displayURLs[0] || 'defaultUser'} 
+              style={{height: 40, width: 40, borderRadius: 20}} 
+            />
+          )}
         </View>
         <Text style={styles.chatRoomName} numberOfLines={1}>{title}</Text>
       </TouchableOpacity>

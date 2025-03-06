@@ -1,7 +1,6 @@
-import { useState, useContext, useRef } from 'react';
+import { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Platform,
-  ActivityIndicator, Alert, KeyboardAvoidingView, Keyboard,
-  TouchableWithoutFeedback} from 'react-native'
+  ActivityIndicator, Alert, KeyboardAvoidingView } from 'react-native'
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
@@ -10,7 +9,6 @@ import ImgComponent from '../components/ImgComponent';
 import client from '../client';
 import { createUserGroup, createGroup, deleteUserGroup, deleteGroup,
   updateGroup } from '../graphql/mutations';
-import { getCurrentUser } from '@aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import { imagePicker, getImgURI } from '../components/addImg';
 
@@ -24,6 +22,7 @@ const CreateGroup = ( {navigation} : any) => {
   const [groupURI, setGroupURL] = useState<string>('defaultGroup');
   const [loading, setLoading] = useState(false);
   const [goNext, setGoNext] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -47,7 +46,8 @@ const CreateGroup = ( {navigation} : any) => {
           input: {
             groupName: groupName,
             description: description,
-            groupURL: groupURI
+            groupURL: groupURI,
+            isPublic: isPublic
           }
         },
         authMode:'userPool'
@@ -57,12 +57,10 @@ const CreateGroup = ( {navigation} : any) => {
 
       //Add Members 
       for(const member of members){
-        if(!member.owner) throw new Error("No owner");
         const userGroupData = await client.graphql({
           query: createUserGroup,
           variables: {
             input: {
-              ownerID: member.owner,
               userID: member.id,
               role: "Member",
               groupID: groupID
@@ -75,12 +73,10 @@ const CreateGroup = ( {navigation} : any) => {
       };
 
       //Add Self
-      const cogID = await getCurrentUser();
       const selfData = await client.graphql({
         query: createUserGroup,
         variables: { 
           input: {
-            ownerID: cogID.userId,
             userID: currUser.id,
             role: "Owner",
             groupID: groupID
@@ -207,12 +203,11 @@ const CreateGroup = ( {navigation} : any) => {
             return (
               <View style={styles.searchUserContainer}>
                 <View style={styles.listUserContainer}>
-                <TouchableOpacity style={{marginRight: 10}} onPress={()=> removeUser(item)}>
-                    <Icon name="remove-circle-outline" size={25}/>
-                  </TouchableOpacity>
                   <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
                   <Text style={[styles.postContent, {marginLeft: 10}]}>{item?.firstname + ' ' + item?.lastname}</Text>
-                  <Text style={styles.memberText}>Member</Text>
+                  <TouchableOpacity style={{marginLeft: 'auto'}} onPress={()=> removeUser(item)}>
+                    <Icon name="remove-circle-outline" size={25}/>
+                  </TouchableOpacity>
                 </View>
               </View>
             )
@@ -265,6 +260,21 @@ const CreateGroup = ( {navigation} : any) => {
         value={description}
         onChangeText={ setDescription }
       />
+      <View style={styles.groupPrivacyContainer}>
+        <Text style={styles.privacyText}>Group Privacy Options:   </Text>
+        <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(false)}>
+          <View 
+            style={isPublic !== null && !isPublic ? styles.privacyIconSelected : null}
+          />
+        </TouchableOpacity>
+        <Text style={styles.privacyText}>Private</Text>
+        <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(true)}>
+          <View 
+            style={isPublic === null || isPublic ? styles.privacyIconSelected : null}
+          />
+        </TouchableOpacity>
+        <Text style={styles.privacyText}>Public</Text>
+      </View>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}

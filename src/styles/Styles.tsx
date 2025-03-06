@@ -40,6 +40,10 @@ const styles = StyleSheet.create({
     alignSelf:'center',
     color: 'white'
   },
+  buttonTextBlue: {
+    fontSize: 16,
+    color: 'blue'
+  },
   announcement: {
     marginTop: 20,
     fontSize: 60,
@@ -127,11 +131,8 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     backgroundColor: colorPrimary,
-    borderWidth: 1,
-    borderRadius: 10,
     height: 40,
     marginRight: 10,
-    marginBottom: 10,
     padding: 10,
   },
 
@@ -234,23 +235,38 @@ const styles = StyleSheet.create({
   },
 
   /** Modal styles */
-  modelOverlay:{
+  postModelOverlay:{
     flex: 1,
-    backgroundColor: 'white',
-  },
-  searchModalContainer: {
-    flex: 1,
-    width: width,
-    height: '80%',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  modalContainer: {
+  postModalContainer: {
     width: 300,
     backgroundColor: 'white',
     padding: 20,
     borderWidth: 1,
     alignItems: 'center',
+  },
+  searchModalOverlay: {
+    flex: 1,
+    justifyContent:'flex-end'
+  },
+  searchModalContainer: {
+    width: width,
+    height: '85%',
+    backgroundColor: 'white',
+    borderRightWidth: 1,
+    borderLeftWidth: 1,
+  },
+  searchModalHeader: {
+    backgroundColor: 'white',
+    alignItems: 'center',
+    borderTopRightRadius: 15,
+    borderTopLeftRadius: 15,
+    borderTopWidth: 1,
+    borderRightWidth: 1,
+    borderLeftWidth: 1,
+    height: 50,
   },
   modalTitle: {
     fontSize: 18,
@@ -265,16 +281,18 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontSize: 16,
   },
-  optionButton: {
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-    width: '100%',
-    alignItems: 'center',
+  addedUserImg: {
+    height: 80,
+    width: 80,
+    borderRadius: 40,
+    marginRight: 10,
   },
-  optionText: {
-    color: 'white',
+  addedUser: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  addedUserText: {
     fontSize: 16,
   },
 
@@ -315,6 +333,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 0,
+    paddingHorizontal: 5,
+    paddingBottom: 5,
+    zIndex: 1
   },
 
   /** List Messages and Groups styles */
@@ -526,6 +547,62 @@ const styles = StyleSheet.create({
     right: 5,
     zIndex: 1
   },
+  groupPrivacyContainer:{
+    flexDirection: 'row',
+    padding: 10,
+  },
+  privacyText:{
+    fontSize: 16,
+    color: 'black',
+  },
+  privacyIcon:{
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    margin: 5,
+    marginLeft: 15,
+    backgroundColor: 'lightgrey',
+    alignSelf: 'center',
+    justifyContent: 'center'
+  },
+  privacyIconSelected:{
+    width: 8,
+    height: 8,
+    borderRadius: 5,
+    backgroundColor: 'black',
+    alignSelf: 'center',
+  },
+  privacyIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto',
+  },
+  privacyIconText: {
+    fontSize: 14,
+    color: 'black',
+    marginLeft: 5,
+  },
+  privacyIconTextSelected: {
+    fontSize: 14,
+    color: 'white',
+    marginLeft: 5,
+  },
+  privacyIconContainerSelected: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    backgroundColor: 'black',
+    padding: 5,
+    borderRadius: 5,
+  },
+  privacyIconContainerNotSelected: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    backgroundColor: 'white',
+    padding: 5,
+    borderRadius: 5,
+  },
 
   /** Search User Styles  */
   searchInput: {
@@ -623,13 +700,10 @@ const styles = StyleSheet.create({
     opacity: 0.6
   },
   editProfileButton: {
-    backgroundColor: colorPrimary,
     position: 'absolute',
-    right: 10,
-    top: 10,
+    right: 5,
+    top: 0,
     width: 'auto',
-    borderWidth: 1,
-    borderRadius: 10,
     padding: 10,
   },
 
