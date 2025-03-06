@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert,
-   TextInput, FlatList, Platform, KeyboardAvoidingView
-} from 'react-native';
+import { useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert, TextInput, FlatList,
+   Platform, KeyboardAvoidingView, Modal } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
 import { imagePicker, getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
-import  { deleteUserGroup, updateGroup } from '../graphql/mutations';
+import  { deleteUserGroup, updateGroup, updateUserGroup } from '../graphql/mutations';
 import client from '../client';
-import { UserChat } from '../API';
+import { UserGroup} from '../API';
 
 const EditGroup = ( {route, navigation} : any ) => {
   const group = route.params.group;
@@ -16,39 +16,52 @@ const EditGroup = ( {route, navigation} : any ) => {
   const [ filepath, setFilepath ] = useState<string>(group.groupURL);
   const [ name, setName ] = useState<string>(group.groupName);
   const [ description, setDescription ] = useState<string>(group.description);
-  const [ members, setMembers ] = useState<UserChat[]>(group.members?.items);
+  const [ members, setMembers ] = useState<UserGroup[]>(group.members?.items);
+  const [ isPublic, setIsPublic ] = useState(group.isPublic);
+  console.log(isPublic);
   const [ removedMembers, setRemovedMembers ] = useState<string[]>([]);
+  const [ modalVisible, setModalVisible ] = useState(false);
+  const [ updateRoleIDs, setUpdateRoleIDs ] = useState<string[]>([]);
+  const [ selectedUserGroup, setSelected ] = useState<UserGroup>();
+  const currUser = useContext(AuthContext)?.currUser;
+  if(!currUser) return;
 
   const getFilePath = async () => {
-    try{
-      setLoading(true);
-      var uri = await imagePicker();
-      if(uri === null) throw new Error('No image selected');
-      setFilepath(uri);      
-    } catch(error: any){
-      Alert.alert(error.message);
-    }finally{
-      setLoading(false);
-    }
+    var uri = await imagePicker();
+    if(uri === null){ 
+      Alert.alert("Alert", "No image selected")
+      return;
+    };
+    setFilepath(uri);      
   }
 
   const handleEditGroup = async () => {
     try{
       setLoading(true);
-      var currURI = await getImgURI( filepath, `public/groupPictures/${group.id}/profile/${Date.now()}.jpg`);
-      await client.graphql({
-        query: updateGroup,
-        variables: {
-          input: {
-            id: group.id,
-            groupName: name,
-            description: description,
-            groupURL: 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + currURI
-          }
-        },
-        authMode: 'userPool'
-      })
-      console.log("Group updated successfully");
+      var currURI = filepath;
+      if(filepath !== group.groupURL){
+        var tempFilepath = await getImgURI(filepath, 
+          `public/groupPictures/${group.id}/profile/${Date.now()}.jpg`)
+        currURI = 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + tempFilepath;
+      }
+      if(name !== group.groupName || description !== group.description || 
+        filepath !== group.groupURL ||group.isPublic !== isPublic 
+      ){
+        await client.graphql({
+          query: updateGroup,
+          variables: {
+            input: {
+              id: group.id,
+              groupName: name,
+              description: description,
+              groupURL: currURI,
+              isPublic: isPublic
+            }
+          },
+          authMode: 'userPool'
+        })
+        console.log(group.id, "updated successfully");
+      }
       for(const member of removedMembers){
         await client.graphql({
           query: deleteUserGroup,
@@ -57,27 +70,74 @@ const EditGroup = ( {route, navigation} : any ) => {
           },
           authMode: 'userPool'
         })
-        console.log("Member removed successfully");
+        console.log(member, "removed successfully");
+      }
+
+      for(const member of members ) { 
+        if(updateRoleIDs.includes(member.id)){
+          await client.graphql({
+            query: updateUserGroup,
+            variables: {
+              input: { 
+                id: member.id,
+                role: member.role
+              }
+            },
+            authMode: 'userPool'
+          })
+          console.log(member.id, "updated successfully");
+        }
       }
     } catch(error){
       console.log(error);
     } finally{
       setLoading(false);
-      handleGoBack();
+      navigation.pop(2);
+      Alert.alert('Success', 'Group updated successfully')
     }
   }
-  
+
   const updateRole = (userChat: any) => {
-    console.log(userChat);
+    if(userChat.role === 'Owner'){
+      var count = 0;
+      for(const member of members){
+        if(member.role === 'Owner'){
+          count++;
+        }
+      }
+      if(count <= 1){
+        Alert.alert(
+          'Error', 'Please give ownership to another member before changing Owner role'
+        )
+        return;
+      }
+    }
+    setModalVisible(true);
+    setSelected(userChat);
   }
 
-  const removeMember = ( item: UserChat) => {
+  const handleOptionButton = (option : string) => {
+    if (selectedUserGroup) {
+      // Update the role of the selected participant
+      setMembers((members) =>
+        members.map((member) => {
+          if(member.id === selectedUserGroup.id && member.role !== option){
+            if(!updateRoleIDs.includes(member.id)){
+              setUpdateRoleIDs([...updateRoleIDs, member.id]);
+            }
+            return {...member, role: option};
+          }else{
+            return member;
+          }
+        })
+      );
+    }
+    setModalVisible(false);
+  };
+
+  const removeMember = ( item: UserGroup) => {
     setRemovedMembers((removedMembers) => [...removedMembers, item.id]);
     setMembers(members.filter((member) => member.id !== item.id));
-  }
-
-  const handleGoBack = () => { 
-    navigation.goBack();
   }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
@@ -90,18 +150,33 @@ const EditGroup = ( {route, navigation} : any ) => {
           <Text style={styles.addImageText}>Add Img</Text>
         </TouchableOpacity>
         <TextInput
-          style={styles.input}
+          style={[styles.input, {marginBottom: 5}]}
           value={name}
           placeholder={name}
           onChangeText={setName}
         />
         <TextInput
-          style={styles.longInput}
+          style={[styles.longInput, {marginBottom: 0}]}
           value={description}
           multiline={true}
           placeholder={description || 'No description'}
           onChangeText={setDescription}
         />
+        <View style={styles.groupPrivacyContainer}>
+          <Text style={styles.privacyText}>Group Privacy Options:   </Text>
+          <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(false)}>
+            <View 
+              style={isPublic !== null && !isPublic ? styles.privacyIconSelected : null}
+            />
+          </TouchableOpacity>
+          <Text style={styles.privacyText}>Private</Text>
+          <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(true)}>
+            <View 
+              style={isPublic === null || isPublic ? styles.privacyIconSelected : null}
+            />
+          </TouchableOpacity>
+          <Text style={styles.privacyText}>Public</Text>
+        </View>
       </View>
     )
   }
@@ -113,9 +188,13 @@ const EditGroup = ( {route, navigation} : any ) => {
         renderItem={({ item }) => {
           return(
             <View style={styles.listMemberContainer}>
-              <TouchableOpacity style={{marginRight: 10}} onPress={() => removeMember(item)}>
-                <Icon name="person-remove-outline" size={18}/>
-              </TouchableOpacity>
+              {currUser.id !== item?.userID && item.role !== 'Owner' ? (
+                <TouchableOpacity style={{marginRight: 10}} onPress={() => removeMember(item)}>
+                  <Icon name="person-remove-outline" size={18}/>
+                </TouchableOpacity>
+              ) : (
+                <View style={{width: 30}}></View>
+              )}
               <ImgComponent uri={item?.user?.profileURL || 'defaultUser'}/>
               <View style={styles.userInfoContainer}>
                 <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
@@ -127,6 +206,7 @@ const EditGroup = ( {route, navigation} : any ) => {
           )
         }}
         ListHeaderComponent={header()}
+        keyboardShouldPersistTaps='handled'
       />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -136,6 +216,29 @@ const EditGroup = ( {route, navigation} : any ) => {
           <Text style={styles.buttonTextWhite}>Save Changes</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
+      <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
+            <FlatList
+              data={["Owner", "Admin", "Member"]}
+              keyExtractor={(option) => option}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity 
+                  style={styles.buttonWhite} 
+                  onPress={() => handleOptionButton(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+              ListFooterComponent={
+                <TouchableOpacity style={styles.buttonBlack} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.buttonTextWhite}>Close</Text>
+                </TouchableOpacity>
+              }
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   )
 }

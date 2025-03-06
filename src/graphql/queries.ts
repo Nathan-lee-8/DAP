@@ -420,7 +420,6 @@ export const commentsByPost = /* GraphQL */ `query CommentsByPost(
 export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
   getUserChat(id: $id) {
     id
-    ownerID
     unreadMessageCount
     lastMessage
     lastMessageAt
@@ -469,7 +468,6 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
   listUserChats(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      ownerID
       unreadMessageCount
       lastMessage
       lastMessageAt
@@ -509,7 +507,6 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
   ) {
     items {
       id
-      ownerID
       unreadMessageCount
       lastMessage
       lastMessageAt
@@ -525,7 +522,6 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
         participants{
           items{
             id
-            ownerID
             unreadMessageCount
             lastMessage
             lastMessageAt
@@ -588,7 +584,6 @@ export const userChatsByChatIDAndCreatedAt = /* GraphQL */ `query UserChatsByCha
   ) {
     items {
       id
-      ownerID
       unreadMessageCount
       lastMessage
       lastMessageAt
@@ -650,7 +645,6 @@ export const getChat = /* GraphQL */ `query GetChat(
     participants {
       items{
         id
-        ownerID
         unreadMessageCount
         lastMessage
         lastMessageAt
@@ -846,7 +840,6 @@ export const messagesByChat = /* GraphQL */ `query MessagesByChat(
 export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
   getUserGroup(id: $id) {
     id
-    ownerID
     userID
     groupID
     role
@@ -859,7 +852,6 @@ export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
       members{
         items{
           id
-          ownerID
           userID
           groupID
           role
@@ -895,7 +887,6 @@ export const listUserGroups = /* GraphQL */ `query ListUserGroups(
   listUserGroups(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       id
-      ownerID
       userID
       groupID
       role
@@ -931,7 +922,6 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
   ) {
     items {
       id
-      ownerID
       userID
       groupID
       role
@@ -950,7 +940,6 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
         members{
           items{
             id
-            ownerID
             userID
             groupID
             role
@@ -1033,7 +1022,6 @@ export const membersByGroup = /* GraphQL */ `query MembersByGroup(
   ) {
     items {
       id
-      ownerID
       userID
       groupID
       role
@@ -1061,7 +1049,6 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     members {
       items{
         id
-        ownerID
         userID
         groupID
         role
@@ -1150,7 +1137,6 @@ export const listGroups = /* GraphQL */ `query ListGroups(
       members {
         items{
           id
-          ownerID
           userID
           groupID
           role

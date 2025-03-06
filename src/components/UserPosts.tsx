@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import client from '../client';
 import { postsByUser } from '../graphql/queries';
 import { Post } from '../API';
@@ -30,6 +30,7 @@ const UserPosts = ( { userID } : any ) => {
         `${userID}PostsCache`, 
         JSON.stringify({posts: fetchedPosts,timestamp: Date.now()})
       );
+      console.log('fetched from userPosts');
     } catch (error) {
       console.log('Error getting posts', error);
     } 
@@ -80,6 +81,14 @@ const UserPosts = ( { userID } : any ) => {
           maxToRenderPerBatch={5}
           windowSize={5}
           removeClippedSubviews={true}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={fetchPosts}
+              colors={['#9Bd35A', '#689F38']}
+              progressBackgroundColor="#ffffff" 
+            />
+          }
         />)}
     </View>
   );

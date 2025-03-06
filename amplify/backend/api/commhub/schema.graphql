@@ -56,12 +56,10 @@ type Comment @model @auth(
 type UserChat @model @auth(
   rules: [
     { allow: owner },
-    { allow: owner, ownerField: "ownerID" },
-    { allow: private, operations: [read, update, delete] }
+    { allow: private }
   ]
 ) {
   id: ID!
-  ownerID: ID!
   unreadMessageCount: Int 
   lastMessage: String
   lastMessageAt: AWSDateTime!
@@ -109,12 +107,10 @@ type Message @model @auth(
 type UserGroup @model @auth(
   rules: [
     { allow: owner },
-    { allow: owner, ownerField: "ownerID" },
-    { allow: private, operations: [read, update, delete] }
+    { allow: private}
   ]
 ) {
   id: ID!
-  ownerID: ID!
   userID: ID! @index(name: "groupsByUser", queryField: "groupsByUser", sortKeyFields: ["createdAt"])
   groupID: ID! @index(name: "membersByGroup", queryField: "membersByGroup")
   role: String

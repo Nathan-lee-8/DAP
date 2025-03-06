@@ -1,26 +1,119 @@
-import { useContext, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, Modal } from "react-native";
-import { deleteUserGroup, deleteGroup, deletePost } from "../graphql/mutations";
+import { useContext, useState, useRef } from "react";
+import { View, Text, FlatList, TouchableOpacity, Alert, Modal,
+  ActivityIndicator } from "react-native";
+import { deleteUserGroup, deleteGroup, deletePost, createUserGroup,
+  createChat, createUserChat
+ } from "../graphql/mutations";
 import { User } from "../API";
 import client from "../client";
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles';
 import ImgComponent from "../components/ImgComponent";
 import SearchBar from "../components/SearchBar";
+import Icon from "@react-native-vector-icons/ionicons";
+import moment from "moment";
 
 const ViewMembers = ( {route, navigation} : any) => {
   const group = route.params.group;
   const userGroups = group.members.items;
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
+  const [ loading, setLoading ] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
   const myUserGroup = userGroups.find((item: any) => item?.user?.id === currUser.id);
+  const users = userGroups.map((item: any) => item.user);
 
-  const handleInvite = () => {
+  const handleCreateChat = async () => {
+    console.log(userGroups.map((item: any) => item.user.id))
+    try {
+      var chatID = null;
+      const addedMembers = [];
+
+      setLoading(true);
+      const currTime = moment(Date.now()).format();
+
+      const chat = await client.graphql({
+        query: createChat,
+        variables: {
+          input: {
+            name: group.groupName,
+            isGroup: userGroups.length > 1,
+            url: group.groupURL
+          }
+        },
+        authMode: 'userPool'
+      });
+      console.log("chat created");
+      chatID = chat.data.createChat.id;
+
+      const myUserChat = await client.graphql({
+        query: createUserChat,
+        variables: {
+          input: {
+            userID: currUser.id,
+            chatID: chat.data.createChat.id,
+            unreadMessageCount: 0,
+            lastMessageAt: currTime,
+            role: 'Owner'
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log("senderChat created");
+      addedMembers.push(myUserChat.data.createUserChat.id);
+
+      userGroups.map(async (user: User) => {
+        const targetUserChat = await client.graphql({
+          query: createUserChat,
+          variables: {
+            input: {
+              userID: user.id,
+              chatID: chat.data.createChat.id,
+              unreadMessageCount: 0,
+              lastMessageAt: currTime,
+              role: 'Member'
+            }
+          },
+          authMode: 'userPool'
+        })
+        console.log(user.firstname + " chat created");
+        addedMembers.push(targetUserChat.data.createUserChat.id);
+      })
+      Alert.alert('Success', 'GroupChat Successfully Created');
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Error', 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleInvite = async () => {
     setModalVisible(false);
-    //take addedMembers and create UserGroup for each member
+    const memberIDs = addedMembers.map((item: any) => item.id);
+    for(const memberID of memberIDs){
+      try{
+        await client.graphql({
+          query: createUserGroup,
+          variables: {
+            input: {
+              userID: memberID,
+              groupID: group.id,
+              role: 'Member'
+            }
+          },
+          authMode: 'userPool'
+        });
+        console.log('userAdded');
+      } catch (error){
+        console.log(error);
+      }
+    }
+    navigation.goBack();
+    Alert.alert('Success', 'Group updated successfully')
   }
 
   const handleEditGroup = () => {
@@ -128,10 +221,32 @@ const ViewMembers = ( {route, navigation} : any) => {
     } catch (error) {
       console.log(error);
     }
+    navigation.pop(2);
+    Alert.alert('Success', 'Group successfully deleted')
   }
 
   const handleAddMember = async (user: User) => {
     setAddedMembers([...addedMembers, user]);
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  }
+
+  const removeMember = (user: User) => {
+    setAddedMembers(addedMembers => addedMembers.filter(item => item !== user));
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  }
+
+  const scrollToBottom = () => {
+    flatListRef.current?.scrollToEnd({
+      animated: true,
+    });
+  };
+
+  if(loading){
+    return <ActivityIndicator size="large" color="#0000ff" />
   }
 
   return (
@@ -142,9 +257,9 @@ const ViewMembers = ( {route, navigation} : any) => {
         renderItem={({ item }) => {
           return(
             <View style={styles.listMemberContainer}>
-              <ImgComponent uri={ item.user.profileURL || 'defaultUser'}/>
+              <ImgComponent uri={ item.user?.profileURL || 'defaultUser'}/>
               <View style={styles.userInfoContainer}>
-                <Text style={styles.postAuthor}>{item.user.firstname + " " + item.user.lastname}</Text>
+                <Text style={styles.postAuthor}>{item.user?.firstname + " " + item.user?.lastname}</Text>
               </View>
                 <Text style={styles.roleText}>{item.role}</Text>
             </View>
@@ -153,6 +268,9 @@ const ViewMembers = ( {route, navigation} : any) => {
       />
       {(myUserGroup?.role === 'Admin' || myUserGroup?.role === 'Owner') && 
         <View>
+          <TouchableOpacity style={styles.buttonWhite} onPress={handleCreateChat}>
+            <Text style={styles.buttonTextBlack}>Create Chat</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.buttonWhite} onPress={() => setModalVisible(true)}>
             <Text style={styles.buttonTextBlack}>Invite</Text>
           </TouchableOpacity>
@@ -178,27 +296,33 @@ const ViewMembers = ( {route, navigation} : any) => {
         onRequestClose={() => setModalVisible(false)}
         animationType="slide"
       >
-        <View style={styles.modelOverlay}>
-          <View style={ {alignItems: 'center', height: 50}}>
+        <View style={styles.searchModalOverlay}>
+          <View style={styles.searchModalHeader}>
             <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Cancel</Text>
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Search User</Text>
           </View>
           <View style={styles.searchModalContainer}>
-            <SearchBar userPressed={handleAddMember} remove={addedMembers}/>
-            <FlatList
-              data={addedMembers}
-              horizontal
-              renderItem={({item}) => {
-                return (
-                  <View>
-                    <ImgComponent uri={item.profileURL || 'defaultUser'} />
-                  </View>
-                )
-              }}
-              contentContainerStyle={{marginTop: 'auto'}}
-            />
+            <SearchBar userPressed={handleAddMember} remove={[...addedMembers, ...users]}/>
+            <View style={{marginTop: 'auto'}}>
+              <FlatList
+                ref={flatListRef}
+                data={addedMembers}
+                horizontal
+                renderItem={({item}) => {
+                  return (
+                    <View>
+                      <TouchableOpacity style={styles.removeIcon} onPress={() => removeMember(item)}>
+                        <Icon name="remove-circle-outline" size={25}/>
+                      </TouchableOpacity>
+                      <ImgComponent style={styles.addedUserImg} uri={item.profileURL || 'defaultUser'}/>
+                    </View>
+                  )
+                }}
+                keyboardShouldPersistTaps='handled'
+              />
+            </View>
             <TouchableOpacity style={styles.buttonBlack} onPress={handleInvite}>
               <Text style={styles.buttonTextWhite}>Invite</Text>
             </TouchableOpacity>

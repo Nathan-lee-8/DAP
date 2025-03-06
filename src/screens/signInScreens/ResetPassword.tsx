@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Alert, Text, Platform,
-  TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView 
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, Alert, Text, Platform, Keyboard,
+  TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
 import { resetPassword, confirmResetPassword } from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/Styles';
@@ -20,7 +19,7 @@ const ResetPassword = () => {
   const [ code, setCode ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ password1, setPassword1 ] = useState('');
-  const [ hasReset, setHasReset ] = useState(true);
+  const [ hasReset, setHasReset ] = useState(false);
   const [ email, setEmail ] = useState('');
 
   const confirmPasswordReset = async () => {

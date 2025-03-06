@@ -203,7 +203,6 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
 ) {
   createUserChat(input: $input, condition: $condition) {
     id
-    ownerID
     unreadMessageCount
     lastMessage
     lastMessageAt
@@ -228,7 +227,6 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
 ) {
   updateUserChat(input: $input, condition: $condition) {
     id
-    ownerID
     unreadMessageCount
     lastMessage
     lastMessageAt
@@ -253,7 +251,6 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
 ) {
   deleteUserChat(input: $input, condition: $condition) {
     id
-    ownerID
     unreadMessageCount
     lastMessage
     lastMessageAt
@@ -398,7 +395,6 @@ export const createUserGroup = /* GraphQL */ `mutation CreateUserGroup(
 ) {
   createUserGroup(input: $input, condition: $condition) {
     id
-    ownerID
     userID
     groupID
     role
@@ -419,7 +415,6 @@ export const updateUserGroup = /* GraphQL */ `mutation UpdateUserGroup(
 ) {
   updateUserGroup(input: $input, condition: $condition) {
     id
-    ownerID
     userID
     groupID
     role
@@ -440,7 +435,6 @@ export const deleteUserGroup = /* GraphQL */ `mutation DeleteUserGroup(
 ) {
   deleteUserGroup(input: $input, condition: $condition) {
     id
-    ownerID
     userID
     groupID
     role

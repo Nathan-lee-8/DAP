@@ -1,19 +1,16 @@
 import { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Platform,
-  ActivityIndicator, FlatList, KeyboardAvoidingView, Keyboard,
-  TouchableWithoutFeedback} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, 
+  ActivityIndicator, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback
+} from 'react-native';
 import styles from '../styles/Styles';
 import { imagePicker, getImgURI } from '../components/addImg';
 import { createPost } from '../graphql/mutations';
 import client from '../client';
 import { AuthContext } from '../context/AuthContext';
 import ImgComponent from '../components/ImgComponent';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { GlobalParamList } from '../types/rootStackParamTypes';
 import Icon from '@react-native-vector-icons/ionicons';
 
-const CreatePost = ({route}: any) => {
+const CreatePost = ({route, navigation}: any) => {
   const { groupID } = route.params;
   const [ content, setContent ] = useState('');
   const [ filepaths, setFilepaths ] = useState<string[]>([]);
@@ -34,8 +31,6 @@ const CreatePost = ({route}: any) => {
     };
     setFilepaths([...filepaths.filter((item) => item !== null), uri]);
   }
-
-  const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
 
   const sendPost = async () => {
     setLoading(true);
