@@ -25,7 +25,7 @@ const Welcome = () => {
       <Text style={styles.announcement}>Interact with your community.</Text>
       <View style={{marginTop: 'auto'}}>
         <TouchableOpacity style={styles.buttonBlack} onPress={handleSignUp}>
-          <Text style={styles.buttonTextWhite}> Get Started</Text>
+          <Text style={styles.buttonTextWhite}>Sign Up</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buttonWhite} onPress={handleSignIn}>
           <Text style={styles.buttonTextBlack}>Log In</Text>

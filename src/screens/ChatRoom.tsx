@@ -233,7 +233,12 @@ const ChatRoom = ( { route, navigation } : any) => {
         onPress={handleViewMembers}
       >        
         <View style={styles.URLSection}>
-          {displayURLs.length > 1 ? (
+          {chat?.url !== null ? (
+            <ImgComponent 
+              uri={chat?.url || 'defaultUser'} 
+              style={{height: 40, width: 40, borderRadius: 20}} 
+            />
+          ) : displayURLs.length > 1 ? (
             displayURLs.slice(0, 2).map((uri, index) => (
               <ImgComponent 
                 key={index} 

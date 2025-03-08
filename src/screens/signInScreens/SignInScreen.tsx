@@ -6,7 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { SignInParamList } from '../../types/rootStackParamTypes';
 import { AuthContext } from '../../context/AuthContext';
-import Icon from '@react-native-vector-icons/ionicons';
+import SocialProvSignIn from '../../components/SocialProvSignIn';
 import styles from '../../styles/Styles';
 
 /**
@@ -43,10 +43,6 @@ const SignIn = () => {
     navigation.navigate('ResetPassword');
   }
 
-  const googleLogin = async () => {
-    console.log('Google login not implemented yet.');
-  }
-
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -77,24 +73,7 @@ const SignIn = () => {
           <Text style={{color: "#007BFF"}}>Reset Password</Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.iconContainer}>
-        <Text style={styles.label}>Login with Social Provider</Text>
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-            <Icon name="logo-google" size={35} color="#007BFF"/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-            <Icon name="logo-facebook" size={35} color="#007BFF"/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-            <Icon name="logo-apple" size={35} color="#007BFF"/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-            <Icon name="logo-amazon" size={35} color="#007BFF"/>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <SocialProvSignIn/>
     </View>
   );
 };

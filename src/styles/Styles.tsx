@@ -379,8 +379,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: colorPrimary,
-    borderWidth: 1,
-    borderColor: '#333'
+    borderTopWidth: 1,
+    borderColor: 'lightgrey'
   },
   chatRoomName: { 
     fontSize: 20,

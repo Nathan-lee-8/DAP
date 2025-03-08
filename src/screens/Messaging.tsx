@@ -104,7 +104,12 @@ const MessageUsers = ( {navigation} : any) => {
                 ) : ( null )}
                 <View style={styles.itemContentSection}>
                   <View style={styles.URLSection}>
-                    {displayURIs.length > 1 ? (
+                    {item?.chat?.url !== null ? (
+                      <ImgComponent 
+                        uri={item?.chat?.url || 'defaultUser'} 
+                        style={{height: 40, width: 40, borderRadius: 20}} 
+                      />
+                    ) : displayURIs.length > 1 ? (
                       displayURIs.slice(0, 2).map((uri, index) => (
                         <ImgComponent 
                           key={index} 
@@ -114,18 +119,13 @@ const MessageUsers = ( {navigation} : any) => {
                             top: index * 10,
                             left: index * 10 , 
                             zIndex: displayURIs.length - index,   
-                            height: 26,
-                            width: 26,
-                            borderRadius: 13,
+                            height: 30,
+                            width: 30,
+                            borderRadius: 25,
                           }} 
                         />
                       ))
-                    ) : item?.chat?.url !== null ? (
-                      <ImgComponent 
-                        uri={item?.chat?.url || 'defaultUser'} 
-                        style={{height: 40, width: 40, borderRadius: 20}} 
-                      />
-                    ) :  (
+                    ) : (
                       <ImgComponent 
                         uri={displayURIs[0] || 'defaultUser'} 
                         style={{height: 40, width: 40, borderRadius: 20}} 
