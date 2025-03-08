@@ -56,8 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if(!userEmail) return;
-    const fetchUserAttributes = async () => {
+    if(!userEmail || userEmail === '') return;
+    const getUserAttributes = async () => {
       try {
         const data = await client.graphql({
           query: userByEmail,
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log('Error fetching user attributes:', error);
       }
     };
-    fetchUserAttributes();
+    getUserAttributes();
   }, [isSignedIn])
 
   return (

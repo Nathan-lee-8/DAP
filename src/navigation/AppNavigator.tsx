@@ -36,6 +36,15 @@ const SignInStack = createNativeStackNavigator();
 const GlobalStack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
 
+const linking = { 
+  prefixes: ['dap://'], // The custom scheme your app is listening for
+  config: {
+    screens: {
+      SignIn: 'group/:groupID',
+    }
+  },
+}
+
 const AppNavigator = () => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
@@ -45,7 +54,7 @@ const AppNavigator = () => {
   const { isSignedIn } = authContext;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       {isSignedIn ? (
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
@@ -63,7 +72,7 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="EditChat" component={EditChat} options={{title: 'Edit Chat'}}/>
         </GlobalStack.Navigator>
       ) : (
-        <SignInStack.Navigator initialRouteName='Welcome'>
+        <SignInStack.Navigator initialRouteName='Welcome' >
           <SignInStack.Screen name="Welcome" component={Welcome} options={{headerShown: false}} />
           <SignInStack.Screen name="SignIn" component={SignIn} options={{title: 'Sign In', headerTitleAlign: 'center'}} />
           <SignInStack.Screen name="SignUp" component={SignUp} options={{title: 'Sign Up', headerTitleAlign: 'center'}} />

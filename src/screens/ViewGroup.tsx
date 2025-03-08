@@ -1,6 +1,6 @@
 import { useState, useCallback, useContext } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert,
-  ActivityIndicator } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator 
+} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import client from '../client';
 import { getGroup } from '../graphql/queries';
@@ -118,7 +118,7 @@ const ViewGroup = ( {route, navigation} : any) => {
               <Icon name="arrow-forward" size={20}/>
             </TouchableOpacity>
             <FlatList
-              key={group?.members?.items.length}
+              keyExtractor={(item : any) => item?.user.id}
               data={group?.members?.items ? group?.members?.items.slice(0,3) : []}
               renderItem={({ item }) => 
                 <ProfilePicture uri={item?.user?.profileURL ||'defaultUser'}/>
@@ -159,7 +159,7 @@ const ViewGroup = ( {route, navigation} : any) => {
         ListHeaderComponent={headerComp}
         data={post}
         renderItem={(item) => {
-          if(item.item === null) return <View></View>
+          if(!item.item) return <View></View>
           return(
             <FormatPost item={item.item} />
           )

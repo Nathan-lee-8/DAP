@@ -7,8 +7,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { SignInParamList } from '../../types/rootStackParamTypes';
 import { AuthContext } from '../../context/AuthContext';
-import styles from '../../styles/Styles'
-import Icon from '@react-native-vector-icons/ionicons';
+import styles from '../../styles/Styles';
+import SocialProvSignIn from '../../components/SocialProvSignIn';
 
 /**
  * Accesses user inputted email, password, first and last name and creates a 
@@ -54,10 +54,6 @@ const SignUp = () => {
     };
   };
 
-  const googleLogin = () => {
-    console.log('Google login not implemented yet.');
-  }
-
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -102,23 +98,7 @@ const SignUp = () => {
         </View>
         
       </TouchableWithoutFeedback>
-        <View style={styles.iconContainer}>
-          <Text style={styles.label}>Login with Social Provider</Text>
-          <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-              <Icon name="logo-google" size={35} color="#007BFF"/>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-              <Icon name="logo-facebook" size={35} color="#007BFF"/>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-              <Icon name="logo-apple" size={35} color="#007BFF"/>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.icon} onPress={ googleLogin }>
-              <Icon name="logo-amazon" size={35} color="#007BFF"/>
-            </TouchableOpacity>
-          </View>
-        </View>
+      <SocialProvSignIn/>
     </View>
   );
 };
