@@ -1,6 +1,6 @@
 // context/AuthContext.tsx
 import { createContext, useState, ReactNode, useEffect } from 'react';
-import { fetchUserAttributes } from 'aws-amplify/auth';
+import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import { userByEmail } from '../graphql/queries';
 import client from '../client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,15 +9,9 @@ import { User } from '../API';
 interface AuthContextType {
   isSignedIn: boolean;
   userEmail: string;
-  firstname: string;
-  lastname: string;
-  profileURL: string | undefined;
   currUser: User | undefined;
   setSignedIn: (value: boolean) => void;
   setUserEmail: (email: string) => void;
-  setFirstName: (firstname: string) => void;
-  setLastName: (lastname: string) => void;
-  setProfileURL: (url: string) => void;
   setCurrUser: (currUser: User) => void;
   logout: () => void;
 }
@@ -28,33 +22,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currUser, setCurrUser ] = useState<User | undefined>(undefined);
   const [isSignedIn, setSignedIn] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string>('');
-  const [firstname, setFirstName] = useState<string>('');
-  const [lastname, setLastName] = useState<string>('');
-  const [profileURL, setProfileURL] = useState<string | undefined>(undefined);
 
+  //Signs out of the app and clears cached data
   const logout = async () => {
     setSignedIn(false);
     setUserEmail('');
-    setFirstName('');
-    setLastName('');
-    setProfileURL(undefined);
     setCurrUser(undefined);
+    await signOut();
     AsyncStorage.clear();
   }
-
+  
+  //runs on app start up to check if user is already signed in
   useEffect(() => {
     const checkAuthState = async () => {
       try {
         const user = await fetchUserAttributes();
-        if(user.email) setUserEmail(user.email);
-        setSignedIn(true);
+        if(user.email){ 
+          setUserEmail(user.email);
+        } else{
+          console.log('error getting user from cognito');
+        }
       } catch (error) {
         console.log('Error checking auth state:', error);
+        await signOut();
       }
     };
     checkAuthState();
   }, []);
 
+  //Sets current user data whenever userEmail is set
   useEffect(() => {
     if(!userEmail || userEmail === '') return;
     const getUserAttributes = async () => {
@@ -64,24 +60,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           variables: { email: userEmail.toLowerCase() },
           authMode: 'userPool'
         });
-        const user = data.data.userByEmail.items[0];
-        setCurrUser(user);
-        setFirstName(user.firstname);
-        setLastName(user.lastname);
-        setProfileURL(user.profileURL);
+        const users = data.data.userByEmail.items;
+        if(users.length > 0) setCurrUser(users[0]);
         setSignedIn(true);
       } catch (error) {
         console.log('Error fetching user attributes:', error);
       }
     };
     getUserAttributes();
-  }, [isSignedIn])
+  }, [userEmail]);
 
   return (
-    <AuthContext.Provider value={{ 
-        isSignedIn, userEmail, firstname, lastname, profileURL, currUser,
-        setProfileURL,setSignedIn, setUserEmail, setFirstName, setLastName, setCurrUser, logout
-      }}>
+    <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, setSignedIn,
+      setUserEmail, setCurrUser, logout}}>
       {children}
     </AuthContext.Provider>
   );

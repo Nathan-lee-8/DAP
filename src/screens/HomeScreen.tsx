@@ -1,15 +1,13 @@
 import { useEffect, useState, useContext, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl, TextInput, Keyboard,
-  TouchableWithoutFeedback, KeyboardAvoidingView, TouchableOpacity, Platform, Alert
- } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import client from '../client';
 import { groupsByUser } from '../graphql/queries';
-import { createUser } from '../graphql/mutations'
 import { ModelSortDirection, Post, Group } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
 import FormatPost from '../components/FormatPost';
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
 /**
  * Displays the active News feed for the current user
@@ -18,18 +16,15 @@ const HomeScreen = () => {
   const [newsFeed, setNewsFeed] = useState<Post[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
-  const [firstname, setFirstName] = useState('');
-  const [lastname, setLastName] = useState('');
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
-  const currEmail = authContext?.userEmail;
-  const setSignedIn = authContext?.setSignedIn;
 
   useEffect(() => {
     loadNewsFeed();
   }, [currUser]);
 
   const loadNewsFeed = async () => {
+    console.log(await fetchUserAttributes());
     try {
       const cachedData = await AsyncStorage.getItem('newsFeedCache');
       if (cachedData) {
@@ -100,70 +95,6 @@ const HomeScreen = () => {
   const onRefresh = useCallback(() => {
     fetchNewsFeed();
   }, [currUser]);
-
-  const handleSignUp = async () => {
-    if(firstname === '') {
-      Alert.alert('Error', 'Please enter your first name.');
-      return;
-    }else if(lastname === '') {
-      Alert.alert('Error', 'Please enter your last name.');
-      return;
-    }else if(!currEmail) {
-      Alert.alert('Error', 'User not Signed In');
-      return;
-    }
-    
-    try{
-      await client.graphql({
-        query: createUser,
-        variables: {
-          input: { 
-            email: currEmail.toLowerCase(), 
-            firstname: firstname.trim(), 
-            lastname: lastname.trim(),
-            profileURL: 'defaultUser'
-          },
-        },
-        authMode: 'userPool'
-      });
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    };
-    if(setSignedIn) setSignedIn(true);
-  }
-
-  if(!currUser){
-    return(
-      <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.formContainer}>
-            <TextInput
-              style={styles.input}
-              value={firstname}
-              onChangeText={setFirstName}
-              autoCapitalize="words"
-              placeholder="First Name"
-            />
-            <TextInput
-              style={styles.input}
-              value={lastname}
-              onChangeText={setLastName}
-              autoCapitalize="words"
-              placeholder="Last Name"
-            />
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
-              <TouchableOpacity style={[styles.buttonBlack, {marginTop: 20}]} onPress={ handleSignUp }>
-                <Text style={styles.buttonTextWhite}>Create Account</Text>
-              </TouchableOpacity>
-            </KeyboardAvoidingView>
-          </View>
-          
-        </TouchableWithoutFeedback>
-      </View>
-    )
-  }
 
   return (
     <View style={styles.container}>

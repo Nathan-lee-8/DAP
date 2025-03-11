@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard,
+import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, ActivityIndicator,
   TouchableWithoutFeedback } from 'react-native';
 import { signIn } from '@aws-amplify/auth';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -11,29 +11,28 @@ import styles from '../../styles/Styles';
 
 /**
  * Retrieves the User input email and password. Signs in with Cognito and sets
- * user email and signed in status & navigates to homepage.
+ * user email.
  */
 const SignIn = () => {
   const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
-  const [password, setPassword] = useState('');
-
+  const [ email, setEmail ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  };
-  const { setSignedIn, setUserEmail, userEmail } = authContext;
+  if(!authContext) return;
+  const { setUserEmail } = authContext;
 
+  //Signs in to cognito, navigates to verify if unverified
   const handleSignIn = async () => {
     try{
-      const res = await signIn({ username: userEmail, password: password });
+      const res = await signIn({ username: email.trim().toLowerCase(), password: password });
       if(!res.isSignedIn){
         Alert.alert('Error', 'Please verify your email before signing in.',[
-          { text: 'OK', onPress: () => navigation.navigate('Verify', {}) }
+          { text: 'OK', onPress: () => navigation.navigate('Verify', {email: email}) }
         ]);
         return;
       };
-      setSignedIn(true);
+      setUserEmail(email.trim().toLowerCase());
     } catch (error: any) {
       Alert.alert('Error', 'Invalid email & password or account does not exist.');
     };
@@ -42,6 +41,8 @@ const SignIn = () => {
   const resetPw = async () => {
     navigation.navigate('ResetPassword');
   }
+
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
     <View style={styles.container}>
@@ -52,8 +53,8 @@ const SignIn = () => {
             placeholder="Enter your email"
             keyboardType="email-address"
             autoCapitalize="none"
-            value={userEmail}
-            onChangeText={ setUserEmail }
+            value={email}
+            onChangeText={ setEmail }
           />
           <TextInput
             style={styles.input}
@@ -73,7 +74,7 @@ const SignIn = () => {
           <Text style={{color: "#007BFF"}}>Reset Password</Text>
         </TouchableOpacity>
       </View>
-      <SocialProvSignIn/>
+      <SocialProvSignIn setLoading={setLoading}/>
     </View>
   );
 };

@@ -1,11 +1,15 @@
-import{ User, Group, UserGroup, Post, UserChat, Chat } from '../API';
+import{ User, Group, Post, UserChat, Chat } from '../API';
 
 export type SignInParamList = {
     Welcome: undefined;
     SignIn: undefined;
     SignUp: undefined;
-    Verify: {password?: string};
+    Verify: {
+        email?: string;
+        password?: string;
+    };
     ResetPassword: undefined;
+    CreateUser: undefined;
 };
 
 export type GlobalParamList = {

@@ -6,14 +6,14 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
-const SocialProvSignIn = () => {
+const SocialProvSignIn = ({setLoading}: any) => {
   const authContext = useContext(AuthContext);
   if(!authContext) return;
-  const { setUserEmail, setSignedIn } = authContext;
+  const { setUserEmail } = authContext;
 
   useEffect(() => {
     const unsubscribe = Hub.listen('auth', ({ payload }) => {
-      console.log(payload);
+      setLoading(true);
       switch (payload.event) {
         case 'signInWithRedirect':
           handleSignIn();
@@ -21,6 +21,7 @@ const SocialProvSignIn = () => {
           break;
         case 'signInWithRedirect_failure':
           Alert.alert('Error', 'Sign In Failed');
+          setLoading(false);
           break;
       }
     });
@@ -29,9 +30,15 @@ const SocialProvSignIn = () => {
   }, []);
 
   const handleSignIn = async () => {
-    const user = await fetchUserAttributes();
-    if(user.email) setUserEmail(user.email);
-    setSignedIn(true);
+    try{
+      const user = await fetchUserAttributes();
+      if(user.email) setUserEmail(user.email);
+    } catch (error) {
+      console.log('Error fetching user attributes:', error);
+      Alert.alert('Error', 'Sign In Failed');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -42,14 +49,11 @@ const SocialProvSignIn = () => {
           <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Google' }) }>
             <Icon name="logo-google" size={35} color="#007BFF"/>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Google' }) }>
+          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Facebook' }) }>
             <Icon name="logo-facebook" size={35} color="#007BFF"/>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Google' }) }>
+          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Apple' }) }>
             <Icon name="logo-apple" size={35} color="#007BFF"/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Google' }) }>
-            <Icon name="logo-amazon" size={35} color="#007BFF"/>
           </TouchableOpacity>
         </View>
       </View>
