@@ -33,6 +33,7 @@ const SocialProvSignIn = ({setLoading}: any) => {
     try{
       const user = await fetchUserAttributes();
       if(user.email) setUserEmail(user.email);
+      console.log(user);
     } catch (error) {
       console.log('Error fetching user attributes:', error);
       Alert.alert('Error', 'Sign In Failed');
@@ -48,12 +49,6 @@ const SocialProvSignIn = ({setLoading}: any) => {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Google' }) }>
             <Icon name="logo-google" size={35} color="#007BFF"/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Facebook' }) }>
-            <Icon name="logo-facebook" size={35} color="#007BFF"/>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Apple' }) }>
-            <Icon name="logo-apple" size={35} color="#007BFF"/>
           </TouchableOpacity>
         </View>
       </View>
