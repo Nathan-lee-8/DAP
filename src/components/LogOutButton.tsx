@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { TouchableOpacity, Text } from "react-native";
 import { AuthContext } from "../context/AuthContext";
-import { signOut } from "aws-amplify/auth";
 import styles from '../styles/Styles';
 
 //Button to handle logout logic
@@ -15,7 +14,6 @@ const LogOutButton = () => {
 
   const handleSignOut = async () => {
     try{ 
-      await signOut();
       logout();
     } catch (error) {
       console.log('error signing out: ', error);
@@ -24,7 +22,7 @@ const LogOutButton = () => {
 
   return (
     <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
-        <Text style={styles.buttonTextBlue}>Log Out</Text>
+      <Text style={styles.buttonTextBlue}>Log Out</Text>
     </TouchableOpacity>
   );
 };

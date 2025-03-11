@@ -10,6 +10,7 @@ import SignIn from '../screens/signInScreens/SignInScreen';
 import SignUp from '../screens/signInScreens/SignUpScreen';
 import Verify from '../screens/signInScreens/Verify';
 import ResetPassword from '../screens/signInScreens/ResetPassword';
+import CreateUser from '../screens/signInScreens/CreateUser';
 
 import Home from '../screens/HomeScreen';
 import Groups from '../screens/Groups';
@@ -40,7 +41,8 @@ const linking = {
   prefixes: ['dap://'], // The custom scheme your app is listening for
   config: {
     screens: {
-      SignIn: 'group/:groupID',
+      Welcome: 'signout',
+      Home: 'signin'
     }
   },
 }
@@ -51,11 +53,11 @@ const AppNavigator = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { isSignedIn } = authContext;
+  const { isSignedIn, currUser } = authContext;
 
   return (
     <NavigationContainer linking={linking}>
-      {isSignedIn ? (
+      {isSignedIn && currUser ? (
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
@@ -71,6 +73,10 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers} options={{title: 'Members'}}/>
           <GlobalStack.Screen name="EditChat" component={EditChat} options={{title: 'Edit Chat'}}/>
         </GlobalStack.Navigator>
+      ) : isSignedIn && !currUser ? (
+        <SignInStack.Navigator initialRouteName='CreateUser' >
+          <SignInStack.Screen name="CreateUser" component={CreateUser} options={{headerShown: false}} />
+        </SignInStack.Navigator>
       ) : (
         <SignInStack.Navigator initialRouteName='Welcome' >
           <SignInStack.Screen name="Welcome" component={Welcome} options={{headerShown: false}} />

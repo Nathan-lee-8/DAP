@@ -3,8 +3,6 @@ import { View, TextInput, TouchableOpacity, Alert, Text, Keyboard,
   TouchableWithoutFeedback, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
-import client from '../../client';
-import { createUser } from '../../graphql/mutations';
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/Styles';
 
@@ -20,27 +18,17 @@ const VerifyScreen = ( {route} : any ) => {
     console.log("Auth context not defined");
     return null;
   }
-  const { userEmail, firstname, lastname, setSignedIn } = authContext;
-  const [password, setPassword] = useState(route.params.password);
-  const [code, setCode] = useState('');
+  const { setUserEmail } = authContext;
+  const [ password, setPassword ] = useState(route.params.password);
+  const email = route.params.email;
+  const [ code, setCode ] = useState('');
 
   const handleVerification = async () => {
     try {
-      await confirmSignUp({username: userEmail, confirmationCode: code });
-      await signIn({username: userEmail, password: password});
-      await client.graphql({
-        query: createUser,
-        variables: {
-          input: { 
-            email: userEmail.toLowerCase(), 
-            firstname: firstname.trim(), 
-            lastname: lastname.trim(),
-            profileURL: 'defaultUser'
-          },
-        },
-        authMode: 'userPool'
-      });
-      setSignedIn(true); 
+      const emailFormat = email.trim().toLowerCase();
+      await confirmSignUp({username: emailFormat, confirmationCode: code });
+      await signIn({username: emailFormat, password: password});
+      setUserEmail(emailFormat);
     } catch (error) {
       console.log(error);
     }
@@ -48,7 +36,7 @@ const VerifyScreen = ( {route} : any ) => {
 
   const resendSignUp = async () => {
     try {
-      resendSignUpCode({ username: userEmail });
+      resendSignUpCode({ username: email.trim().toLowerCase() });
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -62,7 +50,7 @@ const VerifyScreen = ( {route} : any ) => {
         <View style={styles.formContainer}>
           <Text style={[styles.contentText, {alignContent: 'flex-start'}]}>
             Verification email sent to: 
-            <Text style={{color: "#007BFF"}}> {userEmail}</Text>
+            <Text style={{color: "#007BFF"}}> {email}</Text>
           </Text>
           <TextInput
             style={styles.input}
@@ -72,17 +60,15 @@ const VerifyScreen = ( {route} : any ) => {
             keyboardType="numeric"
             maxLength={6}
           />
-          {!password ? (
-            <View>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter password used at account creation"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-              />
-            </View>
-          ) : (null)}
+          {!password &&
+            <TextInput
+              style={styles.input}
+              placeholder="Enter password used at account creation"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+          }
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>

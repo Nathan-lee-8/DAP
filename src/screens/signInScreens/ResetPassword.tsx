@@ -15,7 +15,7 @@ const ResetPassword = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { setSignedIn, setUserEmail } = authContext;
+  const { setUserEmail } = authContext;
   const [ code, setCode ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ password1, setPassword1 ] = useState('');
@@ -28,9 +28,12 @@ const ResetPassword = () => {
       return;
     }
     try {
-      await confirmResetPassword({ username: email, confirmationCode: code, newPassword: password });
-      setSignedIn(true);
-      setUserEmail(email);
+      await confirmResetPassword({ 
+        username: email.trim().toLowerCase(),
+        confirmationCode: code,
+        newPassword: password
+      });
+      setUserEmail(email.trim().toLowerCase());
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
@@ -38,9 +41,8 @@ const ResetPassword = () => {
 
   const handleResetPassword = async () => {
     try {
-      await resetPassword({ username: email });
+      await resetPassword({ username: email.trim().toLowerCase() });
       setHasReset(true);
-      setUserEmail(email);
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
