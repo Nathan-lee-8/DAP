@@ -1,23 +1,13 @@
 # Intro
 
-CommHub is an IOS/Android mobile application that is intended to be a local forum and messaging application for community use. CommHub allows users to create posts, groups and messages to interact with other users. It's primary purpose is to connect local highschool and college students with graduates and local businessess.
+CommHub is an IOS/Android mobile application that is intended to be a local forum and messaging application for community use. CommHub allows users to create posts within groups and send messages within chatrooms to interact with other users. Commhub's primary purpose is to allow local groups and organizations to streamline announcements and share media.
+
+### Groups
+
+Users can create public or private groups with the users of their choice. Groups are intended to be flexible and used for a variety of purposes including interest groups, organizational groups and exchange groups. Groups allow users to interact with others in the group by creating posts and messaging each other. Users can fine tune notification settings to streamline priority announcements. 
 
 ## Messaging
 
 CommHub allows one-to-one messaging as well as group messaging that happen in real-time.
-
-## Posts
-
-CommHub is intended for users to post free & for sale items, local job opportunities, volunteer opportunities, and annoucements.
-- Local businesses can connect with students to find part-time work based on student availability and the business needs.
-- Graduating college students can pass off housing leases and furnishing for discount to incoming students.
-- Local organizations can post volunteer opportunities for high schoolers to fulfill volunteer hours & for others to help their communities.
-- Communities can post annoucements relevent to their neighborhood.
-
-### Groups
-
-Users can create private groups with the users of their choice. Groups allow users to create group chats and message each other as well as create posts and annoucements specific to that group.
-
-
 
 
