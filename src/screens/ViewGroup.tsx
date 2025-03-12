@@ -91,8 +91,8 @@ const ViewGroup = ( {route, navigation} : any) => {
         console.log('Error', error);
       }
     }else{
-      //request to join
-      Alert.alert('not implemented yet');
+      //Send alert to group member or group admin to allow 
+      Alert.alert('not implemented yet', 'send a message to the owner to add you to the group');
     }
   }
 
