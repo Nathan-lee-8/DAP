@@ -32,19 +32,7 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
     }
   };
   useEffect(() => {
-    const initializeCache = async () => {
-      try {
-        const cachedData = await AsyncStorage.getItem('usersCache');
-        if (cachedData) {
-          setData(JSON.parse(cachedData));
-        } else {
-          fetchUsers();
-        }
-      } catch (error) {
-        console.log('Error initializing cache', error);
-      }
-    };
-    initializeCache();
+    fetchUsers();
   }, []);
   
   const handleSearch = async (query: string) => {

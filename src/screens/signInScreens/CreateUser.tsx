@@ -42,9 +42,11 @@ const CreateUser = () => {
         },
         authMode: 'userPool'
       });
+      console.log('creating graphql user');
       setUserEmail(userEmail.trim().toLowerCase())
     } catch (error: any) {
       Alert.alert('Error', error.message);
+      console.log(error);
     };
   };
 
