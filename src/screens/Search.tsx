@@ -81,19 +81,7 @@ const GroupSearch = () => {
   }
 
   useEffect(() => {
-    const initializeCache = async () => { 
-      try{
-        const cachedData = await AsyncStorage.getItem('groupCache');
-        if(cachedData){
-          setData(JSON.parse(cachedData));
-        } else {
-          fetchGroups();
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    initializeCache();
+    fetchGroups();
   }, []);
 
   const handleSearch = async (query: string) => {
