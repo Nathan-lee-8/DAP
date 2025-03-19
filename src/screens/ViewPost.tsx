@@ -1,17 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput, 
-  KeyboardAvoidingView, Platform, 
-  Alert} from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, 
+  Platform, Alert } from 'react-native';
+
+import client from '../client';
 import { createComment } from '../graphql/mutations';
 import { getPost } from '../graphql/queries';
-import client from '../client';
+import { Post } from '../API';
+
+import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
-import { Post } from '../API';
 import moment from 'moment';
 import ImgComponent from '../components/ImgComponent';
 import FormatPost from '../components/FormatPost';
-import { AuthContext } from '../context/AuthContext';
 
 const ViewPost = ( {route} : any) => {
   const postID = route.params.postID;

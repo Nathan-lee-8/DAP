@@ -162,7 +162,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'Black',
     flexDirection: 'row',
-    width: width * 0.65
+    width: width * 0.65,
+    flexWrap: 'wrap',
   },
   postDate: {
     fontSize: 12,
@@ -416,6 +417,12 @@ const styles = StyleSheet.create({
     margin: 5,
     maxWidth: '80%',
   },
+  systemMessage:{
+    color: 'grey',
+    fontSize: 12,
+    alignSelf: 'center',
+    margin: 5,
+  },
   timestamp: {
     fontSize: 9,
     color: '#666',
@@ -665,13 +672,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     padding: 10,
-    marginBottom: 20,
-    backgroundColor: colorPrimary
+    backgroundColor: colorPrimary,
+    marginBottom: 10,
+  },
+  toolbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    alignItems: 'center',
+    backgroundColor: colorPrimary,
+  },
+  messageUserButton: {
+    width: width * 0.16,
+    borderWidth: 1,
+    borderColor: '#888',
+    padding: 5,
+    backgroundColor: '#f2f7f7',
   },
   viewProfileURL: {
-    height: 100, 
-    width: 100, 
-    borderRadius: 50
+    height: 80, 
+    width: 80, 
+    borderRadius: 40
   },
   editProfileURL : { 
     height: 150,
@@ -684,7 +705,7 @@ const styles = StyleSheet.create({
   },
   userInfoContainer: {
     paddingHorizontal: 10,
-    width: width * 0.65
+    width: width * 0.60
   },
   uploadImage: {
     alignSelf: 'center',

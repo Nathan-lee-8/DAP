@@ -14,7 +14,7 @@ export type SignInParamList = {
 
 export type GlobalParamList = {
     MainTabs: undefined;
-    ViewProfile: {user: User};
+    ViewProfile: {userID: string};
     ViewFollowing: {userID: string};
     ChatRoom: {chatID: string};
     CreateChat: {user?: User};

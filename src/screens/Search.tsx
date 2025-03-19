@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, Keyboard,
   TouchableWithoutFeedback } from 'react-native';
-import { Group, User } from '../API';
-import styles from '../styles/Styles';
-import SearchBar from '../components/SearchBar';
-import { listGroups } from '../graphql/queries';
-import ProfilePicture from '../components/ImgComponent';
-import client from '../client';
-import filter from 'lodash/filter';
+
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
+  
+import client from '../client';
+import { listGroups } from '../graphql/queries';
+import { Group, User } from '../API';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import styles from '../styles/Styles';
+import SearchBar from '../components/SearchBar';
+import ProfilePicture from '../components/ImgComponent';
+import filter from 'lodash/filter';
 
 const Search = ( {navigation} : any) => {
   const [searchTerm, setSearchTerm] = useState('Users');

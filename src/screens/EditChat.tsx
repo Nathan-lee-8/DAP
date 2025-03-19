@@ -1,12 +1,14 @@
 import { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert, TextInput, Modal,
   Platform, KeyboardAvoidingView, FlatList } from 'react-native';
-import ImgComponent from '../components/ImgComponent';
-import { imagePicker, getImgURI } from '../components/addImg';
-import { AuthContext } from '../context/AuthContext';
+
+import client from '../client';
 import { updateChat, deleteUserChat, updateUserChat } from '../graphql/mutations';
 import { UserChat } from '../API';
-import client from '../client';
+
+import { AuthContext } from '../context/AuthContext';
+import ImgComponent from '../components/ImgComponent';
+import { imagePicker, getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 

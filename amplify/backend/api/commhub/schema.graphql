@@ -9,6 +9,7 @@ type User @model @auth(
   email: AWSEmail! @index(name: "byEmail", queryField: "userByEmail")
   firstname: String!
   lastname: String!
+  fullname: String!
   profileURL: String!
   description: String
   posts: [Post] @hasMany
@@ -21,7 +22,7 @@ type User @model @auth(
 type Post @model @auth(
   rules: [
     { allow: owner },
-    { allow: private, operations: [read, update, delete] },
+    { allow: private },
     { allow: public, operations: [read] }
   ]
 ) { 
@@ -33,13 +34,15 @@ type Post @model @auth(
   user: User @belongsTo(fields:["userID"])
   group: Group @belongsTo(fields: ["groupID"])
   comments: [Comment] @hasMany(indexName:"commentsByPost", fields: ["id"])
+  commentCount: Int! 
   createdAt: AWSDateTime!
+  @index(name: "commentCountIndex", queryField: "postsByCommentCount", sortKeyFields: ["commentCount"])
 }
 
 type Comment @model @auth(
   rules: [
-    { allow: owner},
-    { allow: private, operations: [read, update] },
+    { allow: owner },
+    { allow: private },
     { allow: public, operations: [read] }
   ]
 ) {
@@ -91,12 +94,13 @@ type Chat @model @auth(
 type Message @model @auth(
   rules: [
     { allow: owner },
-    { allow: private, operations: [read, delete] }
+    { allow: private }
   ]
 ) {
   id: ID!
   content: String!
   msgURL: [String]
+  type: String
   senderID: ID! @index(name: "messagesByUser", queryField: "messagesByUser", sortKeyFields: ["createdAt"])
   chatID: ID! @index(name: "messagesByChat", queryField: "messagesByChat", sortKeyFields: ["createdAt"])
   sender: User @belongsTo(fields: ["senderID"])
@@ -107,7 +111,7 @@ type Message @model @auth(
 type UserGroup @model @auth(
   rules: [
     { allow: owner },
-    { allow: private}
+    { allow: private }
   ]
 ) {
   id: ID!

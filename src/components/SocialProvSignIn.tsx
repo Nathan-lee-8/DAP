@@ -50,6 +50,9 @@ const SocialProvSignIn = ({setLoading}: any) => {
           <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Google' }) }>
             <Icon name="logo-google" size={35} color="#007BFF"/>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Apple' }) }>
+            <Icon name="logo-apple" size={35} color="#007BFF"/>
+          </TouchableOpacity>
         </View>
       </View>
     </View>

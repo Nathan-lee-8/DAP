@@ -2,15 +2,17 @@ import { useState, useCallback, useContext } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator 
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+
 import client from '../client';
 import { getGroup } from '../graphql/queries';
 import { createUserGroup } from "../graphql/mutations";
 import { Group, Post, UserGroup } from '../API'
+
+import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles'
 import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import FormatPost from "../components/FormatPost";
-import { AuthContext } from "../context/AuthContext";
 
 const ViewGroup = ( {route, navigation} : any) => {
   const groupID = route.params.groupID;
@@ -129,7 +131,7 @@ const ViewGroup = ( {route, navigation} : any) => {
               {myUserGroup !== undefined ? (
                 <Text style={{textAlign: 'center'}}>Joined</Text>
               ) : group?.isPublic !== null && !group?.isPublic ? (
-                <Text style={{textAlign: 'center'}}>Request Join</Text>
+                <Text style={{textAlign: 'center', fontSize: 12}}>Request Join</Text>
               ) : (
                 <Text style={{textAlign: 'center'}}>Join Group</Text>
               )}

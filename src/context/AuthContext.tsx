@@ -1,9 +1,10 @@
 // context/AuthContext.tsx
 import { createContext, useState, ReactNode, useEffect } from 'react';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
-import { userByEmail } from '../graphql/queries';
-import client from '../client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import client from '../client';
+import { userByEmail } from '../customGraphql/customQueries';
 import { User } from '../API';
 
 interface AuthContextType {
@@ -14,6 +15,7 @@ interface AuthContextType {
   setUserEmail: (email: string) => void;
   setCurrUser: (currUser: User) => void;
   logout: () => void;
+  triggerFetch: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,6 +24,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currUser, setCurrUser ] = useState<User | undefined>(undefined);
   const [isSignedIn, setSignedIn] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string>('');
+  const [ fetchCounter, setFetchCounter ] = useState(0);
 
   //Signs out of the app and clears cached data
   const logout = async () => {
@@ -30,6 +33,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setCurrUser(undefined);
     await signOut();
     AsyncStorage.clear();
+  }
+
+  const triggerFetch = () => {
+    setFetchCounter((item) => item + 1);
   }
   
   //runs on app start up to check if user is already signed in
@@ -60,6 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           variables: { email: userEmail.toLowerCase() },
           authMode: 'userPool'
         });
+        console.log('fetched user attributes');
         const users = data.data.userByEmail.items;
         if(users.length > 0) setCurrUser(users[0]);
         setSignedIn(true);
@@ -68,11 +76,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
     getUserAttributes();
-  }, [userEmail]);
+  }, [userEmail, fetchCounter]);
 
   return (
     <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, setSignedIn,
-      setUserEmail, setCurrUser, logout}}>
+      setUserEmail, setCurrUser, logout, triggerFetch}}>
       {children}
     </AuthContext.Provider>
   );

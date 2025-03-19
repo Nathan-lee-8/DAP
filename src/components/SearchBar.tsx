@@ -1,46 +1,54 @@
-import { useEffect, useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { View, TextInput, FlatList, TouchableOpacity, Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import filter from 'lodash/filter';
-import client  from '../client';
-import { listUsers } from '../graphql/queries';
+
+import client from '../client';
+import { listUsers } from '../customGraphql/customQueries';
+import { User } from '../API';
+
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
-import { User } from '../API';
 import ProfilePicture from './ImgComponent';
+import filter from 'lodash/filter';
 
 const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:any, remove?: any}) => {
   const [search, setSearch] = useState<string>('');
   const [data, setData] = useState<User[]>([]);
-  const [filteredData, setFilteredData] = useState<User[]>([]);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
-  const fetchUsers = async () => {
+  const fetchUsers = async ( search: string) => {
     try{
       const users = await client.graphql({
         query: listUsers,
-        variables: { limit: 100 },
+        variables: { 
+          limit: 20,
+          filter: {
+            fullname: {contains: search.toLowerCase()}
+          }
+         },
         authMode: 'userPool'
       });
       const userData = users.data.listUsers.items;
-      setData(userData);
-      await AsyncStorage.setItem('usersCache', JSON.stringify(userData));
+      console.log('fetched from searchbar')
+      setData(userData.filter((item) => item.id !== currUser.id));
       console.log('Fetched & cached from searchbar component.');
     } catch (error) {
       console.log('Error fetching users', error);
     }
   };
-  useEffect(() => {
-    fetchUsers();
-  }, []);
   
   const handleSearch = async (query: string) => {
     setSearch(query);
-    if(!query){
-      setFilteredData([]);
-      return;
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
     }
+
+    debounceTimeout.current = setTimeout(() => {
+      fetchUsers(query);
+    }, 500); 
+    
     const formattedSearch = query.toLowerCase();
     const results = filter(data, (user) => {
       if(!user.id || user.id === currUser.id){
@@ -51,16 +59,11 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
       return name.toLowerCase().includes(formattedSearch) || 
         user.email.toLowerCase().includes(formattedSearch)
     });
-    setFilteredData(results);
+    setData(results);
   };
-  
-  const resetCache = async () => {
-    await AsyncStorage.removeItem('usersCache');
-    fetchUsers();
-  }
 
   const handleOnPress = (user: User) => {
-    if(remove) setFilteredData([]);
+    if(remove) setData([]);
     if(userPressed) userPressed(user);
   }
 
@@ -76,7 +79,7 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
         clearButtonMode='always'
       />
       <FlatList
-        data={filteredData}
+        data={data}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.searchUserContainer}>

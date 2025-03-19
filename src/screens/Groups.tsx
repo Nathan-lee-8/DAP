@@ -2,10 +2,12 @@
 import { useContext, useEffect, useState, useCallback } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl
  } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
+ 
+import client from '../client';
 import { groupsByUser } from '../graphql/queries';
 import { UserGroup, ModelSortDirection } from '../API';
-import client from '../client';
+
+import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';

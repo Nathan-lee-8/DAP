@@ -1,10 +1,13 @@
 import { useContext, useState } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, Platform,
-  TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
-import { AuthContext } from '../../context/AuthContext';
-import styles from '../../styles/Styles';
+  TouchableWithoutFeedback, KeyboardAvoidingView, 
+  ActivityIndicator} from 'react-native';
+
 import client from '../../client';
 import { createUser } from '../../graphql/mutations';
+
+import { AuthContext } from '../../context/AuthContext';
+import styles from '../../styles/Styles';
 
 /**
  * Accesses user inputted email, password, first and last name and creates a 
@@ -14,12 +17,13 @@ import { createUser } from '../../graphql/mutations';
 const CreateUser = () => {
   const [ firstname, setFirstName ] = useState<string>('');
   const [ lastname, setLastName ] = useState<string>('');
+  const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) {
     console.log("Auth context not defined");
     return null;
   };
-  const { userEmail, setUserEmail } = authContext;
+  const { userEmail, setUserEmail, triggerFetch } = authContext;
 
   const handleSignUp = async () => {
     if(firstname === '') {
@@ -29,6 +33,7 @@ const CreateUser = () => {
       Alert.alert('Error', 'Please enter your last name.');
       return;
     }
+    setLoading(true);
     try{
       await client.graphql({
         query: createUser,
@@ -36,19 +41,25 @@ const CreateUser = () => {
           input: { 
             email: userEmail.trim().toLowerCase(), 
             firstname: firstname.trim(), 
+            fullname: 
+              firstname.trim().toLocaleLowerCase() + " " +
+              lastname.trim().toLocaleLowerCase(),
             lastname: lastname.trim(),
             profileURL: 'defaultUser'
           },
         },
         authMode: 'userPool'
       });
-      console.log('creating graphql user');
-      setUserEmail(userEmail.trim().toLowerCase())
+      console.log('created graphql user');
+      triggerFetch();
     } catch (error: any) {
       Alert.alert('Error', error.message);
+      setLoading(false);
       console.log(error);
-    };
+    }
   };
+
+  if(loading) return <ActivityIndicator size="small" color="#0000ff" />
 
   return (
     <View style={styles.container}>

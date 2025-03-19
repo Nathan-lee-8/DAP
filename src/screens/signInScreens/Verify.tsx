@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Alert, Text, Keyboard,
-  TouchableWithoutFeedback, KeyboardAvoidingView, Platform
-} from 'react-native';
+  TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from 'react-native';
 import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/Styles';

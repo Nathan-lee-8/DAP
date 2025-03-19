@@ -2,11 +2,13 @@ import { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, 
   ActivityIndicator, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback
 } from 'react-native';
+
+import client from '../client';
+import { createPost } from '../graphql/mutations';
+
+import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import { imagePicker, getImgURI } from '../components/addImg';
-import { createPost } from '../graphql/mutations';
-import client from '../client';
-import { AuthContext } from '../context/AuthContext';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 
@@ -43,7 +45,8 @@ const CreatePost = ({route, navigation}: any) => {
             content: content,
             groupID: groupID,
             postURL: newPaths,
-            userID: currUser.id
+            userID: currUser.id,
+            commentCount: 0
           }
         },
         authMode: 'userPool'

@@ -17,8 +17,29 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
     email
     firstname
     lastname
+    fullname
     profileURL
     description
+    posts {
+      nextToken
+      __typename
+    }
+    chats {
+      nextToken
+      __typename
+    }
+    messages {
+      nextToken
+      __typename
+    }
+    groups {
+      nextToken
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -38,8 +59,29 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
     email
     firstname
     lastname
+    fullname
     profileURL
     description
+    posts {
+      nextToken
+      __typename
+    }
+    chats {
+      nextToken
+      __typename
+    }
+    messages {
+      nextToken
+      __typename
+    }
+    groups {
+      nextToken
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -59,8 +101,29 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
     email
     firstname
     lastname
+    fullname
     profileURL
     description
+    posts {
+      nextToken
+      __typename
+    }
+    chats {
+      nextToken
+      __typename
+    }
+    messages {
+      nextToken
+      __typename
+    }
+    groups {
+      nextToken
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -81,6 +144,35 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
     postURL
     groupID
     userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -102,6 +194,35 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
     postURL
     groupID
     userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -123,6 +244,35 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
     postURL
     groupID
     userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -144,6 +294,32 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
     commentURL
     userID
     postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userCommentsId
@@ -165,6 +341,32 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
     commentURL
     userID
     postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userCommentsId
@@ -186,6 +388,32 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
     commentURL
     userID
     postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userCommentsId
@@ -210,6 +438,29 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
     isMuted
     userID
     chatID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userChatsId
@@ -234,6 +485,29 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
     isMuted
     userID
     chatID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userChatsId
@@ -258,6 +532,29 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
     isMuted
     userID
     chatID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userChatsId
@@ -278,6 +575,14 @@ export const onCreateChat = /* GraphQL */ `subscription OnCreateChat(
     name
     url
     isGroup
+    messages {
+      nextToken
+      __typename
+    }
+    participants {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -297,6 +602,14 @@ export const onUpdateChat = /* GraphQL */ `subscription OnUpdateChat(
     name
     url
     isGroup
+    messages {
+      nextToken
+      __typename
+    }
+    participants {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -316,6 +629,14 @@ export const onDeleteChat = /* GraphQL */ `subscription OnDeleteChat(
     name
     url
     isGroup
+    messages {
+      nextToken
+      __typename
+    }
+    participants {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -334,12 +655,15 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     id
     content
     msgURL
+    type
     senderID
-    sender{
+    chatID
+    sender {
       id
       email
       firstname
       lastname
+      fullname
       profileURL
       description
       createdAt
@@ -347,9 +671,19 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
       owner
       __typename
     }
-    chatID
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
+    userMessagesId
     owner
     __typename
   }
@@ -366,8 +700,32 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
     id
     content
     msgURL
+    type
     senderID
     chatID
+    sender {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userMessagesId
@@ -387,8 +745,32 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
     id
     content
     msgURL
+    type
     senderID
     chatID
+    sender {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userMessagesId
@@ -409,9 +791,34 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
     userID
     groupID
     role
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userGroupsId
+    groupMembersId
     owner
     __typename
   }
@@ -429,9 +836,34 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
     userID
     groupID
     role
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userGroupsId
+    groupMembersId
     owner
     __typename
   }
@@ -449,9 +881,34 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
     userID
     groupID
     role
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userGroupsId
+    groupMembersId
     owner
     __typename
   }
@@ -470,6 +927,14 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup(
     groupURL
     description
     isPublic
+    members {
+      nextToken
+      __typename
+    }
+    posts {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -490,6 +955,14 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup(
     groupURL
     description
     isPublic
+    members {
+      nextToken
+      __typename
+    }
+    posts {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -510,6 +983,14 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup(
     groupURL
     description
     isPublic
+    members {
+      nextToken
+      __typename
+    }
+    posts {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner

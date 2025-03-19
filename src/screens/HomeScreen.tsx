@@ -1,13 +1,15 @@
 import { useEffect, useState, useContext, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+
 import client from '../client';
-import { groupsByUser } from '../graphql/queries';
+import { groupsByUser } from '../customGraphql/customQueries';
 import { ModelSortDirection, Post, Group } from '../API';
+
+import { fetchUserAttributes } from 'aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
 import FormatPost from '../components/FormatPost';
-import { fetchUserAttributes } from 'aws-amplify/auth';
 
 /**
  * Displays the active News feed for the current user
@@ -24,7 +26,6 @@ const HomeScreen = () => {
   }, [currUser]);
 
   const loadNewsFeed = async () => {
-    console.log(await fetchUserAttributes());
     try {
       const cachedData = await AsyncStorage.getItem('newsFeedCache');
       if (cachedData) {

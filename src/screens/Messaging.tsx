@@ -2,9 +2,11 @@ import { useState, useContext, useCallback } from 'react';
 import { View, FlatList, TouchableOpacity, Text, ActivityIndicator
   } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+
+import client  from '../client';
 import { chatsByUser } from '../graphql/queries';
 import { ModelSortDirection, UserChat } from '../API';
-import client  from '../client';
+
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import ImgComponent from '../components/ImgComponent';

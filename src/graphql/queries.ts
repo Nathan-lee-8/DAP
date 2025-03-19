@@ -14,6 +14,7 @@ export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
     email
     firstname
     lastname
+    fullname
     profileURL
     description
     createdAt
@@ -34,6 +35,7 @@ export const listUsers = /* GraphQL */ `query ListUsers(
       email
       firstname
       lastname
+      fullname
       profileURL
       description
       createdAt
@@ -65,6 +67,7 @@ export const userByEmail = /* GraphQL */ `query UserByEmail(
       email
       firstname
       lastname
+      fullname
       profileURL
       description
       createdAt
@@ -92,6 +95,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       email
       firstname
       lastname
+      fullname
       profileURL
       description
       createdAt
@@ -111,6 +115,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
           email
           firstname
           lastname
+          fullname
           profileURL
           createdAt
           updatedAt
@@ -136,6 +141,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       owner
       __typename
     }
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -156,6 +162,7 @@ export const listPosts = /* GraphQL */ `query ListPosts(
       postURL
       groupID
       userID
+      commentCount
       createdAt
       updatedAt
       userPostsId
@@ -189,18 +196,7 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       postURL
       groupID
       userID
-      user{
-        id
-        email
-        firstname
-        lastname
-        profileURL
-        description
-        createdAt
-        updatedAt
-        owner
-        __typename
-      }
+      commentCount
       createdAt
       updatedAt
       userPostsId
@@ -237,32 +233,7 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
       postURL
       groupID
       userID
-      comments{
-        items{
-          id
-          content
-          commentURL
-          userID
-          postID
-          createdAt
-          updatedAt
-          owner
-          __typename
-        }
-        nextToken
-        __typename
-      }
-      group {
-        id
-        groupName
-        groupURL
-        description
-        isPublic
-        createdAt
-        updatedAt
-        owner
-        __typename
-      }
+      commentCount
       createdAt
       updatedAt
       userPostsId
@@ -277,6 +248,43 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
   APITypes.PostsByUserQueryVariables,
   APITypes.PostsByUserQuery
 >;
+export const postsByCommentCount = /* GraphQL */ `query PostsByCommentCount(
+  $createdAt: AWSDateTime!
+  $commentCount: ModelIntKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelPostFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  postsByCommentCount(
+    createdAt: $createdAt
+    commentCount: $commentCount
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.PostsByCommentCountQueryVariables,
+  APITypes.PostsByCommentCountQuery
+>;
 export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
   getComment(id: $id) {
     id
@@ -289,6 +297,7 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
       email
       firstname
       lastname
+      fullname
       profileURL
       description
       createdAt
@@ -302,6 +311,7 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
       postURL
       groupID
       userID
+      commentCount
       createdAt
       updatedAt
       userPostsId
@@ -432,6 +442,7 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       email
       firstname
       lastname
+      fullname
       profileURL
       description
       createdAt
@@ -625,6 +636,7 @@ export const getChat = /* GraphQL */ `query GetChat(
           id
           firstname
           lastname
+          fullname
           email
           profileURL
           description
@@ -633,6 +645,7 @@ export const getChat = /* GraphQL */ `query GetChat(
           owner
           __typename
         }
+        type
         chatID
         owner
         createdAt
@@ -655,6 +668,7 @@ export const getChat = /* GraphQL */ `query GetChat(
         user{
           id
           firstname
+          fullname
           lastname
           email
           profileURL
@@ -662,9 +676,9 @@ export const getChat = /* GraphQL */ `query GetChat(
           createdAt
           updatedAt
           owner
-      __typename
-    }
-    createdAt
+          __typename
+        }
+        createdAt
         updatedAt
         owner
         __typename
@@ -704,6 +718,7 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
     id
     content
     msgURL
+    type
     senderID
     chatID
     sender {
@@ -711,6 +726,7 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       email
       firstname
       lastname
+      fullname
       profileURL
       description
       createdAt
@@ -749,6 +765,7 @@ export const listMessages = /* GraphQL */ `query ListMessages(
       id
       content
       msgURL
+      type
       senderID
       chatID
       createdAt
@@ -785,6 +802,7 @@ export const messagesByUser = /* GraphQL */ `query MessagesByUser(
       id
       content
       msgURL
+      type
       senderID
       chatID
       createdAt
@@ -821,6 +839,7 @@ export const messagesByChat = /* GraphQL */ `query MessagesByChat(
       id
       content
       msgURL
+      type
       senderID
       chatID
       createdAt
@@ -855,11 +874,11 @@ export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
           userID
           groupID
           role
-          createdAt
-          updatedAt
-          owner
-          __typename
-        }
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
         nextToken
         __typename
       }
@@ -893,6 +912,7 @@ export const listUserGroups = /* GraphQL */ `query ListUserGroups(
       createdAt
       updatedAt
       userGroupsId
+      groupMembersId
       owner
       __typename
     }
@@ -962,6 +982,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
               id
               email
               firstname
+              fullname
               lastname
               profileURL
               description
@@ -985,6 +1006,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
               nextToken
               __typename
             }
+            commentCount
             createdAt
             updatedAt
             owner
@@ -1028,6 +1050,7 @@ export const membersByGroup = /* GraphQL */ `query MembersByGroup(
       createdAt
       updatedAt
       userGroupsId
+      groupMembersId
       owner
       __typename
     }
@@ -1057,6 +1080,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           email
           firstname
           lastname
+          fullname
           profileURL
           description
           createdAt
@@ -1084,6 +1108,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           email
           firstname
           lastname
+          fullname
           profileURL
           description
           createdAt
@@ -1103,11 +1128,12 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
             owner
             __typename
           }
-      nextToken
-      __typename
-    }
-    createdAt
-    updatedAt
+          nextToken
+          __typename
+        }
+        commentCount
+        createdAt
+        updatedAt
         userPostsId
         owner
         __typename
@@ -1134,31 +1160,6 @@ export const listGroups = /* GraphQL */ `query ListGroups(
       groupURL
       description
       isPublic
-      members {
-        items{
-          id
-          userID
-          groupID
-          role
-          user{
-            id
-            email
-            firstname
-            lastname
-            profileURL
-            description
-            createdAt
-            updatedAt
-            __typename
-          }
-          createdAt
-          updatedAt
-          owner
-          __typename
-        }
-        nextToken
-        __typename
-      }
       createdAt
       updatedAt
       owner

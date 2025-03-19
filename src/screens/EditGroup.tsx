@@ -1,14 +1,16 @@
 import { useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Alert, TextInput, FlatList,
    Platform, KeyboardAvoidingView, Modal } from 'react-native';
+
+import client from '../client';
+import  { deleteUserGroup, updateGroup, updateUserGroup } from '../graphql/mutations';
+import { UserGroup} from '../API';
+
 import { AuthContext } from '../context/AuthContext';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
 import { imagePicker, getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
-import  { deleteUserGroup, updateGroup, updateUserGroup } from '../graphql/mutations';
-import client from '../client';
-import { UserGroup} from '../API';
 
 const EditGroup = ( {route, navigation} : any ) => {
   const group = route.params.group;
@@ -18,7 +20,6 @@ const EditGroup = ( {route, navigation} : any ) => {
   const [ description, setDescription ] = useState<string>(group.description);
   const [ members, setMembers ] = useState<UserGroup[]>(group.members?.items);
   const [ isPublic, setIsPublic ] = useState(group.isPublic);
-  console.log(isPublic);
   const [ removedMembers, setRemovedMembers ] = useState<string[]>([]);
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ updateRoleIDs, setUpdateRoleIDs ] = useState<string[]>([]);

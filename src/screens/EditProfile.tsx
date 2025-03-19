@@ -1,13 +1,15 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState, useCallback} from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, 
   KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { AuthContext } from '../context/AuthContext';
+
+import client from '../client'
 import { updateUser } from '../graphql/mutations';
+
+import { AuthContext } from '../context/AuthContext';
 import { imagePicker, getImgURI } from '../components/addImg';
 import ImgComponent from '../components/ImgComponent';
 import UserPosts from '../components/UserPosts';
-import client from '../client'
 import styles from '../styles/Styles';
 
 //Update to get user data from authContext
@@ -84,7 +86,7 @@ const EditProfile = () => {
   }
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       // This will reset the state when the screen loses focus
       return () => {
         setTempURL(currUser.profileURL); // Reset state to initial value when leaving the page
@@ -98,7 +100,7 @@ const EditProfile = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : !editsOn ? (
-        <View>
+        <View style={{flex: 1}}>
           <View style={styles.viewUserProfileSection}>
             <ImgComponent uri={currUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
             <View style={styles.userInfoContainer}>
