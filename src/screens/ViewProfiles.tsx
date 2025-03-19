@@ -1,27 +1,59 @@
-import { View, Text } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+
+import client from '../client';
+import { getUser } from '../customGraphql/customQueries';
+import { User } from '../API';
+
 import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ImgComponent';
 
-const ViewProfiles = ( { route } : any) => {
-    const targetUser = route.params?.user;
-    if(!targetUser) return (<View><Text style={styles.noResultsMsg}>Error: User not found</Text></View>);
+const ViewProfiles = ( { route, navigation } : any) => {
+  const targetUserID = route.params.userID;
+  const [ targetUser, setTargetUser ] = useState<User>();
+  useEffect(() => {
+    const fetchProfile = async () => {
+      console.log(targetUserID.toString())
+      try {
+        const response = await client.graphql({
+          query: getUser,
+          variables: { 
+            id: targetUserID.toString(),
+          },
+          authMode: 'userPool'
+        });
+        const user = response.data.getUser;
+        if(user)setTargetUser(user);
+        console.log('fetched User', user);
+      } catch (error) {
+        console.log('Error getting posts', error);
+      } 
+    };
+    fetchProfile();
+  }, []);
 
-    return(
-        <View style={styles.container}>
-            <View style={styles.viewUserProfileSection}>
-                <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
-                <View style={styles.userInfoContainer}>
-                    <Text style={styles.postAuthor}>{targetUser.firstname} {targetUser.lastname}</Text>
-                    <Text style={styles.userContact}>{targetUser.email}</Text>
-                    <Text style={styles.userContact}>User since {targetUser.createdAt ? new Date(targetUser.createdAt).toLocaleDateString() : "unknown"}</Text>
-                    <Text style={styles.userContact}>{targetUser.description || "No bio available"}</Text>
-                </View>
-            </View>
-            <UserPosts userID={targetUser.id}/>
+  if(!targetUser) return (<View><Text style={styles.noResultsMsg}>Error: User not found</Text></View>);
+
+  return(
+    <View style={styles.container}>
+      <View style={styles.viewUserProfileSection}>
+        <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
+        <View style={styles.userInfoContainer}>
+          <Text style={styles.postAuthor}>{targetUser.firstname} {targetUser.lastname}</Text>
+          <Text style={styles.userContact}>{targetUser.email}</Text>
+          <Text style={styles.userContact}>{targetUser.description || "No bio available"}</Text>
         </View>
-        
-    )
+        <View style={{flexDirection: 'column'}}>
+          <TouchableOpacity style={styles.messageUserButton} onPress={() => navigation.navigate('CreateChat', {user: targetUser})}>
+            <Text style={{textAlign:'center', fontSize: 12}}>Message</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+      <UserPosts userID={targetUser.id}/>
+    </View>
+    
+  )
 }
 
 export default ViewProfiles;

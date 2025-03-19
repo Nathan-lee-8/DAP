@@ -3,13 +3,15 @@ import { useEffect, useState, useRef, useContext, useLayoutEffect, useCallback
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
     KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { AuthContext } from '../context/AuthContext';
-import { getChat } from '../graphql/queries';
-import { createMessage, updateUserChat } from '../graphql/mutations';
-import { onCreateMessage } from '../graphql/subscriptions';
-import  { Message, UserChat, Chat } from '../API';
-import styles from '../styles/Styles';
+
 import client from '../client';
+import { getChat } from '../customGraphql/customQueries';
+import { createMessage, updateUserChat } from '../graphql/mutations';
+import { onCreateMessage } from '../customGraphql/customSubscriptions';
+import  { Message, UserChat, Chat } from '../API';
+
+import { AuthContext } from '../context/AuthContext';
+import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
 import moment from 'moment';
@@ -64,7 +66,6 @@ const ChatRoom = ( { route, navigation } : any) => {
             if(!newMessage || prev.find((msg) => msg?.id === newMessage?.id)){
               return prev;
             }
-            lastMsgRef.current = newMessage;
             return [newMessage, ...prev];
           });
           scrollToBottom();
@@ -90,7 +91,6 @@ const ChatRoom = ( { route, navigation } : any) => {
       });
       const chatData = chat.data.getChat;
       if(chatData) setChat(chatData);
-      console.log("chat fetched from chatroom");
       if(chatData?.messages){
         setMessages(
           chatData.messages.items.filter((item): item is Message => item !== null)
@@ -175,7 +175,7 @@ const ChatRoom = ( { route, navigation } : any) => {
   }
 
   const sendMessage = async () => {
-    if(currMessage === '' || !myUserChat ) return;
+    if(currMessage === '' || !chat ) return;
     try {
       await client.graphql({
         query: createMessage,
@@ -183,7 +183,7 @@ const ChatRoom = ( { route, navigation } : any) => {
           input: {
             senderID: currUser.id,
             content: currMessage,
-            chatID: myUserChat.chatID,
+            chatID: chat.id,
           },
         },
         authMode: 'userPool'
@@ -272,6 +272,11 @@ const ChatRoom = ( { route, navigation } : any) => {
           const prevItem = index < messages.length - 1 ? messages[index + 1] : null;
           const prevTime = prevItem ? moment(prevItem.createdAt) : null;
           const shouldShowDate = !prevTime || !currTime.isSame(prevTime, 'day');
+          if(item.type === 'System') return(
+            <View>
+              <Text style={styles.systemMessage}>{item?.content}</Text>
+            </View>
+          )
           return (
             <View>
               {shouldShowDate && (

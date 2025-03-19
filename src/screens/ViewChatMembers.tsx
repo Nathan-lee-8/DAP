@@ -1,10 +1,13 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, Modal } from "react-native";
 import styles from '../styles/Styles';
-import { deleteUserChat, deleteMessage, deleteChat, createUserChat 
- } from "../graphql/mutations";
-import { User } from "../API";
+
 import client from "../client";
+import { deleteUserChat, deleteMessage, deleteChat, createUserChat } from "../graphql/mutations";
+import { createMessage } from "../graphql/mutations";
+import { User } from "../API";
+
+import { AuthContext } from "../context/AuthContext";
 import ImgComponent from "../components/ImgComponent";
 import SearchBar from "../components/SearchBar";
 import Icon from "@react-native-vector-icons/ionicons";
@@ -17,6 +20,8 @@ const ChatMembers = ( {route, navigation} : any ) => {
   const flatListRef = useRef<FlatList>(null);
   const users = userChats.map((item: any) => item.user);
   const myChat = userChats[0];
+  const currUser = useContext(AuthContext)?.currUser;
+  if(!currUser) return;
 
   const handleInvite = async () => {
     setModalVisible(false);
@@ -83,6 +88,19 @@ const ChatMembers = ( {route, navigation} : any ) => {
         index: 0,
         routes: [ { name: 'MainTabs', params: { screen: 'Messages' } } ]
       });
+      await client.graphql({
+        query: createMessage,
+        variables: {
+          input: {
+            senderID: currUser.id,
+            content: currUser.firstname + " left the chat",
+            chatID: chatData.id,
+            type: 'System'
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log("Msg sent")
     } catch (error){ 
       console.log('Error', error);
     }

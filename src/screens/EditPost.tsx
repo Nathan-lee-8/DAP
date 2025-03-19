@@ -1,11 +1,13 @@
 import { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, Keyboard,
   ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
+
+import client from '../client';
+import { updatePost } from '../graphql/mutations';
+
+import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import { imagePicker, getImgURI } from '../components/addImg';
-import { updatePost } from '../graphql/mutations';
-import client from '../client';
-import { AuthContext } from '../context/AuthContext';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 

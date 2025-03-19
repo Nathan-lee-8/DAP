@@ -1,17 +1,20 @@
 import { useContext, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, 
   Modal } from "react-native";
+
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthContext } from "../context/AuthContext";
 import { GlobalParamList, LoggedInParamList } from "../types/rootStackParamTypes";
+
+import client from "../client";
+import { deletePost, deleteComment } from "../customGraphql/customMutations";
 import { Post, Group } from "../API";
+
+import { AuthContext } from "../context/AuthContext";
 import moment from "moment";
 import styles from "../styles/Styles";
 import ImgComponent from "./ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
-import { deletePost, deleteComment } from "../graphql/mutations";
-import client from "../client";
 
 const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -28,14 +31,15 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
     options = ["Report", "Edit", "Delete"];
   }
 
-  const clickPost = (item : string) => {
-    navigation.navigate('ViewPost', { postID: item });
+  const clickPost = (itemID : string) => {
+    navigation.navigate('ViewPost', { postID: itemID });
   }
+  
   const visitProfile = (item : any) => {
     if(item.user.id === currUser.id){
       nav2.navigate('Profile');
     }else{
-      navigation.navigate('ViewProfile', { user: item.user });
+      navigation.navigate('ViewProfile', { userID: item.userID });
     }
   }
 
@@ -72,7 +76,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
             },
             authMode: 'userPool'
           });
-          console.log(comment.id, "successfully deleted");
+          console.log(comment.id, "successfully deleted comment");
         }catch (error : any){
           console.log(error);
         }
@@ -89,7 +93,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
           },
           authMode: 'userPool'
         });
-        console.log(item.id, "successfully deleted");
+        console.log(item.id, "successfully deleted post");
       }catch (error : any){
         console.log(error);
       }
@@ -125,11 +129,18 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
           <View style={styles.profileText}>
             {groupData ? (
               <View style={styles.postAuthor}>
-                <Text style={styles.bold} onPress={() => visitProfile(item)}>
+                <Text style={styles.bold} 
+                  onPress={() => visitProfile(item)}
+                  numberOfLines={1}
+                >
                   {item.user.firstname + " " + item.user.lastname}
                 </Text>
                 <Text> posted in </Text>
-                <Text style={styles.bold} onPress={() => navigation.navigate('ViewGroup', {groupID: item.groupID})}>
+                <Text style={[styles.bold, {flexShrink: 1}]} 
+                  onPress={() => navigation.navigate('ViewGroup', {groupID: item.groupID})}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
                   {getGroupName(item.groupID)}
                 </Text>
               </View>

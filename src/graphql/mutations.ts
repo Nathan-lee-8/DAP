@@ -17,8 +17,29 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
     email
     firstname
     lastname
+    fullname
     profileURL
     description
+    posts {
+      nextToken
+      __typename
+    }
+    chats {
+      nextToken
+      __typename
+    }
+    messages {
+      nextToken
+      __typename
+    }
+    groups {
+      nextToken
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -38,6 +59,7 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser(
     email
     firstname
     lastname
+    fullname
     profileURL
     description
     createdAt
@@ -59,8 +81,29 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
     email
     firstname
     lastname
+    fullname
     profileURL
     description
+    posts {
+      nextToken
+      __typename
+    }
+    chats {
+      nextToken
+      __typename
+    }
+    messages {
+      nextToken
+      __typename
+    }
+    groups {
+      nextToken
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -81,6 +124,35 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
     postURL
     groupID
     userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -102,6 +174,35 @@ export const updatePost = /* GraphQL */ `mutation UpdatePost(
     postURL
     groupID
     userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -123,6 +224,35 @@ export const deletePost = /* GraphQL */ `mutation DeletePost(
     postURL
     groupID
     userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comments {
+      nextToken
+      __typename
+    }
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -144,6 +274,32 @@ export const createComment = /* GraphQL */ `mutation CreateComment(
     commentURL
     userID
     postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userCommentsId
@@ -165,6 +321,32 @@ export const updateComment = /* GraphQL */ `mutation UpdateComment(
     commentURL
     userID
     postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userCommentsId
@@ -186,6 +368,32 @@ export const deleteComment = /* GraphQL */ `mutation DeleteComment(
     commentURL
     userID
     postID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userCommentsId
@@ -210,6 +418,29 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
     isMuted
     userID
     chatID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userChatsId
@@ -234,6 +465,29 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
     isMuted
     userID
     chatID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userChatsId
@@ -278,6 +532,14 @@ export const createChat = /* GraphQL */ `mutation CreateChat(
     name
     url
     isGroup
+    messages {
+      nextToken
+      __typename
+    }
+    participants {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -297,6 +559,14 @@ export const updateChat = /* GraphQL */ `mutation UpdateChat(
     name
     url
     isGroup
+    messages {
+      nextToken
+      __typename
+    }
+    participants {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -316,6 +586,14 @@ export const deleteChat = /* GraphQL */ `mutation DeleteChat(
     name
     url
     isGroup
+    messages {
+      nextToken
+      __typename
+    }
+    participants {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -334,6 +612,7 @@ export const createMessage = /* GraphQL */ `mutation CreateMessage(
     id
     content
     msgURL
+    type
     senderID
     chatID
     createdAt
@@ -355,8 +634,32 @@ export const updateMessage = /* GraphQL */ `mutation UpdateMessage(
     id
     content
     msgURL
+    type
     senderID
     chatID
+    sender {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userMessagesId
@@ -376,8 +679,32 @@ export const deleteMessage = /* GraphQL */ `mutation DeleteMessage(
     id
     content
     msgURL
+    type
     senderID
     chatID
+    sender {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userMessagesId
@@ -398,9 +725,34 @@ export const createUserGroup = /* GraphQL */ `mutation CreateUserGroup(
     userID
     groupID
     role
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userGroupsId
+    groupMembersId
     owner
     __typename
   }
@@ -418,9 +770,34 @@ export const updateUserGroup = /* GraphQL */ `mutation UpdateUserGroup(
     userID
     groupID
     role
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userGroupsId
+    groupMembersId
     owner
     __typename
   }
@@ -438,9 +815,34 @@ export const deleteUserGroup = /* GraphQL */ `mutation DeleteUserGroup(
     userID
     groupID
     role
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userGroupsId
+    groupMembersId
     owner
     __typename
   }
@@ -459,6 +861,14 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
     groupURL
     description
     isPublic
+    members {
+      nextToken
+      __typename
+    }
+    posts {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -479,6 +889,14 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
     groupURL
     description
     isPublic
+    members {
+      nextToken
+      __typename
+    }
+    posts {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -499,6 +917,14 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
     groupURL
     description
     isPublic
+    members {
+      nextToken
+      __typename
+    }
+    posts {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner

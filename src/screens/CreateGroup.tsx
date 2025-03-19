@@ -1,15 +1,17 @@
 import { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, Platform,
-  ActivityIndicator, Alert, KeyboardAvoidingView } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, FlatList, Platform, Alert,
+  ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+
+import client from '../client';
+import { createUserGroup, createGroup, deleteUserGroup, deleteGroup, updateGroup 
+} from '../graphql/mutations';
+import { User } from '../API';
+
+import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
-import { User } from '../API';
 import ImgComponent from '../components/ImgComponent';
-import client from '../client';
-import { createUserGroup, createGroup, deleteUserGroup, deleteGroup,
-  updateGroup } from '../graphql/mutations';
-import { AuthContext } from '../context/AuthContext';
 import { imagePicker, getImgURI } from '../components/addImg';
 
 /**

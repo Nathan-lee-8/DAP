@@ -1,11 +1,13 @@
 import { useContext, useState, useRef } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, Modal,
   ActivityIndicator } from "react-native";
+  
+import client from "../client";
 import { deleteUserGroup, deleteGroup, deletePost, createUserGroup,
   createChat, createUserChat
  } from "../graphql/mutations";
 import { User } from "../API";
-import client from "../client";
+
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles';
 import ImgComponent from "../components/ImgComponent";

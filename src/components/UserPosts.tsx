@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+
 import client from '../client';
-import { postsByUser } from '../graphql/queries';
+import { postsByUser } from '../customGraphql/customQueries';
 import { Post } from '../API';
+
 import styles from '../styles/Styles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ModelSortDirection } from '../API';
@@ -25,12 +27,12 @@ const UserPosts = ( { userID } : any ) => {
         authMode: 'userPool'
       });
       const fetchedPosts = response?.data?.postsByUser?.items || [];
+      console.log('fetched from userPosts');
       setPosts(fetchedPosts);
       await AsyncStorage.setItem(
         `${userID}PostsCache`, 
         JSON.stringify({posts: fetchedPosts,timestamp: Date.now()})
       );
-      console.log('fetched from userPosts');
     } catch (error) {
       console.log('Error getting posts', error);
     } 
@@ -62,7 +64,7 @@ const UserPosts = ( { userID } : any ) => {
   }, [fetchPosts]);
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       {loading? ( 
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (

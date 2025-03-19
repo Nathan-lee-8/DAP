@@ -1,13 +1,14 @@
 import { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, FlatList,
-  KeyboardAvoidingView, Platform
-} from 'react-native';
-import styles from '../styles/Styles';
-import { AuthContext } from '../context/AuthContext';
+  KeyboardAvoidingView, Platform} from 'react-native';
+
 import client from '../client';
 import { createChat, createUserChat, createMessage, deleteChat, deleteMessage,
   deleteUserChat } from '../graphql/mutations';
 import { User } from '../API';
+
+import { AuthContext } from '../context/AuthContext';
+import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
 import moment from 'moment';
