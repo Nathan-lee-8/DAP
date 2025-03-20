@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, FlatList,
 
 import client from '../client';
 import { createChat, createUserChat, createMessage, deleteChat, deleteMessage,
-  deleteUserChat } from '../graphql/mutations';
+  deleteUserChat } from '../customGraphql/customMutations';
 import { User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
@@ -60,7 +60,6 @@ const CreateChat = ({ route, navigation }: any) => {
             userID: currUser.id,
             chatID: chat.data.createChat.id,
             unreadMessageCount: 0,
-            lastMessageAt: currTime,
             lastMessage: message,
             role: 'Owner'
           }
@@ -78,7 +77,6 @@ const CreateChat = ({ route, navigation }: any) => {
               userID: user.id,
               chatID: chat.data.createChat.id,
               unreadMessageCount: 1,
-              lastMessageAt: currTime,
               lastMessage: message,
               role: 'Member'
             }

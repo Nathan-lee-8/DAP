@@ -4,7 +4,7 @@ import { View, FlatList, TouchableOpacity, Text, ActivityIndicator
 import { useFocusEffect } from '@react-navigation/native';
 
 import client  from '../client';
-import { chatsByUser } from '../graphql/queries';
+import { chatsByUser } from '../customGraphql/customQueries';
 import { ModelSortDirection, UserChat } from '../API';
 
 import { AuthContext } from '../context/AuthContext';

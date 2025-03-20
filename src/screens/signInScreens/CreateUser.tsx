@@ -4,7 +4,7 @@ import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, Platform,
   ActivityIndicator} from 'react-native';
 
 import client from '../../client';
-import { createUser } from '../../graphql/mutations';
+import { createUser } from '../../customGraphql/customMutations';
 
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/Styles';
@@ -23,7 +23,7 @@ const CreateUser = () => {
     console.log("Auth context not defined");
     return null;
   };
-  const { userEmail, setUserEmail, triggerFetch } = authContext;
+  const { userEmail, triggerFetch } = authContext;
 
   const handleSignUp = async () => {
     if(firstname === '') {

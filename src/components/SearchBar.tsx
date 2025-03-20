@@ -8,7 +8,6 @@ import { User } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import ProfilePicture from './ImgComponent';
-import filter from 'lodash/filter';
 
 const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:any, remove?: any}) => {
   const [search, setSearch] = useState<string>('');
@@ -22,7 +21,7 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
       const users = await client.graphql({
         query: listUsers,
         variables: { 
-          limit: 20,
+          limit: 10,
           filter: {
             fullname: {contains: search.toLowerCase()}
           }
@@ -30,9 +29,13 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
         authMode: 'userPool'
       });
       const userData = users.data.listUsers.items;
-      console.log('fetched from searchbar')
-      setData(userData.filter((item) => item.id !== currUser.id));
-      console.log('Fetched & cached from searchbar component.');
+      var filteredData = userData.filter((user) => {
+        if(user.id === currUser.id) return false;
+        if(remove && remove.some((removedUser: User) => removedUser.id === user.id)) return false;
+        return true;
+      });
+      setData(filteredData);
+      console.log('Fetched from searchbar.');
     } catch (error) {
       console.log('Error fetching users', error);
     }
@@ -48,18 +51,6 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
     debounceTimeout.current = setTimeout(() => {
       fetchUsers(query);
     }, 500); 
-    
-    const formattedSearch = query.toLowerCase();
-    const results = filter(data, (user) => {
-      if(!user.id || user.id === currUser.id){
-        return false;
-      }
-      if(remove && remove.some((removedUser: User) => removedUser.id === user.id)) return false;
-      const name = user.firstname + " " + user.lastname;
-      return name.toLowerCase().includes(formattedSearch) || 
-        user.email.toLowerCase().includes(formattedSearch)
-    });
-    setData(results);
   };
 
   const handleOnPress = (user: User) => {

@@ -124,34 +124,6 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
     postURL
     groupID
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      description
-      isPublic
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    comments {
-      nextToken
-      __typename
-    }
     commentCount
     createdAt
     updatedAt
@@ -174,34 +146,6 @@ export const updatePost = /* GraphQL */ `mutation UpdatePost(
     postURL
     groupID
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      description
-      isPublic
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    comments {
-      nextToken
-      __typename
-    }
     commentCount
     createdAt
     updatedAt
@@ -224,34 +168,6 @@ export const deletePost = /* GraphQL */ `mutation DeletePost(
     postURL
     groupID
     userID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      description
-      isPublic
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    comments {
-      nextToken
-      __typename
-    }
     commentCount
     createdAt
     updatedAt
@@ -274,32 +190,6 @@ export const createComment = /* GraphQL */ `mutation CreateComment(
     commentURL
     userID
     postID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    post {
-      id
-      content
-      postURL
-      groupID
-      userID
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userCommentsId
@@ -321,32 +211,6 @@ export const updateComment = /* GraphQL */ `mutation UpdateComment(
     commentURL
     userID
     postID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    post {
-      id
-      content
-      postURL
-      groupID
-      userID
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userCommentsId
@@ -368,32 +232,6 @@ export const deleteComment = /* GraphQL */ `mutation DeleteComment(
     commentURL
     userID
     postID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    post {
-      id
-      content
-      postURL
-      groupID
-      userID
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userCommentsId
@@ -413,34 +251,10 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
     id
     unreadMessageCount
     lastMessage
-    lastMessageAt
     role
     isMuted
     userID
     chatID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    chat {
-      id
-      name
-      url
-      isGroup
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userChatsId
@@ -460,34 +274,10 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
     id
     unreadMessageCount
     lastMessage
-    lastMessageAt
     role
     isMuted
     userID
     chatID
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    chat {
-      id
-      name
-      url
-      isGroup
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userChatsId
@@ -507,7 +297,6 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
     id
     unreadMessageCount
     lastMessage
-    lastMessageAt
     role
     isMuted
     userID
@@ -752,7 +541,6 @@ export const createUserGroup = /* GraphQL */ `mutation CreateUserGroup(
     createdAt
     updatedAt
     userGroupsId
-    groupMembersId
     owner
     __typename
   }
@@ -797,7 +585,6 @@ export const updateUserGroup = /* GraphQL */ `mutation UpdateUserGroup(
     createdAt
     updatedAt
     userGroupsId
-    groupMembersId
     owner
     __typename
   }
@@ -842,7 +629,6 @@ export const deleteUserGroup = /* GraphQL */ `mutation DeleteUserGroup(
     createdAt
     updatedAt
     userGroupsId
-    groupMembersId
     owner
     __typename
   }

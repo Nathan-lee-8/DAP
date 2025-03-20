@@ -3,8 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, Alert, Modal } from "react-nati
 import styles from '../styles/Styles';
 
 import client from "../client";
-import { deleteUserChat, deleteMessage, deleteChat, createUserChat } from "../graphql/mutations";
-import { createMessage } from "../graphql/mutations";
+import { deleteUserChat, deleteMessage, deleteChat, createUserChat, createMessage
+} from "../customGraphql/customMutations";
 import { User } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
@@ -35,7 +35,6 @@ const ChatMembers = ( {route, navigation} : any ) => {
               userID: userID,
               chatID: chatData.id,
               unreadMessageCount: 0,
-              lastMessageAt: myChat.lastMessageAt,
               lastMessage: myChat.lastMessage,
               role: 'Member'
             }

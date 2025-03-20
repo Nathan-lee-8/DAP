@@ -2,10 +2,9 @@ import { useEffect, useState, useContext, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 
 import client from '../client';
-import { groupsByUser } from '../customGraphql/customQueries';
+import { groupPosts } from '../customGraphql/customQueries';
 import { ModelSortDirection, Post, Group } from '../API';
 
-import { fetchUserAttributes } from 'aws-amplify/auth';
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
@@ -30,13 +29,13 @@ const HomeScreen = () => {
       const cachedData = await AsyncStorage.getItem('newsFeedCache');
       if (cachedData) {
         const data = JSON.parse(cachedData);
-        // const fiveMin = 5 * 60 * 1000;
-        // if (Date.now() - data.timestamp < fiveMin) {
+        const fiveMin = 5 * 60 * 1000;
+        if (Date.now() - data.timestamp < fiveMin) {
           setNewsFeed(data.posts);
           setGroups(data.groupData);
           setLoading(false);
           return;
-       // }
+        }
       }
       await fetchNewsFeed();
     } catch (error) {
@@ -54,36 +53,34 @@ const HomeScreen = () => {
     setLoading(true);
     try{
       const res = await client.graphql({
-        query: groupsByUser,
+        query: groupPosts,
         variables: {
           userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
         },
         authMode: 'userPool'
       }); 
-      const userGroupData = res.data.groupsByUser.items;
-      console.log(`Fetched from fetchnewsfeed.`);
+      const userGroupData = res.data.groupsByUser.items
 
-      let groupData = userGroupData.flatMap(group => {
-        return (group.group  || []);
-      });
-      groupData = groupData.filter(group => group !== null);
+      let groupData = userGroupData.flatMap(group => { return (group.group  || []) })
+        .filter(group => group !== null);
       setGroups(groupData);
+
       let posts = userGroupData.flatMap(userGroup => {
         return (userGroup.group?.posts?.items || []).filter((post): post is Post => post !== null);
-      })
-      posts = posts.sort((a, b) => {
+      }).sort((a, b) => {
         const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
         return dateB - dateA;
       });
       setNewsFeed(posts);
-      
+
       await AsyncStorage.setItem('newsFeedCache', JSON.stringify({
         posts,
         groupData,
         timestamp: Date.now(),
       }));
+      console.log(`Fetched from fetchnewsfeed.`);
     } catch (error: any) {
       if(error.messsage) console.log('Error fetching news feed', error.message);
       else if(error.errors) console.log('Error fetching news feed', error.errors);

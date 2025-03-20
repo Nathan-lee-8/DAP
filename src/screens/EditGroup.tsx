@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Alert, TextInput, Flat
    Platform, KeyboardAvoidingView, Modal } from 'react-native';
 
 import client from '../client';
-import  { deleteUserGroup, updateGroup, updateUserGroup } from '../graphql/mutations';
+import  { deleteUserGroup, updateGroup, updateUserGroup } from '../customGraphql/customMutations';
 import { UserGroup} from '../API';
 
 import { AuthContext } from '../context/AuthContext';

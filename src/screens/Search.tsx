@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, Keyboard,
   TouchableWithoutFeedback } from 'react-native';
 
@@ -7,14 +7,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
   
 import client from '../client';
-import { listGroups } from '../graphql/queries';
+import { listGroups } from '../customGraphql/customQueries';
 import { Group, User } from '../API';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import ProfilePicture from '../components/ImgComponent';
-import filter from 'lodash/filter';
 
 const Search = ( {navigation} : any) => {
   const [searchTerm, setSearchTerm] = useState('Users');
@@ -57,8 +55,8 @@ const Search = ( {navigation} : any) => {
         </View>
       </View>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={{flex: 1}}>
-          </View>
+        <View style={{flex: 1}}>
+        </View>
       </TouchableWithoutFeedback>
     </View>
   )
@@ -67,39 +65,37 @@ const Search = ( {navigation} : any) => {
 const GroupSearch = () => {
   const [search, setSearch] = useState('');
   const [data, setData] = useState<Group[]>();
-  const [filteredData, setFilteredData] = useState<Group[]>();
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchGroups = async () => {
+  const fetchGroups = async (query: string) => {
     try{
       const groups = await client.graphql({
         query: listGroups,
-        authMode:'userPool'
-      })
+        variables: { 
+          limit: 10,
+          filter: {
+            groupName: {contains: query}
+          }
+         },
+        authMode: 'userPool'
+      });
       setData(groups.data.listGroups.items);
-      AsyncStorage.setItem('groupCache', JSON.stringify(groups.data.listGroups.items));
       console.log("fetchedGroups from search")
     } catch (error) {
       console.log(error);
     }
   }
 
-  useEffect(() => {
-    fetchGroups();
-  }, []);
-
   const handleSearch = async (query: string) => {
     setSearch(query);
-    if(!query){
-      setFilteredData([]);
-      return;
+
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
     }
-    const formattedSearch = query.toLowerCase();
-    const results = filter(data, (group) => {
-      const name = group.groupName.toLowerCase();
-      const id = group.id.toString();
-      return name.includes(formattedSearch) || id.includes(formattedSearch);
-    });
-    setFilteredData(results);
+
+    debounceTimeout.current = setTimeout(() => {
+      fetchGroups(query);
+    }, 500); 
   }
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -118,7 +114,7 @@ const GroupSearch = () => {
         autoCorrect={false}
       />
       <FlatList
-        data={filteredData}
+        data={data}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.searchUserContainer}>

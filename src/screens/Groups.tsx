@@ -4,7 +4,7 @@ import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshContr
  } from 'react-native';
  
 import client from '../client';
-import { groupsByUser } from '../graphql/queries';
+import { groupsByUser } from '../customGraphql/customQueries';
 import { UserGroup, ModelSortDirection } from '../API';
 
 import { AuthContext } from '../context/AuthContext';

@@ -16,12 +16,11 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     id
     content
     msgURL
+    type
     senderID
-    sender{
-      firstname
-      lastname
-      profileURL
-    }
+    chatID
+    owner
+    __typename
   }
 }
 ` as GeneratedSubscription<

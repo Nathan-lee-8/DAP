@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Alert, TextInput, Moda
   Platform, KeyboardAvoidingView, FlatList } from 'react-native';
 
 import client from '../client';
-import { updateChat, deleteUserChat, updateUserChat } from '../graphql/mutations';
+import { updateChat, deleteUserChat, updateUserChat } from '../customGraphql/customMutations';
 import { UserChat } from '../API';
 
 import { AuthContext } from '../context/AuthContext';

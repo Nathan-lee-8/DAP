@@ -6,7 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../client';
 import { getChat } from '../customGraphql/customQueries';
-import { createMessage, updateUserChat } from '../graphql/mutations';
+import { createMessage, updateUserChat } from '../customGraphql/customMutations';
 import { onCreateMessage } from '../customGraphql/customSubscriptions';
 import  { Message, UserChat, Chat } from '../API';
 
@@ -72,7 +72,10 @@ const ChatRoom = ( { route, navigation } : any) => {
         },
         error: (err: any) => console.error("Subscription error:", err),
       });
-      return () => subscription.unsubscribe();
+      return () => {
+        setMessages([]);
+        subscription.unsubscribe()
+      };
     }, [chatID])
   );
 
@@ -92,9 +95,9 @@ const ChatRoom = ( { route, navigation } : any) => {
       const chatData = chat.data.getChat;
       if(chatData) setChat(chatData);
       if(chatData?.messages){
-        setMessages(
-          chatData.messages.items.filter((item): item is Message => item !== null)
-        )
+        const newChat = chatData.messages.items
+          .filter((item): item is Message => item !== null && !messages.includes(item))
+        setMessages((prev) => [...prev, ...newChat])
       }
       let parts = chatData?.participants?.items.filter(item => item !== null);
       if(parts){
@@ -131,7 +134,7 @@ const ChatRoom = ( { route, navigation } : any) => {
       if(myUserChat){
         const myUnread = myUserChat?.unreadMessageCount || 0;
         const msgChanged = messages[0].content !== myUserChat.lastMessage;
-        if(myUnread === 0 && !msgChanged) {
+        if(!myUserChat.lastMessage || (myUnread === 0 && !msgChanged)) {
             return;
         };
         await client.graphql({
@@ -140,7 +143,6 @@ const ChatRoom = ( { route, navigation } : any) => {
             input: {
               id: myUserChat?.id,
               lastMessage: messages[0].content, 
-              lastMessageAt: messages[0].createdAt,
               unreadMessageCount: 0,
             },
           },
@@ -158,7 +160,6 @@ const ChatRoom = ( { route, navigation } : any) => {
               input: {
                 id: part.id,
                 lastMessage: lastMsgRef.current.content,
-                lastMessageAt: lastMsgRef.current.createdAt,
                 unreadMessageCount: numUnread + msgCountRef.current,
               },
             },
@@ -191,6 +192,7 @@ const ChatRoom = ( { route, navigation } : any) => {
       setMessage('');
       msgCountRef.current = msgCountRef.current + 1;
       msgSentRef.current = true;
+      console.log('msg sent');
     } catch (error) {
       console.error("Failed to send message:", error);
     }
@@ -220,11 +222,6 @@ const ChatRoom = ( { route, navigation } : any) => {
   const getMsgContainerStyle = (id: string) => {
     if(id === currUser.id) return styles.myMessageContainer;
     return styles.otherMessageContainer;
-  }
-  
-  const getUserURL = (userID: string) => {
-    const uri = participants.find((part) => part.userID === userID);
-    return uri?.user?.profileURL || 'defaultUser';
   }
 
   return(
@@ -286,7 +283,7 @@ const ChatRoom = ( { route, navigation } : any) => {
               )}
               <View style={getMsgContainerStyle(item?.senderID)}>
                 {item?.senderID !== currUser.id && 
-                  <ImgComponent uri={getUserURL(item?.senderID)}/>
+                  <ImgComponent uri={item?.sender?.profileURL|| 'defaultUser'}/>
                 }
                 <View style={getMsgStyle(item?.senderID)}>
                   <Text>{item?.content}</Text>

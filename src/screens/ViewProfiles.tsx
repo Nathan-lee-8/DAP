@@ -14,18 +14,17 @@ const ViewProfiles = ( { route, navigation } : any) => {
   const [ targetUser, setTargetUser ] = useState<User>();
   useEffect(() => {
     const fetchProfile = async () => {
-      console.log(targetUserID.toString())
       try {
         const response = await client.graphql({
           query: getUser,
           variables: { 
-            id: targetUserID.toString(),
+            id: targetUserID,
           },
           authMode: 'userPool'
         });
         const user = response.data.getUser;
         if(user)setTargetUser(user);
-        console.log('fetched User', user);
+        console.log('fetched User');
       } catch (error) {
         console.log('Error getting posts', error);
       } 
@@ -50,7 +49,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
           </TouchableOpacity>
         </View>
       </View>
-      <UserPosts userID={targetUser.id}/>
+      <UserPosts userID={targetUser.id} isPrivate={true}/>
     </View>
     
   )
