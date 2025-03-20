@@ -232,6 +232,17 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
       content
       postURL
       groupID
+      group{ 
+        id
+        groupName
+        groupURL
+        description
+        isPublic
+        createdAt
+        updatedAt
+        owner
+        __typename
+      }
       userID
       commentCount
       createdAt
@@ -432,7 +443,6 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
     id
     unreadMessageCount
     lastMessage
-    lastMessageAt
     role
     isMuted
     userID
@@ -481,7 +491,6 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
       id
       unreadMessageCount
       lastMessage
-      lastMessageAt
       role
       isMuted
       userID
@@ -502,7 +511,7 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
 >;
 export const chatsByUser = /* GraphQL */ `query ChatsByUser(
   $userID: ID!
-  $lastMessageAt: ModelStringKeyConditionInput
+  $updatedAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserChatFilterInput
   $limit: Int
@@ -510,7 +519,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
 ) {
   chatsByUser(
     userID: $userID
-    lastMessageAt: $lastMessageAt
+    updatedAt: $updatedAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -520,7 +529,6 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       id
       unreadMessageCount
       lastMessage
-      lastMessageAt
       role
       isMuted
       userID
@@ -535,7 +543,6 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
             id
             unreadMessageCount
             lastMessage
-            lastMessageAt
             role
             isMuted
             userID
@@ -544,6 +551,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
               email
               firstname
               lastname
+              fullname
               profileURL
               description
               createdAt
@@ -597,7 +605,6 @@ export const userChatsByChatIDAndCreatedAt = /* GraphQL */ `query UserChatsByCha
       id
       unreadMessageCount
       lastMessage
-      lastMessageAt
       role
       isMuted
       userID
@@ -660,7 +667,6 @@ export const getChat = /* GraphQL */ `query GetChat(
         id
         unreadMessageCount
         lastMessage
-        lastMessageAt
         role
         isMuted
         userID
@@ -912,7 +918,6 @@ export const listUserGroups = /* GraphQL */ `query ListUserGroups(
       createdAt
       updatedAt
       userGroupsId
-      groupMembersId
       owner
       __typename
     }
@@ -926,7 +931,7 @@ export const listUserGroups = /* GraphQL */ `query ListUserGroups(
 >;
 export const groupsByUser = /* GraphQL */ `query GroupsByUser(
   $userID: ID!
-  $createdAt: ModelStringKeyConditionInput
+  $updatedAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserGroupFilterInput
   $limit: Int
@@ -934,7 +939,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
 ) {
   groupsByUser(
     userID: $userID
-    createdAt: $createdAt
+    updatedAt: $updatedAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -1050,7 +1055,6 @@ export const membersByGroup = /* GraphQL */ `query MembersByGroup(
       createdAt
       updatedAt
       userGroupsId
-      groupMembersId
       owner
       __typename
     }

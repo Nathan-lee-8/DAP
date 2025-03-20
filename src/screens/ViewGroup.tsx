@@ -1,11 +1,11 @@
 import { useState, useCallback, useContext } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator 
-} from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
+  RefreshControl} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
-import { getGroup } from '../graphql/queries';
-import { createUserGroup } from "../graphql/mutations";
+import { getGroup } from '../customGraphql/customQueries';
+import { createUserGroup } from '../customGraphql/customMutations';
 import { Group, Post, UserGroup } from '../API'
 
 import { AuthContext } from "../context/AuthContext";
@@ -67,6 +67,9 @@ const ViewGroup = ( {route, navigation} : any) => {
   }
 
   const handleViewMembers = () => {
+    if(group?.isPublic !== null && !group?.isPublic && myUserGroup === undefined){
+      return;
+    }
     if(group?.members) navigation.navigate('ViewMembers', {group: group});
     else Alert.alert("Unable to Retrieve member data");
   }
@@ -171,6 +174,14 @@ const ViewGroup = ( {route, navigation} : any) => {
             <Text style={styles.noResultsMsg}>No Posts Available</Text>
           </View>
         )}
+         refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={fetchCurrentData}
+            colors={['#9Bd35A', '#689F38']}
+            progressBackgroundColor="#ffffff" 
+          />
+        }
       />
     </View>
   )

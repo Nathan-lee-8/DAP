@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: 'lightgrey',
     borderWidth: 1,
+    alignItems: 'center'
   },
   shareSection: {
     borderRadius: 10,
@@ -208,6 +209,7 @@ const styles = StyleSheet.create({
     padding: 5,
     marginLeft: 'auto',
     paddingHorizontal: 10,
+    justifyContent: 'center'
   },    
   paginationContainer: {
     position: 'absolute',

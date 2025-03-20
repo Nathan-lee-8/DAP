@@ -4,7 +4,7 @@ import { View, Text, Alert, TouchableOpacity, ActivityIndicator, TextInput, Plat
 import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../client'
-import { updateUser } from '../graphql/mutations';
+import { updateUser } from '../customGraphql/customMutations';
 
 import { AuthContext } from '../context/AuthContext';
 import { imagePicker, getImgURI } from '../components/addImg';

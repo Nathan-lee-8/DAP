@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, Key
   ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 
 import client from '../client';
-import { updatePost } from '../graphql/mutations';
+import { updatePost } from '../customGraphql/customMutations';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';

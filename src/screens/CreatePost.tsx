@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList,
 } from 'react-native';
 
 import client from '../client';
-import { createPost } from '../graphql/mutations';
+import { createPost } from '../customGraphql/customMutations';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';

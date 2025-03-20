@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Platform, Alert,
 
 import client from '../client';
 import { createUserGroup, createGroup, deleteUserGroup, deleteGroup, updateGroup 
-} from '../graphql/mutations';
+} from '../customGraphql/customMutations';
 import { User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';

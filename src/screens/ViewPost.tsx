@@ -3,8 +3,8 @@ import { View, Text, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView
   Platform, Alert } from 'react-native';
 
 import client from '../client';
-import { createComment } from '../graphql/mutations';
-import { getPost } from '../graphql/queries';
+import { createComment } from '../customGraphql/customMutations';
+import { getPost } from '../customGraphql/customQueries';
 import { Post } from '../API';
 
 import { AuthContext } from '../context/AuthContext';

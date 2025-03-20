@@ -39,7 +39,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
     if(item.user.id === currUser.id){
       nav2.navigate('Profile');
     }else{
-      navigation.navigate('ViewProfile', { userID: item.userID });
+      navigation.navigate('ViewProfile', { userID: item.user.id });
     }
   }
 
@@ -194,7 +194,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
       <TouchableOpacity style={styles.interactSection} onPress={() => clickPost(item.id)}>
         <View style={styles.commentSection}>
           <Icon name="chatbubble-outline" size={15}/>
-          <Text> {item.comments?.items.length}</Text>
+          <Text> {item.commentCount}</Text>
         </View>
         <TouchableOpacity style={styles.shareSection} onPress={handleShare}>
           <Icon name="arrow-redo-outline" size={15}/>

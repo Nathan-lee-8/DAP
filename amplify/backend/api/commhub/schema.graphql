@@ -65,10 +65,9 @@ type UserChat @model @auth(
   id: ID!
   unreadMessageCount: Int 
   lastMessage: String
-  lastMessageAt: AWSDateTime!
   role: String!
   isMuted: Boolean
-  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["lastMessageAt"])
+  userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["updatedAt"])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields: ["userID"])
   chat: Chat @belongsTo(fields: ["chatID"])
@@ -115,12 +114,13 @@ type UserGroup @model @auth(
   ]
 ) {
   id: ID!
-  userID: ID! @index(name: "groupsByUser", queryField: "groupsByUser", sortKeyFields: ["createdAt"])
+  userID: ID! @index(name: "groupsByUser", queryField: "groupsByUser", sortKeyFields: ["updatedAt"])
   groupID: ID! @index(name: "membersByGroup", queryField: "membersByGroup")
   role: String
   user: User @belongsTo(fields: ["userID"])
   group: Group @belongsTo(fields: ["groupID"])
   createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
 }
 
 type Group @model @auth(

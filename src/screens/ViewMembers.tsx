@@ -3,9 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, Alert, Modal,
   ActivityIndicator } from "react-native";
   
 import client from "../client";
-import { deleteUserGroup, deleteGroup, deletePost, createUserGroup,
-  createChat, createUserChat
- } from "../graphql/mutations";
+import { deleteUserGroup, deleteGroup, deletePost, createUserGroup, createChat, 
+  createUserChat } from "../customGraphql/customMutations";
 import { User } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
@@ -13,7 +12,6 @@ import styles from '../styles/Styles';
 import ImgComponent from "../components/ImgComponent";
 import SearchBar from "../components/SearchBar";
 import Icon from "@react-native-vector-icons/ionicons";
-import moment from "moment";
 
 const ViewMembers = ( {route, navigation} : any) => {
   const group = route.params.group;
@@ -35,7 +33,6 @@ const ViewMembers = ( {route, navigation} : any) => {
       const addedMembers = [];
 
       setLoading(true);
-      const currTime = moment(Date.now()).format();
 
       const chat = await client.graphql({
         query: createChat,
@@ -58,7 +55,6 @@ const ViewMembers = ( {route, navigation} : any) => {
             userID: currUser.id,
             chatID: chat.data.createChat.id,
             unreadMessageCount: 0,
-            lastMessageAt: currTime,
             role: 'Owner'
           }
         },
@@ -75,7 +71,6 @@ const ViewMembers = ( {route, navigation} : any) => {
               userID: user.id,
               chatID: chat.data.createChat.id,
               unreadMessageCount: 0,
-              lastMessageAt: currTime,
               role: 'Member'
             }
           },

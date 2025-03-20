@@ -433,7 +433,6 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
     id
     unreadMessageCount
     lastMessage
-    lastMessageAt
     role
     isMuted
     userID
@@ -480,7 +479,6 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
     id
     unreadMessageCount
     lastMessage
-    lastMessageAt
     role
     isMuted
     userID
@@ -527,7 +525,6 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
     id
     unreadMessageCount
     lastMessage
-    lastMessageAt
     role
     isMuted
     userID
@@ -818,7 +815,6 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
     createdAt
     updatedAt
     userGroupsId
-    groupMembersId
     owner
     __typename
   }
@@ -863,7 +859,6 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
     createdAt
     updatedAt
     userGroupsId
-    groupMembersId
     owner
     __typename
   }
@@ -908,7 +903,6 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
     createdAt
     updatedAt
     userGroupsId
-    groupMembersId
     owner
     __typename
   }
