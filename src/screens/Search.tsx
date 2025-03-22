@@ -1,22 +1,50 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, Keyboard,
-  TouchableWithoutFeedback } from 'react-native';
+  ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GlobalParamList } from '../types/rootStackParamTypes';
   
 import client from '../client';
-import { listGroups } from '../customGraphql/customQueries';
-import { Group, User } from '../API';
+import { listGroups, groupsByMemberCount } from '../customGraphql/customQueries';
+import { Group, User, ModelSortDirection } from '../API';
 
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import ProfilePicture from '../components/ImgComponent';
+import FormatExploreGroup from '../components/FormatExploreGroup';
 
 const Search = ( {navigation} : any) => {
   const [searchTerm, setSearchTerm] = useState('Users');
   const [selected, setSelected] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [exploreGroups, setExplore] = useState<Group[]>([]);
+
+  // useEffect(() => {
+  //   fetchExplorer();
+  // }, []);
+
+  // const fetchExplorer = async () => {
+  //   try{
+  //     const data = await client.graphql({
+  //       query: groupsByMemberCount,
+  //       variables: {
+  //         creatdAt
+  //         limit: 10,
+  //         sortDirection: ModelSortDirection.DESC,
+  //         filter: {isPublic: {eq: true}}
+  //       },
+  //       authMode:'userPool'
+  //     })
+  //     setExplore(data.data.groupsByMemberCount.items);
+  //     console.log('fetched explore groups', data.data.groupsByMemberCount.items) 
+  //   }catch(error){
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
 
   const handleSelected = ( item : string) => {
     setSearchTerm(item);
@@ -25,6 +53,12 @@ const Search = ( {navigation} : any) => {
 
   const handleViewUser = ( user: User) => {
     navigation.navigate('ViewProfile', {user: user});
+  }
+
+  if(loading) {
+    return(
+      <ActivityIndicator size="large" color="#0000ff" />
+    )
   }
 
   return (
@@ -55,8 +89,12 @@ const Search = ( {navigation} : any) => {
         </View>
       </View>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={{flex: 1}}>
-        </View>
+        <FlatList
+          data={exploreGroups}
+          renderItem={({item}) => 
+            <FormatExploreGroup item={item}/>
+          }
+        />
       </TouchableWithoutFeedback>
     </View>
   )
@@ -126,7 +164,7 @@ const GroupSearch = () => {
                   <Text style={styles.postContent} numberOfLines={1}>{item.description}</Text>
                 </View>
                 
-                <Text style={styles.memberText}>{item.members?.items.length} members</Text>
+                <Text style={styles.memberText}>{item.memberCount} members</Text>
               </View>
             </TouchableOpacity>
           </View>

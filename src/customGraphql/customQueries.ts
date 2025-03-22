@@ -66,6 +66,7 @@ export const listGroups = /* GraphQL */ `query ListGroups(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -189,12 +190,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
         groupURL
         description
         isPublic
-        members{
-          items{
-            id
-          }
-          nextToken
-        }
+        memberCount
       }
     }
     nextToken
@@ -237,6 +233,7 @@ export const getChat = /* GraphQL */ `query GetChat(
         id
         role
         lastMessage
+        unreadMessageCount
         userID
         chatID
         user{
@@ -309,6 +306,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     groupURL
     description
     isPublic
+    memberCount
     members {
       items{
         id
@@ -383,3 +381,39 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
   }
 }
 ` as GeneratedQuery<APITypes.GetPostQueryVariables, APITypes.GetPostQuery>;
+
+export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
+  $createdAt: AWSDateTime!
+  $memberCount: ModelIntKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelGroupFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  groupsByMemberCount(
+    memberCount: $memberCount
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      memberCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GroupsByMemberCountQueryVariables,
+  APITypes.GroupsByMemberCountQuery
+>;

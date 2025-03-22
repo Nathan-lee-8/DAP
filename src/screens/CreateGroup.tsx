@@ -49,7 +49,8 @@ const CreateGroup = ( {navigation} : any) => {
             groupName: groupName,
             description: description,
             groupURL: groupURI,
-            isPublic: isPublic
+            isPublic: isPublic,
+            memberCount: addedMembers.length + 1
           }
         },
         authMode:'userPool'

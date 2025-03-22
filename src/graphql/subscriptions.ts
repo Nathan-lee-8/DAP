@@ -40,6 +40,10 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
       nextToken
       __typename
     }
+    notifications {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -79,6 +83,10 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
       __typename
     }
     comments {
+      nextToken
+      __typename
+    }
+    notifications {
       nextToken
       __typename
     }
@@ -124,6 +132,10 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
       nextToken
       __typename
     }
+    notifications {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -163,6 +175,7 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -213,6 +226,7 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -263,6 +277,7 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -655,29 +670,6 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     type
     senderID
     chatID
-    sender {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    chat {
-      id
-      name
-      url
-      isGroup
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userMessagesId
@@ -807,6 +799,7 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -851,6 +844,7 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -895,6 +889,7 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -921,6 +916,7 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup(
     groupURL
     description
     isPublic
+    memberCount
     members {
       nextToken
       __typename
@@ -949,6 +945,7 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup(
     groupURL
     description
     isPublic
+    memberCount
     members {
       nextToken
       __typename
@@ -977,6 +974,7 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup(
     groupURL
     description
     isPublic
+    memberCount
     members {
       nextToken
       __typename
@@ -994,4 +992,103 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup(
 ` as GeneratedSubscription<
   APITypes.OnDeleteGroupSubscriptionVariables,
   APITypes.OnDeleteGroupSubscription
+>;
+export const onCreateNotification = /* GraphQL */ `subscription OnCreateNotification(
+  $filter: ModelSubscriptionNotificationFilterInput
+  $owner: String
+) {
+  onCreateNotification(filter: $filter, owner: $owner) {
+    id
+    type
+    content
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userNotificationsId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateNotificationSubscriptionVariables,
+  APITypes.OnCreateNotificationSubscription
+>;
+export const onUpdateNotification = /* GraphQL */ `subscription OnUpdateNotification(
+  $filter: ModelSubscriptionNotificationFilterInput
+  $owner: String
+) {
+  onUpdateNotification(filter: $filter, owner: $owner) {
+    id
+    type
+    content
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userNotificationsId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateNotificationSubscriptionVariables,
+  APITypes.OnUpdateNotificationSubscription
+>;
+export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotification(
+  $filter: ModelSubscriptionNotificationFilterInput
+  $owner: String
+) {
+  onDeleteNotification(filter: $filter, owner: $owner) {
+    id
+    type
+    content
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userNotificationsId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteNotificationSubscriptionVariables,
+  APITypes.OnDeleteNotificationSubscription
 >;

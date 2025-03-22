@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView
   Platform, Alert } from 'react-native';
 
 import client from '../client';
-import { createComment } from '../customGraphql/customMutations';
+import { createComment, deleteComment } from '../customGraphql/customMutations';
 import { getPost } from '../customGraphql/customQueries';
 import { Post } from '../API';
 
@@ -69,6 +69,34 @@ const ViewPost = ( {route} : any) => {
     }
   }
 
+  const handleDeleteComment = (commentID: string) => {
+    Alert.alert('Confirm', 'Delete comment?', [
+      {
+        text: "Cancel",
+        style: "cancel"
+      },
+      { 
+        text: "Delete", 
+        onPress: async () => {
+          try{
+            await client.graphql({
+              query: deleteComment,
+              variables: {
+                input: {
+                  id: commentID
+                }
+              },
+              authMode: 'userPool'
+            });
+            console.log(commentID, "successfully deleted comment");
+          }catch (error){ 
+            console.log(error)
+          }
+        }
+      }
+    ])
+  }
+
   return (
     <View style={styles.container}>
       {postData && <FormatPost item={postData} groupData={postData?.group ? [postData.group] : []}/>}
@@ -76,6 +104,11 @@ const ViewPost = ( {route} : any) => {
         data={postData?.comments?.items}
         renderItem={({ item }) => (
           <View style={styles.postContainer}>
+            {currUser.id === item?.user?.id && 
+              <Icon name="trash-outline" style={styles.postOptions} size={20} color={'black'}
+                onPress={() => handleDeleteComment(item.id)}
+              />
+            }
             <View style={styles.profileSection}>
               <ImgComponent uri={item?.user?.profileURL || 'defaultUser'} style={styles.postProfileImg}/>
               <View style={styles.profileText}>
