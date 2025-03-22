@@ -20,26 +20,6 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
     fullname
     profileURL
     description
-    posts {
-      nextToken
-      __typename
-    }
-    chats {
-      nextToken
-      __typename
-    }
-    messages {
-      nextToken
-      __typename
-    }
-    groups {
-      nextToken
-      __typename
-    }
-    comments {
-      nextToken
-      __typename
-    }
     createdAt
     updatedAt
     owner
@@ -84,26 +64,6 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
     fullname
     profileURL
     description
-    posts {
-      nextToken
-      __typename
-    }
-    chats {
-      nextToken
-      __typename
-    }
-    messages {
-      nextToken
-      __typename
-    }
-    groups {
-      nextToken
-      __typename
-    }
-    comments {
-      nextToken
-      __typename
-    }
     createdAt
     updatedAt
     owner
@@ -321,14 +281,6 @@ export const createChat = /* GraphQL */ `mutation CreateChat(
     name
     url
     isGroup
-    messages {
-      nextToken
-      __typename
-    }
-    participants {
-      nextToken
-      __typename
-    }
     createdAt
     updatedAt
     owner
@@ -348,14 +300,6 @@ export const updateChat = /* GraphQL */ `mutation UpdateChat(
     name
     url
     isGroup
-    messages {
-      nextToken
-      __typename
-    }
-    participants {
-      nextToken
-      __typename
-    }
     createdAt
     updatedAt
     owner
@@ -375,14 +319,6 @@ export const deleteChat = /* GraphQL */ `mutation DeleteChat(
     name
     url
     isGroup
-    messages {
-      nextToken
-      __typename
-    }
-    participants {
-      nextToken
-      __typename
-    }
     createdAt
     updatedAt
     owner
@@ -426,29 +362,6 @@ export const updateMessage = /* GraphQL */ `mutation UpdateMessage(
     type
     senderID
     chatID
-    sender {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    chat {
-      id
-      name
-      url
-      isGroup
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userMessagesId
@@ -471,29 +384,6 @@ export const deleteMessage = /* GraphQL */ `mutation DeleteMessage(
     type
     senderID
     chatID
-    sender {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    chat {
-      id
-      name
-      url
-      isGroup
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userMessagesId
@@ -514,30 +404,6 @@ export const createUserGroup = /* GraphQL */ `mutation CreateUserGroup(
     userID
     groupID
     role
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      description
-      isPublic
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userGroupsId
@@ -558,30 +424,6 @@ export const updateUserGroup = /* GraphQL */ `mutation UpdateUserGroup(
     userID
     groupID
     role
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      description
-      isPublic
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userGroupsId
@@ -602,30 +444,6 @@ export const deleteUserGroup = /* GraphQL */ `mutation DeleteUserGroup(
     userID
     groupID
     role
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      description
-      isPublic
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userGroupsId
@@ -647,14 +465,7 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
     groupURL
     description
     isPublic
-    members {
-      nextToken
-      __typename
-    }
-    posts {
-      nextToken
-      __typename
-    }
+    memberCount
     createdAt
     updatedAt
     owner
@@ -675,14 +486,7 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
     groupURL
     description
     isPublic
-    members {
-      nextToken
-      __typename
-    }
-    posts {
-      nextToken
-      __typename
-    }
+    memberCount
     createdAt
     updatedAt
     owner
@@ -703,14 +507,7 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
     groupURL
     description
     isPublic
-    members {
-      nextToken
-      __typename
-    }
-    posts {
-      nextToken
-      __typename
-    }
+    memberCount
     createdAt
     updatedAt
     owner
@@ -720,4 +517,64 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
 ` as GeneratedMutation<
   APITypes.DeleteGroupMutationVariables,
   APITypes.DeleteGroupMutation
+>;
+export const createNotification = /* GraphQL */ `mutation CreateNotification(
+  $input: CreateNotificationInput!
+  $condition: ModelNotificationConditionInput
+) {
+  createNotification(input: $input, condition: $condition) {
+    id
+    type
+    content
+    userID
+    createdAt
+    updatedAt
+    userNotificationsId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateNotificationMutationVariables,
+  APITypes.CreateNotificationMutation
+>;
+export const updateNotification = /* GraphQL */ `mutation UpdateNotification(
+  $input: UpdateNotificationInput!
+  $condition: ModelNotificationConditionInput
+) {
+  updateNotification(input: $input, condition: $condition) {
+    id
+    type
+    content
+    userID
+    createdAt
+    updatedAt
+    userNotificationsId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateNotificationMutationVariables,
+  APITypes.UpdateNotificationMutation
+>;
+export const deleteNotification = /* GraphQL */ `mutation DeleteNotification(
+  $input: DeleteNotificationInput!
+  $condition: ModelNotificationConditionInput
+) {
+  deleteNotification(input: $input, condition: $condition) {
+    id
+    type
+    content
+    userID
+    createdAt
+    updatedAt
+    userNotificationsId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteNotificationMutationVariables,
+  APITypes.DeleteNotificationMutation
 >;

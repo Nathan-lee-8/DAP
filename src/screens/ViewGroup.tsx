@@ -119,7 +119,7 @@ const ViewGroup = ( {route, navigation} : any) => {
           </View>
           <View style={styles.groupMembersContainer}>
             <TouchableOpacity style={{flexDirection: 'row'}} onPress={handleViewMembers}>
-              <Text>{group?.members?.items.length} members </Text>
+              <Text>{group?.memberCount} members </Text>
               <Icon name="arrow-forward" size={20}/>
             </TouchableOpacity>
             <FlatList

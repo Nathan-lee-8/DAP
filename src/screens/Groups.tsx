@@ -100,7 +100,7 @@ const Groups = ( {navigation} : any ) => {
                   </View>
                 </View>
                 
-                <Text style={styles.memberText}>{item.group?.members?.items.length  || 0} members</Text>
+                <Text style={styles.memberText}>{item.group?.memberCount || 0} members</Text>
               </View>
             </TouchableOpacity>
           )

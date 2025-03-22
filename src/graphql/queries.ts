@@ -136,6 +136,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -238,6 +239,7 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
         groupURL
         description
         isPublic
+        memberCount
         createdAt
         updatedAt
         owner
@@ -874,17 +876,18 @@ export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
       groupURL
       description
       isPublic
+      memberCount
       members{
         items{
           id
           userID
           groupID
           role
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
+          createdAt
+          updatedAt
+          owner
+          __typename
+        }
         nextToken
         __typename
       }
@@ -962,6 +965,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
         createdAt
         updatedAt
         owner
+        memberCount
         members{
           items{
             id
@@ -1073,6 +1077,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     groupURL
     description
     isPublic
+    memberCount
     members {
       items{
         id
@@ -1164,6 +1169,7 @@ export const listGroups = /* GraphQL */ `query ListGroups(
       groupURL
       description
       isPublic
+      memberCount
       createdAt
       updatedAt
       owner
@@ -1176,4 +1182,131 @@ export const listGroups = /* GraphQL */ `query ListGroups(
 ` as GeneratedQuery<
   APITypes.ListGroupsQueryVariables,
   APITypes.ListGroupsQuery
+>;
+export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
+  $createdAt: AWSDateTime!
+  $memberCount: ModelIntKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelGroupFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  groupsByMemberCount(
+    createdAt: $createdAt
+    memberCount: $memberCount
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      memberCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GroupsByMemberCountQueryVariables,
+  APITypes.GroupsByMemberCountQuery
+>;
+export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
+  getNotification(id: $id) {
+    id
+    type
+    content
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userNotificationsId
+    owner
+    __typename
+  }
+    
+}
+` as GeneratedQuery<
+  APITypes.GetNotificationQueryVariables,
+  APITypes.GetNotificationQuery
+>;
+export const listNotifications = /* GraphQL */ `query ListNotifications(
+  $filter: ModelNotificationFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listNotifications(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      type
+      content
+      userID
+      createdAt
+      updatedAt
+      userNotificationsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListNotificationsQueryVariables,
+  APITypes.ListNotificationsQuery
+>;
+export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelNotificationFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  notificationsByUser(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      type
+      content
+      userID
+      createdAt
+      updatedAt
+      userNotificationsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.NotificationsByUserQueryVariables,
+  APITypes.NotificationsByUserQuery
 >;
