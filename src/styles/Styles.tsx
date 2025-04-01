@@ -456,24 +456,24 @@ const styles = StyleSheet.create({
   /** Groups Section */
   groupImg: {
     width: '100%',
-    height: 170,
+    height: 200,
     alignSelf: 'center',
   },
   groupImgContainer: {
     width: '100%',
-    height: 170,
+    height: 200,
     alignSelf: 'center',
   },
   backButton: {
     position: 'absolute',
-    top: 20,
+    top: 50,
     left: 10,
     zIndex: 1
   },
   groupHeader:{
     position: 'absolute',
     fontSize: 20,
-    top: 20,
+    top: 50,
     left: 45,
     zIndex: 1
   },
@@ -483,9 +483,6 @@ const styles = StyleSheet.create({
     margin: 5,
     marginBottom: 0,
     backgroundColor: colorPrimary,
-  },
-  groupTextSection: {
-    marginBottom: 10
   },
   groupMembersContainer: {
   }, 
@@ -510,6 +507,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 5,
     margin: 5,
+    marginBottom: 0,
     justifyContent: 'center',
     backgroundColor: colorPrimary
   },
