@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert,
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { GlobalParamList, LoggedInParamList } from "../types/rootStackParamTypes";
+import { GlobalParamList } from "../types/rootStackParamTypes";
 
 import client from "../client";
 import { deletePost, deleteComment } from "../customGraphql/customMutations";
@@ -18,7 +18,6 @@ import Icon from "@react-native-vector-icons/ionicons";
 
 const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
-  const nav2 = useNavigation<NativeStackNavigationProp<LoggedInParamList>>();
   const { width } = Dimensions.get('window');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -36,11 +35,8 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   }
   
   const visitProfile = (item : any) => {
-    if(item.user.id === currUser.id){
-      nav2.navigate('Profile');
-    }else{
-      navigation.navigate('ViewProfile', { userID: item.user.id });
-    }
+    if(item.user.id === currUser.id) return;
+    navigation.navigate('ViewProfile', { userID: item.user.id });
   }
 
   const getGroupName = ( id? : string) => {

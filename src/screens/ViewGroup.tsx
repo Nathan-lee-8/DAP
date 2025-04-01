@@ -13,6 +13,7 @@ import styles from '../styles/Styles'
 import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import FormatPost from "../components/FormatPost";
+import LinearGradient from "react-native-linear-gradient";
 
 const ViewGroup = ( {route, navigation} : any) => {
   const groupID = route.params.groupID;
@@ -63,11 +64,11 @@ const ViewGroup = ( {route, navigation} : any) => {
   );
 
   const createGroupPost = () => {
-    navigation.navigate('CreatePost', {groupID: groupID});
+    navigation.navigate('CreatePost', {groupID: groupID, isPublic: group?.isPublic});
   }
 
   const handleViewMembers = () => {
-    if(group?.isPublic !== null && !group?.isPublic && myUserGroup === undefined){
+    if(!group?.isPublic && myUserGroup === undefined){
       return;
     }
     if(group?.members) navigation.navigate('ViewMembers', {group: group});
@@ -109,39 +110,60 @@ const ViewGroup = ( {route, navigation} : any) => {
   const headerComp = () => {
     return( 
       <View>
+        <Icon name="arrow-back" size={25} style={styles.backButton} onPress={() => navigation.goBack()}/>
+        <Text style={styles.groupHeader}>Groups</Text>
         <View style={styles.groupImgContainer}>
           <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.94)', 'rgba(255, 255, 255, 0.1)', 'rgba(0,0,0,0)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.gradient}
+          />
         </View>
-        <View style={styles.groupInfoContainer}>
+        <TouchableOpacity style={styles.groupInfoContainer} onPress={handleViewMembers}>
           <View style={styles.groupTextSection}>
             <Text style={styles.groupNameText}>{group?.groupName}</Text>
             <Text style={styles.groupDescriptionText}>{group?.description}</Text>
           </View>
-          <View style={styles.groupMembersContainer}>
-            <TouchableOpacity style={{flexDirection: 'row'}} onPress={handleViewMembers}>
-              <Text>{group?.memberCount} members </Text>
-              <Icon name="arrow-forward" size={20}/>
-            </TouchableOpacity>
-            <FlatList
-              keyExtractor={(item : any) => item?.user.id}
-              data={group?.members?.items ? group?.members?.items.slice(0,3) : []}
-              renderItem={({ item }) => 
-                <ProfilePicture uri={item?.user?.profileURL ||'defaultUser'}/>
-              }
-              numColumns={5}
-            />
-            <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
-              {myUserGroup !== undefined ? (
-                <Text style={{textAlign: 'center'}}>Joined</Text>
-              ) : group?.isPublic !== null && !group?.isPublic ? (
-                <Text style={{textAlign: 'center', fontSize: 12}}>Request Join</Text>
-              ) : (
-                <Text style={{textAlign: 'center'}}>Join Group</Text>
-              )}
-            </TouchableOpacity>
+          <View style={styles.URLSection}>
+            {group?.members?.items.slice(0, 5).map((item, index) => (
+              <ProfilePicture uri={item?.user?.profileURL || 'defaultUser'}
+                key={index}
+                style={{
+                  position: 'absolute',
+                  top: 10,
+                  left: index * 18,
+                  height: 30, width: 30, borderRadius: 15,
+                }}
+              />
+            ))}
+            {group?.members?.items.length && group?.members?.items.length > 4 && (
+              <Icon name="ellipsis-horizontal-circle-sharp" size={38} 
+                style={{position: 'absolute', top: 5, left: 80}}
+              />
+            )}
           </View>
-        </View>
+          <View style={{flexDirection: 'row', marginTop: 5}}>
+            <Text>{group?.memberCount} members </Text>
+            {group?.isPublic ? (
+              <Icon name="lock-open" size={20}/>
+            ) : (
+              <Icon name="lock-closed" size={20}/>
+            )}
+          </View>
+          <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
+            {myUserGroup !== undefined ? (
+              <Text style={{textAlign: 'center'}}>Joined</Text>
+            ) : group?.isPublic !== null && !group?.isPublic ? (
+              <Text style={{textAlign: 'center', fontSize: 12}}>Request Join</Text>
+            ) : (
+              <Text style={{textAlign: 'center'}}>Join Group</Text>
+            )}
+          </TouchableOpacity>
+        </TouchableOpacity>
         <TouchableOpacity onPress={createGroupPost} style={styles.postContentTouchable}>
+          <ProfilePicture style={styles.postContentImg} uri={currUser.profileURL || 'defaultUser'}/>
           <Text style={styles.postContentInput}>Post Content...</Text>
           <Icon name="send" size={30} style={styles.postContentButton}/>
         </TouchableOpacity>

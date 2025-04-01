@@ -64,7 +64,9 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
-          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} options={{title: 'Group'}}/>
+          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} 
+            options={{title: 'Group', headerShown: false}}
+          />
           <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
           <GlobalStack.Screen name="ViewPost" component={ViewPost} options={{title: 'Post'}}/>
           <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>

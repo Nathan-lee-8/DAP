@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import client from '../client';
 import { getUser } from '../customGraphql/customQueries';
@@ -12,6 +12,8 @@ import ProfilePicture from '../components/ImgComponent';
 const ViewProfiles = ( { route, navigation } : any) => {
   const targetUserID = route.params.userID;
   const [ targetUser, setTargetUser ] = useState<User>();
+  const [ loading, setLoading ] = useState(true);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -27,11 +29,14 @@ const ViewProfiles = ( { route, navigation } : any) => {
         console.log('fetched User');
       } catch (error) {
         console.log('Error getting posts', error);
-      } 
+      } finally {
+        setLoading(false);
+      }
     };
     fetchProfile();
   }, []);
 
+  if(loading) return (<ActivityIndicator size="large" color="#0000ff" />);
   if(!targetUser) return (<View><Text style={styles.noResultsMsg}>Error: User not found</Text></View>);
 
   return(

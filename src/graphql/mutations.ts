@@ -85,6 +85,7 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
     groupID
     userID
     commentCount
+    type
     createdAt
     updatedAt
     userPostsId
@@ -107,6 +108,7 @@ export const updatePost = /* GraphQL */ `mutation UpdatePost(
     groupID
     userID
     commentCount
+    type
     createdAt
     updatedAt
     userPostsId
@@ -129,6 +131,7 @@ export const deletePost = /* GraphQL */ `mutation DeletePost(
     groupID
     userID
     commentCount
+    type
     createdAt
     updatedAt
     userPostsId
@@ -466,6 +469,7 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
     description
     isPublic
     memberCount
+    type
     createdAt
     updatedAt
     owner
@@ -487,6 +491,7 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
     description
     isPublic
     memberCount
+    type
     createdAt
     updatedAt
     owner
@@ -508,6 +513,7 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
     description
     isPublic
     memberCount
+    type
     createdAt
     updatedAt
     owner

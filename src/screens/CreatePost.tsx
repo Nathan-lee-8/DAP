@@ -13,7 +13,7 @@ import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 
 const CreatePost = ({route, navigation}: any) => {
-  const { groupID } = route.params;
+  const { groupID, isPublic } = route.params;
   const [ content, setContent ] = useState('');
   const [ filepaths, setFilepaths ] = useState<string[]>([]);
   const [ loading, setLoading ] = useState(false);
@@ -45,6 +45,7 @@ const CreatePost = ({route, navigation}: any) => {
             content: content,
             groupID: groupID,
             postURL: newPaths,
+            type: isPublic ? "Public" : "Private",
             userID: currUser.id,
             commentCount: 0
           }

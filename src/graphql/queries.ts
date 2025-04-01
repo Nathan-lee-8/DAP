@@ -90,6 +90,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
     postURL
     groupID
     userID
+    type
     user {
       id
       email
@@ -137,6 +138,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -163,6 +165,7 @@ export const listPosts = /* GraphQL */ `query ListPosts(
       postURL
       groupID
       userID
+      type
       commentCount
       createdAt
       updatedAt
@@ -197,6 +200,7 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       postURL
       groupID
       userID
+      type
       commentCount
       createdAt
       updatedAt
@@ -240,6 +244,7 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
         description
         isPublic
         memberCount
+        type
         createdAt
         updatedAt
         owner
@@ -247,6 +252,7 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
       }
       userID
       commentCount
+      type
       createdAt
       updatedAt
       userPostsId
@@ -261,16 +267,16 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
   APITypes.PostsByUserQueryVariables,
   APITypes.PostsByUserQuery
 >;
-export const postsByCommentCount = /* GraphQL */ `query PostsByCommentCount(
-  $createdAt: AWSDateTime!
+export const postsByComments = /* GraphQL */ `query PostsByComments(
+  $type: String!
   $commentCount: ModelIntKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelPostFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  postsByCommentCount(
-    createdAt: $createdAt
+  postsByComments(
+    type: $type
     commentCount: $commentCount
     sortDirection: $sortDirection
     filter: $filter
@@ -283,6 +289,7 @@ export const postsByCommentCount = /* GraphQL */ `query PostsByCommentCount(
       postURL
       groupID
       userID
+      type
       commentCount
       createdAt
       updatedAt
@@ -295,8 +302,8 @@ export const postsByCommentCount = /* GraphQL */ `query PostsByCommentCount(
   }
 }
 ` as GeneratedQuery<
-  APITypes.PostsByCommentCountQueryVariables,
-  APITypes.PostsByCommentCountQuery
+  APITypes.PostsByCommentsQueryVariables,
+  APITypes.PostsByCommentsQuery
 >;
 export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
   getComment(id: $id) {
@@ -324,6 +331,7 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
       postURL
       groupID
       userID
+      type
       commentCount
       createdAt
       updatedAt
@@ -877,6 +885,7 @@ export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
       description
       isPublic
       memberCount
+      type
       members{
         items{
           id
@@ -966,6 +975,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
         updatedAt
         owner
         memberCount
+        type
         members{
           items{
             id
@@ -1016,6 +1026,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
               __typename
             }
             commentCount
+            type
             createdAt
             updatedAt
             owner
@@ -1078,6 +1089,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     description
     isPublic
     memberCount
+    type
     members {
       items{
         id
@@ -1141,6 +1153,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           __typename
         }
         commentCount
+        type
         createdAt
         updatedAt
         userPostsId
@@ -1170,6 +1183,7 @@ export const listGroups = /* GraphQL */ `query ListGroups(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -1184,7 +1198,7 @@ export const listGroups = /* GraphQL */ `query ListGroups(
   APITypes.ListGroupsQuery
 >;
 export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
-  $createdAt: AWSDateTime!
+  $type: String!
   $memberCount: ModelIntKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelGroupFilterInput
@@ -1192,7 +1206,7 @@ export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
   $nextToken: String
 ) {
   groupsByMemberCount(
-    createdAt: $createdAt
+    type: $type
     memberCount: $memberCount
     sortDirection: $sortDirection
     filter: $filter
@@ -1206,6 +1220,7 @@ export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -1244,7 +1259,6 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
     owner
     __typename
   }
-    
 }
 ` as GeneratedQuery<
   APITypes.GetNotificationQueryVariables,

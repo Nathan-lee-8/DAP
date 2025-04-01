@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, Touchable, TouchableOpacity } from 'react-native';
 
 import client from '../client';
 import { groupPosts } from '../customGraphql/customQueries';
@@ -13,7 +13,7 @@ import FormatPost from '../components/FormatPost';
 /**
  * Displays the active News feed for the current user
  */
-const HomeScreen = () => {
+const HomeScreen = ( {navigation} : any) => {
   const [newsFeed, setNewsFeed] = useState<Post[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +106,9 @@ const HomeScreen = () => {
           }}
           ListEmptyComponent={() => (
             <View>
-              <Text style={styles.noResultsMsg}>New To DAP? Create or join a Group to get started!</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('CreateGroup')}>
+                <Text style={styles.noResultsMsg}>New To DAP? Create or join a Group to get started!</Text>
+              </TouchableOpacity>
             </View>
           )}
           refreshControl={

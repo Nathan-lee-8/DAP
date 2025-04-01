@@ -2,6 +2,11 @@ import { StyleSheet, Platform, Dimensions } from 'react-native';
 
 const colorBackground = '#f2f7f7';
 const colorPrimary = 'white';
+const textColor = 'black';
+
+// const backgroundDark = '#181C14'
+// const primaryDark = '#3C3D37'
+// const textDark = 'white'
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
@@ -61,21 +66,25 @@ const styles = StyleSheet.create({
   },  
   noResultsMsg : {
     fontSize: 16,
-    color: '#333',
+    color: textColor,
     textAlign: 'center',
     marginTop: 20,
   },
   title: {
     fontSize: 24,
-    color: '#333',
+    color: textColor,
     margin: 20,
     textAlign: 'center'
+  },
+  gradient: {
+    ...StyleSheet.absoluteFillObject,
   },
   
   /** Sign in and Sign up page */
   contentText: {
     fontSize: 24,
     marginBottom: 60,
+    color: textColor,
     alignSelf: 'center',
     textAlign: 'center',
   },
@@ -139,10 +148,9 @@ const styles = StyleSheet.create({
   /** User Posts styles */
   postContainer: {
     backgroundColor: colorPrimary,
-    marginBottom: 5,
-    padding: 5,
-    paddingTop: 10,
-    paddingHorizontal: 20,
+    margin: 5,
+    marginBottom: 0,
+    padding: 10,
     flexShrink: 1
   },
   profileSection: {
@@ -448,24 +456,38 @@ const styles = StyleSheet.create({
   /** Groups Section */
   groupImg: {
     width: '100%',
-    height: 190,
+    height: 170,
     alignSelf: 'center',
   },
   groupImgContainer: {
     width: '100%',
-    height: 190,
+    height: 170,
     alignSelf: 'center',
   },
+  backButton: {
+    position: 'absolute',
+    top: 20,
+    left: 10,
+    zIndex: 1
+  },
+  groupHeader:{
+    position: 'absolute',
+    fontSize: 20,
+    top: 20,
+    left: 45,
+    zIndex: 1
+  },
   groupInfoContainer: {
-    padding: 5,
+    padding: 10,
+    paddingTop: 5,
+    margin: 5,
+    marginBottom: 0,
     backgroundColor: colorPrimary,
-    flexDirection: 'row',
   },
   groupTextSection: {
-    width: width * 0.74
+    marginBottom: 10
   },
   groupMembersContainer: {
-    width: width * 0.25,
   }, 
   joinButton: {
     padding: 5,
@@ -473,37 +495,48 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#888',
     marginTop: 10,
-    backgroundColor: '#f2f7f7'
+    backgroundColor: colorBackground
   },
   groupNameText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: textColor,
   },
   groupDescriptionText: {
     fontSize: 14,
-    color: '#888',
+    color: textColor,
   },
   postContentTouchable: {
     flexDirection: 'row',
     padding: 5,
-    justifyContent: 'center'
+    margin: 5,
+    justifyContent: 'center',
+    backgroundColor: colorPrimary
+  },
+  postContentImg:{
+    alignSelf: 'center',
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    marginRight: 10
   },
   postContentButton: {
     marginLeft: 10,
   },
   postContentInput: {
     height: 35,
-    width: '90%',
+    width: '80%',
     borderColor: '#ccc',
     borderWidth: 1,
-    backgroundColor: colorPrimary,
+    backgroundColor: colorBackground,
     paddingHorizontal: 8,
     borderRadius: 5,
     textAlignVertical: 'center',
     alignSelf: 'center',
     lineHeight: 35,
     fontSize: 14,
-    color: '#ccc'
+    color: textColor,
+    fontWeight: 300
   }, 
   createGroupButton: {
     alignSelf:'center',
@@ -517,8 +550,8 @@ const styles = StyleSheet.create({
   addImageText: {
     position: 'absolute',
     fontSize: 20,
-    top: 60,
-    left: 150,
+    top: 20,
+    left: 120,
     fontWeight: '600',
     color: 'black',
     opacity: 0.8
@@ -667,6 +700,36 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     backgroundColor: 'grey',
     zIndex: 1
+  },
+
+  /** Explore Section */
+  exploreGroupContainer: {
+    display: 'flex',
+    backgroundColor: colorPrimary,
+    width: width * 0.475,
+    height: 200,
+    margin: 5,
+  },
+  exploreImg: {
+    width: '100%',
+    height: '78%',
+    objectFit: 'cover'
+  },
+  exploreTitle:{
+    fontSize: 18,
+    fontWeight: '600'
+  },
+  exploreDescription:{
+    flexDirection: 'row',
+    position: 'absolute',
+    fontSize: 15,
+    top: 5,
+    left: 5,
+    zIndex: 1
+  },
+  exploreMembers:{
+    fontSize: 12,
+    fontWeight: '400'
   },
 
   /** Profile Section */
