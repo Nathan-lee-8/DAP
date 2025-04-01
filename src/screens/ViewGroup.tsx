@@ -122,7 +122,7 @@ const ViewGroup = ( {route, navigation} : any) => {
           />
         </View>
         <TouchableOpacity style={styles.groupInfoContainer} onPress={handleViewMembers}>
-          <View style={styles.groupTextSection}>
+          <View>
             <Text style={styles.groupNameText}>{group?.groupName}</Text>
             <Text style={styles.groupDescriptionText}>{group?.description}</Text>
           </View>
