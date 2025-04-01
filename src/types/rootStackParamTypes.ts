@@ -19,7 +19,7 @@ export type GlobalParamList = {
     ChatRoom: {chatID: string};
     CreateChat: {user?: User};
     CreateGroup: undefined;
-    CreatePost: {groupID: string};
+    CreatePost: {groupID: string, isPublic: boolean};
     ViewGroup: {groupID: string};
     ViewPost: {postID: string};
     EditGroup: {group: Group};

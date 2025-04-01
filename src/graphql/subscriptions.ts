@@ -156,6 +156,7 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
     postURL
     groupID
     userID
+    type
     user {
       id
       email
@@ -176,6 +177,7 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -207,6 +209,7 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
     postURL
     groupID
     userID
+    type
     user {
       id
       email
@@ -227,6 +230,7 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -258,6 +262,7 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
     postURL
     groupID
     userID
+    type
     user {
       id
       email
@@ -278,6 +283,7 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -328,6 +334,7 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
       postURL
       groupID
       userID
+      type
       commentCount
       createdAt
       updatedAt
@@ -375,6 +382,7 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
       postURL
       groupID
       userID
+      type
       commentCount
       createdAt
       updatedAt
@@ -422,6 +430,7 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
       postURL
       groupID
       userID
+      type
       commentCount
       createdAt
       updatedAt
@@ -800,6 +809,7 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -845,6 +855,7 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -890,6 +901,7 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
       description
       isPublic
       memberCount
+      type
       createdAt
       updatedAt
       owner
@@ -917,6 +929,7 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup(
     description
     isPublic
     memberCount
+    type
     members {
       nextToken
       __typename
@@ -946,6 +959,7 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup(
     description
     isPublic
     memberCount
+    type
     members {
       nextToken
       __typename
@@ -975,6 +989,7 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup(
     description
     isPublic
     memberCount
+    type
     members {
       nextToken
       __typename

@@ -381,9 +381,8 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
   }
 }
 ` as GeneratedQuery<APITypes.GetPostQueryVariables, APITypes.GetPostQuery>;
-
 export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
-  $createdAt: AWSDateTime!
+  $type: String!
   $memberCount: ModelIntKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelGroupFilterInput
@@ -391,6 +390,7 @@ export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
   $nextToken: String
 ) {
   groupsByMemberCount(
+    type: $type
     memberCount: $memberCount
     sortDirection: $sortDirection
     filter: $filter
@@ -402,18 +402,45 @@ export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
       groupName
       groupURL
       description
-      isPublic
       memberCount
-      createdAt
-      updatedAt
-      owner
-      __typename
+      type
     }
     nextToken
-    __typename
   }
 }
 ` as GeneratedQuery<
   APITypes.GroupsByMemberCountQueryVariables,
   APITypes.GroupsByMemberCountQuery
+>;
+export const postsByComments = /* GraphQL */ `query PostsByComments(
+  $type: String!
+  $commentCount: ModelIntKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelPostFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  postsByComments(
+    type: $type
+    commentCount: $commentCount
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      content
+      postURL
+      groupID
+      userID
+      type
+      commentCount
+    }
+    nextToken
+  }
+}
+` as GeneratedQuery<
+  APITypes.PostsByCommentsQueryVariables,
+  APITypes.PostsByCommentsQuery
 >;

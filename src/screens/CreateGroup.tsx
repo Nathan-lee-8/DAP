@@ -13,6 +13,7 @@ import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
 import ImgComponent from '../components/ImgComponent';
 import { imagePicker, getImgURI } from '../components/addImg';
+import LinearGradient from 'react-native-linear-gradient';
 
 /**
  * @returns 
@@ -50,6 +51,7 @@ const CreateGroup = ( {navigation} : any) => {
             description: description,
             groupURL: groupURI,
             isPublic: isPublic,
+            type: isPublic ? 'Public' : 'Private',
             memberCount: addedMembers.length + 1
           }
         },
@@ -246,7 +248,13 @@ const CreateGroup = ( {navigation} : any) => {
     <View style={styles.container}>
       <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
         <ImgComponent uri={groupURI} style={styles.groupImg}/>
-        <Text style={styles.addImageText}>add Image</Text>
+        <LinearGradient
+          colors={['rgba(231, 229, 229, 0.94)', 'rgba(51, 47, 47, 0.1)', 'rgba(0,0,0,0)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.gradient}
+        />
+        <Text style={styles.addImageText}>Click to add Image</Text>
       </TouchableOpacity>
       <TextInput
         style={styles.input}

@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Alert, Text, Platform, Keyboard,
   TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
-import { resetPassword, confirmResetPassword } from '@aws-amplify/auth';
+import { resetPassword, confirmResetPassword, signIn } from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/Styles';
 
@@ -15,7 +15,7 @@ const ResetPassword = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { setUserEmail } = authContext;
+  const { setUserEmail, triggerFetch } = authContext;
   const [ code, setCode ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ password1, setPassword1 ] = useState('');
@@ -33,7 +33,9 @@ const ResetPassword = () => {
         confirmationCode: code,
         newPassword: password
       });
+      await signIn({ username: email.trim().toLowerCase(), password: password })
       setUserEmail(email.trim().toLowerCase());
+      Alert.alert('Success', 'Password reset successfully');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
@@ -53,7 +55,7 @@ const ResetPassword = () => {
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
-          <Text style={styles.contentText}>Enter your email to reset your password:</Text>
+          <Text style={styles.contentText}>Enter your email to reset your password</Text>
           <TextInput
             style={styles.input}
             placeholder='Enter email'
