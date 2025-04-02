@@ -216,9 +216,9 @@ const ChatMembers = ( {route, navigation} : any ) => {
         renderItem={({ item }) => {
           return(
             <View style={styles.listMemberContainer}>
-              <ImgComponent uri={ item.user.profileURL || 'defaultUser'}/>
+              <ImgComponent uri={ item.user?.profileURL || 'defaultUser'}/>
               <View style={styles.userInfoContainer}>
-                <Text style={styles.postAuthor}>{item.user.firstname + " " + item.user.lastname}</Text>
+                <Text style={styles.postAuthor}>{item.user?.firstname + " " + item.user?.lastname}</Text>
               </View>
                 <Text style={styles.roleText}>{item.role}</Text>
             </View>
