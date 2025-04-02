@@ -1,5 +1,6 @@
 import { useContext, useRef, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, Modal } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, Modal, Platform,
+  KeyboardAvoidingView } from "react-native";
 import styles from '../styles/Styles';
 
 import client from "../client";
@@ -254,8 +255,8 @@ const ChatMembers = ( {route, navigation} : any ) => {
       >
         <View style={styles.searchModalOverlay}>
           <View style={styles.searchModalHeader}>
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>Cancel</Text>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeSearchButton}>
+              <Text style={styles.closeSearchButtonText}>Cancel</Text>
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Search User</Text>
           </View>
@@ -279,9 +280,14 @@ const ChatMembers = ( {route, navigation} : any ) => {
                 keyboardShouldPersistTaps='handled'
               />
             </View>
-            <TouchableOpacity style={styles.buttonBlack} onPress={handleInvite}>
-              <Text style={styles.buttonTextWhite}>Invite</Text>
-            </TouchableOpacity>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 130 : 0}
+            >
+              <TouchableOpacity style={styles.buttonBlack} onPress={handleInvite}>
+                <Text style={styles.buttonTextWhite}>Invite</Text>
+              </TouchableOpacity>
+              </KeyboardAvoidingView>
           </View>
         </View>
       </Modal>

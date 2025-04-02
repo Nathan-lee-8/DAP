@@ -1,5 +1,7 @@
-import { useEffect, useState, useContext, useCallback } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl, Touchable, TouchableOpacity } from 'react-native';
+import { useEffect, useState, useContext, useCallback, useLayoutEffect } from 'react';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
+  Modal,
+  TouchableWithoutFeedback} from 'react-native';
 
 import client from '../client';
 import { groupPosts } from '../customGraphql/customQueries';
@@ -9,6 +11,8 @@ import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
 import FormatPost from '../components/FormatPost';
+import Icon from '@react-native-vector-icons/ionicons';
+import Notifications from '../components/Notifications';
 
 /**
  * Displays the active News feed for the current user
@@ -17,12 +21,27 @@ const HomeScreen = ( {navigation} : any) => {
   const [newsFeed, setNewsFeed] = useState<Post[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
 
   useEffect(() => {
     loadNewsFeed();
   }, [currUser]);
+
+  useLayoutEffect(()=> {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity style={{marginRight: 15}} onPress={toggleModal} >
+          <Icon name="notifications-outline" size={24} />
+        </TouchableOpacity>
+      )
+    })
+  })
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  }
 
   const loadNewsFeed = async () => {
     try {
@@ -121,6 +140,21 @@ const HomeScreen = ( {navigation} : any) => {
           }
         />
       )}
+      <Modal transparent={true} visible={modalVisible} onRequestClose={toggleModal}>
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+      
+          <View style={styles.notificationOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={styles.notificationContainer}>
+                <Icon name="close-circle-outline" size={25} style={{marginLeft: 'auto'}}
+                  onPress={() => setModalVisible(false)}
+                />
+                <Notifications/>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
     
   );

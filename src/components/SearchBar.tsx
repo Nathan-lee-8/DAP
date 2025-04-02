@@ -42,7 +42,13 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
   };
   
   const handleSearch = async (query: string) => {
+    
     setSearch(query);
+    if(query === '') {
+      
+      setData([]);
+      return;
+    }
 
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);

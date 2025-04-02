@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import FastImage from 'react-native-fast-image';
 
-const ImgComponent = ({ uri, style} : {uri: string; style?: any}) => {
+const ImgComponent = ({ uri, style, resizeMode} : {uri: string; style?: any; resizeMode? : any}) => {
   const [error, setError] = useState(false);
   if(error) uri = 'defaultUser';
   const getStyle = () => {
@@ -22,7 +22,7 @@ const ImgComponent = ({ uri, style} : {uri: string; style?: any}) => {
       <FastImage
         style={getStyle()}
         source={{ uri: uri, priority: FastImage.priority.normal }}
-        resizeMode={FastImage.resizeMode.cover}
+        resizeMode={resizeMode === 'contain' ? FastImage.resizeMode.contain : FastImage.resizeMode.cover}
         onError={() => setError(true)}
       />
     );

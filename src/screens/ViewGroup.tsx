@@ -1,5 +1,5 @@
 import { useState, useCallback, useContext } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal,
   RefreshControl} from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
@@ -20,7 +20,8 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ group, setGroup ] = useState<Group>();
   const [ post, setPosts ] = useState<Post[]>([]);
   const [ loading, setLoading ] = useState(true);
-  const [ myUserGroup, setMyUserGroup ] = useState<UserGroup>()
+  const [ myUserGroup, setMyUserGroup ] = useState<UserGroup>();
+  const [ modalVisible, setModalVisible ] = useState(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -124,6 +125,10 @@ const ViewGroup = ( {route, navigation} : any) => {
           />
         </View>
         <TouchableOpacity style={styles.groupInfoContainer} onPress={handleViewMembers}>
+          <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
+            color={'black'}
+            onPress={() => setModalVisible(true)}
+          />
           <View>
             <Text style={styles.groupNameText}>{group?.groupName}</Text>
             <Text style={styles.groupDescriptionText}>{group?.description}</Text>
@@ -187,10 +192,10 @@ const ViewGroup = ( {route, navigation} : any) => {
       <FlatList
         ListHeaderComponent={headerComp}
         data={post}
-        renderItem={(item) => {
-          if(!item.item) return <View></View>
+        renderItem={({item}) => {
+          if(!item) return <View></View>
           return(
-            <FormatPost item={item.item} />
+            <FormatPost item={item} />
           )
         }}
         ListEmptyComponent={() => (
@@ -207,6 +212,22 @@ const ViewGroup = ( {route, navigation} : any) => {
           />
         }
       />
+      <Modal
+        animationType="slide" 
+        transparent={true} 
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)} 
+      >
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
+          </View>
+          
+          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.buttonTextBlack}>Close</Text>
+            </TouchableOpacity>
+        </View>
+      </Modal>
+
     </View>
   )
 }
