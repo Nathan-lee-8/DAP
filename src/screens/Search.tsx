@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useContext } from 'react';
-import { View, Text, TouchableOpacity, FlatList, TextInput, Keyboard,
+import { View, Text, TouchableOpacity, FlatList, TextInput, Keyboard, RefreshControl,
   ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
@@ -134,6 +134,14 @@ const Search = ( {navigation} : any) => {
             </TouchableOpacity> 
           }
           numColumns={2}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={fetchExplorer}
+              colors={['#9Bd35A', '#689F38']}
+              progressBackgroundColor="#ffffff" 
+            />
+          }
         />
       </TouchableWithoutFeedback>
     </View>
@@ -166,6 +174,10 @@ const GroupSearch = () => {
 
   const handleSearch = async (query: string) => {
     setSearch(query);
+    if(query === '') {
+      setData([]);
+      return;
+    }
 
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);

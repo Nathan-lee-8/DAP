@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList, Platform, Alert,
-  ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+  ActivityIndicator, KeyboardAvoidingView, ScrollView } from 'react-native';
 
 import client from '../client';
 import { createUserGroup, createGroup, deleteUserGroup, deleteGroup, updateGroup 
@@ -38,7 +38,7 @@ const CreateGroup = ( {navigation} : any) => {
     var groupID = null;
     const addedMembers = [];
 
-    try{
+    try{ 
       setLoading(true);
       setGoNext(false);
 
@@ -193,6 +193,14 @@ const CreateGroup = ( {navigation} : any) => {
     }
   }
 
+  const handleGoNext = () => {
+    if(groupName.trim() === ""){
+      Alert.alert("Error", "Please enter a valid group name.");
+      return;
+    }
+    setGoNext(true);
+  }
+
   if(loading) {
     return(
       <ActivityIndicator size="large" color="#0000ff" />
@@ -246,52 +254,56 @@ const CreateGroup = ( {navigation} : any) => {
 
   return(
     <View style={styles.container}>
-      <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
-        <ImgComponent uri={groupURI} style={styles.groupImg}/>
-        <LinearGradient
-          colors={['rgba(231, 229, 229, 0.94)', 'rgba(51, 47, 47, 0.1)', 'rgba(0,0,0,0)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.gradient}
+      <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}} 
+        keyboardShouldPersistTaps='handled'
+      >
+        <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
+          <ImgComponent uri={groupURI} style={styles.groupImg}/>
+          <LinearGradient
+            colors={['rgba(231, 229, 229, 0.94)', 'rgba(51, 47, 47, 0.1)', 'rgba(0,0,0,0)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.gradient}
+          />
+          <Text style={styles.addImageText}>Click to add Image</Text>
+        </TouchableOpacity>
+        <TextInput
+          style={styles.input}
+          placeholder="Group name"
+          autoCapitalize="words"
+          value={groupName}
+          onChangeText={ setGroupName }
         />
-        <Text style={styles.addImageText}>Click to add Image</Text>
-      </TouchableOpacity>
-      <TextInput
-        style={styles.input}
-        placeholder="Group name"
-        autoCapitalize="words"
-        value={groupName}
-        onChangeText={ setGroupName }
-      />
-      <TextInput
-        style={styles.longInput}
-        placeholder="Description"
-        multiline={true}
-        autoCapitalize="sentences"
-        value={description}
-        onChangeText={ setDescription }
-      />
-      <View style={styles.groupPrivacyContainer}>
-        <Text style={styles.privacyText}>Group Privacy Options:   </Text>
-        <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(false)}>
-          <View 
-            style={isPublic !== null && !isPublic ? styles.privacyIconSelected : null}
-          />
-        </TouchableOpacity>
-        <Text style={styles.privacyText}>Private</Text>
-        <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(true)}>
-          <View 
-            style={isPublic === null || isPublic ? styles.privacyIconSelected : null}
-          />
-        </TouchableOpacity>
-        <Text style={styles.privacyText}>Public</Text>
-      </View>
+        <TextInput
+          style={styles.longInput}
+          placeholder="Description"
+          multiline={true}
+          autoCapitalize="sentences"
+          value={description}
+          onChangeText={ setDescription }
+        />
+        <View style={styles.groupPrivacyContainer}>
+          <Text style={styles.privacyText}>Group Privacy Options:   </Text>
+          <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(false)}>
+            <View 
+              style={isPublic !== null && !isPublic ? styles.privacyIconSelected : null}
+            />
+          </TouchableOpacity>
+          <Text style={styles.privacyText}>Private</Text>
+          <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(true)}>
+            <View 
+              style={isPublic === null || isPublic ? styles.privacyIconSelected : null}
+            />
+          </TouchableOpacity>
+          <Text style={styles.privacyText}>Public</Text>
+        </View>
+      </ScrollView>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >   
-        <TouchableOpacity style={styles.buttonBlack} onPress={() => setGoNext(true)}>
+        <TouchableOpacity style={styles.buttonBlack} onPress={handleGoNext}>
           <Text style={styles.buttonTextWhite}>Next</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>

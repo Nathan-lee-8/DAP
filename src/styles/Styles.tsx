@@ -240,23 +240,39 @@ const styles = StyleSheet.create({
   postOptions: {
     position: 'absolute',
     top: 5,
-    right: 20,
+    right: 10,
     zIndex: 1,
-    padding: 2,
+    padding: 5,
   },
 
   /** Modal styles */
   postModelOverlay:{
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)'
   },
   postModalContainer: {
-    width: 300,
+    width: '90%',
     backgroundColor: 'white',
-    padding: 20,
-    borderWidth: 1,
+    marginBottom: 10,
+    borderRadius: 10,
     alignItems: 'center',
+  },
+  optionButton: {
+    width: '100%',
+    paddingHorizontal: 10,
+    height: 50,
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  closeOverlayButton: {
+    marginBottom: 50,
+    height: 50,
+    width: '90%',
+    backgroundColor: colorPrimary,
+    borderRadius: 10,
+    justifyContent: 'center',
   },
   searchModalOverlay: {
     flex: 1,
@@ -283,12 +299,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     margin: 15,
   },
-  closeButton: {
+  closeSearchButton: {
     position: 'absolute',
     top: 15,
     left: 10,
   },
-  closeButtonText: {
+  closeSearchButtonText: {
     color: 'blue',
     fontSize: 16,
   },
@@ -305,6 +321,17 @@ const styles = StyleSheet.create({
   },
   addedUserText: {
     fontSize: 16,
+  },
+  notificationOverlay: {
+    flex: 1,
+    alignItems: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)'
+  },
+  notificationContainer: {
+    marginTop: 110,
+    height: '100%',
+    width: '50%',
+    backgroundColor: colorBackground
   },
 
   /** View Post Section */
@@ -570,7 +597,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'black',
     padding: 5,
-    width: width * 0.14,
+    width: 'auto',
     marginLeft: 'auto'
   },
   roleText: {
@@ -713,7 +740,8 @@ const styles = StyleSheet.create({
   },
   exploreTitle:{
     fontSize: 18,
-    fontWeight: '600'
+    fontWeight: '600',
+    paddingHorizontal: 5
   },
   exploreDescription:{
     flexDirection: 'row',
@@ -721,9 +749,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     top: 5,
     left: 5,
-    zIndex: 1
+    zIndex: 1,
+    paddingRight: 5
   },
   exploreMembers:{
+    position: 'absolute',
+    bottom: 5,
+    left: 5,
     fontSize: 12,
     fontWeight: '400'
   },

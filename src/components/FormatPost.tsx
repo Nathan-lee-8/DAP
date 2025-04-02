@@ -26,7 +26,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   if(!currUser) return;
 
   var options = ["Report"];
-  if(item.userID === currUser.id){
+  if(item.user?.id === currUser.id || item.userID === currUser.id){
     options = ["Report", "Edit", "Delete"];
   }
 
@@ -169,6 +169,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                     height: 200,
                     marginRight: 10,
                   }} 
+                  resizeMode={"contain"}
                 />
               </View>
             )}
@@ -196,25 +197,32 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
           <Icon name="arrow-redo-outline" size={15}/>
         </TouchableOpacity>
       </TouchableOpacity>
-      <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+      <Modal 
+        animationType="slide"
+        transparent={true} 
+        visible={modalVisible} 
+        onRequestClose={() => setModalVisible(false)}  
+      >
         <View style={styles.postModelOverlay}>
           <View style={styles.postModalContainer}>
             <FlatList
               data={options}
               keyExtractor={(option) => option}
+              style={{height: 'auto', width: '100%'}}
               renderItem={({ item: option }) => (
                 <TouchableOpacity 
-                  style={[styles.buttonWhite, {paddingHorizontal: 100}]} 
+                  style={styles.optionButton} 
                   onPress={() => handleOptionButton(option)}
                 >
                   <Text style={styles.buttonTextBlack}>{option}</Text>
                 </TouchableOpacity>
               )}
             />
-            <TouchableOpacity style={styles.buttonBlack} onPress={() => setModalVisible(false)}>
-              <Text style={styles.buttonTextWhite}>Close</Text>
-            </TouchableOpacity>
           </View>
+          
+          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonTextBlack}>Close</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
     </View>
