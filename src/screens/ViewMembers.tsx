@@ -5,7 +5,7 @@ import { View, Text, FlatList, TouchableOpacity, Alert, Modal,
 import client from "../client";
 import { deleteUserGroup, deleteGroup, deletePost, createUserGroup, createChat, 
   createUserChat } from "../customGraphql/customMutations";
-import { User } from "../API";
+import { User, UserGroup } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles';
@@ -23,15 +23,12 @@ const ViewMembers = ( {route, navigation} : any) => {
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
-  const myUserGroup = userGroups.find((item: any) => item?.user?.id === currUser.id);
+  const myUserGroup = userGroups.find((item: any) => item?.userID === currUser.id);
   const users = userGroups.map((item: any) => item.user);
 
   const handleCreateChat = async () => {
-    console.log(userGroups.map((item: any) => item.user.id))
     try {
-      var chatID = null;
       const addedMembers = [];
-
       setLoading(true);
 
       const chat = await client.graphql({
@@ -39,44 +36,32 @@ const ViewMembers = ( {route, navigation} : any) => {
         variables: {
           input: {
             name: group.groupName,
-            isGroup: userGroups.length > 1,
+            isGroup: true,
             url: group.groupURL
           }
         },
         authMode: 'userPool'
       });
       console.log("chat created");
-      chatID = chat.data.createChat.id;
 
-      const myUserChat = await client.graphql({
-        query: createUserChat,
-        variables: {
-          input: {
-            userID: currUser.id,
-            chatID: chat.data.createChat.id,
-            unreadMessageCount: 0,
-            role: 'Owner'
-          }
-        },
-        authMode: 'userPool'
-      })
-      console.log("senderChat created");
-      addedMembers.push(myUserChat.data.createUserChat.id);
-
-      userGroups.map(async (user: User) => {
+      userGroups.map(async (item: UserGroup) => {
+        let role = 'Member';
+        if(item.userID === currUser.id){
+          role = 'Owner';
+        }
         const targetUserChat = await client.graphql({
           query: createUserChat,
           variables: {
             input: {
-              userID: user.id,
+              userID: item.userID,
               chatID: chat.data.createChat.id,
               unreadMessageCount: 0,
-              role: 'Member'
+              role: role
             }
           },
           authMode: 'userPool'
         })
-        console.log(user.firstname + " chat created");
+        console.log(item.user?.firstname + " chat created");
         addedMembers.push(targetUserChat.data.createUserChat.id);
       })
       Alert.alert('Success', 'GroupChat Successfully Created');

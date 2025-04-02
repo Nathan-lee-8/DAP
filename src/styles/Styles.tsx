@@ -464,18 +464,16 @@ const styles = StyleSheet.create({
     height: 200,
     alignSelf: 'center',
   },
-  backButton: {
+  backContainer: {
+    flexDirection: 'row',
     position: 'absolute',
     top: 50,
     left: 10,
-    zIndex: 1
+    zIndex: 1,
   },
   groupHeader:{
-    position: 'absolute',
-    fontSize: 20,
-    top: 50,
-    left: 45,
-    zIndex: 1
+    fontSize: 24,
+    marginLeft: 10,
   },
   groupInfoContainer: {
     padding: 10,

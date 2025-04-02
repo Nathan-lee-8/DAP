@@ -110,8 +110,10 @@ const ViewGroup = ( {route, navigation} : any) => {
   const headerComp = () => {
     return( 
       <View>
-        <Icon name="arrow-back" size={25} style={styles.backButton} onPress={() => navigation.goBack()}/>
-        <Text style={styles.groupHeader}>Groups</Text>
+        <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back" size={25} style={{alignSelf: 'center'}}/>
+          <Text style={styles.groupHeader}>Groups</Text>
+        </TouchableOpacity>
         <View style={styles.groupImgContainer}>
           <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
           <LinearGradient
@@ -147,9 +149,9 @@ const ViewGroup = ( {route, navigation} : any) => {
           <View style={{flexDirection: 'row', marginTop: 5}}>
             <Text>{group?.memberCount} members </Text>
             {group?.isPublic ? (
-              <Icon name="lock-open" size={20}/>
+              <Icon name="lock-open" size={18}/>
             ) : (
-              <Icon name="lock-closed" size={20}/>
+              <Icon name="lock-closed" size={18}/>
             )}
           </View>
           <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>

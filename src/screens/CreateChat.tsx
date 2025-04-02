@@ -11,7 +11,6 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
-import moment from 'moment';
 
 //TODO: Add rollback in case of failure, create Loading screen
 const CreateChat = ({ route, navigation }: any) => {
@@ -38,14 +37,13 @@ const CreateChat = ({ route, navigation }: any) => {
 
     try {
       setLoading(true);
-      const currTime = moment(Date.now()).format();
 
       const chat = await client.graphql({
         query: createChat,
         variables: {
           input: {
             name: chatname,
-            isGroup: targetUsers.length > 1,
+            isGroup: false,
           }
         },
         authMode: 'userPool'

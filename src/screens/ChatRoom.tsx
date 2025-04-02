@@ -31,22 +31,19 @@ const ChatRoom = ( { route, navigation } : any) => {
   const flatListRef = useRef<FlatList<Message>>(null);
   const msgCountRef = useRef<number>(0);
   const msgSentRef = useRef<boolean>(false);
-  const lastMsgRef = useRef(messages[0]);
 
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  //Updates last message anytime messages changes
-  useEffect(() => {
-    lastMsgRef.current = messages[0];
-  }, [messages]);
-
   //update title anytime participants changes
   useEffect( () => {
-    var temptitle = participants.map((item) => 
-      `${item.user?.firstname} ${item.user?.lastname}`).filter(Boolean).join(', ');
-    setTitle(temptitle);
+    if(chat?.name) setTitle(chat.name);
+    else{
+      var temptitle = participants.map((item) => 
+        `${item.user?.firstname} ${item.user?.lastname}`).filter(Boolean).join(', ');
+      setTitle(temptitle);
+    }
   }, [participants]);
 
   //get Chat data when gain focus and clean subscription when losing focus
@@ -131,25 +128,27 @@ const ChatRoom = ( { route, navigation } : any) => {
 
   const handleGoBack = async () => {
     try{
-      if(myUserChat){
-        const myUnread = myUserChat?.unreadMessageCount || 0;
-        const msgChanged = messages[0].content !== myUserChat.lastMessage;
-        if(!myUserChat.lastMessage || (myUnread === 0 && !msgChanged)) {
-            return;
-        };
-        await client.graphql({
-          query: updateUserChat,
-          variables: {
-            input: {
-              id: myUserChat?.id,
-              lastMessage: messages[0].content, 
-              unreadMessageCount: 0,
-            },
+      if(!myUserChat || !messages[0]) return;
+      const myUnread = myUserChat.unreadMessageCount || 0;
+      const msgChanged = messages[0].content !== myUserChat.lastMessage;
+      //if curr user has 0 unread messages and message hasn't changed, do nothing
+      if(myUnread === 0 && !msgChanged) {
+          return;
+      };
+      //update current user to have 0 unread messages and update the last message
+      await client.graphql({
+        query: updateUserChat,
+        variables: {
+          input: {
+            id: myUserChat?.id,
+            lastMessage: messages[0].content, 
+            unreadMessageCount: 0,
           },
-          authMode: 'userPool'
-        });
-        console.log('updated my chat');
-      }
+        },
+        authMode: 'userPool'
+      });
+      console.log('updated my chat');
+      
 
       if(msgSentRef.current){
         for(const part of participants){
@@ -159,7 +158,7 @@ const ChatRoom = ( { route, navigation } : any) => {
             variables: {
               input: {
                 id: part.id,
-                lastMessage: lastMsgRef.current.content,
+                lastMessage: messages[0].content, 
                 unreadMessageCount: numUnread + msgCountRef.current,
               },
             },
