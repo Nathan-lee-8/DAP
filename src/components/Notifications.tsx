@@ -26,7 +26,7 @@ const Notifications = () => {
       })
       const notificationList = notifData.data.notificationsByUser.items;
       setNotifications(notificationList);
-
+      console.log('fetched from notifications');
     } catch (error: any) {
       console.log(error);
     } finally {

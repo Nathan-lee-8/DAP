@@ -19,8 +19,10 @@ import Icon from "@react-native-vector-icons/ionicons";
 const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const { width } = Dimensions.get('window');
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [ currentIndex, setCurrentIndex ] = useState(0);
+  const [ modalVisible, setModalVisible ] = useState(false);
+  const [ imageModalVisible, setImageModalVisible ] = useState(false);
+  const [ commentModalVisible, setCommentModalVisible ] = useState(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -162,27 +164,24 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
           <FlatList
             data={item.postURL}
             renderItem={({ item }) => (
-              <View>
+              <TouchableOpacity onPress={() => setImageModalVisible(true)}>
                 <ImgComponent uri={item || 'defautUser'} 
                   style={{
-                    width: width * 0.90,
+                    width: width,
                     height: 200,
                     marginRight: 10,
                   }} 
-                  resizeMode={"contain"}
                 />
-              </View>
+              </TouchableOpacity>
             )}
             horizontal={true}
-            contentContainerStyle={styles.postImgContainer}
             onScroll={onScroll}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
           />
           <View style={styles.paginationContainer}>
             {item.postURL.length > 1 && item?.postURL.map((_, index) => (
-              <View key={index} style={[ styles.dot, currentIndex === index && styles.activeDot ]}>
-              </View>
+              <View key={index} style={[ styles.dot, currentIndex === index && styles.activeDot ]}/>
             ))}
           </View>
         </View>
@@ -197,6 +196,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
           <Icon name="arrow-redo-outline" size={15}/>
         </TouchableOpacity>
       </TouchableOpacity>
+
       <Modal 
         animationType="slide"
         transparent={true} 
@@ -223,6 +223,66 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
           <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
+        </View>
+      </Modal>
+
+      <Modal 
+        animationType="slide"
+        transparent={true} 
+        visible={imageModalVisible} 
+        onRequestClose={() => setImageModalVisible(false)}  
+      >
+        <View style={styles.imageOverlay}>
+          <View style={styles.imageModalContainer}>
+            <View style={{height: 60}}>
+              <Icon style={styles.editProfileButton} name="close-circle-outline" size={35}
+                onPress={() => setImageModalVisible(false)}
+              />
+            </View>
+            <FlatList
+              data={item.postURL}
+              renderItem={({ item }) => (
+                <View>
+                  <ImgComponent uri={item || 'defautUser'} 
+                    style={{
+                      width: width,
+                      height: '100%',
+                      marginRight: 10,
+                    }} 
+                    resizeMode={"contain"}
+                  />
+                </View>
+              )}
+              horizontal={true}
+              onScroll={onScroll}
+              scrollEventThrottle={16}
+              showsHorizontalScrollIndicator={false}
+            />
+            <View style={styles.paginationContainer}>
+              {item.postURL && item?.postURL.length > 1 && item?.postURL?.map((_, index) => (
+                <View key={index} style={[ styles.dot, currentIndex === index && styles.activeDot ]}/>
+              ))}
+              <Icon name="chatbubble-outline" size={40} style={styles.imageCommentIcon} color={'grey'}
+                onPress={() => setCommentModalVisible(true)}
+              />
+            </View>
+
+            <Modal 
+              animationType="slide"
+              transparent={true} 
+              visible={commentModalVisible} 
+              onRequestClose={() => setCommentModalVisible(false)}  
+            >
+              <View style={styles.commentModalOverlay}>
+                <TouchableOpacity style={styles.commentModalHeader} onPress={() => setCommentModalVisible(false)}/>
+                <View style={styles.commentModalContainer}>
+                  <Text style={styles.title}>Comments</Text>
+
+                </View>
+              </View>
+            </Modal>
+
+          </View>
         </View>
       </Modal>
     </View>

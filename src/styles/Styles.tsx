@@ -324,14 +324,43 @@ const styles = StyleSheet.create({
   },
   notificationOverlay: {
     flex: 1,
-    alignItems: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)'
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+  notificationHeader:{
+    height: '10%',
   },
   notificationContainer: {
-    marginTop: 110,
-    height: '100%',
-    width: '50%',
+    flex: 1,
     backgroundColor: colorBackground
+  },
+  imageOverlay:{
+    flex: 1,
+    justifyContent:'flex-end'
+  },
+  imageModalContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: colorBackground
+  },
+  imageCommentIcon: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    zIndex: 1
+  },
+  commentModalOverlay:{
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)'
+  },
+  commentModalHeader:{
+    height: '30%',
+  },
+  commentModalContainer:{
+    width: width,
+    height: '85%',
+    backgroundColor: colorBackground,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
   },
 
   /** View Post Section */
@@ -819,6 +848,7 @@ const styles = StyleSheet.create({
     top: 0,
     width: 'auto',
     padding: 10,
+    zIndex: 1
   },
 
 });
