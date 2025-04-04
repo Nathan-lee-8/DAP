@@ -217,6 +217,8 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                   <Text style={styles.buttonTextBlack}>{option}</Text>
                 </TouchableOpacity>
               )}
+
+              
             />
           </View>
           
@@ -234,7 +236,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
       >
         <View style={styles.imageOverlay}>
           <View style={styles.imageModalContainer}>
-            <View style={{height: 60}}>
+            <View style={styles.imageModalHeader}>
               <Icon style={styles.editProfileButton} name="close-circle-outline" size={35}
                 onPress={() => setImageModalVisible(false)}
               />

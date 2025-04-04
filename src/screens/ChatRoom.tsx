@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useContext, useLayoutEffect, useCallback
  } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
-    KeyboardAvoidingView, Platform, Alert } from 'react-native';
+    KeyboardAvoidingView, Platform, Alert, Modal } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../client';
@@ -27,6 +27,7 @@ const ChatRoom = ( { route, navigation } : any) => {
   const [ chat, setChat ] = useState<Chat>();
   const [ title, setTitle ] = useState<string>('default');
   const [ displayURLs, setURLs ] = useState<(string | undefined)[]>([]);
+  const [ modalVisible, setModalVisible ] = useState(false);
 
   const flatListRef = useRef<FlatList<Message>>(null);
   const msgCountRef = useRef<number>(0);
@@ -35,6 +36,8 @@ const ChatRoom = ( { route, navigation } : any) => {
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
+
+  const options = ['View Members', 'Invite', 'Leave'];
 
   //update title anytime participants changes
   useEffect( () => {
@@ -116,16 +119,6 @@ const ChatRoom = ( { route, navigation } : any) => {
     }
   };
 
-  useLayoutEffect(()=> {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={handleGoBack} >
-          <Icon name="arrow-back" size={24} />
-        </TouchableOpacity>
-      )
-    })
-  })
-
   const handleGoBack = async () => {
     try{
       if(!myUserChat || !messages[0]) return;
@@ -204,15 +197,6 @@ const ChatRoom = ( { route, navigation } : any) => {
     });
   };
 
-  const handleViewMembers = () => {
-    if(!myUserChat){
-      Alert.alert("Error", 'unknown error');
-      return;
-    }
-    navigation.navigate('ViewChatMembers', 
-      {chatData: chat, userChats: [myUserChat, ...participants]});
-  }
-
   const getMsgStyle = (id: string) => {
     if(id === currUser.id) return styles.myMessage;
     return styles.otherMessage;
@@ -223,41 +207,56 @@ const ChatRoom = ( { route, navigation } : any) => {
     return styles.otherMessageContainer;
   }
 
+  const handleOptionButton = (option: string) => {
+    if(option === 'View Members'){
+      navigation.navigate('ViewChatMembers', 
+        {chatData: chat, userChats: [myUserChat, ...participants]});
+    }
+    setModalVisible(false);
+    console.log(option);
+  }
+
   return(
     <View style={styles.container}>
-      <TouchableOpacity style={styles.messageHeaderContainer}
-        onPress={handleViewMembers}
-      >        
-        <View style={styles.URLSection}>
-          {chat?.url !== null ? (
-            <ImgComponent 
-              uri={chat?.url || 'defaultUser'} 
-              style={{height: 40, width: 40, borderRadius: 20}} 
-            />
-          ) : displayURLs.length > 1 ? (
-            displayURLs.slice(0, 2).map((uri, index) => (
+      <View style={styles.messageHeaderContainer}>
+        <View style={{flexDirection: 'row'}}>
+          <Icon style={{padding: 10, alignSelf: 'center'}} name='arrow-back-outline' size={25}
+            onPress={() => handleGoBack()}
+          />
+          <View style={styles.URLSection}>
+            {chat?.url !== null ? (
               <ImgComponent 
-                key={index} 
-                uri={uri || 'defaultUser'} 
-                style={{ 
-                  position: 'absolute', 
-                  top: index * 10,
-                  left: index * 10 + 5 , 
-                  zIndex: displayURLs.length - index,   
-                  height: 26,
-                  width: 26,
-                  borderRadius: 13,
-                }} 
+                uri={chat?.url || 'defaultUser'} 
+                style={{height: 40, width: 40, borderRadius: 20}} 
               />
-            ))
-          ) : (
-            <ImgComponent uri={displayURLs[0] || 'defaultUser'} 
-              style={{height: 40, width: 40, borderRadius: 20}} 
-            />
-          )}
+            ) : displayURLs.length > 1 ? (
+              displayURLs.slice(0, 2).map((uri, index) => (
+                <ImgComponent 
+                  key={index} 
+                  uri={uri || 'defaultUser'} 
+                  style={{ 
+                    position: 'absolute', 
+                    top: index * 10,
+                    left: index * 10 + 5 , 
+                    zIndex: displayURLs.length - index,   
+                    height: 26,
+                    width: 26,
+                    borderRadius: 13,
+                  }} 
+                />
+              ))
+            ) : (
+              <ImgComponent uri={displayURLs[0] || 'defaultUser'} 
+                style={{height: 40, width: 40, borderRadius: 20}} 
+              />
+            )}
+          </View>
+          <Text style={styles.chatRoomName} numberOfLines={1}>{title}</Text>
+          <Icon style={{alignSelf:'center'}} name='ellipsis-horizontal-outline' size={25} 
+            onPress={() => setModalVisible(true)}
+          />
         </View>
-        <Text style={styles.chatRoomName} numberOfLines={1}>{title}</Text>
-      </TouchableOpacity>
+      </View>
       {loading && <ActivityIndicator size="small" color="#0000ff" />}
       <FlatList
         ref={flatListRef}
@@ -316,6 +315,34 @@ const ChatRoom = ( { route, navigation } : any) => {
           <Icon name="send" size={30} />
         </TouchableOpacity>
       </KeyboardAvoidingView>
+      <Modal 
+        animationType="slide"
+        transparent={true} 
+        visible={modalVisible} 
+        onRequestClose={() => setModalVisible(false)}  
+      >
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
+            <FlatList
+              data={options}
+              keyExtractor={(option) => option}
+              style={{height: 'auto', width: '100%'}}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity 
+                  style={styles.optionButton} 
+                  onPress={() => handleOptionButton(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          
+          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonTextBlack}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   )
 }
