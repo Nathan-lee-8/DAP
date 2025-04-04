@@ -61,7 +61,8 @@ const AppNavigator = () => {
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
-          <GlobalStack.Screen name="ChatRoom" component={ChatRoom} options={{title: 'Messages'}}/>
+          <GlobalStack.Screen name="ChatRoom" component={ChatRoom} 
+            options={{title: 'Messages', headerShown: false}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
           <GlobalStack.Screen name="ViewGroup" component={ViewGroup} 

@@ -337,6 +337,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent:'flex-end'
   },
+  imageModalHeader:{
+    marginTop: 60, 
+  },
   imageModalContainer: {
     width: '100%',
     height: '100%',
@@ -442,8 +445,8 @@ const styles = StyleSheet.create({
 
   /** chatRoom Styles   */
   messageHeaderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    height: Platform.OS === 'ios' ? 120 : 40,
+    justifyContent: 'flex-end',
     padding: 10,
     backgroundColor: colorPrimary,
     borderTopWidth: 1,
@@ -453,7 +456,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'black',
     padding: 10,
-    width: width * 0.8
+    width: width * 0.66
   },
   myMessageContainer: {
     flexDirection: 'row',
@@ -556,6 +559,7 @@ const styles = StyleSheet.create({
   groupDescriptionText: {
     fontSize: 14,
     color: textColor,
+    width: '90%'
   },
   postContentTouchable: {
     flexDirection: 'row',
