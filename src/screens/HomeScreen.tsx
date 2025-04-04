@@ -32,16 +32,12 @@ const HomeScreen = ( {navigation} : any) => {
   useLayoutEffect(()=> {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity style={{marginRight: 15}} onPress={toggleModal} >
+        <TouchableOpacity style={{marginRight: 15}} onPress={() => setModalVisible(true)} >
           <Icon name="notifications-outline" size={24} />
         </TouchableOpacity>
       )
     })
   })
-
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  }
 
   const loadNewsFeed = async () => {
     try {
@@ -140,20 +136,16 @@ const HomeScreen = ( {navigation} : any) => {
           }
         />
       )}
-      <Modal transparent={true} visible={modalVisible} onRequestClose={toggleModal}>
-        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-      
+      <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
           <View style={styles.notificationOverlay}>
-            <TouchableWithoutFeedback>
-              <View style={styles.notificationContainer}>
-                <Icon name="close-circle-outline" size={25} style={{marginLeft: 'auto'}}
-                  onPress={() => setModalVisible(false)}
-                />
-                <Notifications/>
-              </View>
-            </TouchableWithoutFeedback>
+            <TouchableOpacity style={styles.notificationHeader} onPress={() => setModalVisible(false)}/>
+            <View style={styles.notificationContainer}>
+              <Icon name="close-circle-outline" size={25} style={styles.editProfileButton}
+                onPress={() => setModalVisible(false)}
+              />
+              <Notifications/>
+            </View>
           </View>
-        </TouchableWithoutFeedback>
       </Modal>
     </View>
     
