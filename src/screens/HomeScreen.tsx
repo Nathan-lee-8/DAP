@@ -1,7 +1,6 @@
 import { useEffect, useState, useContext, useCallback, useLayoutEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
-  Modal,
-  TouchableWithoutFeedback} from 'react-native';
+  Modal} from 'react-native';
 
 import client from '../client';
 import { groupPosts } from '../customGraphql/customQueries';

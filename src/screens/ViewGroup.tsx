@@ -1,12 +1,13 @@
-import { useState, useCallback, useContext } from "react";
+import { useState, useCallback, useContext, useRef } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal,
-  RefreshControl} from "react-native";
+  RefreshControl, KeyboardAvoidingView, Platform } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
 import { getGroup } from '../customGraphql/customQueries';
-import { createUserGroup } from '../customGraphql/customMutations';
-import { Group, Post, UserGroup } from '../API'
+import { createUserGroup, deleteUserGroup, deletePost, deleteGroup
+ } from '../customGraphql/customMutations';
+import { Group, Post, UserGroup, User } from '../API'
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles'
@@ -14,6 +15,8 @@ import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import FormatPost from "../components/FormatPost";
 import LinearGradient from "react-native-linear-gradient";
+import SearchBar from "../components/SearchBar";
+import ImgComponent from "../components/ImgComponent";
 
 const ViewGroup = ( {route, navigation} : any) => {
   const groupID = route.params.groupID;
@@ -22,6 +25,12 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ loading, setLoading ] = useState(true);
   const [ myUserGroup, setMyUserGroup ] = useState<UserGroup>();
   const [ modalVisible, setModalVisible ] = useState(false);
+  const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
+  const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
+  const [ users, setUsers] = useState<User[]>([]);
+  const flatListRef = useRef<FlatList>(null);
+
+  const [ options, setOptions ] = useState(["View Members"]);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -48,9 +57,16 @@ const ViewGroup = ( {route, navigation} : any) => {
         const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
         return dateB - dateA;
       });
+      const userData = groupData.members?.items?.map((item: any) => item.user);
+      if(userData) setUsers(userData);
       if(posts) setPosts(posts);
-      const myUserGroup = groupData.members?.items?.find((member) => member?.user?.id === currUser.id)
+      const myUserGroup = groupData.members?.items?.find((member) => member?.user?.id === currUser.id);
       if(myUserGroup) setMyUserGroup(myUserGroup);
+      if(myUserGroup?.role  === 'Owner' || myUserGroup?.role === 'Admin'){
+        setOptions(['Invite Members', 'View Members', 'Edit Group', 'Delete Group'])
+      }else if(myUserGroup?.role === 'Admin'){
+        setOptions(['Invite Members', 'View Members', 'Edit Group', 'Leave Group'])
+      }
     } catch (error: any) {
       console.log(error);
     } finally {
@@ -66,14 +82,6 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   const createGroupPost = () => {
     navigation.navigate('CreatePost', {groupID: groupID, isPublic: group?.isPublic});
-  }
-
-  const handleViewMembers = () => {
-    if(!group?.isPublic && myUserGroup === undefined){
-      return;
-    }
-    if(group?.members) navigation.navigate('ViewMembers', {group: group});
-    else Alert.alert("Unable to Retrieve member data");
   }
   
   const handleJoinGroup = async () => {
@@ -103,6 +111,181 @@ const ViewGroup = ( {route, navigation} : any) => {
     }
   }
 
+  const handleOptionButton = (option: string) => {
+    setModalVisible(false);
+    if(option === 'View Members'){
+      navigation.navigate('ViewMembers', {group: group});
+    }else if(option === 'Edit Group'){
+      handleEditGroup();
+    }else if(option === 'Invite Members'){
+      setInviteModalVisible(true);
+    }else if(option === 'Leave Group'){
+      handleLeaveGroup();
+    }else if(option === 'Delete Group'){
+      handleDeleteGroup();
+    }
+  }
+
+  const handleEditGroup = () => {
+    navigation.navigate('EditGroup', {group: group});
+  }
+
+  const handleLeaveGroup = () => {
+    Alert.alert(
+      "Leave Group",
+      "Are you sure you want to leave this group?",
+      [
+        {
+          text: "Cancel",
+        },
+        { text: "Leave", onPress: leaveGroup}
+      ]
+    );
+  }
+
+  const leaveGroup = async () => {
+    const userGroupID = myUserGroup?.id;
+    if(!userGroupID) return;
+    try{
+      await client.graphql({
+        query: deleteUserGroup,
+        variables: {
+          input: {
+            id: userGroupID
+          }
+        },
+        authMode: 'userPool'
+      });
+      console.log('user removed');
+      navigation.reset({
+        index: 0,
+        routes: [ { name: 'MainTabs', params: { screen: 'Groups' } } ]
+      });
+    } catch (error: any) {
+      console.log('Error', error.message);
+    }
+  }   
+
+  const handleInvite = async () => {
+    if(addedMembers.length === 0 ) {
+      Alert.alert('Error', 'No members selected');
+      return;
+    }
+    setInviteModalVisible(false);
+    const memberIDs = addedMembers.map((item: any) => item.id);
+    for(const memberID of memberIDs){
+      try{
+        await client.graphql({
+          query: createUserGroup,
+          variables: {
+            input: {
+              userID: memberID,
+              groupID: groupID,
+              role: 'Member'
+            }
+          },
+          authMode: 'userPool'
+        });
+        console.log('userAdded');
+      } catch (error){
+        console.log(error);
+      }
+    }
+    navigation.goBack();
+    Alert.alert('Success', 'Group updated successfully')
+  }
+  const handleDeleteGroup = () => {
+    Alert.alert(
+      "Delete Group",
+      "Are you sure you want to delete this group?",
+      [
+        {
+          text: "Cancel",
+        },
+        { text: "Delete", onPress: deleteGroupAndPosts}
+      ]
+    );
+  }
+
+  const deleteGroupAndPosts = async () => {
+    if(!group){
+      Alert.alert('Error', 'Error deleting group');
+      return;
+    }
+    // delete all Group Posts
+    const postIDs = group.posts ? group.posts?.items.map((item: any) => item.id) : [];
+    for(const postID of postIDs){
+      try{
+        await client.graphql({
+          query: deletePost,
+          variables: {
+            input: {
+              id: postID
+            }
+          },
+          authMode: 'userPool'
+        })
+        console.log(postID, " post deleted");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    // delete all user Groups
+    const participantIDs = group.members ? group.members?.items.map((item : any) => item.id) : [];
+    for(const partID of participantIDs){
+      try{
+        await client.graphql({
+          query: deleteUserGroup,
+          variables: {
+            input: {
+              id: partID
+            }
+          },
+          authMode: 'userPool'
+        })
+        console.log(partID, " userGroup deleted");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    // Delete group
+    try{
+      await client.graphql({
+        query: deleteGroup,
+        variables: {
+          input: {
+            id: group.id
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log(group.id, " group deleted");
+    } catch (error) {
+      console.log(error);
+    }
+    navigation.pop(2);
+    Alert.alert('Success', 'Group successfully deleted')
+  }
+
+  const handleAddMember = async (user: User) => {
+    setAddedMembers([...addedMembers, user]);
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  }
+
+  const removeMember = (user: User) => {
+    setAddedMembers(addedMembers => addedMembers.filter(item => item !== user));
+    setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+  }
+
+  const scrollToBottom = () => {
+    flatListRef.current?.scrollToEnd({
+      animated: true,
+    });
+  };
 
   if(loading){
     return <ActivityIndicator size="large" color="#0000ff" />
@@ -124,7 +307,7 @@ const ViewGroup = ( {route, navigation} : any) => {
             style={styles.gradient}
           />
         </View>
-        <TouchableOpacity style={styles.groupInfoContainer} onPress={handleViewMembers}>
+        <View style={styles.groupInfoContainer}>
           <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
             color={'black'}
             onPress={() => setModalVisible(true)}
@@ -168,7 +351,7 @@ const ViewGroup = ( {route, navigation} : any) => {
               <Text style={{textAlign: 'center'}}>Join Group</Text>
             )}
           </TouchableOpacity>
-        </TouchableOpacity>
+        </View>
         <TouchableOpacity onPress={createGroupPost} style={styles.postContentTouchable}>
           <ProfilePicture style={styles.postContentImg} uri={currUser.profileURL || 'defaultUser'}/>
           <Text style={styles.postContentInput}>Post Content...</Text>
@@ -220,11 +403,69 @@ const ViewGroup = ( {route, navigation} : any) => {
       >
         <View style={styles.postModelOverlay}>
           <View style={styles.postModalContainer}>
+          <FlatList
+              data={options}
+              keyExtractor={(option) => option}
+              style={{height: 'auto', width: '100%'}}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity 
+                  style={styles.optionButton} 
+                  onPress={() => handleOptionButton(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+            />
           </View>
           
           <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
-              <Text style={styles.buttonTextBlack}>Close</Text>
+            <Text style={styles.buttonTextBlack}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      <Modal 
+        transparent={true} 
+        visible={inviteModalVisible} 
+        onRequestClose={() => setInviteModalVisible(false)}
+        animationType="slide"
+      >
+        <View style={styles.searchModalOverlay}>
+          <View style={styles.searchModalHeader}>
+            <TouchableOpacity onPress={() => setInviteModalVisible(false)} style={styles.closeSearchButton}>
+              <Text style={styles.closeSearchButtonText}>Cancel</Text>
             </TouchableOpacity>
+            <Text style={styles.modalTitle}>Search User</Text>
+          </View>
+          <View style={styles.searchModalContainer}>
+            <SearchBar userPressed={handleAddMember} remove={[...addedMembers, ...users]}/>
+            <View style={{marginTop: 'auto'}}>
+              <FlatList
+                ref={flatListRef}
+                data={addedMembers}
+                horizontal
+                renderItem={({item}) => {
+                  return (
+                    <View>
+                      <TouchableOpacity style={styles.removeIcon} onPress={() => removeMember(item)}>
+                        <Icon name="remove-circle-outline" size={25}/>
+                      </TouchableOpacity>
+                      <ImgComponent style={styles.addedUserImg} uri={item.profileURL || 'defaultUser'}/>
+                    </View>
+                  )
+                }}
+                keyboardShouldPersistTaps='handled'
+              />
+            </View>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 130 : 0}
+            >
+              <TouchableOpacity style={styles.buttonBlack} onPress={handleInvite}>
+                <Text style={styles.buttonTextWhite}>Invite</Text>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>  
+          </View>
         </View>
       </Modal>
 

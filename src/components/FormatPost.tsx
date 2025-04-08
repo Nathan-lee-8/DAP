@@ -15,6 +15,7 @@ import moment from "moment";
 import styles from "../styles/Styles";
 import ImgComponent from "./ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
+import Comments from './ListComments';
 
 const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -29,7 +30,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
 
   var options = ["Report"];
   if(item.user?.id === currUser.id || item.userID === currUser.id){
-    options = ["Report", "Edit", "Delete"];
+    options = ["Edit", "Delete"];
   }
 
   const clickPost = (itemID : string) => {
@@ -279,7 +280,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                 <TouchableOpacity style={styles.commentModalHeader} onPress={() => setCommentModalVisible(false)}/>
                 <View style={styles.commentModalContainer}>
                   <Text style={styles.title}>Comments</Text>
-
+                  <Comments postID={item.id}/>
                 </View>
               </View>
             </Modal>

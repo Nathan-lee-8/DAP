@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useContext, useLayoutEffect, useCallback
+import { useEffect, useState, useRef, useContext, useCallback
  } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
     KeyboardAvoidingView, Platform, Alert, Modal } from 'react-native';
@@ -6,14 +6,16 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../client';
 import { getChat } from '../customGraphql/customQueries';
-import { createMessage, updateUserChat } from '../customGraphql/customMutations';
+import { createMessage, updateUserChat, deleteUserChat, createUserChat,
+deleteChat, deleteMessage } from '../customGraphql/customMutations';
 import { onCreateMessage } from '../customGraphql/customSubscriptions';
-import  { Message, UserChat, Chat } from '../API';
+import  { Message, UserChat, Chat, User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
+import SearchBar from '../components/SearchBar';
 import moment from 'moment';
 
 const ChatRoom = ( { route, navigation } : any) => {
@@ -29,6 +31,12 @@ const ChatRoom = ( { route, navigation } : any) => {
   const [ displayURLs, setURLs ] = useState<(string | undefined)[]>([]);
   const [ modalVisible, setModalVisible ] = useState(false);
 
+  const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
+  const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
+  const [ users, setUsers ] = useState<User[]>([]);
+  const [ options, setOptions ] = useState(['View Members', 'Leave']);
+  const inviteFlatListRef = useRef<FlatList>(null);
+ 
   const flatListRef = useRef<FlatList<Message>>(null);
   const msgCountRef = useRef<number>(0);
   const msgSentRef = useRef<boolean>(false);
@@ -37,7 +45,6 @@ const ChatRoom = ( { route, navigation } : any) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  const options = ['View Members', 'Invite', 'Leave'];
 
   //update title anytime participants changes
   useEffect( () => {
@@ -100,6 +107,8 @@ const ChatRoom = ( { route, navigation } : any) => {
         setMessages((prev) => [...prev, ...newChat])
       }
       let parts = chatData?.participants?.items.filter(item => item !== null);
+      const userData = parts?.map((item: any) => item.user)
+      if(userData) setUsers(userData);
       if(parts){
         let URLs: (string | undefined)[] = [];
         setParticipants(parts.filter((item): item is UserChat => {
@@ -109,7 +118,13 @@ const ChatRoom = ( { route, navigation } : any) => {
           return item?.userID !== currUser?.id;
         }));
         setURLs(URLs);
-        setMyUserChat(parts.find((item): item is UserChat => item?.userID === currUser.id));
+        const myUser = parts.find((item): item is UserChat => item?.userID === currUser.id)
+        setMyUserChat(myUser);
+        if(myUser?.role === 'Admin'){
+          setOptions(['View Members', 'Edit Chat', 'Invite', 'Leave'])
+        }else if(myUser?.role === 'Owner'){
+          setOptions(['View Members', 'Edit Chat', 'Invite', 'Delete'])
+        }
       }
       setNextToken(chatData?.messages?.nextToken);
     } catch (error: any) {
@@ -211,9 +226,200 @@ const ChatRoom = ( { route, navigation } : any) => {
     if(option === 'View Members'){
       navigation.navigate('ViewChatMembers', 
         {chatData: chat, userChats: [myUserChat, ...participants]});
+    }else if( option === 'Leave'){
+      handleLeaveChat();
+    }else if(option === 'Invite'){
+      setInviteModalVisible(true);
+    }else if(option === 'Edit Chat'){
+      handleEditChat();
+    }else if(option === 'Delete'){
+      handleDeleteChat();
     }
     setModalVisible(false);
     console.log(option);
+  }
+
+  const handleEditChat = () => {
+    navigation.navigate('EditChat', {currChat: chat});
+  }
+  
+  const handleLeaveChat = () => {
+    Alert.alert(
+      "Leave Chat",
+      "Are you sure you want to leave this chat?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        { 
+          text: "Leave", 
+          onPress: leaveChat
+        }
+      ]
+    );
+  }
+
+  const leaveChat = async () => {
+    try{
+      await client.graphql({
+        query: deleteUserChat,
+        variables: {
+          input: {
+            id: chatID
+          }
+        },
+        authMode: 'userPool'
+      });
+      console.log('left chat');
+      navigation.reset({
+        index: 0,
+        routes: [ { name: 'MainTabs', params: { screen: 'Messages' } } ]
+      });
+      await client.graphql({
+        query: createMessage,
+        variables: {
+          input: {
+            senderID: currUser.id,
+            content: currUser.firstname + " left the chat",
+            chatID: chatID,
+            type: 'System'
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log("Msg sent")
+    } catch (error){ 
+      console.log('Error', error);
+    }
+  }
+
+  const handleInvite = async () => {
+    setInviteModalVisible(false);
+    const userIDs = addedMembers.map((item: any) => item.id);
+    try{
+      for(const userID of userIDs){
+        await client.graphql({
+          query: createUserChat,
+          variables: {
+            input: {
+              userID: userID,
+              chatID: chatID,
+              unreadMessageCount: 0,
+              lastMessage: myUserChat?.lastMessage,
+              role: 'Member'
+            }
+          },
+          authMode: 'userPool'
+        });
+        console.log('userAdded');
+      }
+    } catch (error){
+      console.log(error);
+    } 
+    navigation.goBack();
+    Alert.alert('Success', 'User(s) successfully added');
+  }
+
+  const handleAddMember = (user: User) => {
+    setAddedMembers([...addedMembers, user]);
+    setTimeout(() => {
+      scrollToInviteBottom();
+    }, 100);
+  }
+
+  const removeMember = (user: User) => {
+    setAddedMembers(addedMembers => addedMembers.filter(item => item !== user));
+    setTimeout(() => {
+      scrollToInviteBottom();
+    }, 100);
+  }
+
+  const scrollToInviteBottom = () => {
+    inviteFlatListRef.current?.scrollToEnd({
+      animated: true,
+    });
+  };
+
+  const handleDeleteChat = async () => {
+    Alert.alert(
+      "Delete Chat",
+      "Are you sure you want to delete this chat?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        { 
+          text: "Delete", 
+          onPress: deleteChatAndMessages
+        }
+      ]
+    );
+  }
+
+  const deleteChatAndMessages = async () => {
+    //delete messages
+    const chatIDs = chat?.messages?.items.map( (item : any) => item.id);
+    if(chatIDs){
+      for( const chatID of chatIDs){
+        try{
+          await client.graphql({
+            query: deleteMessage,
+            variables: {
+              input: {
+                id: chatID
+              }
+            },
+            authMode: 'userPool'
+          })
+          console.log(chatID, " message deleted");
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+
+    //delete userChats
+    const userChatIDs = chat?.participants?.items.map( (item: any) => item.id);
+    if(userChatIDs){
+      for(const userChatID of userChatIDs){
+        try{
+          await client.graphql({
+            query: deleteUserChat,
+            variables: {
+              input: {
+                id: userChatID
+              }
+            },
+            authMode: 'userPool'
+          })
+          console.log(userChatID, " user chat deleted");
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    
+    //delete chat
+    try{
+      await client.graphql({
+        query: deleteChat,
+        variables: {
+          input: {
+            id: chatID
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log(chatID, " chat deleted");
+    } catch (error) {
+      console.log(error);
+    }
+    navigation.reset({
+      index: 0,
+      routes: [ { name: 'MainTabs', params: { screen: 'Messages' } } ]
+    });
   }
 
   return(
@@ -341,6 +547,50 @@ const ChatRoom = ( { route, navigation } : any) => {
           <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
+        </View>
+      </Modal>
+      <Modal 
+        transparent={true} 
+        visible={inviteModalVisible} 
+        onRequestClose={() => setInviteModalVisible(false)}
+        animationType="slide"
+      >
+        <View style={styles.searchModalOverlay}>
+          <View style={styles.searchModalHeader}>
+            <TouchableOpacity onPress={() => setInviteModalVisible(false)} style={styles.closeSearchButton}>
+              <Text style={styles.closeSearchButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Search User</Text>
+          </View>
+          <View style={styles.searchModalContainer}>
+            <SearchBar userPressed={handleAddMember} remove={[...addedMembers, ...users]}/>
+            <View style={{marginTop: 'auto'}}>
+              <FlatList
+                ref={inviteFlatListRef}
+                data={addedMembers}
+                horizontal
+                renderItem={({item}) => {
+                  return (
+                    <View>
+                      <TouchableOpacity style={styles.removeIcon} onPress={() => removeMember(item)}>
+                        <Icon name="remove-circle-outline" size={25}/>
+                      </TouchableOpacity>
+                      <ImgComponent style={styles.addedUserImg} uri={item.profileURL || 'defaultUser'}/>
+                    </View>
+                  )
+                }}
+                keyboardShouldPersistTaps='handled'
+              />
+            </View>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 130 : 0}
+            >
+              <TouchableOpacity style={styles.buttonBlack} onPress={handleInvite}>
+                <Text style={styles.buttonTextWhite}>Invite</Text>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>  
+          </View>
         </View>
       </Modal>
     </View>

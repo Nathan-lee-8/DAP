@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
   },
   commentModalContainer:{
     width: width,
-    height: '85%',
+    height: '70%',
     backgroundColor: colorBackground,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
 
   /** chatRoom Styles   */
   messageHeaderContainer: {
-    height: Platform.OS === 'ios' ? 120 : 40,
+    height: Platform.OS === 'ios' ? 120 : 80,
     justifyContent: 'flex-end',
     padding: 10,
     backgroundColor: colorPrimary,
