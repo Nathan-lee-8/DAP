@@ -1,9 +1,9 @@
 import { useState, useContext, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
+import { View, Text, FlatList, ActivityIndicator,
   RefreshControl} from "react-native";
 
 import client from '../client';
-import { notificationsByUser } from "../graphql/queries";
+import { notificationsByUser } from "../customGraphql/customQueries";
 import { Notification } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
