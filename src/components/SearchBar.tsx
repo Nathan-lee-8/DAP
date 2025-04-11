@@ -18,7 +18,17 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
 
   const fetchUsers = async ( search: string) => {
     try{
-      const users = await client.graphql({
+      const usersByEmail = await client.graphql({
+        query: listUsers,
+        variables: { 
+          limit: 10,
+          filter: {
+            email: {contains: search.toLowerCase()}
+          }
+         },
+        authMode: 'userPool'
+      });
+      const usersByName = await client.graphql({
         query: listUsers,
         variables: { 
           limit: 10,
@@ -28,8 +38,9 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
          },
         authMode: 'userPool'
       });
-      const userData = users.data.listUsers.items;
-      var filteredData = userData.filter((user) => {
+      const userData = [...usersByEmail.data.listUsers.items, ...usersByName.data.listUsers.items];
+      const uniqueUserData = Array.from(new Map(userData.map(user => [user.id, user])).values());
+      var filteredData = uniqueUserData.filter((user) => {
         if(user.id === currUser.id) return false;
         if(remove && remove.some((removedUser: User) => removedUser.id === user.id)) return false;
         return true;

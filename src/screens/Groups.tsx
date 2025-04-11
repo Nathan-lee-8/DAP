@@ -20,23 +20,6 @@ const Groups = ( {navigation} : any ) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  const loadGroups = async () => {
-    try{
-      const cachedData = await AsyncStorage.getItem('groups');
-      if(cachedData){
-        console.log("loaded cached groups");
-        const data = JSON.parse(cachedData);
-        setGroup(data);
-        setLoading(false);
-        return;
-      }else{
-        await fetchGroups();
-      }
-    } catch (error) {
-      console.log('Error loading cached groups', error);
-    }
-  }
-  
   const fetchGroups = async () => {
     setLoading(true);
     try{
@@ -60,7 +43,7 @@ const Groups = ( {navigation} : any ) => {
   }
 
   useEffect(() => {
-    loadGroups();
+    fetchGroups();
   }, []);
 
   const onRefresh = useCallback(() => {

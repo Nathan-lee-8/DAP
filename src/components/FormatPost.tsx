@@ -199,7 +199,6 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
       </TouchableOpacity>
 
       <Modal 
-        animationType="slide"
         transparent={true} 
         visible={modalVisible} 
         onRequestClose={() => setModalVisible(false)}  
@@ -238,7 +237,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
         <View style={styles.imageOverlay}>
           <View style={styles.imageModalContainer}>
             <View style={styles.imageModalHeader}>
-              <Icon style={styles.editProfileButton} name="close-circle-outline" size={35}
+              <Icon style={styles.editProfileButton} name="close-outline" size={40}
                 onPress={() => setImageModalVisible(false)}
               />
             </View>

@@ -30,7 +30,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ users, setUsers] = useState<User[]>([]);
   const flatListRef = useRef<FlatList>(null);
 
-  const [ options, setOptions ] = useState(["View Members"]);
+  const [ options, setOptions ] = useState(['View Members', 'Leave']);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -63,9 +63,9 @@ const ViewGroup = ( {route, navigation} : any) => {
       const myUserGroup = groupData.members?.items?.find((member) => member?.user?.id === currUser.id);
       if(myUserGroup) setMyUserGroup(myUserGroup);
       if(myUserGroup?.role  === 'Owner' || myUserGroup?.role === 'Admin'){
-        setOptions(['Invite Members', 'View Members', 'Edit Group', 'Delete Group'])
+        setOptions(['View Members', 'Invite', 'Edit', 'Delete'])
       }else if(myUserGroup?.role === 'Admin'){
-        setOptions(['Invite Members', 'View Members', 'Edit Group', 'Leave Group'])
+        setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
       }
     } catch (error: any) {
       console.log(error);
@@ -115,13 +115,13 @@ const ViewGroup = ( {route, navigation} : any) => {
     setModalVisible(false);
     if(option === 'View Members'){
       navigation.navigate('ViewMembers', {group: group});
-    }else if(option === 'Edit Group'){
+    }else if(option === 'Edit'){
       handleEditGroup();
-    }else if(option === 'Invite Members'){
+    }else if(option === 'Invite'){
       setInviteModalVisible(true);
-    }else if(option === 'Leave Group'){
+    }else if(option === 'Leave'){
       handleLeaveGroup();
-    }else if(option === 'Delete Group'){
+    }else if(option === 'Delete'){
       handleDeleteGroup();
     }
   }
@@ -191,9 +191,10 @@ const ViewGroup = ( {route, navigation} : any) => {
         console.log(error);
       }
     }
-    navigation.goBack();
-    Alert.alert('Success', 'Group updated successfully')
+    fetchCurrentData();
+    Alert.alert('Success', 'Group updated successfully');
   }
+
   const handleDeleteGroup = () => {
     Alert.alert(
       "Delete Group",
@@ -328,7 +329,7 @@ const ViewGroup = ( {route, navigation} : any) => {
                 }}
               />
             ))}
-            {group?.members?.items.length && group?.members?.items.length > 4 && (
+            {group?.members?.items.length && group?.members?.items.length > 5 && (
               <Icon name="ellipsis-horizontal-circle-sharp" size={38} 
                 style={{position: 'absolute', top: 5, left: 80}}
               />
@@ -396,14 +397,13 @@ const ViewGroup = ( {route, navigation} : any) => {
         }
       />
       <Modal
-        animationType="slide" 
         transparent={true} 
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)} 
       >
         <View style={styles.postModelOverlay}>
           <View style={styles.postModalContainer}>
-          <FlatList
+            <FlatList
               data={options}
               keyExtractor={(option) => option}
               style={{height: 'auto', width: '100%'}}

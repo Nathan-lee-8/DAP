@@ -136,15 +136,15 @@ const HomeScreen = ( {navigation} : any) => {
         />
       )}
       <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
-          <View style={styles.notificationOverlay}>
-            <TouchableOpacity style={styles.notificationHeader} onPress={() => setModalVisible(false)}/>
-            <View style={styles.notificationContainer}>
-              <Icon name="close-circle-outline" size={25} style={styles.editProfileButton}
-                onPress={() => setModalVisible(false)}
-              />
-              <Notifications/>
-            </View>
+        <View style={styles.notificationOverlay}>
+        <TouchableOpacity style={styles.notificationHeader} onPress={() => setModalVisible(false)}/>
+          <View style={styles.notificationContainer}>
+            <Icon name="close-outline" size={35} style={styles.editProfileButton}
+              onPress={() => setModalVisible(false)}
+            />
+            <Notifications/>
           </View>
+        </View>
       </Modal>
     </View>
     
