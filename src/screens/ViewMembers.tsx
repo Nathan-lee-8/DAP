@@ -1,24 +1,31 @@
 import { useContext, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator 
-} from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
+  Modal } from "react-native";
   
 import client from "../client";
-import {  createChat, createUserChat 
-} from "../customGraphql/customMutations";
+import {  createChat, createUserChat, deleteUserGroup
+ } from "../customGraphql/customMutations";
 import { UserGroup } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles';
 import ImgComponent from "../components/ImgComponent";
 
-const ViewMembers = ( {route} : any) => {
+const ViewMembers = ( {route, navigation} : any) => {
   const group = route.params.group;
   const userGroups = group.members.items;
   const [ loading, setLoading ] = useState(false);
+  const [ modalVisible, setModalVisible ] = useState(false);
+  const [ selectedUser, setSelectedUser ] = useState<UserGroup>();
+  const [ options, setOptions ] = useState(['View Profile', 'Report']);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
   const myUserGroup = userGroups.find((item: any) => item?.userID === currUser.id);
+
+  if(myUserGroup?.role === 'Admin' || myUserGroup?.role === 'Owner'){
+    setOptions(['View Profile', 'Edit Role', 'Remove']);
+  }
 
   const handleCreateChat = async () => {
     try {
@@ -67,7 +74,44 @@ const ViewMembers = ( {route} : any) => {
     }
   }
 
+  const handleUserPressed = (item: UserGroup) => {
+    setSelectedUser(item);
+    setModalVisible(true);
+  }
 
+  const handleOptionButton = (option: string) => {
+    if(option === 'View Profile'){
+      navigation.navigate('ViewProfile', {userID: selectedUser?.userID})
+    }else if(option === 'Edit Role'){
+      Alert.alert('Not Implemented Yet');
+    }else if(option === 'Report'){
+      Alert.alert('Not Implemented Yet')
+    }else if(option === 'Remove'){
+      handleRemoveUser();
+    }
+    setModalVisible(false);
+  }
+
+  const handleRemoveUser = async () => {
+    if(!selectedUser){
+      Alert.alert('Error', 'Error removing user');
+      return;
+    }
+    try{
+      await client.graphql({
+        query: deleteUserGroup,
+        variables: {
+          input: {
+            id: selectedUser.userID
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Successfully removed User');
+    } catch (error) {
+      Alert.alert('Error', 'Error removing user');
+    }
+  }
 
   if(loading){
     return <ActivityIndicator size="large" color="#0000ff" />
@@ -79,14 +123,17 @@ const ViewMembers = ( {route} : any) => {
       <FlatList
         data={userGroups}
         renderItem={({ item }) => {
+          var disable = item.userID === currUser.id;
           return(
-            <View style={styles.listMemberContainer}>
-              <ImgComponent uri={ item.user?.profileURL || 'defaultUser'}/>
+            <TouchableOpacity style={styles.listMemberContainer} onPress={() => handleUserPressed(item)}
+              disabled={disable}
+            >
+              <ImgComponent uri={item?.user?.profileURL || 'defaultUser'}/>
               <View style={styles.userInfoContainer}>
-                <Text style={styles.postAuthor}>{item.user?.firstname + " " + item.user?.lastname}</Text>
+                <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
               </View>
-                <Text style={styles.roleText}>{item.role}</Text>
-            </View>
+              <Text style={styles.roleText}>{item.role}</Text>
+            </TouchableOpacity>
           )
         }}
       />
@@ -97,6 +144,33 @@ const ViewMembers = ( {route} : any) => {
           </TouchableOpacity>
         </View>
       }
+      <Modal 
+        transparent={true} 
+        visible={modalVisible} 
+        onRequestClose={() => setModalVisible(false)}  
+      >
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
+            <FlatList
+              data={options}
+              keyExtractor={(option) => option}
+              style={{height: 'auto', width: '100%'}}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity 
+                  style={styles.optionButton} 
+                  onPress={() => handleOptionButton(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          
+          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonTextBlack}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }

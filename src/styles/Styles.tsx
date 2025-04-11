@@ -276,11 +276,13 @@ const styles = StyleSheet.create({
   },
   searchModalOverlay: {
     flex: 1,
-    justifyContent:'flex-end'
+    justifyContent: 'flex-end'
+  },
+  searchModalSpacer: {
+    height: Platform.OS === 'ios' ? '10%': 0
   },
   searchModalContainer: {
-    width: width,
-    height: '85%',
+    flex: 1,
     backgroundColor: 'white',
     borderRightWidth: 1,
     borderLeftWidth: 1,
@@ -293,7 +295,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderRightWidth: 1,
     borderLeftWidth: 1,
-    height: 50,
+    height: '7%',
   },
   modalTitle: {
     fontSize: 18,
@@ -302,7 +304,7 @@ const styles = StyleSheet.create({
   closeSearchButton: {
     position: 'absolute',
     top: 15,
-    left: 10,
+    right: 10,
   },
   closeSearchButtonText: {
     color: 'blue',
@@ -327,7 +329,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.3)'
   },
   notificationHeader:{
-    height: '10%',
+    height: Platform.OS === 'ios' ? '10%' : '7%',
   },
   notificationContainer: {
     flex: 1,
@@ -338,7 +340,7 @@ const styles = StyleSheet.create({
     justifyContent:'flex-end'
   },
   imageModalHeader:{
-    marginTop: 60, 
+    height: Platform.OS === 'ios' ? '30%' : 0,
   },
   imageModalContainer: {
     width: '100%',
@@ -356,11 +358,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.2)'
   },
   commentModalHeader:{
-    height: '30%',
+    height:'30%',
   },
   commentModalContainer:{
-    width: width,
-    height: '70%',
+    flex: 1,
     backgroundColor: colorBackground,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
@@ -526,7 +527,7 @@ const styles = StyleSheet.create({
   backContainer: {
     flexDirection: 'row',
     position: 'absolute',
-    top: 50,
+    top: Platform.OS === 'ios'? '10%' : '5%',
     left: 10,
     zIndex: 1,
   },
@@ -541,8 +542,6 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     backgroundColor: colorPrimary,
   },
-  groupMembersContainer: {
-  }, 
   joinButton: {
     padding: 5,
     width: width * 0.22,
@@ -603,14 +602,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: '40%',
   },
-  addImageText: {
+  addImageTextContainer: {
     position: 'absolute',
-    fontSize: 20,
     top: 20,
-    left: 120,
+    width: '100%',
+    alignItems : 'center'
+  },
+  addImageText: {
+    fontSize: 30,
     fontWeight: '600',
     color: 'black',
-    opacity: 0.8
   },
   addMemberText: {
     flexDirection: 'row',

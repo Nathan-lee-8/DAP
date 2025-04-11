@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef, useContext, useCallback
- } from 'react';
+import { useEffect, useState, useRef, useContext, useCallback } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
     KeyboardAvoidingView, Platform, Alert, Modal } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -121,9 +120,9 @@ const ChatRoom = ( { route, navigation } : any) => {
         const myUser = parts.find((item): item is UserChat => item?.userID === currUser.id)
         setMyUserChat(myUser);
         if(myUser?.role === 'Admin'){
-          setOptions(['View Members', 'Edit Chat', 'Invite', 'Leave'])
+          setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
         }else if(myUser?.role === 'Owner'){
-          setOptions(['View Members', 'Edit Chat', 'Invite', 'Delete'])
+          setOptions(['View Members', 'Invite', 'Edit', 'Delete'])
         }
       }
       setNextToken(chatData?.messages?.nextToken);
@@ -230,7 +229,7 @@ const ChatRoom = ( { route, navigation } : any) => {
       handleLeaveChat();
     }else if(option === 'Invite'){
       setInviteModalVisible(true);
-    }else if(option === 'Edit Chat'){
+    }else if(option === 'Edit'){
       handleEditChat();
     }else if(option === 'Delete'){
       handleDeleteChat();
@@ -522,7 +521,6 @@ const ChatRoom = ( { route, navigation } : any) => {
         </TouchableOpacity>
       </KeyboardAvoidingView>
       <Modal 
-        animationType="slide"
         transparent={true} 
         visible={modalVisible} 
         onRequestClose={() => setModalVisible(false)}  
@@ -556,6 +554,7 @@ const ChatRoom = ( { route, navigation } : any) => {
         animationType="slide"
       >
         <View style={styles.searchModalOverlay}>
+          <TouchableOpacity style={styles.searchModalSpacer} onPress={() => setInviteModalVisible(false)}/>
           <View style={styles.searchModalHeader}>
             <TouchableOpacity onPress={() => setInviteModalVisible(false)} style={styles.closeSearchButton}>
               <Text style={styles.closeSearchButtonText}>Cancel</Text>

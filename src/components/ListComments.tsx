@@ -1,12 +1,12 @@
 import { useContext, useState } from 'react';
 import { View, Text, ActivityIndicator, FlatList, TouchableOpacity, Alert,
-  KeyboardAvoidingView, TextInput, Platform } from "react-native";
+  Modal, KeyboardAvoidingView, TextInput, Platform } from "react-native";
 import styles from "../styles/Styles";
 import { useEffect } from "react";
 
 import client from "../client";
 import { commentsByPost } from "../customGraphql/customQueries";
-import { createComment } from "../customGraphql/customMutations";
+import { createComment, deleteComment } from "../customGraphql/customMutations";
 import { Comment } from "../API";
 
 import ImgComponent from './ImgComponent';
@@ -18,6 +18,7 @@ const ListComments = ({postID}: any) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ comment, setComment ] = useState<string>('');
+  const [ modalVisible, setModalVisible ] = useState(false);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return <ActivityIndicator size="large" color="#0000ff" />;
 
@@ -68,6 +69,49 @@ const ListComments = ({postID}: any) => {
       console.error('Error creating comment:', error);
     }
   }
+  
+  const handleOptionButton = (option: string, item: Comment) => {
+    if(option === "Report"){
+      Alert.alert("Not Implemented Yet");
+    } else if(option === "Edit"){
+      Alert.alert("Not Implemented Yet");
+    } else if(option === "Delete"){
+      Alert.alert(
+        "Delete",
+        "Are you sure you want Delete this comment?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          { 
+            text: "Delete", 
+            onPress: () => handleDeleteComment(item.id)
+          }
+        ]
+      );
+    }
+    console.log(option)
+  }
+
+  const handleDeleteComment = async (itemID: string) => {
+    try{
+      await client.graphql({
+        query: deleteComment,
+        variables: {
+          input: {
+            id: itemID
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log("comment deleted");
+      fetchComments();
+    } catch (error) {
+      console.log(error);
+    }
+ 
+  }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
@@ -75,18 +119,51 @@ const ListComments = ({postID}: any) => {
     <View style={{flex: 1}}>
       <FlatList
         data={comments}
-        renderItem={({ item }) => (
-          <View style={styles.postContainer}>
-            <View style={styles.profileSection}>
-              <ImgComponent uri={item?.user?.profileURL || 'defaultUser'} style={styles.postProfileImg}/>
-              <View style={styles.profileText}>
-                <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
-                <Text style={styles.postDate}>{moment(item?.createdAt).fromNow()}</Text>
+        renderItem={({ item }) => {
+          var options = ["Report"];
+          if(item.userID === currUser.id){
+            options = ["Edit", "Delete"];
+          }
+          return (
+            <View style={styles.postContainer}>
+              <Icon name="ellipsis-horizontal" size={20} style={styles.postOptions} onPress={() => setModalVisible(true)}/>
+              <View style={styles.profileSection}>
+                <ImgComponent uri={item?.user?.profileURL || 'defaultUser'} style={styles.postProfileImg}/>
+                <View style={styles.profileText}>
+                  <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+                  <Text style={styles.postDate}>{moment(item?.createdAt).fromNow()}</Text>
+                </View>
               </View>
+              <Text style={styles.postContent}>{item?.content}</Text>
+              <Modal 
+                transparent={true} 
+                visible={modalVisible} 
+                onRequestClose={() => setModalVisible(false)}  
+              >
+                <View style={styles.postModelOverlay}>
+                  <View style={styles.postModalContainer}>
+                    <FlatList
+                      data={options}
+                      keyExtractor={(option) => option}
+                      style={{height: 'auto', width: '100%'}}
+                      renderItem={({ item: option }) => (
+                        <TouchableOpacity 
+                          style={styles.optionButton} 
+                          onPress={() => handleOptionButton(option, item)}
+                        >
+                          <Text style={styles.buttonTextBlack}>{option}</Text>
+                        </TouchableOpacity>
+                      )}
+                    />
+                  </View>
+                  <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+                    <Text style={styles.buttonTextBlack}>Close</Text>
+                  </TouchableOpacity>
+                </View>
+              </Modal>
             </View>
-            <Text style={styles.postContent}>{item?.content}</Text>
-          </View>
-        )}
+          )
+        }}
         ListEmptyComponent={() => (
           <View>
             <Text style={styles.noResultsMsg}>No Comments Available</Text>
