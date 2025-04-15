@@ -235,7 +235,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
         <View style={styles.imageOverlay}>
           <View style={styles.imageModalContainer}>
             <View style={styles.imageModalHeader}>
-              <Icon style={styles.editProfileButton} name="close-outline" size={40}
+              <Icon style={styles.closeImageModal} name="close-outline" size={40}
                 onPress={() => setImageModalVisible(false)}
               />
             </View>

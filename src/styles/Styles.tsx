@@ -340,12 +340,19 @@ const styles = StyleSheet.create({
     justifyContent:'flex-end'
   },
   imageModalHeader:{
-    height: Platform.OS === 'ios' ? '30%' : 0,
+    height: 0,
   },
   imageModalContainer: {
     width: '100%',
     height: '100%',
     backgroundColor: colorBackground
+  },
+  closeImageModal: {
+    position: 'absolute',
+    right: 10,
+    top: Platform.OS === 'ios' ? 50 : 10,
+    padding: 10,
+    zIndex: 1
   },
   imageCommentIcon: {
     position: 'absolute',
