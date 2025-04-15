@@ -158,6 +158,18 @@ export const updatePost = /* GraphQL */ `mutation UpdatePost(
   APITypes.UpdatePostMutationVariables,
   APITypes.UpdatePostMutation
 >;
+export const updateComment = /* GraphQL */ `mutation UpdateComment(
+  $input: UpdateCommentInput!
+  $condition: ModelCommentConditionInput
+) {
+  updateComment(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateCommentMutationVariables,
+  APITypes.UpdateCommentMutation
+>;
 export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
   $input: UpdateUserChatInput!
   $condition: ModelUserChatConditionInput

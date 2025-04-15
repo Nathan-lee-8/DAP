@@ -168,9 +168,8 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               <TouchableOpacity onPress={() => setImageModalVisible(true)}>
                 <ImgComponent uri={item || 'defautUser'} 
                   style={{
-                    width: width,
+                    width: width - 30,
                     height: 200,
-                    marginRight: 10,
                   }} 
                 />
               </TouchableOpacity>
@@ -179,6 +178,8 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
             onScroll={onScroll}
             scrollEventThrottle={16}
             showsHorizontalScrollIndicator={false}
+            pagingEnabled
+            snapToAlignment="center"
           />
           <View style={styles.paginationContainer}>
             {item.postURL.length > 1 && item?.postURL.map((_, index) => (
@@ -217,11 +218,8 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                   <Text style={styles.buttonTextBlack}>{option}</Text>
                 </TouchableOpacity>
               )}
-
-              
             />
           </View>
-          
           <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
@@ -248,8 +246,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                   <ImgComponent uri={item || 'defautUser'} 
                     style={{
                       width: width,
-                      height: '100%',
-                      marginRight: 10,
+                      height: '100%'
                     }} 
                     resizeMode={"contain"}
                   />
@@ -259,6 +256,8 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               onScroll={onScroll}
               scrollEventThrottle={16}
               showsHorizontalScrollIndicator={false}
+              pagingEnabled
+              snapToAlignment="center"
             />
             <View style={styles.paginationContainer}>
               {item.postURL && item?.postURL.length > 1 && item?.postURL?.map((_, index) => (
@@ -268,7 +267,6 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                 onPress={() => setCommentModalVisible(true)}
               />
             </View>
-
             <Modal 
               animationType="slide"
               transparent={true} 
