@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
   },
 
-  /** View Post Section */
+  /** View Post/comment Section */
   addCommentSection: {
     flexDirection: 'row',
     marginBottom: Platform.OS === 'ios' ? 40 : 0,
@@ -383,6 +383,16 @@ const styles = StyleSheet.create({
   },
   commentButton: {
     marginLeft: 10,
+  },
+  editCommentInput:{
+    width: width * .8,
+    backgroundColor: colorBackground,
+    padding: 5
+  },
+  saveCommentButton:{
+    display: 'flex',
+    marginLeft: 10,
+    justifyContent:'center',
   },
 
   /** Create Post Styles*/

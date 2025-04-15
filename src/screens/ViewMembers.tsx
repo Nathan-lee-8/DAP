@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
   Modal } from "react-native";
   
@@ -23,9 +23,11 @@ const ViewMembers = ( {route, navigation} : any) => {
   if(!currUser) return;
   const myUserGroup = userGroups.find((item: any) => item?.userID === currUser.id);
 
-  if(myUserGroup?.role === 'Admin' || myUserGroup?.role === 'Owner'){
-    setOptions(['View Profile', 'Edit Role', 'Remove']);
-  }
+  useEffect(() => {
+    if(myUserGroup.role === 'Admin' || myUserGroup.role === 'Owner'){
+      setOptions(['View Profile', 'Edit Role', 'Remove']);
+    }
+  }, [myUserGroup]);
 
   const handleCreateChat = async () => {
     try {

@@ -38,10 +38,17 @@ const ViewPost = ( {route} : any) => {
     fetchPost();
   }, [postID]);
 
+  const header = () => {
+    return (
+      <View>
+        {postData && <FormatPost item={postData} groupData={postData?.group ? [postData.group] : []}/>}
+      </View> 
+    )
+  }
+
   return (
     <View style={styles.container}>
-      {postData && <FormatPost item={postData} groupData={postData?.group ? [postData.group] : []}/>}
-      <Comments postID={postID}/>
+      <Comments postID={postID} header={header}/>
     </View>
   )
 }

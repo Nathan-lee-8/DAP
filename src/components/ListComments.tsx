@@ -1,24 +1,23 @@
-import { useContext, useState } from 'react';
-import { View, Text, ActivityIndicator, FlatList, TouchableOpacity, Alert,
-  Modal, KeyboardAvoidingView, TextInput, Platform } from "react-native";
+import { useContext, useRef, useState } from 'react';
+import { View, Text, ActivityIndicator, FlatList, TouchableOpacity, Alert, Keyboard,
+ KeyboardAvoidingView, TextInput, Platform, TouchableWithoutFeedback } from "react-native";
 import styles from "../styles/Styles";
 import { useEffect } from "react";
 
 import client from "../client";
 import { commentsByPost } from "../customGraphql/customQueries";
-import { createComment, deleteComment } from "../customGraphql/customMutations";
+import { createComment } from "../customGraphql/customMutations";
 import { Comment } from "../API";
 
-import ImgComponent from './ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
-import moment from 'moment';
 import { AuthContext } from '../context/AuthContext';
+import CommentComp from '../components/commentComponent';
 
-const ListComments = ({postID}: any) => {
+const ListComments = ({postID, header}: any) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ comment, setComment ] = useState<string>('');
-  const [ modalVisible, setModalVisible ] = useState(false);
+  const flatListRef = useRef<FlatList>(null);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return <ActivityIndicator size="large" color="#0000ff" />;
 
@@ -33,7 +32,7 @@ const ListComments = ({postID}: any) => {
       })
       const commentList = commentData.data.commentsByPost.items;
       setComments(commentList);
-      console.log('fetched from notifications');
+      console.log('fetched comments');
     } catch (error: any) {
       console.log(error);
     } finally {
@@ -69,99 +68,32 @@ const ListComments = ({postID}: any) => {
       console.error('Error creating comment:', error);
     }
   }
-  
-  const handleOptionButton = (option: string, item: Comment) => {
-    if(option === "Report"){
-      Alert.alert("Not Implemented Yet");
-    } else if(option === "Edit"){
-      Alert.alert("Not Implemented Yet");
-    } else if(option === "Delete"){
-      Alert.alert(
-        "Delete",
-        "Are you sure you want Delete this comment?",
-        [
-          {
-            text: "Cancel",
-            style: "cancel"
-          },
-          { 
-            text: "Delete", 
-            onPress: () => handleDeleteComment(item.id)
-          }
-        ]
-      );
-    }
-    console.log(option)
-  }
 
-  const handleDeleteComment = async (itemID: string) => {
-    try{
-      await client.graphql({
-        query: deleteComment,
-        variables: {
-          input: {
-            id: itemID
-          }
-        },
-        authMode: 'userPool'
-      })
-      console.log("comment deleted");
-      fetchComments();
-    } catch (error) {
-      console.log(error);
+  const handleItemPress = (index: number) => {
+    if(index - comments.length < 2){
+      flatListRef.current?.scrollToEnd();
     }
- 
-  }
+  };
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (  
     <View style={{flex: 1}}>
       <FlatList
+        ref={flatListRef}
         data={comments}
-        renderItem={({ item }) => {
-          var options = ["Report"];
-          if(item.userID === currUser.id){
-            options = ["Edit", "Delete"];
-          }
+        renderItem={({ item, index }) => {
           return (
-            <View style={styles.postContainer}>
-              <Icon name="ellipsis-horizontal" size={20} style={styles.postOptions} onPress={() => setModalVisible(true)}/>
-              <View style={styles.profileSection}>
-                <ImgComponent uri={item?.user?.profileURL || 'defaultUser'} style={styles.postProfileImg}/>
-                <View style={styles.profileText}>
-                  <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
-                  <Text style={styles.postDate}>{moment(item?.createdAt).fromNow()}</Text>
+            <KeyboardAvoidingView 
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            > 
+              <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <View style={{ flex: 1 }}>
+                  <CommentComp item={item} onFocus={() => handleItemPress(index)} />
                 </View>
-              </View>
-              <Text style={styles.postContent}>{item?.content}</Text>
-              <Modal 
-                transparent={true} 
-                visible={modalVisible} 
-                onRequestClose={() => setModalVisible(false)}  
-              >
-                <View style={styles.postModelOverlay}>
-                  <View style={styles.postModalContainer}>
-                    <FlatList
-                      data={options}
-                      keyExtractor={(option) => option}
-                      style={{height: 'auto', width: '100%'}}
-                      renderItem={({ item: option }) => (
-                        <TouchableOpacity 
-                          style={styles.optionButton} 
-                          onPress={() => handleOptionButton(option, item)}
-                        >
-                          <Text style={styles.buttonTextBlack}>{option}</Text>
-                        </TouchableOpacity>
-                      )}
-                    />
-                  </View>
-                  <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
-                    <Text style={styles.buttonTextBlack}>Close</Text>
-                  </TouchableOpacity>
-                </View>
-              </Modal>
-            </View>
+              </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
           )
         }}
         ListEmptyComponent={() => (
@@ -170,6 +102,7 @@ const ListComments = ({postID}: any) => {
           </View>
         )}
         scrollEnabled
+        ListHeaderComponent={header}
       />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
