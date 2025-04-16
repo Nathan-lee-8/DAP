@@ -206,6 +206,69 @@ export const deleteComment = /* GraphQL */ `mutation DeleteComment(
   APITypes.DeleteCommentMutationVariables,
   APITypes.DeleteCommentMutation
 >;
+export const createReply = /* GraphQL */ `mutation CreateReply(
+  $input: CreateReplyInput!
+  $condition: ModelReplyConditionInput
+) {
+  createReply(input: $input, condition: $condition) {
+    id
+    content
+    url
+    userID
+    commentID
+    createdAt
+    updatedAt
+    userRepliesId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateReplyMutationVariables,
+  APITypes.CreateReplyMutation
+>;
+export const updateReply = /* GraphQL */ `mutation UpdateReply(
+  $input: UpdateReplyInput!
+  $condition: ModelReplyConditionInput
+) {
+  updateReply(input: $input, condition: $condition) {
+    id
+    content
+    url
+    userID
+    commentID
+    createdAt
+    updatedAt
+    userRepliesId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateReplyMutationVariables,
+  APITypes.UpdateReplyMutation
+>;
+export const deleteReply = /* GraphQL */ `mutation DeleteReply(
+  $input: DeleteReplyInput!
+  $condition: ModelReplyConditionInput
+) {
+  deleteReply(input: $input, condition: $condition) {
+    id
+    content
+    url
+    userID
+    commentID
+    createdAt
+    updatedAt
+    userRepliesId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteReplyMutationVariables,
+  APITypes.DeleteReplyMutation
+>;
 export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
   $input: CreateUserChatInput!
   $condition: ModelUserChatConditionInput
@@ -583,4 +646,67 @@ export const deleteNotification = /* GraphQL */ `mutation DeleteNotification(
 ` as GeneratedMutation<
   APITypes.DeleteNotificationMutationVariables,
   APITypes.DeleteNotificationMutation
+>;
+export const createReport = /* GraphQL */ `mutation CreateReport(
+  $input: CreateReportInput!
+  $condition: ModelReportConditionInput
+) {
+  createReport(input: $input, condition: $condition) {
+    id
+    reporterID
+    reportedItemID
+    reportedItemType
+    reason
+    message
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateReportMutationVariables,
+  APITypes.CreateReportMutation
+>;
+export const updateReport = /* GraphQL */ `mutation UpdateReport(
+  $input: UpdateReportInput!
+  $condition: ModelReportConditionInput
+) {
+  updateReport(input: $input, condition: $condition) {
+    id
+    reporterID
+    reportedItemID
+    reportedItemType
+    reason
+    message
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateReportMutationVariables,
+  APITypes.UpdateReportMutation
+>;
+export const deleteReport = /* GraphQL */ `mutation DeleteReport(
+  $input: DeleteReportInput!
+  $condition: ModelReportConditionInput
+) {
+  deleteReport(input: $input, condition: $condition) {
+    id
+    reporterID
+    reportedItemID
+    reportedItemType
+    reason
+    message
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteReportMutationVariables,
+  APITypes.DeleteReportMutation
 >;

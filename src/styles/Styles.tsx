@@ -373,6 +373,43 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
   },
+  reportModalOverLay:{
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reportModalContainer:{
+    height: 400,
+    width: '80%',
+    backgroundColor: colorBackground,
+    borderRadius: 10
+  },
+  reportModalText:{
+    fontSize: 16,
+    marginHorizontal: 20
+  },
+  reportInput:{
+    flex: 1,
+    textAlignVertical: 'top',
+    backgroundColor: colorPrimary,
+    margin: 20,
+    borderWidth: 1
+  },
+  closeReportModalButton: {
+    position: 'absolute',
+    top: 10,
+    padding: 10,
+    right: 10,
+    zIndex: 1
+  },
+  reportModalButton:{
+    width: '100%',
+    justifyContent: 'center',
+    height: 50,
+    marginTop: 'auto',
+    marginBottom: 10
+  },
 
   /** View Post/comment Section */
   addCommentSection: {

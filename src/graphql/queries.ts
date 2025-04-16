@@ -448,6 +448,144 @@ export const commentsByPost = /* GraphQL */ `query CommentsByPost(
   APITypes.CommentsByPostQueryVariables,
   APITypes.CommentsByPostQuery
 >;
+export const getReply = /* GraphQL */ `query GetReply($id: ID!) {
+  getReply(id: $id) {
+    id
+    content
+    url
+    userID
+    commentID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comment {
+      id
+      content
+      commentURL
+      userID
+      postID
+      createdAt
+      updatedAt
+      userCommentsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userRepliesId
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetReplyQueryVariables, APITypes.GetReplyQuery>;
+export const listReplies = /* GraphQL */ `query ListReplies(
+  $filter: ModelReplyFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listReplies(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      content
+      url
+      userID
+      commentID
+      createdAt
+      updatedAt
+      userRepliesId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListRepliesQueryVariables,
+  APITypes.ListRepliesQuery
+>;
+export const repliesByUser = /* GraphQL */ `query RepliesByUser(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelReplyFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  repliesByUser(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      content
+      url
+      userID
+      commentID
+      createdAt
+      updatedAt
+      userRepliesId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.RepliesByUserQueryVariables,
+  APITypes.RepliesByUserQuery
+>;
+export const repliesByComment = /* GraphQL */ `query RepliesByComment(
+  $commentID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelReplyFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  repliesByComment(
+    commentID: $commentID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      content
+      url
+      userID
+      commentID
+      createdAt
+      updatedAt
+      userRepliesId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.RepliesByCommentQueryVariables,
+  APITypes.RepliesByCommentQuery
+>;
 export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
   getUserChat(id: $id) {
     id
@@ -692,9 +830,9 @@ export const getChat = /* GraphQL */ `query GetChat(
           createdAt
           updatedAt
           owner
-          __typename
-        }
-        createdAt
+      __typename
+    }
+    createdAt
         updatedAt
         owner
         __typename
@@ -1149,13 +1287,13 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
             owner
             __typename
           }
-          nextToken
-          __typename
-        }
+      nextToken
+      __typename
+    }
         commentCount
         type
-        createdAt
-        updatedAt
+    createdAt
+    updatedAt
         userPostsId
         owner
         __typename
@@ -1323,4 +1461,45 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
 ` as GeneratedQuery<
   APITypes.NotificationsByUserQueryVariables,
   APITypes.NotificationsByUserQuery
+>;
+export const getReport = /* GraphQL */ `query GetReport($id: ID!) {
+  getReport(id: $id) {
+    id
+    reporterID
+    reportedItemID
+    reportedItemType
+    reason
+    message
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetReportQueryVariables, APITypes.GetReportQuery>;
+export const listReports = /* GraphQL */ `query ListReports(
+  $filter: ModelReportFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listReports(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      reporterID
+      reportedItemID
+      reportedItemType
+      reason
+      message
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListReportsQueryVariables,
+  APITypes.ListReportsQuery
 >;
