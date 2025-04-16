@@ -81,6 +81,7 @@ export type User = {
   messages?: ModelMessageConnection | null,
   groups?: ModelUserGroupConnection | null,
   comments?: ModelCommentConnection | null,
+  replies?: ModelReplyConnection | null,
   notifications?: ModelNotificationConnection | null,
   createdAt: string,
   updatedAt: string,
@@ -160,11 +161,33 @@ export type Comment = {
   commentURL?: Array< string | null > | null,
   userID: string,
   postID: string,
+  replies?: ModelReplyConnection | null,
   user?: User | null,
   post?: Post | null,
   createdAt: string,
   updatedAt: string,
   userCommentsId?: string | null,
+  owner?: string | null,
+};
+
+export type ModelReplyConnection = {
+  __typename: "ModelReplyConnection",
+  items:  Array<Reply | null >,
+  nextToken?: string | null,
+};
+
+export type Reply = {
+  __typename: "Reply",
+  id: string,
+  content: string,
+  url?: Array< string | null > | null,
+  userID: string,
+  commentID: string,
+  user?: User | null,
+  comment?: Comment | null,
+  createdAt: string,
+  updatedAt: string,
+  userRepliesId?: string | null,
   owner?: string | null,
 };
 
@@ -366,6 +389,44 @@ export type UpdateCommentInput = {
 };
 
 export type DeleteCommentInput = {
+  id: string,
+};
+
+export type CreateReplyInput = {
+  id?: string | null,
+  content: string,
+  url?: Array< string | null > | null,
+  userID: string,
+  commentID: string,
+  createdAt?: string | null,
+  userRepliesId?: string | null,
+};
+
+export type ModelReplyConditionInput = {
+  content?: ModelStringInput | null,
+  url?: ModelStringInput | null,
+  userID?: ModelIDInput | null,
+  commentID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelReplyConditionInput | null > | null,
+  or?: Array< ModelReplyConditionInput | null > | null,
+  not?: ModelReplyConditionInput | null,
+  updatedAt?: ModelStringInput | null,
+  userRepliesId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type UpdateReplyInput = {
+  id: string,
+  content?: string | null,
+  url?: Array< string | null > | null,
+  userID?: string | null,
+  commentID?: string | null,
+  createdAt?: string | null,
+  userRepliesId?: string | null,
+};
+
+export type DeleteReplyInput = {
   id: string,
 };
 
@@ -608,6 +669,55 @@ export type DeleteNotificationInput = {
   id: string,
 };
 
+export type CreateReportInput = {
+  id?: string | null,
+  reporterID: string,
+  reportedItemID: string,
+  reportedItemType: string,
+  reason: string,
+  message: string,
+};
+
+export type ModelReportConditionInput = {
+  reporterID?: ModelStringInput | null,
+  reportedItemID?: ModelStringInput | null,
+  reportedItemType?: ModelStringInput | null,
+  reason?: ModelStringInput | null,
+  message?: ModelStringInput | null,
+  and?: Array< ModelReportConditionInput | null > | null,
+  or?: Array< ModelReportConditionInput | null > | null,
+  not?: ModelReportConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type Report = {
+  __typename: "Report",
+  id: string,
+  reporterID: string,
+  reportedItemID: string,
+  reportedItemType: string,
+  reason: string,
+  message: string,
+  createdAt: string,
+  updatedAt: string,
+  owner?: string | null,
+};
+
+export type UpdateReportInput = {
+  id: string,
+  reporterID?: string | null,
+  reportedItemID?: string | null,
+  reportedItemType?: string | null,
+  reason?: string | null,
+  message?: string | null,
+};
+
+export type DeleteReportInput = {
+  id: string,
+};
+
 export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
   email?: ModelStringInput | null,
@@ -684,6 +794,21 @@ export type ModelCommentFilterInput = {
   or?: Array< ModelCommentFilterInput | null > | null,
   not?: ModelCommentFilterInput | null,
   userCommentsId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelReplyFilterInput = {
+  id?: ModelIDInput | null,
+  content?: ModelStringInput | null,
+  url?: ModelStringInput | null,
+  userID?: ModelIDInput | null,
+  commentID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelReplyFilterInput | null > | null,
+  or?: Array< ModelReplyFilterInput | null > | null,
+  not?: ModelReplyFilterInput | null,
+  userRepliesId?: ModelIDInput | null,
   owner?: ModelStringInput | null,
 };
 
@@ -789,6 +914,27 @@ export type ModelNotificationFilterInput = {
   owner?: ModelStringInput | null,
 };
 
+export type ModelReportFilterInput = {
+  id?: ModelIDInput | null,
+  reporterID?: ModelStringInput | null,
+  reportedItemID?: ModelStringInput | null,
+  reportedItemType?: ModelStringInput | null,
+  reason?: ModelStringInput | null,
+  message?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelReportFilterInput | null > | null,
+  or?: Array< ModelReportFilterInput | null > | null,
+  not?: ModelReportFilterInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelReportConnection = {
+  __typename: "ModelReportConnection",
+  items:  Array<Report | null >,
+  nextToken?: string | null,
+};
+
 export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   email?: ModelSubscriptionStringInput | null,
@@ -806,6 +952,7 @@ export type ModelSubscriptionUserFilterInput = {
   userMessagesId?: ModelSubscriptionIDInput | null,
   userGroupsId?: ModelSubscriptionIDInput | null,
   userCommentsId?: ModelSubscriptionIDInput | null,
+  userRepliesId?: ModelSubscriptionIDInput | null,
   userNotificationsId?: ModelSubscriptionIDInput | null,
   owner?: ModelStringInput | null,
 };
@@ -877,6 +1024,19 @@ export type ModelSubscriptionCommentFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionCommentFilterInput | null > | null,
   or?: Array< ModelSubscriptionCommentFilterInput | null > | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelSubscriptionReplyFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  content?: ModelSubscriptionStringInput | null,
+  url?: ModelSubscriptionStringInput | null,
+  userID?: ModelSubscriptionIDInput | null,
+  commentID?: ModelSubscriptionIDInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionReplyFilterInput | null > | null,
+  or?: Array< ModelSubscriptionReplyFilterInput | null > | null,
   owner?: ModelStringInput | null,
 };
 
@@ -962,6 +1122,20 @@ export type ModelSubscriptionNotificationFilterInput = {
   updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionNotificationFilterInput | null > | null,
   or?: Array< ModelSubscriptionNotificationFilterInput | null > | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelSubscriptionReportFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  reporterID?: ModelSubscriptionStringInput | null,
+  reportedItemID?: ModelSubscriptionStringInput | null,
+  reportedItemType?: ModelSubscriptionStringInput | null,
+  reason?: ModelSubscriptionStringInput | null,
+  message?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionReportFilterInput | null > | null,
+  or?: Array< ModelSubscriptionReportFilterInput | null > | null,
   owner?: ModelStringInput | null,
 };
 
@@ -1150,6 +1324,66 @@ export type DeleteCommentMutation = {
     createdAt: string,
     updatedAt: string,
     userCommentsId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type CreateReplyMutationVariables = {
+  input: CreateReplyInput,
+  condition?: ModelReplyConditionInput | null,
+};
+
+export type CreateReplyMutation = {
+  createReply?:  {
+    __typename: "Reply",
+    id: string,
+    content: string,
+    url?: Array< string | null > | null,
+    userID: string,
+    commentID: string,
+    createdAt: string,
+    updatedAt: string,
+    userRepliesId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type UpdateReplyMutationVariables = {
+  input: UpdateReplyInput,
+  condition?: ModelReplyConditionInput | null,
+};
+
+export type UpdateReplyMutation = {
+  updateReply?:  {
+    __typename: "Reply",
+    id: string,
+    content: string,
+    url?: Array< string | null > | null,
+    userID: string,
+    commentID: string,
+    createdAt: string,
+    updatedAt: string,
+    userRepliesId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type DeleteReplyMutationVariables = {
+  input: DeleteReplyInput,
+  condition?: ModelReplyConditionInput | null,
+};
+
+export type DeleteReplyMutation = {
+  deleteReply?:  {
+    __typename: "Reply",
+    id: string,
+    content: string,
+    url?: Array< string | null > | null,
+    userID: string,
+    commentID: string,
+    createdAt: string,
+    updatedAt: string,
+    userRepliesId?: string | null,
     owner?: string | null,
   } | null,
 };
@@ -1510,6 +1744,66 @@ export type DeleteNotificationMutation = {
     createdAt: string,
     updatedAt: string,
     userNotificationsId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type CreateReportMutationVariables = {
+  input: CreateReportInput,
+  condition?: ModelReportConditionInput | null,
+};
+
+export type CreateReportMutation = {
+  createReport?:  {
+    __typename: "Report",
+    id: string,
+    reporterID: string,
+    reportedItemID: string,
+    reportedItemType: string,
+    reason: string,
+    message: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type UpdateReportMutationVariables = {
+  input: UpdateReportInput,
+  condition?: ModelReportConditionInput | null,
+};
+
+export type UpdateReportMutation = {
+  updateReport?:  {
+    __typename: "Report",
+    id: string,
+    reporterID: string,
+    reportedItemID: string,
+    reportedItemType: string,
+    reason: string,
+    message: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type DeleteReportMutationVariables = {
+  input: DeleteReportInput,
+  condition?: ModelReportConditionInput | null,
+};
+
+export type DeleteReportMutation = {
+  deleteReport?:  {
+    __typename: "Report",
+    id: string,
+    reporterID: string,
+    reportedItemID: string,
+    reportedItemType: string,
+    reason: string,
+    message: string,
+    createdAt: string,
+    updatedAt: string,
     owner?: string | null,
   } | null,
 };
@@ -1913,6 +2207,131 @@ export type CommentsByPostQuery = {
       createdAt: string,
       updatedAt: string,
       userCommentsId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetReplyQueryVariables = {
+  id: string,
+};
+
+export type GetReplyQuery = {
+  getReply?:  {
+    __typename: "Reply",
+    id: string,
+    content: string,
+    url?: Array< string | null > | null,
+    userID: string,
+    commentID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    comment?:  {
+      __typename: "Comment",
+      id: string,
+      content: string,
+      commentURL?: Array< string | null > | null,
+      userID: string,
+      postID: string,
+      createdAt: string,
+      updatedAt: string,
+      userCommentsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userRepliesId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type ListRepliesQueryVariables = {
+  filter?: ModelReplyFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListRepliesQuery = {
+  listReplies?:  {
+    __typename: "ModelReplyConnection",
+    items:  Array< {
+      __typename: "Reply",
+      id: string,
+      content: string,
+      url?: Array< string | null > | null,
+      userID: string,
+      commentID: string,
+      createdAt: string,
+      updatedAt: string,
+      userRepliesId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type RepliesByUserQueryVariables = {
+  userID: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelReplyFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type RepliesByUserQuery = {
+  repliesByUser?:  {
+    __typename: "ModelReplyConnection",
+    items:  Array< {
+      __typename: "Reply",
+      id: string,
+      content: string,
+      url?: Array< string | null > | null,
+      userID: string,
+      commentID: string,
+      createdAt: string,
+      updatedAt: string,
+      userRepliesId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type RepliesByCommentQueryVariables = {
+  commentID: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelReplyFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type RepliesByCommentQuery = {
+  repliesByComment?:  {
+    __typename: "ModelReplyConnection",
+    items:  Array< {
+      __typename: "Reply",
+      id: string,
+      content: string,
+      url?: Array< string | null > | null,
+      userID: string,
+      commentID: string,
+      createdAt: string,
+      updatedAt: string,
+      userRepliesId?: string | null,
       owner?: string | null,
     } | null >,
     nextToken?: string | null,
@@ -2740,6 +3159,50 @@ export type NotificationsByUserQuery = {
   } | null,
 };
 
+export type GetReportQueryVariables = {
+  id: string,
+};
+
+export type GetReportQuery = {
+  getReport?:  {
+    __typename: "Report",
+    id: string,
+    reporterID: string,
+    reportedItemID: string,
+    reportedItemType: string,
+    reason: string,
+    message: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type ListReportsQueryVariables = {
+  filter?: ModelReportFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListReportsQuery = {
+  listReports?:  {
+    __typename: "ModelReportConnection",
+    items:  Array< {
+      __typename: "Report",
+      id: string,
+      reporterID: string,
+      reportedItemID: string,
+      reportedItemType: string,
+      reason: string,
+      message: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type OnCreateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
   owner?: string | null,
@@ -2773,6 +3236,10 @@ export type OnCreateUserSubscription = {
     } | null,
     comments?:  {
       __typename: "ModelCommentConnection",
+      nextToken?: string | null,
+    } | null,
+    replies?:  {
+      __typename: "ModelReplyConnection",
       nextToken?: string | null,
     } | null,
     notifications?:  {
@@ -2820,6 +3287,10 @@ export type OnUpdateUserSubscription = {
       __typename: "ModelCommentConnection",
       nextToken?: string | null,
     } | null,
+    replies?:  {
+      __typename: "ModelReplyConnection",
+      nextToken?: string | null,
+    } | null,
     notifications?:  {
       __typename: "ModelNotificationConnection",
       nextToken?: string | null,
@@ -2863,6 +3334,10 @@ export type OnDeleteUserSubscription = {
     } | null,
     comments?:  {
       __typename: "ModelCommentConnection",
+      nextToken?: string | null,
+    } | null,
+    replies?:  {
+      __typename: "ModelReplyConnection",
       nextToken?: string | null,
     } | null,
     notifications?:  {
@@ -3044,6 +3519,10 @@ export type OnCreateCommentSubscription = {
     commentURL?: Array< string | null > | null,
     userID: string,
     postID: string,
+    replies?:  {
+      __typename: "ModelReplyConnection",
+      nextToken?: string | null,
+    } | null,
     user?:  {
       __typename: "User",
       id: string,
@@ -3091,6 +3570,10 @@ export type OnUpdateCommentSubscription = {
     commentURL?: Array< string | null > | null,
     userID: string,
     postID: string,
+    replies?:  {
+      __typename: "ModelReplyConnection",
+      nextToken?: string | null,
+    } | null,
     user?:  {
       __typename: "User",
       id: string,
@@ -3138,6 +3621,10 @@ export type OnDeleteCommentSubscription = {
     commentURL?: Array< string | null > | null,
     userID: string,
     postID: string,
+    replies?:  {
+      __typename: "ModelReplyConnection",
+      nextToken?: string | null,
+    } | null,
     user?:  {
       __typename: "User",
       id: string,
@@ -3168,6 +3655,141 @@ export type OnDeleteCommentSubscription = {
     createdAt: string,
     updatedAt: string,
     userCommentsId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnCreateReplySubscriptionVariables = {
+  filter?: ModelSubscriptionReplyFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnCreateReplySubscription = {
+  onCreateReply?:  {
+    __typename: "Reply",
+    id: string,
+    content: string,
+    url?: Array< string | null > | null,
+    userID: string,
+    commentID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    comment?:  {
+      __typename: "Comment",
+      id: string,
+      content: string,
+      commentURL?: Array< string | null > | null,
+      userID: string,
+      postID: string,
+      createdAt: string,
+      updatedAt: string,
+      userCommentsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userRepliesId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnUpdateReplySubscriptionVariables = {
+  filter?: ModelSubscriptionReplyFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnUpdateReplySubscription = {
+  onUpdateReply?:  {
+    __typename: "Reply",
+    id: string,
+    content: string,
+    url?: Array< string | null > | null,
+    userID: string,
+    commentID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    comment?:  {
+      __typename: "Comment",
+      id: string,
+      content: string,
+      commentURL?: Array< string | null > | null,
+      userID: string,
+      postID: string,
+      createdAt: string,
+      updatedAt: string,
+      userCommentsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userRepliesId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnDeleteReplySubscriptionVariables = {
+  filter?: ModelSubscriptionReplyFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnDeleteReplySubscription = {
+  onDeleteReply?:  {
+    __typename: "Reply",
+    id: string,
+    content: string,
+    url?: Array< string | null > | null,
+    userID: string,
+    commentID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    comment?:  {
+      __typename: "Comment",
+      id: string,
+      content: string,
+      commentURL?: Array< string | null > | null,
+      userID: string,
+      postID: string,
+      createdAt: string,
+      updatedAt: string,
+      userCommentsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userRepliesId?: string | null,
     owner?: string | null,
   } | null,
 };
@@ -3808,6 +4430,66 @@ export type OnDeleteNotificationSubscription = {
     createdAt: string,
     updatedAt: string,
     userNotificationsId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnCreateReportSubscriptionVariables = {
+  filter?: ModelSubscriptionReportFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnCreateReportSubscription = {
+  onCreateReport?:  {
+    __typename: "Report",
+    id: string,
+    reporterID: string,
+    reportedItemID: string,
+    reportedItemType: string,
+    reason: string,
+    message: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnUpdateReportSubscriptionVariables = {
+  filter?: ModelSubscriptionReportFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnUpdateReportSubscription = {
+  onUpdateReport?:  {
+    __typename: "Report",
+    id: string,
+    reporterID: string,
+    reportedItemID: string,
+    reportedItemType: string,
+    reason: string,
+    message: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnDeleteReportSubscriptionVariables = {
+  filter?: ModelSubscriptionReportFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnDeleteReportSubscription = {
+  onDeleteReport?:  {
+    __typename: "Report",
+    id: string,
+    reporterID: string,
+    reportedItemID: string,
+    reportedItemType: string,
+    reason: string,
+    message: string,
+    createdAt: string,
+    updatedAt: string,
     owner?: string | null,
   } | null,
 };

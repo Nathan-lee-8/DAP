@@ -84,16 +84,11 @@ const ListComments = ({postID, header}: any) => {
         data={comments}
         renderItem={({ item, index }) => {
           return (
-            <KeyboardAvoidingView 
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-            > 
               <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
                 <View style={{ flex: 1 }}>
                   <CommentComp item={item} onFocus={() => handleItemPress(index)} />
                 </View>
               </TouchableWithoutFeedback>
-            </KeyboardAvoidingView>
           )
         }}
         ListEmptyComponent={() => (

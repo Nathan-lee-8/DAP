@@ -17,6 +17,7 @@ type User @model @auth(
   messages: [Message] @hasMany
   groups: [UserGroup] @hasMany
   comments: [Comment] @hasMany
+  replies: [Reply] @hasMany
   notifications: [Notification] @hasMany
 }
 
@@ -52,8 +53,26 @@ type Comment @model @auth(
   commentURL: [String]
   userID: ID! @index(name:"commentsByUser", queryField: "commentsByUser", sortKeyFields: ["createdAt"])
   postID: ID! @index(name:"commentsByPost", queryField: "commentsByPost", sortKeyFields: ["createdAt"])
+  replies: [Reply] @hasMany(indexName: "repliesByComment", fields: ["id"])
   user: User @belongsTo(fields:["userID"])
   post: Post @belongsTo(fields:["postID"])
+  createdAt: AWSDateTime!
+}
+
+type Reply @model @auth(
+  rules: [
+    { allow: owner },
+    { allow: private },
+    { allow: public, operations: [read] }
+  ]
+) {
+  id: ID!
+  content: String!
+  url: [String]
+  userID: ID! @index(name:"repliesByUser", queryField: "repliesByUser", sortKeyFields: ["createdAt"])
+  commentID: ID! @index(name: "repliesByComment", queryField: "repliesByComment", sortKeyFields: ["createdAt"])
+  user: User @belongsTo(fields:["userID"])
+  comment: Comment @belongsTo(fields:["commentID"])
   createdAt: AWSDateTime!
 }
 
@@ -154,4 +173,17 @@ type Notification @model @auth(
   userID: ID! @index(name: "notificationsByUser", queryField: "notificationsByUser", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields:["userID"])
   createdAt: AWSDateTime!
+}
+
+type Report @model @auth(
+  rules: [
+    { allow: owner }
+  ]
+) { 
+  id: ID!
+  reporterID: String!
+  reportedItemID: String!
+  reportedItemType: String!
+  reason: String!
+  message: String!
 }

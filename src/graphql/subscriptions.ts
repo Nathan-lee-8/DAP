@@ -40,6 +40,10 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
       nextToken
       __typename
     }
+    replies {
+      nextToken
+      __typename
+    }
     notifications {
       nextToken
       __typename
@@ -86,6 +90,10 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
       nextToken
       __typename
     }
+    replies {
+      nextToken
+      __typename
+    }
     notifications {
       nextToken
       __typename
@@ -129,6 +137,10 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
       __typename
     }
     comments {
+      nextToken
+      __typename
+    }
+    replies {
       nextToken
       __typename
     }
@@ -315,6 +327,10 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
     commentURL
     userID
     postID
+    replies {
+      nextToken
+      __typename
+    }
     user {
       id
       email
@@ -363,6 +379,10 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
     commentURL
     userID
     postID
+    replies {
+      nextToken
+      __typename
+    }
     user {
       id
       email
@@ -411,6 +431,10 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
     commentURL
     userID
     postID
+    replies {
+      nextToken
+      __typename
+    }
     user {
       id
       email
@@ -448,6 +472,144 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
 ` as GeneratedSubscription<
   APITypes.OnDeleteCommentSubscriptionVariables,
   APITypes.OnDeleteCommentSubscription
+>;
+export const onCreateReply = /* GraphQL */ `subscription OnCreateReply(
+  $filter: ModelSubscriptionReplyFilterInput
+  $owner: String
+) {
+  onCreateReply(filter: $filter, owner: $owner) {
+    id
+    content
+    url
+    userID
+    commentID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comment {
+      id
+      content
+      commentURL
+      userID
+      postID
+      createdAt
+      updatedAt
+      userCommentsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userRepliesId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateReplySubscriptionVariables,
+  APITypes.OnCreateReplySubscription
+>;
+export const onUpdateReply = /* GraphQL */ `subscription OnUpdateReply(
+  $filter: ModelSubscriptionReplyFilterInput
+  $owner: String
+) {
+  onUpdateReply(filter: $filter, owner: $owner) {
+    id
+    content
+    url
+    userID
+    commentID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comment {
+      id
+      content
+      commentURL
+      userID
+      postID
+      createdAt
+      updatedAt
+      userCommentsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userRepliesId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateReplySubscriptionVariables,
+  APITypes.OnUpdateReplySubscription
+>;
+export const onDeleteReply = /* GraphQL */ `subscription OnDeleteReply(
+  $filter: ModelSubscriptionReplyFilterInput
+  $owner: String
+) {
+  onDeleteReply(filter: $filter, owner: $owner) {
+    id
+    content
+    url
+    userID
+    commentID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    comment {
+      id
+      content
+      commentURL
+      userID
+      postID
+      createdAt
+      updatedAt
+      userCommentsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userRepliesId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteReplySubscriptionVariables,
+  APITypes.OnDeleteReplySubscription
 >;
 export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
   $filter: ModelSubscriptionUserChatFilterInput
@@ -679,7 +841,7 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     type
     senderID
     chatID
-    createdAt
+        createdAt
     updatedAt
     userMessagesId
     owner
@@ -1106,4 +1268,67 @@ export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotifica
 ` as GeneratedSubscription<
   APITypes.OnDeleteNotificationSubscriptionVariables,
   APITypes.OnDeleteNotificationSubscription
+>;
+export const onCreateReport = /* GraphQL */ `subscription OnCreateReport(
+  $filter: ModelSubscriptionReportFilterInput
+  $owner: String
+) {
+  onCreateReport(filter: $filter, owner: $owner) {
+    id
+    reporterID
+    reportedItemID
+    reportedItemType
+    reason
+    message
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateReportSubscriptionVariables,
+  APITypes.OnCreateReportSubscription
+>;
+export const onUpdateReport = /* GraphQL */ `subscription OnUpdateReport(
+  $filter: ModelSubscriptionReportFilterInput
+  $owner: String
+) {
+  onUpdateReport(filter: $filter, owner: $owner) {
+    id
+    reporterID
+    reportedItemID
+    reportedItemType
+    reason
+    message
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateReportSubscriptionVariables,
+  APITypes.OnUpdateReportSubscription
+>;
+export const onDeleteReport = /* GraphQL */ `subscription OnDeleteReport(
+  $filter: ModelSubscriptionReportFilterInput
+  $owner: String
+) {
+  onDeleteReport(filter: $filter, owner: $owner) {
+    id
+    reporterID
+    reportedItemID
+    reportedItemType
+    reason
+    message
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteReportSubscriptionVariables,
+  APITypes.OnDeleteReportSubscription
 >;

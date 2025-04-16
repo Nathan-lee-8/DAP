@@ -278,3 +278,15 @@ export const deleteComment = /* GraphQL */ `mutation DeleteComment(
   APITypes.DeleteCommentMutationVariables,
   APITypes.DeleteCommentMutation
 >;
+export const createReport = /* GraphQL */ `mutation CreateReport(
+  $input: CreateReportInput!
+  $condition: ModelReportConditionInput
+) {
+  createReport(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateReportMutationVariables,
+  APITypes.CreateReportMutation
+>;

@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, 
+import { useContext, useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, TextInput,
   Modal } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
@@ -7,7 +7,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { GlobalParamList } from "../types/rootStackParamTypes";
 
 import client from "../client";
-import { deletePost, deleteComment } from "../customGraphql/customMutations";
+import { deletePost, deleteComment, createReport } from "../customGraphql/customMutations";
 import { Post, Group } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
@@ -24,14 +24,18 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ imageModalVisible, setImageModalVisible ] = useState(false);
   const [ commentModalVisible, setCommentModalVisible ] = useState(false);
+  const [ reportModalVisible, setReportModalVisible ] = useState(false);
+  const [ reportMessage, setReportMessage ] = useState("");
+  const [ options, setOptions ] = useState(["Report"]);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  var options = ["Report"];
-  if(item.user?.id === currUser.id || item.userID === currUser.id){
-    options = ["Edit", "Delete"];
-  }
+  useEffect(() => {
+    if(item.user?.id === currUser.id || item.userID === currUser.id){
+      setOptions(["Edit", "Delete"]);
+    }
+  }, [currUser])
 
   const clickPost = (itemID : string) => {
     navigation.navigate('ViewPost', { postID: itemID });
@@ -108,9 +112,32 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
         { text: 'Cancel' },
         { text: 'OK', onPress: () => handleDelete() }
       ])
-    }
-    else{
+    }else if(option === "Report"){
+      setReportModalVisible(true);
+    }else{
       Alert.alert(option, "not implemented");
+    }
+  }
+
+  const handleReport = async () => {
+    try{
+      client.graphql({
+        query: createReport,
+        variables: {
+          input: {
+            reporterID: currUser.id,
+            reportedItemID: item.id,
+            reportedItemType: "Post",
+            reason: reportMessage, // UPDATE REASON WITH TYPES
+            message: reportMessage,
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Success', 'Report sent successfully');
+      setReportModalVisible(false);
+    }catch(error){
+      Alert.alert('Error', 'Failed to send report');
     }
   }
   
@@ -199,6 +226,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
         </TouchableOpacity>
       </TouchableOpacity>
 
+      {/* Option Modal */}
       <Modal 
         transparent={true} 
         visible={modalVisible} 
@@ -226,6 +254,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
         </View>
       </Modal>
 
+      {/* Image Display Modal */}
       <Modal 
         animationType="slide"
         transparent={true} 
@@ -282,6 +311,35 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               </View>
             </Modal>
 
+          </View>
+        </View>
+      </Modal>
+
+      {/* Report Modal */}
+      <Modal 
+        transparent={true} 
+        visible={reportModalVisible} 
+        onRequestClose={() => setReportModalVisible(false)}  
+      >
+        <View style={styles.reportModalOverLay}>
+          <View style={styles.reportModalContainer}>
+            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
+              onPress={() => setReportModalVisible(false)}
+            /> 
+            <Text style={styles.title}>Report</Text>
+            <Text style={styles.reportModalText}>
+              Thank you for keeping DAP communities safe. What is the purpose of this report?
+            </Text>
+            <TextInput
+              value={reportMessage}
+              onChangeText={setReportMessage}
+              style={styles.reportInput}
+              placeholder="Add a note (optional)"
+              multiline={true}
+            />
+            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
+              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

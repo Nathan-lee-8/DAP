@@ -235,7 +235,6 @@ const ChatRoom = ( { route, navigation } : any) => {
       handleDeleteChat();
     }
     setModalVisible(false);
-    console.log(option);
   }
 
   const handleEditChat = () => {
