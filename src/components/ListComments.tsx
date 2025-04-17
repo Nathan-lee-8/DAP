@@ -12,6 +12,7 @@ import { Comment } from "../API";
 import Icon from '@react-native-vector-icons/ionicons';
 import { AuthContext } from '../context/AuthContext';
 import CommentComp from '../components/commentComponent';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ListComments = ({postID, header}: any) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
@@ -32,6 +33,7 @@ const ListComments = ({postID, header}: any) => {
       })
       const commentList = commentData.data.commentsByPost.items;
       setComments(commentList);
+      await AsyncStorage.setItem('Comments', JSON.stringify(commentList));
       console.log('fetched comments');
     } catch (error: any) {
       console.log(error);
@@ -40,8 +42,22 @@ const ListComments = ({postID, header}: any) => {
     }
   }
 
+  const loadComments = async () => {
+    try{
+      const storedComments = await AsyncStorage.getItem('Comments');
+      if(storedComments){
+        setComments(JSON.parse(storedComments));
+        setLoading(false);
+        return;
+      }
+      await fetchComments();
+    } catch (error) {
+      console.log('Error loading cached news feed', error);
+    }
+  }
+
   useEffect(() => {
-    fetchComments();
+    loadComments();
   }, []);
 
   const postComment = async () => {

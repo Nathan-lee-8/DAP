@@ -1,6 +1,6 @@
 import { useContext, useState, useCallback} from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, 
-  KeyboardAvoidingView, ScrollView } from 'react-native';
+  KeyboardAvoidingView, ScrollView, Modal, FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../client'
@@ -11,16 +11,15 @@ import { imagePicker, getImgURI } from '../components/addImg';
 import ImgComponent from '../components/ImgComponent';
 import UserPosts from '../components/UserPosts';
 import styles from '../styles/Styles';
+import Icon from '@react-native-vector-icons/ionicons';
 
 //Update to get user data from authContext
 const EditProfile = () => {
   const [ loading, setLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
+  const [ modalVisible, setModalVisible ] = useState(false);
   const authContext = useContext(AuthContext);
-  if(!authContext){
-    Alert.alert('Error', 'Internal Error');
-    return;
-  }
+  if(!authContext) return;
   const { currUser, setCurrUser } = authContext;
   if(!currUser) return;
      
@@ -54,8 +53,7 @@ const EditProfile = () => {
       setLoading(true);
       var tempProfileURL = tempURL;
       if(tempURL !== currUser.profileURL){
-        const filepath = await getImgURI(tempURL, `public/profilePictures/${currUser.id}/${Date.now()}.jpg`);
-        
+        const filepath = await getImgURI(tempURL, `public/profilePictures/${currUser.id}/${Date.now()}.jpg`);        
         console.log("finished s3 upload");
         tempProfileURL = "https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath;
       }
@@ -95,6 +93,13 @@ const EditProfile = () => {
     }, [])
   );
 
+  const handleOptionButton = ( option: string) => {
+    setModalVisible(false);
+    if(option === 'Edit'){
+      setEditsOn(true);
+    }
+  }
+
   return (
     <View style={styles.container}>
       {loading ? (
@@ -108,9 +113,9 @@ const EditProfile = () => {
               <Text style={styles.postContent}>{currUser.email} </Text>
               <Text style={styles.postContent}>{currUser.description}</Text>
             </View>
-            <TouchableOpacity style={styles.editProfileButton} onPress={() => setEditsOn(true)}>
-              <Text style={styles.buttonTextBlue}>Edit</Text>
-            </TouchableOpacity>
+            <Icon style={styles.editProfileButton} name="ellipsis-horizontal" size={25} 
+              onPress={() => setModalVisible(true)}
+            />
           </View>
           <UserPosts userID={currUser.id} />
         </View>
@@ -159,6 +164,33 @@ const EditProfile = () => {
           </KeyboardAvoidingView>
         </View>
       )}
+      <Modal
+        transparent={true} 
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)} 
+      >
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
+            <FlatList
+              data={["Edit", ]}
+              keyExtractor={(option) => option}
+              style={{height: 'auto', width: '100%'}}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity 
+                  style={styles.optionButton} 
+                  onPress={() => handleOptionButton(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          
+          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonTextBlack}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
     
   );

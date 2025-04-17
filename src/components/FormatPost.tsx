@@ -120,8 +120,9 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   }
 
   const handleReport = async () => {
+    if(reportMessage === "") return; 
     try{
-      client.graphql({
+      await client.graphql({
         query: createReport,
         variables: {
           input: {
@@ -334,7 +335,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               value={reportMessage}
               onChangeText={setReportMessage}
               style={styles.reportInput}
-              placeholder="Add a note (optional)"
+              placeholder="Add a note"
               multiline={true}
             />
             <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
