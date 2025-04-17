@@ -1,10 +1,10 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { View, Text, FlatList, Modal, TouchableOpacity, Alert, TextInput, 
   } from 'react-native';
 
 import client from '../client';
 import { deleteComment } from '../customGraphql/customMutations';
-import { updateComment } from '../customGraphql/customMutations';
+import { updateComment, createReport } from '../customGraphql/customMutations';
 
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../styles/Styles';
@@ -16,15 +16,23 @@ const CommentComp = ( {item, onFocus } : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
   const [ message, setMessage ] = useState(item.content);
+  const [ options, setOptions ] = useState(["Report"]);
+  const [ reportMessage, setReportMessage ] = useState("");
+  const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
-  var options = (item.userID === currUser.id) ? ["Edit", "Delete"] : ["Report"];
+
+  useEffect(() => {
+    if(item.userID === currUser.id){
+      setOptions(["Edit", "Delete"]);
+    }
+  }, [currUser]);
 
   const handleOptionButton = (option: string) => {
+    setModalVisible(false);
     if(option === "Report"){
-      Alert.alert("Not Implemented Yet");
+      setReportModalVisible(true);
     } else if(option === "Edit"){
-      setModalVisible(false);
       setEditsOn(true);
       onFocus();
     } else if(option === "Delete"){
@@ -82,30 +90,74 @@ const CommentComp = ( {item, onFocus } : any) => {
     }
   }
 
+  const handleReport = async () => {
+    if(reportMessage === "") return;
+    try{
+      await client.graphql({
+        query: createReport,
+        variables: {
+          input: {
+            reporterID: currUser.id,
+            reportedItemID: item.id,
+            reportedItemType: "Comment",
+            reason: reportMessage, // UPDATE REASON WITH TYPES
+            message: reportMessage,
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Success', 'Report sent successfully');
+      setReportModalVisible(false);
+    }catch(error){
+      Alert.alert('Error', 'Failed to send report');
+    }
+  }
+
+  const getCompactTimeAgo = (date : any) => {
+    const now = moment();
+    const created = moment(date);
+    const duration = moment.duration(now.diff(created));
+  
+    const weeks = Math.floor(duration.asWeeks());
+    const days = Math.floor(duration.asDays());
+    const hours = Math.floor(duration.asHours());
+    const minutes = Math.floor(duration.asMinutes());
+  
+    if (weeks >= 1) {
+      return `${weeks}w`;
+    } else if (days >= 1) {
+      return `${days}d`;
+    } else if (hours >= 1) {
+      return `${hours}h`;
+    } else {
+      return `${minutes}m`;
+    }
+  };
+
   return(
-    <View style={styles.postContainer}>
+    <View style={styles.commentContainer}>
       <Icon name="ellipsis-horizontal" size={20} style={styles.postOptions} onPress={() => setModalVisible(true)}/>
       <View style={styles.profileSection}>
-        <ImgComponent uri={item?.user?.profileURL || 'defaultUser'} style={styles.postProfileImg}/>
+        <ImgComponent style={styles.commentUserImg} uri={item?.user?.profileURL || 'defaultUser'}/>
         <View style={styles.profileText}>
-          <Text style={styles.postAuthor}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
-          <Text style={styles.postDate}>{moment(item?.createdAt).fromNow()}</Text>
+          <Text>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+          {editsOn ? (
+            <View style={{flexDirection: 'row'}}>
+              <TextInput
+                style={styles.editCommentInput}
+                value={message}
+                onChangeText={setMessage}
+              />
+              <TouchableOpacity style={styles.saveCommentButton} onPress={() => setEditsOn(false)}>
+                <Text style={{color: 'blue'}} onPress={ handleEditComment }>Save</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <Text style={styles.postContent}>{item?.content}</Text>
+          )}
         </View>
+        <Text style={styles.commentDate}>{getCompactTimeAgo(item?.createdAt)}</Text>
       </View>
-      {editsOn ? (
-        <View style={{flexDirection: 'row'}}>
-          <TextInput
-            style={styles.editCommentInput}
-            value={message}
-            onChangeText={setMessage}
-          />
-          <TouchableOpacity style={styles.saveCommentButton} onPress={() => setEditsOn(false)}>
-            <Text style={{color: 'blue'}} onPress={ handleEditComment }>Save</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <Text style={styles.postContent}>{item?.content}</Text>
-      )}
 
       <Modal 
         transparent={true} 
@@ -131,6 +183,34 @@ const CommentComp = ( {item, onFocus } : any) => {
           <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
+        </View>
+      </Modal>
+
+      <Modal 
+        transparent={true} 
+        visible={reportModalVisible} 
+        onRequestClose={() => setReportModalVisible(false)}  
+      >
+        <View style={styles.reportModalOverLay}>
+          <View style={styles.reportModalContainer}>
+            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
+              onPress={() => setReportModalVisible(false)}
+            /> 
+            <Text style={styles.title}>Report</Text>
+            <Text style={styles.reportModalText}>
+              Thank you for keeping DAP communities safe. What is the purpose of this report?
+            </Text>
+            <TextInput
+              value={reportMessage}
+              onChangeText={setReportMessage}
+              style={styles.reportInput}
+              placeholder="Add a note"
+              multiline={true}
+            />
+            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
+              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </Modal>
     </View>

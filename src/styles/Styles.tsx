@@ -411,7 +411,33 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
 
-  /** View Post/comment Section */
+  /** comment Section */
+  commentUserImg: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+  },
+  commentContainer: {
+    marginBottom: 0,
+    padding: 10,
+  },
+  commentDate:{
+    marginLeft: 5,
+    color: '#888',
+  },
+
+
+  editCommentInput:{
+    width: width * .8,
+    backgroundColor: colorBackground,
+    padding: 5
+  },
+  saveCommentButton:{
+    display: 'flex',
+    marginLeft: 10,
+    justifyContent:'center',
+  },
+
   addCommentSection: {
     flexDirection: 'row',
     marginBottom: Platform.OS === 'ios' ? 40 : 0,
@@ -427,16 +453,6 @@ const styles = StyleSheet.create({
   },
   commentButton: {
     marginLeft: 10,
-  },
-  editCommentInput:{
-    width: width * .8,
-    backgroundColor: colorBackground,
-    padding: 5
-  },
-  saveCommentButton:{
-    display: 'flex',
-    marginLeft: 10,
-    justifyContent:'center',
   },
 
   /** Create Post Styles*/
@@ -868,7 +884,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#888',
     padding: 5,
-    backgroundColor: '#f2f7f7',
+    backgroundColor: colorBackground,
+  },
+  reportUserButton:{
+    marginTop: 'auto',
+    width: width * 0.16,
+    borderWidth: 1,
+    borderColor: '#888',
+    padding: 5,
+    backgroundColor: colorBackground,
   },
   viewProfileURL: {
     height: 80, 

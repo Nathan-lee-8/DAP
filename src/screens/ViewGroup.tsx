@@ -1,11 +1,11 @@
 import { useState, useCallback, useContext, useRef } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal,
-  RefreshControl, KeyboardAvoidingView, Platform } from "react-native";
+  RefreshControl, KeyboardAvoidingView, Platform, TextInput } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
 import { getGroup } from '../customGraphql/customQueries';
-import { createUserGroup, deleteUserGroup, deletePost, deleteGroup
+import { createUserGroup, deleteUserGroup, deletePost, deleteGroup, createReport
  } from '../customGraphql/customMutations';
 import { Group, Post, UserGroup, User } from '../API'
 
@@ -26,11 +26,13 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ myUserGroup, setMyUserGroup ] = useState<UserGroup>();
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
+  const [ reportModalVisible, setReportModalVisible ] = useState(false);
+  const [ reportMessage, setReportMessage ] = useState("");
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
   const [ users, setUsers] = useState<User[]>([]);
   const flatListRef = useRef<FlatList>(null);
 
-  const [ options, setOptions ] = useState(['View Members', 'Leave']);
+  const [ options, setOptions ] = useState(['View Members', 'Report', 'Leave']);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -62,10 +64,16 @@ const ViewGroup = ( {route, navigation} : any) => {
       if(posts) setPosts(posts);
       const myUserGroup = groupData.members?.items?.find((member) => member?.user?.id === currUser.id);
       if(myUserGroup) setMyUserGroup(myUserGroup);
-      if(myUserGroup?.role  === 'Owner' || myUserGroup?.role === 'Admin'){
+      if(!myUserGroup){
+        if(group?.isPublic){
+          setOptions(['View Members', 'Report']);
+        }else {
+          setOptions(['Report']);
+        }
+      }else if(myUserGroup?.role  === 'Owner' || myUserGroup?.role === 'Admin'){
         setOptions(['View Members', 'Invite', 'Edit', 'Delete'])
       }else if(myUserGroup?.role === 'Admin'){
-        setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
+        setOptions(['View Members', 'Invite', 'Edit', 'Report', 'Leave'])
       }
     } catch (error: any) {
       console.log(error);
@@ -87,7 +95,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   const handleJoinGroup = async () => {
     if(myUserGroup !== undefined) return;
 
-    if(group?.isPublic === null || group?.isPublic){
+    if(group?.isPublic){
       try{
         await client.graphql({
           query: createUserGroup,
@@ -123,6 +131,10 @@ const ViewGroup = ( {route, navigation} : any) => {
       handleLeaveGroup();
     }else if(option === 'Delete'){
       handleDeleteGroup();
+    }else if(option === 'Report'){
+      setReportModalVisible(true);
+    }else{
+      Alert.alert(option, 'Not implemented yet');
     }
   }
 
@@ -346,7 +358,7 @@ const ViewGroup = ( {route, navigation} : any) => {
           <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
             {myUserGroup !== undefined ? (
               <Text style={{textAlign: 'center'}}>Joined</Text>
-            ) : group?.isPublic !== null && !group?.isPublic ? (
+            ) : !group?.isPublic ? (
               <Text style={{textAlign: 'center', fontSize: 12}}>Request Join</Text>
             ) : (
               <Text style={{textAlign: 'center'}}>Join Group</Text>
@@ -361,8 +373,31 @@ const ViewGroup = ( {route, navigation} : any) => {
       </View>
     )
   }
+
+  const handleReport = async () => {
+    if(reportMessage === "") return;
+    try{
+      await client.graphql({
+        query: createReport,
+        variables: {
+          input: {
+            reporterID: currUser.id,
+            reportedItemID: groupID,
+            reportedItemType: "Group",
+            reason: reportMessage, // UPDATE REASON WITH TYPES
+            message: reportMessage,
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Success', 'Report sent successfully');
+      setReportModalVisible(false);
+    }catch(error){
+      Alert.alert('Error', 'Failed to send report');
+    }
+  }
   
-  if(group?.isPublic !== null && !group?.isPublic && myUserGroup === undefined){
+  if(!group?.isPublic && myUserGroup === undefined){
     return (
       <View style={styles.container}>
         {headerComp()}
@@ -396,6 +431,9 @@ const ViewGroup = ( {route, navigation} : any) => {
           />
         }
       />
+
+      
+      {/* Options Modal */}
       <Modal
         transparent={true} 
         visible={modalVisible}
@@ -424,6 +462,7 @@ const ViewGroup = ( {route, navigation} : any) => {
         </View>
       </Modal>
 
+      {/* Invite User Modal */}
       <Modal 
         transparent={true} 
         visible={inviteModalVisible} 
@@ -465,6 +504,35 @@ const ViewGroup = ( {route, navigation} : any) => {
                 <Text style={styles.buttonTextWhite}>Invite</Text>
               </TouchableOpacity>
             </KeyboardAvoidingView>  
+          </View>
+        </View>
+      </Modal>
+
+      {/* Report Modal */}
+      <Modal 
+        transparent={true} 
+        visible={reportModalVisible} 
+        onRequestClose={() => setReportModalVisible(false)}  
+      >
+        <View style={styles.reportModalOverLay}>
+          <View style={styles.reportModalContainer}>
+            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
+              onPress={() => setReportModalVisible(false)}
+            /> 
+            <Text style={styles.title}>Report</Text>
+            <Text style={styles.reportModalText}>
+              Thank you for keeping DAP communities safe. What is the purpose of this report?
+            </Text>
+            <TextInput
+              value={reportMessage}
+              onChangeText={setReportMessage}
+              style={styles.reportInput}
+              placeholder="Add a note"
+              multiline={true}
+            />
+            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
+              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
