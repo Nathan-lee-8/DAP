@@ -413,29 +413,27 @@ const styles = StyleSheet.create({
 
   /** comment Section */
   commentUserImg: {
-    height: 40,
-    width: 40,
-    borderRadius: 20,
+    marginTop: 5,
+    height: 35,
+    width: 35,
+    borderRadius: 18,
   },
   commentContainer: {
-    marginBottom: 0,
-    padding: 10,
+    marginTop: 5,
+    paddingHorizontal: 10,
   },
   commentDate:{
     marginLeft: 5,
     color: '#888',
   },
-
-
-  editCommentInput:{
-    width: width * .8,
-    backgroundColor: colorBackground,
-    padding: 5
+  replyText:{
+    fontWeight:400,
+    fontSize: 12
   },
-  saveCommentButton:{
-    display: 'flex',
-    marginLeft: 10,
-    justifyContent:'center',
+  editCommentInput:{
+    backgroundColor: colorBackground,
+    padding: 5,
+    width: 0.65 * width
   },
 
   addCommentSection: {

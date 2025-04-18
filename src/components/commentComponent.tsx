@@ -4,7 +4,7 @@ import { View, Text, FlatList, Modal, TouchableOpacity, Alert, TextInput,
 
 import client from '../client';
 import { deleteComment } from '../customGraphql/customMutations';
-import { updateComment, createReport } from '../customGraphql/customMutations';
+import { createReport } from '../customGraphql/customMutations';
 
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../styles/Styles';
@@ -12,10 +12,8 @@ import moment from 'moment';
 import ImgComponent from './ImgComponent';
 import { AuthContext } from '../context/AuthContext';
 
-const CommentComp = ( {item, onFocus } : any) => {
+const CommentComp = ( {item, editComment, replyComment } : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
-  const [ editsOn, setEditsOn ] = useState(false);
-  const [ message, setMessage ] = useState(item.content);
   const [ options, setOptions ] = useState(["Report"]);
   const [ reportMessage, setReportMessage ] = useState("");
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
@@ -33,8 +31,7 @@ const CommentComp = ( {item, onFocus } : any) => {
     if(option === "Report"){
       setReportModalVisible(true);
     } else if(option === "Edit"){
-      setEditsOn(true);
-      onFocus();
+      editComment(item);
     } else if(option === "Delete"){
       Alert.alert(
         "Delete",
@@ -67,26 +64,6 @@ const CommentComp = ( {item, onFocus } : any) => {
       Alert.alert('Success', "Comment deleted");
     } catch (error) {
       Alert.alert('Error', "Error deleting comment")
-    }
-  }
-
-  const handleEditComment = async () => {
-    setEditsOn(false);
-    if(!message || message === item.content) return;
-    try{
-      await client.graphql({
-        query: updateComment,
-        variables: {
-          input: {
-            id: item.id,
-            content: message
-          }
-        },
-        authMode: 'userPool'
-      })
-      Alert.alert('Success', "Comment updated");
-    } catch (error) {
-      Alert.alert('Error', "Error updating comment")
     }
   }
 
@@ -140,23 +117,15 @@ const CommentComp = ( {item, onFocus } : any) => {
       <View style={styles.profileSection}>
         <ImgComponent style={styles.commentUserImg} uri={item?.user?.profileURL || 'defaultUser'}/>
         <View style={styles.profileText}>
-          <Text>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
-          {editsOn ? (
-            <View style={{flexDirection: 'row'}}>
-              <TextInput
-                style={styles.editCommentInput}
-                value={message}
-                onChangeText={setMessage}
-              />
-              <TouchableOpacity style={styles.saveCommentButton} onPress={() => setEditsOn(false)}>
-                <Text style={{color: 'blue'}} onPress={ handleEditComment }>Save</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <Text style={styles.postContent}>{item?.content}</Text>
-          )}
+          <View style={{flexDirection: 'row'}}>
+            <Text style={[styles.bold, {fontWeight: 500}]}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
+            <Text style={styles.commentDate}>{getCompactTimeAgo(item?.createdAt)}</Text>
+          </View>
+          <Text style={styles.postContent}>{item?.content}</Text>
+          <TouchableOpacity onPress={() => replyComment(item)}>
+            <Text style={styles.replyText}>Reply</Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.commentDate}>{getCompactTimeAgo(item?.createdAt)}</Text>
       </View>
 
       <Modal 

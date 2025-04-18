@@ -85,11 +85,13 @@ const ListComments = ({postID, header}: any) => {
     }
   }
 
-  const handleItemPress = (index: number) => {
-    if(index - comments.length < 2){
-      flatListRef.current?.scrollToEnd();
-    }
-  };
+  const handleEdit = (item: any) => {
+    console.log(item);
+  }
+
+  const handleReply = (item: any) => {
+    console.log(item);
+  }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
@@ -98,13 +100,13 @@ const ListComments = ({postID, header}: any) => {
       <FlatList
         ref={flatListRef}
         data={comments}
-        renderItem={({ item, index }) => {
+        renderItem={({ item }) => {
           return (
-              <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                <View style={{ flex: 1 }}>
-                  <CommentComp item={item} onFocus={() => handleItemPress(index)} />
-                </View>
-              </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <View style={{ flex: 1 }}>
+                <CommentComp item={item} editComment={handleEdit} replyComment={handleReply}/>
+              </View>
+            </TouchableWithoutFeedback>
           )
         }}
         ListEmptyComponent={() => (
