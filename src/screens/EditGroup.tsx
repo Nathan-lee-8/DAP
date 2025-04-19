@@ -9,6 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 import ImgComponent from '../components/ImgComponent';
 import { imagePicker, getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
+import Icon from '@react-native-vector-icons/ionicons';
 
 const EditGroup = ( {route, navigation} : any ) => {
   const group = route.params.group;
@@ -76,32 +77,42 @@ const EditGroup = ( {route, navigation} : any ) => {
           </View>
         </TouchableOpacity>
         <TextInput
-          style={[styles.input, {marginBottom: 5}]}
+          style={[styles.input, {marginTop: 10}]}
           value={name}
           placeholder={name}
           onChangeText={setName}
         />
         <TextInput
-          style={[styles.longInput, {marginBottom: 0}]}
+          style={styles.longInput}
           value={description}
           multiline={true}
           placeholder={description || 'No description'}
           onChangeText={setDescription}
         />
         <View style={styles.groupPrivacyContainer}>
-          <Text style={styles.privacyText}>Group Privacy Options:   </Text>
-          <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(false)}>
-            <View 
-              style={isPublic !== null && !isPublic ? styles.privacyIconSelected : null}
-            />
+          <Text style={[styles.privacyText, {padding: 10}]}>Visibility</Text>
+
+          <TouchableOpacity style={styles.privacyOptionContainer} onPress={() => setIsPublic(true)}>
+            <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-open" size={20}/>
+            <View style={{flexDirection: 'column'}}>
+              <Text style={styles.privacyText}>Public</Text>
+              <Text>Anyone can find and join.</Text>
+            </View>
+            <View style={styles.privacyIcon}>
+              <View style={isPublic ? styles.privacyIconSelected : null}/>
+            </View>
           </TouchableOpacity>
-          <Text style={styles.privacyText}>Private</Text>
-          <TouchableOpacity style={styles.privacyIcon} onPress={() => setIsPublic(true)}>
-            <View 
-              style={isPublic === null || isPublic ? styles.privacyIconSelected : null}
-            />
+
+          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setIsPublic(false)}>
+            <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-closed" size={20}/>
+            <View style={{flexDirection: 'column'}}>
+              <Text style={styles.privacyText}>Private</Text>
+              <Text>Anyone can find. Request to join.</Text>
+            </View>
+            <View style={styles.privacyIcon}>
+              <View style={!isPublic ? styles.privacyIconSelected : null}/>
+            </View>
           </TouchableOpacity>
-          <Text style={styles.privacyText}>Public</Text>
         </View>
       </ScrollView>
       <KeyboardAvoidingView

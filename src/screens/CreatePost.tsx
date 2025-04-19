@@ -28,7 +28,6 @@ const CreatePost = ({route, navigation}: any) => {
     }
     var uri = await imagePicker();
     if(uri === null){
-      Alert.alert('No image selected')
       return;
     };
     setFilepaths([...filepaths.filter((item) => item !== null), uri]);
@@ -102,9 +101,13 @@ const CreatePost = ({route, navigation}: any) => {
           value={content}
           onChangeText={setContent}
         />
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity onPress={getFilePath} style={{marginLeft: 'auto'}}>
-            <Icon name="image-outline" size={30} color={"blue"}/>
+        <View style={styles.postFooter}>
+          <TouchableOpacity style={styles.addPostImgButton} onPress={getFilePath}>
+            <Text style={styles.buttonTextBlack}>Photos</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.createPostButton} onPress={sendPost}>
+            <Text style={styles.buttonTextWhite}>Post</Text>
           </TouchableOpacity>
         </View>
         <View style={{paddingLeft: 10}}>
@@ -117,22 +120,13 @@ const CreatePost = ({route, navigation}: any) => {
                 <ImgComponent uri={item || 'defaultUser'} 
                   style={{height: 90, width: 90}} 
                 />
-                <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveItem(item)}>
-                  <Icon name="remove-circle-outline" size={20}/>
-                </TouchableOpacity>
+                <Icon style={styles.removeIcon} name="remove-circle-outline" size={20}
+                  onPress={() => handleRemoveItem(item)}
+                />
               </View>
             )}
           />
         </View>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-        >   
-          <TouchableOpacity onPress={sendPost} style={styles.buttonBlack}>
-            <Text style={styles.buttonTextWhite}>Create</Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
       </View>
     </TouchableWithoutFeedback>
   )

@@ -18,21 +18,23 @@ const styles = StyleSheet.create({
   },
   buttonBlack: {
     alignSelf: 'center',
-    width: '100%',
+    width: width - 20,
     height: 50,
     backgroundColor: 'black',
     justifyContent: 'center',
     margin: 5,
+    marginHorizontal: 10,
   },
   buttonWhite: {
     alignSelf: 'center',
-    width: '100%', 
+    width: width - 20,
     height: 50,
     borderWidth: 1,
     borderColor: 'black',
     backgroundColor: 'white',
     justifyContent: 'center',
-    margin: 5
+    margin: 5,
+    marginHorizontal: 10,
   },
   buttonTextBlack: { 
     fontSize: 14,
@@ -98,7 +100,8 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     paddingHorizontal: 8,
-    marginBottom: 10,
+    margin: 10,
+    marginTop: 0,
     borderRadius: 5,
     backgroundColor: colorPrimary
   },
@@ -107,7 +110,8 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
     paddingHorizontal: 8,
-    marginBottom: 10,
+    margin: 10,
+    marginTop: 0,
     borderRadius: 5,
     textAlignVertical: 'top',
     backgroundColor: colorPrimary
@@ -128,8 +132,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   label: {
-    marginBottom: 8,
-    marginLeft: 2,
+    marginBottom: 5,
+    marginLeft: 12,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -430,24 +434,50 @@ const styles = StyleSheet.create({
     fontWeight:400,
     fontSize: 12
   },
-  editCommentInput:{
-    backgroundColor: colorBackground,
-    padding: 5,
-    width: 0.65 * width
-  },
 
   addCommentSection: {
-    flexDirection: 'row',
     marginBottom: Platform.OS === 'ios' ? 40 : 0,
+    backgroundColor: colorPrimary,
+    padding: 10,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+  },
+  inputTargetContainer:{
+    backgroundColor: colorBackground,
+    marginRight: 40,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    borderColor: '#ccc',
+    borderTopWidth: 1,
+    borderRightWidth: 1,
+    borderLeftWidth: 1,
+  }, 
+  inputTargetText:{
+    fontSize: 14,
+    margin: 7,
+    marginLeft: 12,
+    paddingRight: 25
   },
   commentInput: {
     height: 35,
-    width: '90%',
+    flex: 1,
     borderColor: '#ccc',
     borderWidth: 1,
     backgroundColor: colorPrimary,
-    borderRadius: 5,
+    borderRadius: 20,
     padding: 7,
+    paddingLeft: 12,
+  },
+  commentInputUnrounded: {
+    height: 35,
+    flex: 1,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    backgroundColor: colorPrimary,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    padding: 7,
+    paddingLeft: 12,
   },
   commentButton: {
     marginLeft: 10,
@@ -455,14 +485,29 @@ const styles = StyleSheet.create({
 
   /** Create Post Styles*/
   contentInput: {
-    height: 120,
+    height: 170,
     borderColor: '#ccc',
     borderWidth: 1,
     marginTop: 40,
+    marginHorizontal: 10,
     paddingHorizontal: 8,
-    borderRadius: 5,
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
     textAlignVertical: 'top',
     backgroundColor: colorPrimary
+  },
+  postFooter:{
+    backgroundColor: colorPrimary,
+    height: 50,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
+    borderLeftWidth: 1,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderColor: 'lightgrey',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 10
   },
   postImageContainer: {
     paddingRight: 10,
@@ -475,6 +520,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
     paddingBottom: 5,
     zIndex: 1
+  },
+  addPostImgButton:{
+    padding: 10,
+    paddingVertical: 5,
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  createPostButton: {
+    padding: 10,
+    paddingVertical: 5,
+    marginRight: 10,
+    marginLeft: 'auto',
+    backgroundColor: 'black',
+    borderRadius: 5,
   },
 
   /** List Messages and Groups styles */
@@ -584,18 +644,18 @@ const styles = StyleSheet.create({
   /** Groups Section */
   groupImg: {
     width: '100%',
-    height: 200,
+    height: 180,
     alignSelf: 'center',
   },
   groupImgContainer: {
     width: '100%',
-    height: 200,
+    height: 180,
     alignSelf: 'center',
   },
   backContainer: {
     flexDirection: 'row',
     position: 'absolute',
-    top: Platform.OS === 'ios'? '10%' : '5%',
+    top: Platform.OS === 'ios'? '10%' : 20,
     left: 10,
     zIndex: 1,
   },
@@ -715,7 +775,16 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
   groupPrivacyContainer:{
+    backgroundColor: colorPrimary,
+    marginHorizontal: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5
+  },
+  privacyOptionContainer: {
     flexDirection: 'row',
+    borderTopWidth: 1,
+    borderColor: '#ccc',
     padding: 10,
   },
   privacyText:{
@@ -727,7 +796,7 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     margin: 5,
-    marginLeft: 15,
+    marginLeft: 'auto',
     backgroundColor: 'lightgrey',
     alignSelf: 'center',
     justifyContent: 'center'

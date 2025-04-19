@@ -503,6 +503,21 @@ export const commentsByPost = /* GraphQL */ `query CommentsByPost(
       }
       postID
       createdAt
+      replies{
+        items{
+          id
+          content
+          userID
+          user{
+            id
+            firstname
+            lastname
+            profileURL
+          }
+          createdAt
+        }
+        nextToken
+      }
     }
     nextToken
   }

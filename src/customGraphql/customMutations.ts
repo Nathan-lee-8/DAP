@@ -273,10 +273,22 @@ export const deleteComment = /* GraphQL */ `mutation DeleteComment(
   deleteComment(input: $input, condition: $condition) {
     id
   }
-}
+}s
 ` as GeneratedMutation<
   APITypes.DeleteCommentMutationVariables,
   APITypes.DeleteCommentMutation
+>;
+export const createReply = /* GraphQL */ `mutation CreateReply(
+  $input: CreateReplyInput!
+  $condition: ModelReplyConditionInput
+) {
+  createReply(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateReplyMutationVariables,
+  APITypes.CreateReplyMutation
 >;
 export const createReport = /* GraphQL */ `mutation CreateReport(
   $input: CreateReportInput!

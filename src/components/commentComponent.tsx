@@ -12,7 +12,7 @@ import moment from 'moment';
 import ImgComponent from './ImgComponent';
 import { AuthContext } from '../context/AuthContext';
 
-const CommentComp = ( {item, editComment, replyComment } : any) => {
+const CommentComp = ( {item, handleKeyboard } : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ options, setOptions ] = useState(["Report"]);
   const [ reportMessage, setReportMessage ] = useState("");
@@ -31,7 +31,7 @@ const CommentComp = ( {item, editComment, replyComment } : any) => {
     if(option === "Report"){
       setReportModalVisible(true);
     } else if(option === "Edit"){
-      editComment(item);
+      handleKeyboard(item, "Edit");
     } else if(option === "Delete"){
       Alert.alert(
         "Delete",
@@ -90,16 +90,16 @@ const CommentComp = ( {item, editComment, replyComment } : any) => {
     }
   }
 
-  const getCompactTimeAgo = (date : any) => {
+  const getCompactTimeAgo = (date : string) => {
     const now = moment();
-    const created = moment(date);
+    const created = moment.utc(date).local();
     const duration = moment.duration(now.diff(created));
-  
+ 
     const weeks = Math.floor(duration.asWeeks());
     const days = Math.floor(duration.asDays());
     const hours = Math.floor(duration.asHours());
     const minutes = Math.floor(duration.asMinutes());
-  
+    
     if (weeks >= 1) {
       return `${weeks}w`;
     } else if (days >= 1) {
@@ -119,14 +119,34 @@ const CommentComp = ( {item, editComment, replyComment } : any) => {
         <View style={styles.profileText}>
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.bold, {fontWeight: 500}]}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
-            <Text style={styles.commentDate}>{getCompactTimeAgo(item?.createdAt)}</Text>
+            <Text style={styles.commentDate}>{getCompactTimeAgo(item.createdAt)}</Text>
           </View>
           <Text style={styles.postContent}>{item?.content}</Text>
-          <TouchableOpacity onPress={() => replyComment(item)}>
+          <TouchableOpacity onPress={() => handleKeyboard(item, "Reply")}>
             <Text style={styles.replyText}>Reply</Text>
           </TouchableOpacity>
         </View>
       </View>
+      <FlatList
+        data={item.replies.items}
+        renderItem={(reply) => {
+          const replyData = reply.item;
+          return(
+            <View style={{marginLeft: 40}}>
+              <View style={styles.profileSection}>
+                <ImgComponent uri={replyData?.user?.profileURL || 'defaultUser'}/>
+                <View style={styles.profileText}>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={[styles.bold, {fontWeight: 500}]}>{replyData?.user?.firstname + " " + replyData?.user?.lastname}</Text>
+                    <Text style={styles.commentDate}>{getCompactTimeAgo(replyData.createdAt)}</Text>
+                  </View>
+                  <Text style={styles.postContent}>{replyData?.content}</Text>
+                </View>
+              </View>
+            </View>
+          )
+        }}
+      />
 
       <Modal 
         transparent={true} 
