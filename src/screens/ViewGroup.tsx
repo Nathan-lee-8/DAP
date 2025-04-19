@@ -300,6 +300,29 @@ const ViewGroup = ( {route, navigation} : any) => {
     });
   };
 
+  const handleReport = async () => {
+    if(reportMessage === "") return;
+    try{
+      await client.graphql({
+        query: createReport,
+        variables: {
+          input: {
+            reporterID: currUser.id,
+            reportedItemID: groupID,
+            reportedItemType: "Group",
+            reason: reportMessage, // UPDATE REASON WITH TYPES
+            message: reportMessage,
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Success', 'Report sent successfully');
+      setReportModalVisible(false);
+    }catch(error){
+      Alert.alert('Error', 'Failed to send report');
+    }
+  }
+
   if(loading){
     return <ActivityIndicator size="large" color="#0000ff" />
   }
@@ -307,19 +330,6 @@ const ViewGroup = ( {route, navigation} : any) => {
   const headerComp = () => {
     return( 
       <View>
-        <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={25} style={{alignSelf: 'center'}}/>
-          <Text style={styles.groupHeader}>Groups</Text>
-        </TouchableOpacity>
-        <View style={styles.groupImgContainer}>
-          <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
-          <LinearGradient
-            colors={['rgba(255, 255, 255, 0.94)', 'rgba(255, 255, 255, 0.1)', 'rgba(0,0,0,0)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.gradient}
-          />
-        </View>
         <View style={styles.groupInfoContainer}>
           <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
             color={'black'}
@@ -373,33 +383,23 @@ const ViewGroup = ( {route, navigation} : any) => {
       </View>
     )
   }
-
-  const handleReport = async () => {
-    if(reportMessage === "") return;
-    try{
-      await client.graphql({
-        query: createReport,
-        variables: {
-          input: {
-            reporterID: currUser.id,
-            reportedItemID: groupID,
-            reportedItemType: "Group",
-            reason: reportMessage, // UPDATE REASON WITH TYPES
-            message: reportMessage,
-          }
-        },
-        authMode: 'userPool'
-      })
-      Alert.alert('Success', 'Report sent successfully');
-      setReportModalVisible(false);
-    }catch(error){
-      Alert.alert('Error', 'Failed to send report');
-    }
-  }
   
   if(!group?.isPublic && myUserGroup === undefined){
     return (
       <View style={styles.container}>
+      <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-back" size={25} style={{alignSelf: 'center'}}/>
+        <Text style={styles.groupHeader}>Groups</Text>
+      </TouchableOpacity>
+      <View style={styles.groupImgContainer}>
+        <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0.94)', 'rgba(255, 255, 255, 0.1)', 'rgba(0,0,0,0)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.gradient}
+        />
+      </View>
         {headerComp()}
         <Text style={styles.contentText}>Private Group</Text>
       </View>
@@ -408,6 +408,19 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>
+        <Icon name="arrow-back" size={25} style={{alignSelf: 'center'}}/>
+        <Text style={styles.groupHeader}>Groups</Text>
+      </TouchableOpacity>
+      <View style={styles.groupImgContainer}>
+        <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0.94)', 'rgba(255, 255, 255, 0.1)', 'rgba(0,0,0,0)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.gradient}
+        />
+      </View>
       <FlatList
         ListHeaderComponent={headerComp}
         data={post}

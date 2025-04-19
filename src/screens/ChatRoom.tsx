@@ -505,7 +505,7 @@ const ChatRoom = ( { route, navigation } : any) => {
       />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.addCommentSection}
+        style={[styles.addCommentSection, {flexDirection: 'row'}]}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       > 
         <TextInput
