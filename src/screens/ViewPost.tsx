@@ -40,7 +40,7 @@ const ViewPost = ( {route} : any) => {
 
   const header = () => {
     return (
-      <View>
+      <View style={{marginBottom: 5}}>
         {postData && <FormatPost item={postData} groupData={postData?.group ? [postData.group] : []}/>}
       </View> 
     )

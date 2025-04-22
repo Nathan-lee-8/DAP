@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, TextInput,
-  Modal } from "react-native";
+  Modal, Platform, KeyboardAvoidingView} from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -305,10 +305,14 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
             >
               <View style={styles.commentModalOverlay}>
                 <TouchableOpacity style={styles.commentModalHeader} onPress={() => setCommentModalVisible(false)}/>
-                <View style={styles.commentModalContainer}>
+                <KeyboardAvoidingView 
+                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                  style={styles.commentModalContainer}
+                  keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+                >
                   <Text style={styles.title}>Comments</Text>
                   <Comments postID={item.id}/>
-                </View>
+                </KeyboardAvoidingView>
               </View>
             </Modal>
 
