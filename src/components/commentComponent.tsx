@@ -1,10 +1,9 @@
 import { useState, useContext, useEffect } from 'react';
 import { View, Text, FlatList, Modal, TouchableOpacity, Alert, TextInput, 
-  } from 'react-native';
+  Pressable } from 'react-native';
 
 import client from '../client';
-import { deleteComment } from '../customGraphql/customMutations';
-import { createReport } from '../customGraphql/customMutations';
+import { deleteComment, createReport, deleteReply } from '../customGraphql/customMutations';
 
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../styles/Styles';
@@ -12,26 +11,22 @@ import moment from 'moment';
 import ImgComponent from './ImgComponent';
 import { AuthContext } from '../context/AuthContext';
 
-const CommentComp = ( {item, handleKeyboard } : any) => {
+const CommentComp = ( {item, handleKeyboard, refreshComments } : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ options, setOptions ] = useState(["Report"]);
   const [ reportMessage, setReportMessage ] = useState("");
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
+  const [ itemPressed, setItemPressed ] = useState<any>();
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
-
-  useEffect(() => {
-    if(item.userID === currUser.id){
-      setOptions(["Edit", "Delete"]);
-    }
-  }, [currUser]);
 
   const handleOptionButton = (option: string) => {
     setModalVisible(false);
     if(option === "Report"){
       setReportModalVisible(true);
     } else if(option === "Edit"){
-      handleKeyboard(item, "Edit");
+      if(itemPressed) handleKeyboard(itemPressed, "Edit Reply")
+      else handleKeyboard(item, "Edit");
     } else if(option === "Delete"){
       Alert.alert(
         "Delete",
@@ -52,31 +47,46 @@ const CommentComp = ( {item, handleKeyboard } : any) => {
 
   const handleDeleteComment = async (itemID: string) => {
     try{
-      await client.graphql({
-        query: deleteComment,
-        variables: {
-          input: {
-            id: itemID
-          }
-        },
-        authMode: 'userPool'
-      })
+      if(itemPressed){
+        await client.graphql({
+          query: deleteReply,
+          variables: {
+            input: {
+              id: itemPressed.id
+            }
+          },
+          authMode: 'userPool'
+        })
+      }else{
+        await client.graphql({
+          query: deleteComment,
+          variables: {
+            input: {
+              id: itemID
+            }
+          },
+          authMode: 'userPool'
+        })
+      }
       Alert.alert('Success', "Comment deleted");
+      refreshComments();
     } catch (error) {
-      Alert.alert('Error', "Error deleting comment")
+      Alert.alert('Error', "Error deleting comment");
     }
   }
 
   const handleReport = async () => {
     if(reportMessage === "") return;
+    var itemType = (itemPressed) ?  "Reply" : "Comment";
+    var currItemID = (itemPressed) ? itemPressed.id : item.id;
     try{
       await client.graphql({
         query: createReport,
         variables: {
           input: {
             reporterID: currUser.id,
-            reportedItemID: item.id,
-            reportedItemType: "Comment",
+            reportedItemID: currItemID,
+            reportedItemType: itemType,
             reason: reportMessage, // UPDATE REASON WITH TYPES
             message: reportMessage,
           }
@@ -88,6 +98,26 @@ const CommentComp = ( {item, handleKeyboard } : any) => {
     }catch(error){
       Alert.alert('Error', 'Failed to send report');
     }
+  }
+
+  const handleReplyLongPress = ( replyData: any) => { 
+    if(replyData.userID === currUser.id){
+      setOptions(["Edit", "Delete"]);
+    } else {
+      setOptions(["Report"]);
+    }
+    setItemPressed(replyData);
+    setModalVisible(true);
+  }
+
+  const handleCommentPress = () => {
+    if(item.userID === currUser.id){
+      setOptions(["Edit", "Delete"]);
+    
+    }else{
+      setOptions(["Report"]);
+    }
+    setModalVisible(true);
   }
 
   const getCompactTimeAgo = (date : string) => {
@@ -113,26 +143,35 @@ const CommentComp = ( {item, handleKeyboard } : any) => {
 
   return(
     <View style={styles.commentContainer}>
-      <Icon name="ellipsis-horizontal" size={20} style={styles.postOptions} onPress={() => setModalVisible(true)}/>
-      <View style={styles.profileSection}>
+      <Pressable onLongPress={handleCommentPress}
+        style={({ pressed }) => [
+          styles.profileSection,
+          { opacity: pressed ? 0.5 : 1 }
+        ]}
+        >
         <ImgComponent style={styles.commentUserImg} uri={item?.user?.profileURL || 'defaultUser'}/>
         <View style={styles.profileText}>
           <View style={{flexDirection: 'row'}}>
             <Text style={[styles.bold, {fontWeight: 500}]}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
             <Text style={styles.commentDate}>{getCompactTimeAgo(item.createdAt)}</Text>
           </View>
-          <Text style={styles.postContent}>{item?.content}</Text>
-          <TouchableOpacity onPress={() => handleKeyboard(item, "Reply")}>
+          <Text style={[styles.postContent, {marginBottom: 0}]}>{item?.content}</Text>
+          <TouchableOpacity style={{marginBottom:5}} onPress={() => handleKeyboard(item, "Reply")}>
             <Text style={styles.replyText}>Reply</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </Pressable>
       <FlatList
         data={item.replies.items}
         renderItem={(reply) => {
           const replyData = reply.item;
           return(
-            <View style={{marginLeft: 40}}>
+            <Pressable onLongPress={() => handleReplyLongPress(replyData)}
+              style={({ pressed }) => [
+                {marginLeft: 40},
+                { opacity: pressed ? 0.5 : 1 }
+              ]}
+            >
               <View style={styles.profileSection}>
                 <ImgComponent uri={replyData?.user?.profileURL || 'defaultUser'}/>
                 <View style={styles.profileText}>
@@ -141,9 +180,12 @@ const CommentComp = ( {item, handleKeyboard } : any) => {
                     <Text style={styles.commentDate}>{getCompactTimeAgo(replyData.createdAt)}</Text>
                   </View>
                   <Text style={styles.postContent}>{replyData?.content}</Text>
+                  <TouchableOpacity style={{marginBottom:5}} onPress={() => handleKeyboard(item, "Reply")}>
+                    <Text style={styles.replyText}>Reply</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-            </View>
+            </Pressable>
           )
         }}
       />

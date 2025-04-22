@@ -1,33 +1,32 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
-  Modal } from "react-native";
+  Modal, TextInput } from "react-native";
   
 import client from "../client";
-import {  createChat, createUserChat, deleteUserGroup
- } from "../customGraphql/customMutations";
+import {  createChat, createUserChat, deleteUserGroup, createReport,
+  updateUserGroup } from "../customGraphql/customMutations";
 import { UserGroup } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles';
 import ImgComponent from "../components/ImgComponent";
+import Icon from "@react-native-vector-icons/ionicons";
 
 const ViewMembers = ( {route, navigation} : any) => {
   const group = route.params.group;
-  const userGroups = group.members.items;
+  const [ userGroups, setUserGroups ] = useState(group.members.items);
   const [ loading, setLoading ] = useState(false);
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ selectedUser, setSelectedUser ] = useState<UserGroup>();
   const [ options, setOptions ] = useState(['View Profile', 'Report']);
+  const [ reportModalVisible, setReportModalVisible ] = useState(false);
+  const [ reportMessage, setReportMessage ] = useState("");
+  const [ roleModalVisible, setRoleModalVisible ] = useState(false);
+  const [ roleOptions, setRoleOptions ] = useState(['Owner', 'Admin', 'Member'])
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
   const myUserGroup = userGroups.find((item: any) => item?.userID === currUser.id);
-
-  useEffect(() => {
-    if(myUserGroup.role === 'Admin' || myUserGroup.role === 'Owner'){
-      setOptions(['View Profile', 'Edit Role', 'Remove']);
-    }
-  }, [myUserGroup]);
 
   const handleCreateChat = async () => {
     try {
@@ -77,19 +76,31 @@ const ViewMembers = ( {route, navigation} : any) => {
   }
 
   const handleUserPressed = (item: UserGroup) => {
+    if(item.userID === currUser.id) setOptions(['Edit Role']);
+    else if(!myUserGroup){
+      setOptions(['View Profile']);
+    } else if(myUserGroup.role === 'Admin' || myUserGroup.role === 'Owner') {
+      setOptions(['View Profile', 'Edit Role', 'Remove']);
+      if(item.userID === currUser.id) setOptions(['Edit Role'])
+    }else {
+      setOptions(['View Profile', 'Report']);
+    }
     setSelectedUser(item);
     setModalVisible(true);
   }
 
-  const handleOptionButton = (option: string) => {
+  const handleOptionButton = async (option: string) => {
     if(option === 'View Profile'){
       navigation.navigate('ViewProfile', {userID: selectedUser?.userID})
     }else if(option === 'Edit Role'){
-      Alert.alert('Not Implemented Yet');
+      if(selectedUser?.role === 'Admin') setRoleOptions(['Owner', 'Member']);
+      else if(selectedUser?.role === 'Owner') setRoleOptions(['Admin', 'Member']);
+      else if(selectedUser?.role === 'Member') setRoleOptions(['Admin', 'Owner']);
+      setRoleModalVisible(true);
     }else if(option === 'Report'){
-      Alert.alert('Not Implemented Yet')
+      setReportModalVisible(true);
     }else if(option === 'Remove'){
-      handleRemoveUser();
+      await handleRemoveUser();
     }
     setModalVisible(false);
   }
@@ -104,14 +115,75 @@ const ViewMembers = ( {route, navigation} : any) => {
         query: deleteUserGroup,
         variables: {
           input: {
-            id: selectedUser.userID
+            id: selectedUser.id
           }
         },
         authMode: 'userPool'
       })
+      setUserGroups(userGroups.filter((item: UserGroup) => item.userID !== selectedUser.userID));
       Alert.alert('Successfully removed User');
     } catch (error) {
       Alert.alert('Error', 'Error removing user');
+      console.log(error);
+    }
+  }
+
+  const handleReport = async () => {
+    if(reportMessage === "" || !selectedUser) return;
+    try{
+      await client.graphql({
+        query: createReport,
+        variables: {
+          input: {
+            reporterID: currUser.id,
+            reportedItemID: selectedUser.id,
+            reportedItemType: "User",
+            reason: reportMessage, // UPDATE REASON WITH TYPES
+            message: reportMessage,
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Success', 'Report sent successfully');
+      setReportModalVisible(false);
+    }catch(error){
+      Alert.alert('Error', 'Failed to send report');
+    }
+  }
+
+  const updateRole = async (role: string) => {
+    setRoleModalVisible(false);
+    if(!selectedUser){
+      Alert.alert('Error', 'There was an issue updating roles');
+      return;
+    }
+    const ownerCount =  userGroups.filter((userGroup : UserGroup) => userGroup.role === 'Owner').length;
+    console.log(selectedUser.userID === currUser.id && ownerCount <= 1)
+    if(selectedUser.userID === currUser.id && ownerCount <= 1){
+      Alert.alert('Error', 'You must have at least one owner');
+      return;
+    }
+    try{
+      await client.graphql({
+        query: updateUserGroup,
+        variables: {
+          input: {
+            id: selectedUser.id,
+            role: role
+          }
+        },
+        authMode: 'userPool'
+      })
+      setUserGroups((prevUserGroups : UserGroup[]) =>
+        prevUserGroups.map(userGroup =>
+          userGroup.id === selectedUser.id
+            ? { ...userGroup, role: role }
+            : userGroup
+        )
+      );
+    }catch(error) {
+      Alert.alert('Error', 'There was an issue updating roles');
+      console.log(error);    
     }
   }
 
@@ -125,7 +197,10 @@ const ViewMembers = ( {route, navigation} : any) => {
       <FlatList
         data={userGroups}
         renderItem={({ item }) => {
-          var disable = item.userID === currUser.id;
+          var disable = (item.userID === currUser.id);
+          if(myUserGroup && myUserGroup.role === 'Admin' || myUserGroup.role === 'Owner'){
+            disable = false;
+          }
           return(
             <TouchableOpacity style={styles.listMemberContainer} onPress={() => handleUserPressed(item)}
               disabled={disable}
@@ -146,6 +221,7 @@ const ViewMembers = ( {route, navigation} : any) => {
           </TouchableOpacity>
         </View>
       }
+      
       <Modal 
         transparent={true} 
         visible={modalVisible} 
@@ -167,8 +243,64 @@ const ViewMembers = ( {route, navigation} : any) => {
               )}
             />
           </View>
-          
           <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonTextBlack}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/*Report Modal */}
+      <Modal 
+        transparent={true} 
+        visible={reportModalVisible} 
+        onRequestClose={() => setReportModalVisible(false)}  
+      >
+        <View style={styles.reportModalOverLay}>
+          <View style={styles.reportModalContainer}>
+            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
+              onPress={() => setReportModalVisible(false)}
+            /> 
+            <Text style={styles.title}>Report</Text>
+            <Text style={styles.reportModalText}>
+              Thank you for keeping DAP communities safe. What is the purpose of this report?
+            </Text>
+            <TextInput
+              value={reportMessage}
+              onChangeText={setReportMessage}
+              style={styles.reportInput}
+              placeholder="Add a note"
+              multiline={true}
+            />
+            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
+              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/*Role Modal */}
+      <Modal 
+        transparent={true} 
+        visible={roleModalVisible} 
+        onRequestClose={() => setRoleModalVisible(false)}  
+      >
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
+            <FlatList
+              data={roleOptions}
+              keyExtractor={(option) => option}
+              style={{height: 'auto', width: '100%'}}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity 
+                  style={styles.optionButton} 
+                  onPress={() => updateRole(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setRoleModalVisible(false)}>
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
         </View>

@@ -290,6 +290,30 @@ export const createReply = /* GraphQL */ `mutation CreateReply(
   APITypes.CreateReplyMutationVariables,
   APITypes.CreateReplyMutation
 >;
+export const deleteReply = /* GraphQL */ `mutation DeleteReply(
+  $input: DeleteReplyInput!
+  $condition: ModelReplyConditionInput
+) {
+  deleteReply(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteReplyMutationVariables,
+  APITypes.DeleteReplyMutation
+>;
+export const updateReply = /* GraphQL */ `mutation UpdateReply(
+  $input: UpdateReplyInput!
+  $condition: ModelReplyConditionInput
+) {
+  updateReply(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateReplyMutationVariables,
+  APITypes.UpdateReplyMutation
+>;
 export const createReport = /* GraphQL */ `mutation CreateReport(
   $input: CreateReportInput!
   $condition: ModelReportConditionInput

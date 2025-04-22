@@ -203,6 +203,7 @@ const ViewGroup = ( {route, navigation} : any) => {
         console.log(error);
       }
     }
+    setAddedMembers([]);
     fetchCurrentData();
     Alert.alert('Success', 'Group updated successfully');
   }
@@ -358,7 +359,7 @@ const ViewGroup = ( {route, navigation} : any) => {
             )}
           </View>
           <View style={{flexDirection: 'row', marginTop: 5}}>
-            <Text>{group?.memberCount} members </Text>
+            <Text>{group?.members?.items.length} members </Text>
             {group?.isPublic ? (
               <Icon name="lock-open" size={18}/>
             ) : (
@@ -549,7 +550,6 @@ const ViewGroup = ( {route, navigation} : any) => {
           </View>
         </View>
       </Modal>
-
     </View>
   )
 }

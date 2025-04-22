@@ -423,8 +423,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
   },
   commentContainer: {
+    paddingTop: 5,
+    paddingHorizontal: 10,
+    marginHorizontal: 5,
+    backgroundColor: colorPrimary,
+  },
+  commentContainerPressed:{
     marginTop: 5,
     paddingHorizontal: 10,
+    backgroundColor: 'white'
   },
   commentDate:{
     marginLeft: 5,

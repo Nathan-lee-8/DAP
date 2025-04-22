@@ -53,7 +53,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
           input: {
             reporterID: currUser.id,
             reportedItemID: targetUserID,
-            reportedItemType: "Profile",
+            reportedItemType: "User",
             reason: reportMessage, // UPDATE REASON WITH TYPES
             message: reportMessage,
           }

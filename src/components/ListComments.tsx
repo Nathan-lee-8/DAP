@@ -6,7 +6,8 @@ import { useEffect } from "react";
 
 import client from "../client";
 import { commentsByPost } from "../customGraphql/customQueries";
-import { createComment, createReply } from "../customGraphql/customMutations";
+import { createComment, createReply, updateComment, updateReply 
+  } from "../customGraphql/customMutations";
 import { Comment } from "../API";
 
 import Icon from '@react-native-vector-icons/ionicons';
@@ -98,7 +99,42 @@ const ListComments = ({postID, header}: any) => {
     } catch (error) {
       console.error('Error creating comment:', error);
     }
-  
+  }
+
+  const handleEditComment = async () => {
+    try{
+      await client.graphql({
+        query: updateComment,
+        variables: {
+          input: {
+            id: replyTarget.id,
+            content: comment,
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Success', 'Comment edited successfully');
+    } catch (error) {
+      Alert.alert('Error', 'There was an issue updating this comment');
+    }
+  }
+
+  const handleEditReply = async () => { 
+    try{
+      await client.graphql({
+        query: updateReply,
+        variables: {
+          input: {
+            id: replyTarget.id,
+            content: comment,
+          }
+        },
+        authMode: 'userPool'
+      })
+      Alert.alert('Success', 'Comment edited successfully');
+    } catch (error) {
+      Alert.alert('Error', 'There was an issue updating this comment');
+    }
   }
 
   const handleKeyboard = (item: any, target: string) => {
@@ -116,7 +152,9 @@ const ListComments = ({postID, header}: any) => {
     } else if(keyboardTarget === "Reply"){
       await postReply();
     } else if(keyboardTarget === "Edit"){
-      Alert.alert("Editing comment not implemented");
+      await handleEditComment();
+    }else if(keyboardTarget === "Edit Reply"){
+      await handleEditReply();
     }
     setComment("");
     setKeyboardTarget("Comment");
@@ -134,7 +172,7 @@ const ListComments = ({postID, header}: any) => {
           return (
             <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
               <View style={{ flex: 1 }}>
-                <CommentComp item={item} handleKeyboard={handleKeyboard}/>
+                <CommentComp item={item} handleKeyboard={handleKeyboard} refreshComments={fetchComments}/>
               </View>
             </TouchableWithoutFeedback>
           )
@@ -161,7 +199,7 @@ const ListComments = ({postID, header}: any) => {
               <Text style={styles.inputTargetText} numberOfLines={1}>
                 Replying to @{replyTarget.user.firstname + " " + replyTarget.user.lastname}
                 </Text>
-            ) : keyboardTarget === "Edit" ? (
+            ) : keyboardTarget === "Edit"  || keyboardTarget === "Edit Reply" ? (
               <Text style={styles.inputTargetText}>Edit comment:</Text>
             ) : null}
           </View>
