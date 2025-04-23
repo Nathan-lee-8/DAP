@@ -48,7 +48,7 @@ const ViewPost = ( {route} : any) => {
 
   return (
     <View style={styles.container}>
-      <Comments postID={postID} header={header}/>
+      <Comments postID={postID} header={header} customPadding={80}/>
     </View>
   )
 }

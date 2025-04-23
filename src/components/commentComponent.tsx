@@ -11,12 +11,13 @@ import moment from 'moment';
 import ImgComponent from './ImgComponent';
 import { AuthContext } from '../context/AuthContext';
 
-const CommentComp = ( {item, handleKeyboard, refreshComments } : any) => {
+const CommentComp = ( {item, handleKeyboard, refreshComments, index } : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ options, setOptions ] = useState(["Report"]);
   const [ reportMessage, setReportMessage ] = useState("");
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const [ itemPressed, setItemPressed ] = useState<any>();
+  const [ darkened, setDarkened ] = useState(false);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
@@ -25,8 +26,12 @@ const CommentComp = ( {item, handleKeyboard, refreshComments } : any) => {
     if(option === "Report"){
       setReportModalVisible(true);
     } else if(option === "Edit"){
-      if(itemPressed) handleKeyboard(itemPressed, "Edit Reply")
-      else handleKeyboard(item, "Edit");
+      if(itemPressed) handleKeyboard(itemPressed, "Edit Reply", index)
+      else handleKeyboard(item, "Edit", index);
+      setDarkened(true);
+      setTimeout(() => {
+        setDarkened(false);
+      }, 1000);
     } else if(option === "Delete"){
       Alert.alert(
         "Delete",
@@ -120,6 +125,14 @@ const CommentComp = ( {item, handleKeyboard, refreshComments } : any) => {
     setModalVisible(true);
   }
 
+  const handleReply = (item: any, index: number) => {
+    handleKeyboard(item, "Reply", index);
+    setDarkened(true);
+    setTimeout(() => {
+      setDarkened(false);
+    }, 1000);
+  }
+
   const getCompactTimeAgo = (date : string) => {
     const now = moment();
     const created = moment.utc(date).local();
@@ -142,7 +155,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments } : any) => {
   };
 
   return(
-    <View style={styles.commentContainer}>
+    <View style={darkened ? styles.commentContainerPressed : styles.commentContainer}>
       <Pressable onLongPress={handleCommentPress}
         style={({ pressed }) => [
           styles.profileSection,
@@ -156,7 +169,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments } : any) => {
             <Text style={styles.commentDate}>{getCompactTimeAgo(item.createdAt)}</Text>
           </View>
           <Text style={[styles.postContent, {marginBottom: 0}]}>{item?.content}</Text>
-          <TouchableOpacity style={{marginBottom:5}} onPress={() => handleKeyboard(item, "Reply")}>
+          <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(item, index)}>
             <Text style={styles.replyText}>Reply</Text>
           </TouchableOpacity>
         </View>
@@ -180,7 +193,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments } : any) => {
                     <Text style={styles.commentDate}>{getCompactTimeAgo(replyData.createdAt)}</Text>
                   </View>
                   <Text style={styles.postContent}>{replyData?.content}</Text>
-                  <TouchableOpacity style={{marginBottom:5}} onPress={() => handleKeyboard(item, "Reply")}>
+                  <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(item, index)}>
                     <Text style={styles.replyText}>Reply</Text>
                   </TouchableOpacity>
                 </View>

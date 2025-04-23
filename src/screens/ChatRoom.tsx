@@ -505,19 +505,19 @@ const ChatRoom = ( { route, navigation } : any) => {
       />
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[styles.addCommentSection, {flexDirection: 'row'}]}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        style={[styles.addCommentSection, {paddingBottom: 0}]}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
       > 
-        <TextInput
-          style={styles.commentInput}
-          placeholder={'Type a message'}
-          value={currMessage}
-          autoCapitalize='sentences'
-          onChangeText={(text) => setMessage(text)}
-        />
-        <TouchableOpacity style={styles.commentButton} onPress={sendMessage} >
-          <Icon name="send" size={30} />
-        </TouchableOpacity>
+        <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30 : 0}}>
+          <TextInput
+            style={styles.commentInput}
+            placeholder={'Type a message'}
+            value={currMessage}
+            autoCapitalize='sentences'
+            onChangeText={(text) => setMessage(text)}
+          />
+          <Icon style={styles.commentButton} onPress={sendMessage}  name="send" size={30} />
+        </View>
       </KeyboardAvoidingView>
       <Modal 
         transparent={true} 
