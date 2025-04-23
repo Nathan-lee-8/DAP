@@ -155,26 +155,23 @@ const styles = StyleSheet.create({
     margin: 5,
     marginBottom: 0,
     padding: 10,
-    flexShrink: 1
   },
   profileSection: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignContent:'flex-start',
     marginBottom: 5
   },
   postProfileImg: {
     height: 35,
     width: 35,
-    borderRadius: 18
+    borderRadius: 18,
   },
   profileText:{
+    flexShrink: 1,
     marginLeft: 10,
   },
   postAuthor: {
-    fontSize: 14,
-    color: 'Black',
     flexDirection: 'row',
-    width: width * 0.65,
     flexWrap: 'wrap',
   },
   postDate: {
@@ -242,11 +239,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray', // Change this color for active dot
   },
   postOptions: {
-    position: 'absolute',
-    top: 5,
-    right: 10,
     zIndex: 1,
-    padding: 5,
+    marginLeft: 'auto',
+    paddingLeft: 5,
+    paddingBottom: 5,
   },
 
   /** Modal styles */
@@ -369,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.2)'
   },
   commentModalHeader:{
-    height:'30%',
+    height: '30%'
   },
   commentModalContainer:{
     flex: 1,
@@ -429,9 +425,10 @@ const styles = StyleSheet.create({
     backgroundColor: colorPrimary,
   },
   commentContainerPressed:{
-    marginTop: 5,
+    paddingTop: 5,
     paddingHorizontal: 10,
-    backgroundColor: 'white'
+    marginHorizontal: 5,
+    backgroundColor: '#ccc'
   },
   commentDate:{
     marginLeft: 5,
@@ -443,9 +440,10 @@ const styles = StyleSheet.create({
   },
 
   addCommentSection: {
-    marginBottom: Platform.OS === 'ios' ? 40 : 0,
-    backgroundColor: colorPrimary,
+    height: 'auto',
+    backgroundColor: 'white',
     padding: 10,
+    paddingBottom: Platform.OS === 'ios' ? 30 : 0,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
   },

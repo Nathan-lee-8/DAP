@@ -1,6 +1,6 @@
 import { useContext, useRef, useState } from 'react';
-import { View, Text, ActivityIndicator, FlatList, TouchableOpacity, Alert, Keyboard,
- KeyboardAvoidingView, TextInput, Platform, TouchableWithoutFeedback } from "react-native";
+import { View, Text, ActivityIndicator, FlatList, TouchableOpacity, Alert,
+ KeyboardAvoidingView, TextInput, Platform } from "react-native";
 import styles from "../styles/Styles";
 import { useEffect } from "react";
 
@@ -15,13 +15,15 @@ import { AuthContext } from '../context/AuthContext';
 import CommentComp from '../components/commentComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ListComments = ({postID, header}: any) => {
+const ListComments = ({postID, header, customPadding}: any) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ comment, setComment ] = useState<string>('');
   const [ keyboardTarget, setKeyboardTarget ] = useState("Comment");
   const [ replyTarget, setReplyTarget ] = useState<any>();
   const flatListRef = useRef<FlatList>(null);
+  const scrollTargetRef = useRef<number | null>(null);
+  const inputRef = useRef<TextInput>(null);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return <ActivityIndicator size="large" color="#0000ff" />;
 
@@ -137,7 +139,18 @@ const ListComments = ({postID, header}: any) => {
     }
   }
 
-  const handleKeyboard = (item: any, target: string) => {
+  const handleKeyboard = (item: any, target: string, index: number) => {
+    if (index !== -1) {
+      scrollTargetRef.current = index;
+    }
+    if(inputRef.current?.isFocused){
+      flatListRef.current?.scrollToIndex({
+        index: index,
+        animated: true,
+        viewPosition: 0.3,
+      });
+    }
+    inputRef.current?.focus();
     setKeyboardTarget(target);
     setReplyTarget(item);
   }
@@ -164,17 +177,13 @@ const ListComments = ({postID, header}: any) => {
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (  
-    <View style={{flex: 1}}>
+    <View style={{flex:1}}> 
       <FlatList
         ref={flatListRef}
         data={comments}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           return (
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-              <View style={{ flex: 1 }}>
-                <CommentComp item={item} handleKeyboard={handleKeyboard} refreshComments={fetchComments}/>
-              </View>
-            </TouchableWithoutFeedback>
+            <CommentComp item={item} handleKeyboard={handleKeyboard} refreshComments={fetchComments} index={index}/>
           )
         }}
         ListEmptyComponent={() => (
@@ -184,38 +193,52 @@ const ListComments = ({postID, header}: any) => {
         )}
         scrollEnabled
         ListHeaderComponent={header}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
       />
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.addCommentSection}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-      > 
-        {keyboardTarget !== "Comment" && 
-          <View style={styles.inputTargetContainer}>
-            <Icon style={{position:'absolute', right: 10, top: 5, zIndex: 1}} name="close-outline" size={25}
-              onPress={() => setKeyboardTarget("Comment")}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? customPadding : 0}
+      >
+        <View style={styles.addCommentSection}>
+          {keyboardTarget !== "Comment" && 
+            <View style={styles.inputTargetContainer}>
+              <Icon style={{position:'absolute', right: 10, top: 5, zIndex: 1}} name="close-outline" size={25}
+                onPress={() => setKeyboardTarget("Comment")}
+              />
+              {keyboardTarget === "Reply" ? (
+                <Text style={styles.inputTargetText} numberOfLines={1}>
+                  Replying to @{replyTarget.user.firstname + " " + replyTarget.user.lastname}
+                  </Text>
+              ) : keyboardTarget === "Edit"  || keyboardTarget === "Edit Reply" ? (
+                <Text style={styles.inputTargetText}>Edit comment:</Text>
+              ) : null}
+            </View>
+          }
+          <View style={{flexDirection: 'row'}}>
+            <TextInput
+              ref={inputRef}
+              style={keyboardTarget === "Comment" ? styles.commentInput : styles.commentInputUnrounded}
+              placeholder="Add a comment"
+              multiline={true}
+              numberOfLines={4}
+              value={comment}
+              onChangeText={setComment}
+              onFocus={() => {
+                if (scrollTargetRef.current !== null && flatListRef.current) {
+                  setTimeout(() => {
+                    flatListRef.current?.scrollToIndex({
+                      index: scrollTargetRef.current!,
+                      animated: true,
+                      viewPosition: 0.3,
+                    });
+                    scrollTargetRef.current = null;
+                  }, 150); // Delay helps ensure layout is stable
+                }
+              }}
             />
-            {keyboardTarget === "Reply" ? (
-              <Text style={styles.inputTargetText} numberOfLines={1}>
-                Replying to @{replyTarget.user.firstname + " " + replyTarget.user.lastname}
-                </Text>
-            ) : keyboardTarget === "Edit"  || keyboardTarget === "Edit Reply" ? (
-              <Text style={styles.inputTargetText}>Edit comment:</Text>
-            ) : null}
+            <Icon style={styles.commentButton} name="send" size={30} onPress={handleSend} />
           </View>
-        }
-        <View style={{flexDirection: 'row'}}>
-          <TextInput
-            style={keyboardTarget === "Comment" ? styles.commentInput : styles.commentInputUnrounded}
-            placeholder="Add a comment"
-            multiline={true}
-            numberOfLines={4}
-            value={comment}
-            onChangeText={setComment}
-          />
-          <TouchableOpacity onPress={handleSend} style={styles.commentButton}>
-            <Icon name="send" size={30} />
-          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </View>

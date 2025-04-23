@@ -144,10 +144,6 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   
   return (  
     <View style={styles.postContainer}>
-      <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
-        color={'black'}
-        onPress={() => setModalVisible(true)}
-      />
       {item?.user?.firstname ? (
         <TouchableOpacity style={styles.profileSection} onPress={() => clickPost(item.id)}> 
           <TouchableOpacity onPress={() => visitProfile(item)}>
@@ -163,7 +159,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                   {item.user.firstname + " " + item.user.lastname}
                 </Text>
                 <Text> posted in </Text>
-                <Text style={[styles.bold, {flexShrink: 1}]} 
+                <Text style={styles.bold} 
                   onPress={() => navigation.navigate('ViewGroup', {groupID: item.groupID})}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -176,6 +172,10 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
             )}
             <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
           </View>
+          <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
+            color={'black'}
+            onPress={() => setModalVisible(true)}
+          />
         </TouchableOpacity>
       ) : (
         <View style={styles.postAuthor}>
@@ -303,19 +303,15 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               visible={commentModalVisible} 
               onRequestClose={() => setCommentModalVisible(false)}  
             >
+                                  
               <View style={styles.commentModalOverlay}>
                 <TouchableOpacity style={styles.commentModalHeader} onPress={() => setCommentModalVisible(false)}/>
-                <KeyboardAvoidingView 
-                  behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                  style={styles.commentModalContainer}
-                  keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-                >
+                <View style={styles.commentModalContainer}>
                   <Text style={styles.title}>Comments</Text>
-                  <Comments postID={item.id}/>
-                </KeyboardAvoidingView>
+                  <Comments postID={item.id} customPadding={310}/>
+                </View>
               </View>
             </Modal>
-
           </View>
         </View>
       </Modal>
