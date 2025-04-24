@@ -1,6 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, TextInput,
-  Modal, Platform, KeyboardAvoidingView} from "react-native";
+  Modal } from "react-native";
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming
+} from 'react-native-reanimated';
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -141,6 +144,20 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
       Alert.alert('Error', 'Failed to send report');
     }
   }
+
+  const heightPercent = useSharedValue(30);
+  const panComments = Gesture.Pan().onUpdate((event) => {
+    console.log('running', event);
+    if (event.translationY < -50) {
+      heightPercent.value = withTiming(10);
+    } else if (event.translationY > 50) {
+      heightPercent.value = withTiming(30);
+    }
+  })
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    height: `${heightPercent.value}%`,
+  }));
   
   return (  
     <View style={styles.postContainer}>
@@ -303,13 +320,14 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               visible={commentModalVisible} 
               onRequestClose={() => setCommentModalVisible(false)}  
             >
-                                  
               <View style={styles.commentModalOverlay}>
-                <TouchableOpacity style={styles.commentModalHeader} onPress={() => setCommentModalVisible(false)}/>
-                <View style={styles.commentModalContainer}>
-                  <Text style={styles.title}>Comments</Text>
-                  <Comments postID={item.id} customPadding={310}/>
-                </View>
+                <TouchableOpacity style={[styles.commentModalHeader, animatedStyle]} onPress={() => setCommentModalVisible(false)}/>
+                  <GestureDetector gesture={panComments}>
+                    <Animated.View style={styles.commentModalContainer} >
+                      <Text style={styles.title}>Comments</Text>
+                      <Comments postID={item.id} customPadding={310} />
+                    </Animated.View>
+                  </GestureDetector>
               </View>
             </Modal>
           </View>
