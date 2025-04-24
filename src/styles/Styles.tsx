@@ -362,13 +362,14 @@ const styles = StyleSheet.create({
   },
   commentModalOverlay:{
     flex: 1,
+    justifyContent: 'flex-end',
     backgroundColor: 'rgba(0, 0, 0, 0.2)'
   },
   commentModalHeader:{
-    height: '30%'
+    flex: 1
   },
   commentModalContainer:{
-    flex: 1,
+    height: '70%',
     backgroundColor: colorBackground,
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
