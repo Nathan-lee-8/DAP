@@ -2,8 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, TextInput,
   Modal } from "react-native";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, useDerivedValue,
+  runOnJS } from 'react-native-reanimated';
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -30,6 +30,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const [ reportMessage, setReportMessage ] = useState("");
   const [ options, setOptions ] = useState(["Report"]);
+  const [ customPadding, setCustomPadding ] = useState(310);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -145,19 +146,30 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
     }
   }
 
-  const heightPercent = useSharedValue(30);
+  const heightPercent = useSharedValue(70);
   const panComments = Gesture.Pan().onUpdate((event) => {
-    console.log('running', event);
-    if (event.translationY < -50) {
-      heightPercent.value = withTiming(10);
-    } else if (event.translationY > 50) {
-      heightPercent.value = withTiming(30);
+    if (event.translationY < -100) {
+      heightPercent.value = withTiming(92);
+    } else if (event.translationY > 100) {
+      if(event.translationY > 250 && heightPercent.value === 70){
+        runOnJS(setCommentModalVisible)(false);
+      }else{
+        heightPercent.value = withTiming(70);
+      }
     }
   })
 
   const animatedStyle = useAnimatedStyle(() => ({
     height: `${heightPercent.value}%`,
   }));
+
+  useDerivedValue(() => {
+    if (heightPercent.value >= 90) {
+      runOnJS(setCustomPadding)(120);
+    } else {
+      runOnJS(setCustomPadding)(310);
+    }
+  }, [heightPercent]);
   
   return (  
     <View style={styles.postContainer}>
@@ -321,13 +333,13 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
               onRequestClose={() => setCommentModalVisible(false)}  
             >
               <View style={styles.commentModalOverlay}>
-                <TouchableOpacity style={[styles.commentModalHeader, animatedStyle]} onPress={() => setCommentModalVisible(false)}/>
-                  <GestureDetector gesture={panComments}>
-                    <Animated.View style={styles.commentModalContainer} >
-                      <Text style={styles.title}>Comments</Text>
-                      <Comments postID={item.id} customPadding={310} />
-                    </Animated.View>
-                  </GestureDetector>
+                <TouchableOpacity style={styles.commentModalHeader} onPress={() => setCommentModalVisible(false)}/>
+                <GestureDetector gesture={panComments}>
+                  <Animated.View style={[styles.commentModalContainer, animatedStyle]} >
+                    <Text style={styles.title}>Comments</Text>
+                    <Comments postID={item.id} customPadding={customPadding} />
+                  </Animated.View>
+                </GestureDetector>
               </View>
             </Modal>
           </View>
