@@ -58,6 +58,8 @@ const ViewMembers = ( {route, navigation} : any) => {
               userID: item.userID,
               chatID: chat.data.createChat.id,
               unreadMessageCount: 0,
+              lastMessage: "",
+              lastMessageAt: Date.now().toString(),
               role: role
             }
           },

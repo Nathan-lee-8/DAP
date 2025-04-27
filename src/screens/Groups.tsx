@@ -103,9 +103,7 @@ const Groups = ( {navigation} : any ) => {
         }
       />
       
-      <TouchableOpacity onPress={createGroup}>
-        <Icon name="add-circle-outline" style={styles.createButton} size={50}/>
-      </TouchableOpacity>
+      <Icon name="add-circle-outline" style={styles.createButton} size={50}  onPress={createGroup}/>
     </View>
   );
 };

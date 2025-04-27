@@ -646,6 +646,7 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
       owner
       __typename
     }
+    lastMessageAt
     createdAt
     updatedAt
     userChatsId
@@ -692,6 +693,7 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
       owner
       __typename
     }
+    lastMessageAt
     createdAt
     updatedAt
     userChatsId
@@ -738,6 +740,7 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
       owner
       __typename
     }
+    lastMessageAt
     createdAt
     updatedAt
     userChatsId
@@ -841,7 +844,7 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     type
     senderID
     chatID
-        createdAt
+    createdAt
     updatedAt
     userMessagesId
     owner

@@ -4,6 +4,8 @@ import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, TextInput,
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, useDerivedValue,
   runOnJS } from 'react-native-reanimated';
+import RNFS from 'react-native-fs';
+import Share from 'react-native-share';
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -65,9 +67,34 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
     setCurrentIndex(index);
   };
 
-  const handleShare = () => {
-    Alert.alert('Not implemented')
+  const handleShare = async () => {
+    try {
+      // Download all media
+      const downloadedFiles = item.postURL
+        ? await Promise.all(item.postURL
+          .filter((url): url is string => typeof url === 'string')
+          .map(downloadMediaToLocal))
+        : [];
+  
+      const shareOptions = {
+        title: 'Check out this post!',
+        message: item.content,
+        urls: downloadedFiles.length > 0 ? downloadedFiles : undefined,
+      };
+  
+      await Share.open(shareOptions);
+    } catch (err) {
+      console.log('Share error:', err);
+    }
   }
+
+  const downloadMediaToLocal = async (url: string): Promise<string> => {
+    const filename = url.split('/').pop() || `file_${Date.now()}`;
+    const localPath = `${RNFS.TemporaryDirectoryPath}${filename}`;
+  
+    await RNFS.downloadFile({ fromUrl: url, toFile: localPath }).promise;
+    return `file://${localPath}`;
+  };
 
   //delete all post and comments
   const handleDelete = async () => {

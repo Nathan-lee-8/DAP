@@ -684,6 +684,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     backgroundColor: colorBackground
   },
+  groupOptionsButton:{
+    position: 'absolute',
+    top: 0,
+    right: 5,
+    padding: 5,
+    zIndex: 1
+  },
   groupNameText: {
     fontSize: 16,
     fontWeight: 'bold',

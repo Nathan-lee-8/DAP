@@ -165,7 +165,7 @@ const GroupSearch = () => {
          },
         authMode: 'userPool'
       });
-      setData(groups.data.listGroups.items);
+      setData(groups.data.listGroups.items.filter((item) => item.type !== 'Hidden'));
       console.log("fetchedGroups from search")
     } catch (error) {
       console.log(error);

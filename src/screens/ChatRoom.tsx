@@ -21,29 +21,25 @@ const ChatRoom = ( { route, navigation } : any) => {
   const chatID = route.params.chatID;
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const [ loading, setLoading ] = useState<boolean>(false);
-  const [ messages, setMessages ] = useState<Message[]>([]);
   const [ currMessage, setMessage ] = useState<string>('');
   const [ participants, setParticipants ] = useState<UserChat[]>([]);
   const [ myUserChat, setMyUserChat ] = useState<UserChat>();
   const [ chat, setChat ] = useState<Chat>();
   const [ title, setTitle ] = useState<string>('default');
   const [ displayURLs, setURLs ] = useState<(string | undefined)[]>([]);
-  const [ modalVisible, setModalVisible ] = useState(false);
+  const [ messages, setMessages ] = useState<Message[]>([]);
+  const flatListRef = useRef<FlatList<Message>>(null);
 
+  const [ modalVisible, setModalVisible ] = useState(false);
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
   const [ users, setUsers ] = useState<User[]>([]);
   const [ options, setOptions ] = useState(['View Members', 'Leave']);
   const inviteFlatListRef = useRef<FlatList>(null);
  
-  const flatListRef = useRef<FlatList<Message>>(null);
-  const msgCountRef = useRef<number>(0);
-  const msgSentRef = useRef<boolean>(false);
-
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
-
 
   //update title anytime participants changes
   useEffect( () => {
@@ -67,9 +63,9 @@ const ChatRoom = ( { route, navigation } : any) => {
         authMode: 'userPool'
       }).subscribe({
         next: (value : any) => {
-          const newMessage = value?.data.onCreateMessage;
+          const newMessage = value.data.onCreateMessage;
           setMessages((prev) => {
-            if(!newMessage || prev.find((msg) => msg?.id === newMessage?.id)){
+            if(!newMessage || prev.find((msg) => msg.id === newMessage.id)){
               return prev;
             }
             return [newMessage, ...prev];
@@ -111,13 +107,13 @@ const ChatRoom = ( { route, navigation } : any) => {
       if(parts){
         let URLs: (string | undefined)[] = [];
         setParticipants(parts.filter((item): item is UserChat => {
-          if(item?.userID !== currUser.id){ 
-            URLs.push(item?.user?.profileURL || undefined)
+          if(item.userID !== currUser.id){ 
+            URLs.push(item.user?.profileURL || undefined)
           }
-          return item?.userID !== currUser?.id;
+          return item.userID !== currUser.id;
         }));
         setURLs(URLs);
-        const myUser = parts.find((item): item is UserChat => item?.userID === currUser.id)
+        const myUser = parts.find((item): item is UserChat => item.userID === currUser.id)
         setMyUserChat(myUser);
         if(myUser?.role === 'Admin'){
           setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
@@ -134,51 +130,19 @@ const ChatRoom = ( { route, navigation } : any) => {
   };
 
   const handleGoBack = async () => {
-    try{
-      if(!myUserChat || !messages[0]) return;
-      const myUnread = myUserChat.unreadMessageCount || 0;
-      const msgChanged = messages[0].content !== myUserChat.lastMessage;
-      //if curr user has 0 unread messages and message hasn't changed, do nothing
-      if(myUnread === 0 && !msgChanged) {
-          return;
-      };
-      //update current user to have 0 unread messages and update the last message
+    if(myUserChat && myUserChat.unreadMessageCount !== 0){
       await client.graphql({
         query: updateUserChat,
         variables: {
           input: {
-            id: myUserChat?.id,
-            lastMessage: messages[0].content, 
+            id: myUserChat.id,
             unreadMessageCount: 0,
           },
         },
         authMode: 'userPool'
       });
-      console.log('updated my chat');
-      
-
-      if(msgSentRef.current){
-        for(const part of participants){
-          const numUnread = part?.unreadMessageCount || 0;
-          await client.graphql({
-            query: updateUserChat,
-            variables: {
-              input: {
-                id: part.id,
-                lastMessage: messages[0].content, 
-                unreadMessageCount: numUnread + msgCountRef.current,
-              },
-            },
-            authMode: 'userPool'
-          });
-        }
-        console.log("updated participant chats");
-      }
-    } catch (error) {
-      console.error("Error updating last message:", error);
-    } finally{
-      navigation.goBack();
     }
+    navigation.goBack();
   }
 
   const sendMessage = async () => {
@@ -196,8 +160,6 @@ const ChatRoom = ( { route, navigation } : any) => {
         authMode: 'userPool'
       });
       setMessage('');
-      msgCountRef.current = msgCountRef.current + 1;
-      msgSentRef.current = true;
       console.log('msg sent');
     } catch (error) {
       console.error("Failed to send message:", error);
@@ -304,7 +266,8 @@ const ChatRoom = ( { route, navigation } : any) => {
               userID: userID,
               chatID: chatID,
               unreadMessageCount: 0,
-              lastMessage: myUserChat?.lastMessage,
+              lastMessage: myUserChat?.lastMessage || "",
+              lastMessageAt: myUserChat?.lastMessageAt || Date.now().toString(),
               role: 'Member'
             }
           },

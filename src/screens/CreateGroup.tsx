@@ -25,7 +25,7 @@ const CreateGroup = ( {navigation} : any) => {
   const [groupURI, setGroupURL] = useState<string>('defaultGroup');
   const [loading, setLoading] = useState(false);
   const [goNext, setGoNext] = useState(false);
-  const [isPublic, setIsPublic] = useState(true);
+  const [type, setType] = useState('Public');
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -50,8 +50,8 @@ const CreateGroup = ( {navigation} : any) => {
             groupName: groupName,
             description: description,
             groupURL: groupURI,
-            isPublic: isPublic,
-            type: isPublic ? 'Public' : 'Private',
+            isPublic: type !== 'Hidden',
+            type: type,
             memberCount: addedMembers.length + 1
           }
         },
@@ -287,25 +287,34 @@ const CreateGroup = ( {navigation} : any) => {
         <View style={styles.groupPrivacyContainer}>
           <Text style={[styles.privacyText, {padding: 10}]}>Visibility</Text>
 
-          <TouchableOpacity style={styles.privacyOptionContainer} onPress={() => setIsPublic(true)}>
+          <TouchableOpacity style={styles.privacyOptionContainer} onPress={() => setType('Public')}>
             <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-open" size={20}/>
             <View style={{flexDirection: 'column'}}>
               <Text style={styles.privacyText}>Public</Text>
               <Text>Anyone can find and join.</Text>
             </View>
             <View style={styles.privacyIcon}>
-              <View style={isPublic ? styles.privacyIconSelected : null}/>
+              <View style={type === 'Public' ? styles.privacyIconSelected : null}/>
             </View>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setIsPublic(false)}>
+          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setType('Private')}>
             <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-closed" size={20}/>
             <View style={{flexDirection: 'column'}}>
               <Text style={styles.privacyText}>Private</Text>
               <Text>Anyone can find. Request to join.</Text>
             </View>
             <View style={styles.privacyIcon}>
-              <View style={!isPublic ? styles.privacyIconSelected : null}/>
+              <View style={type === 'Private' ? styles.privacyIconSelected : null}/>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setType('Hidden')}>
+            <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-closed" size={20}/>
+            <View style={{flexDirection: 'column'}}>
+              <Text style={styles.privacyText}>Hidden</Text>
+              <Text>Invite Only.</Text>
+            </View>
+            <View style={styles.privacyIcon}>
+              <View style={type === 'Hidden' ? styles.privacyIconSelected : null}/>
             </View>
           </TouchableOpacity>
 

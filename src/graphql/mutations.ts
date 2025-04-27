@@ -281,6 +281,7 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
     isMuted
     userID
     chatID
+    lastMessageAt
     createdAt
     updatedAt
     userChatsId
@@ -304,6 +305,7 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
     isMuted
     userID
     chatID
+    lastMessageAt
     createdAt
     updatedAt
     userChatsId
@@ -327,6 +329,7 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
     isMuted
     userID
     chatID
+    lastMessageAt
     createdAt
     updatedAt
     userChatsId

@@ -332,7 +332,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     return( 
       <View>
         <View style={styles.groupInfoContainer}>
-          <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
+          <Icon name="ellipsis-horizontal-sharp" style={styles.groupOptionsButton} size={20} 
             color={'black'}
             onPress={() => setModalVisible(true)}
           />

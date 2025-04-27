@@ -17,7 +17,7 @@ const EditGroup = ( {route, navigation} : any ) => {
   const [ filepath, setFilepath ] = useState<string>(group.groupURL);
   const [ name, setName ] = useState<string>(group.groupName);
   const [ description, setDescription ] = useState<string>(group.description);
-  const [ isPublic, setIsPublic ] = useState(group.isPublic);
+  const [ type, setType ] = useState(group.type);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
@@ -40,7 +40,7 @@ const EditGroup = ( {route, navigation} : any ) => {
         currURI = 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + tempFilepath;
       }
       if(name !== group.groupName || description !== group.description || 
-        filepath !== group.groupURL || group.isPublic !== isPublic 
+        filepath !== group.groupURL || group.type !== type 
       ){
         await client.graphql({
           query: updateGroup,
@@ -50,7 +50,8 @@ const EditGroup = ( {route, navigation} : any ) => {
               groupName: name,
               description: description,
               groupURL: currURI,
-              isPublic: isPublic
+              isPublic: type !== 'Hidden',
+              type: type
             }
           },
           authMode: 'userPool'
@@ -92,25 +93,34 @@ const EditGroup = ( {route, navigation} : any ) => {
         <View style={styles.groupPrivacyContainer}>
           <Text style={[styles.privacyText, {padding: 10}]}>Visibility</Text>
 
-          <TouchableOpacity style={styles.privacyOptionContainer} onPress={() => setIsPublic(true)}>
+          <TouchableOpacity style={styles.privacyOptionContainer} onPress={() => setType('Public')}>
             <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-open" size={20}/>
             <View style={{flexDirection: 'column'}}>
               <Text style={styles.privacyText}>Public</Text>
               <Text>Anyone can find and join.</Text>
             </View>
             <View style={styles.privacyIcon}>
-              <View style={isPublic ? styles.privacyIconSelected : null}/>
+              <View style={type === 'Public' ? styles.privacyIconSelected : null}/>
             </View>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setIsPublic(false)}>
+          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setType('Private')}>
             <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-closed" size={20}/>
             <View style={{flexDirection: 'column'}}>
               <Text style={styles.privacyText}>Private</Text>
               <Text>Anyone can find. Request to join.</Text>
             </View>
             <View style={styles.privacyIcon}>
-              <View style={!isPublic ? styles.privacyIconSelected : null}/>
+              <View style={type === 'Private' ? styles.privacyIconSelected : null}/>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setType('Hidden')}>
+            <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-closed" size={20}/>
+            <View style={{flexDirection: 'column'}}>
+              <Text style={styles.privacyText}>Hidden</Text>
+              <Text>Invite Only.</Text>
+            </View>
+            <View style={styles.privacyIcon}>
+              <View style={type === 'Hidden' ? styles.privacyIconSelected : null}/>
             </View>
           </TouchableOpacity>
         </View>
