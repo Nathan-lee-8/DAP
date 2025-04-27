@@ -59,6 +59,7 @@ const CreateChat = ({ route, navigation }: any) => {
             chatID: chat.data.createChat.id,
             unreadMessageCount: 0,
             lastMessage: message,
+            lastMessageAt: Date.now().toString(),
             role: 'Owner'
           }
         },
@@ -76,6 +77,7 @@ const CreateChat = ({ route, navigation }: any) => {
               chatID: chat.data.createChat.id,
               unreadMessageCount: 1,
               lastMessage: message,
+              lastMessageAt: Date.now().toString(),
               role: 'Member'
             }
           },

@@ -150,9 +150,7 @@ const MessageUsers = ( {navigation} : any) => {
           </View>
         }
       />
-      <TouchableOpacity onPress={handleCreateMsg}>
-        <Icon name="add-circle-outline" style={styles.createButton} size={50}/>
-      </TouchableOpacity>
+      <Icon name="add-circle-outline" style={styles.createButton} size={50}  onPress={handleCreateMsg}/>
     </View>
   );
 };

@@ -251,8 +251,8 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
         __typename
       }
       userID
-      commentCount
       type
+      commentCount
       createdAt
       updatedAt
       userPostsId
@@ -618,6 +618,7 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       owner
       __typename
     }
+    lastMessageAt
     createdAt
     updatedAt
     userChatsId
@@ -643,6 +644,7 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
       isMuted
       userID
       chatID
+      lastMessageAt
       createdAt
       updatedAt
       userChatsId
@@ -659,7 +661,7 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
 >;
 export const chatsByUser = /* GraphQL */ `query ChatsByUser(
   $userID: ID!
-  $updatedAt: ModelStringKeyConditionInput
+  $lastMessageAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserChatFilterInput
   $limit: Int
@@ -667,7 +669,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
 ) {
   chatsByUser(
     userID: $userID
-    updatedAt: $updatedAt
+    lastMessageAt: $lastMessageAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -681,6 +683,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       isMuted
       userID
       chatID
+      lastMessageAt
       chat{
         id
         name
@@ -708,6 +711,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
               __typename
             }
             chatID
+            lastMessageAt
             createdAt
             updatedAt
             owner
@@ -757,6 +761,7 @@ export const userChatsByChatIDAndCreatedAt = /* GraphQL */ `query UserChatsByCha
       isMuted
       userID
       chatID
+      lastMessageAt
       createdAt
       updatedAt
       userChatsId
@@ -830,9 +835,10 @@ export const getChat = /* GraphQL */ `query GetChat(
           createdAt
           updatedAt
           owner
-      __typename
-    }
-    createdAt
+          __typename
+        }
+        lastMessageAt
+        createdAt
         updatedAt
         owner
         __typename
@@ -1287,13 +1293,13 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
             owner
             __typename
           }
-      nextToken
-      __typename
-    }
+          nextToken
+          __typename
+        }
         commentCount
         type
-    createdAt
-    updatedAt
+        createdAt
+        updatedAt
         userPostsId
         owner
         __typename

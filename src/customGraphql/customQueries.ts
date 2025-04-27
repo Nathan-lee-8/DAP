@@ -251,7 +251,7 @@ export const getChat = /* GraphQL */ `query GetChat(
 ` as GeneratedQuery<APITypes.GetChatQueryVariables, APITypes.GetChatQuery>;
 export const chatsByUser = /* GraphQL */ `query ChatsByUser(
   $userID: ID!
-  $updatedAt: ModelStringKeyConditionInput
+  $lastMessageAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserChatFilterInput
   $limit: Int
@@ -259,7 +259,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
 ) {
   chatsByUser(
     userID: $userID
-    updatedAt: $updatedAt
+    lastMessageAt: $lastMessageAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -307,6 +307,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
     description
     isPublic
     memberCount
+    type
     members {
       items{
         id
