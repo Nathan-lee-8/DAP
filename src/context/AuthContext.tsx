@@ -2,6 +2,8 @@
 import { createContext, useState, ReactNode, useEffect } from 'react';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getMessaging, requestPermission, getToken } from '@react-native-firebase/messaging';
+import { getApp } from '@react-native-firebase/app';
 
 import client from '../client';
 import { userByEmail } from '../customGraphql/customQueries';
@@ -60,6 +62,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   //Sets current user data whenever userEmail is set
   useEffect(() => {
     if(!userEmail || userEmail === '') return;
+    const getNotificationPermission = async () => {
+      try{
+        const messaging = getMessaging();
+        const authStatus = await messaging.requestPermission();
+        if (authStatus > 0) {
+          console.log('Getting FCM token...');
+          const token = await messaging.getToken();
+          console.log('FCM Token:', token);
+        } else {
+          console.log('Permission not granted, cannot get token');
+        }
+      }catch(error){
+        console.log(error);
+      }
+    }
     const getUserAttributes = async () => {
       try {
         const data = await client.graphql({
@@ -71,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const users = data.data.userByEmail.items;
         if(users.length > 0) setCurrUser(users[0]);
         setSignedIn(true);
+        getNotificationPermission();
       } catch (error) {
         console.log('Error fetching user attributes:', error);
       }
