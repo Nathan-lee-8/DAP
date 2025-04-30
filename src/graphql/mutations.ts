@@ -84,8 +84,8 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
     postURL
     groupID
     userID
-    commentCount
     type
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -107,8 +107,8 @@ export const updatePost = /* GraphQL */ `mutation UpdatePost(
     postURL
     groupID
     userID
-    commentCount
     type
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -130,8 +130,8 @@ export const deletePost = /* GraphQL */ `mutation DeletePost(
     postURL
     groupID
     userID
-    commentCount
     type
+    commentCount
     createdAt
     updatedAt
     userPostsId
@@ -712,4 +712,61 @@ export const deleteReport = /* GraphQL */ `mutation DeleteReport(
 ` as GeneratedMutation<
   APITypes.DeleteReportMutationVariables,
   APITypes.DeleteReportMutation
+>;
+export const createToken = /* GraphQL */ `mutation CreateToken(
+  $input: CreateTokenInput!
+  $condition: ModelTokenConditionInput
+) {
+  createToken(input: $input, condition: $condition) {
+    id
+    tokenID
+    userID
+    createdAt
+    updatedAt
+    userFcmTokensId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateTokenMutationVariables,
+  APITypes.CreateTokenMutation
+>;
+export const updateToken = /* GraphQL */ `mutation UpdateToken(
+  $input: UpdateTokenInput!
+  $condition: ModelTokenConditionInput
+) {
+  updateToken(input: $input, condition: $condition) {
+    id
+    tokenID
+    userID
+    createdAt
+    updatedAt
+    userFcmTokensId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateTokenMutationVariables,
+  APITypes.UpdateTokenMutation
+>;
+export const deleteToken = /* GraphQL */ `mutation DeleteToken(
+  $input: DeleteTokenInput!
+  $condition: ModelTokenConditionInput
+) {
+  deleteToken(input: $input, condition: $condition) {
+    id
+    tokenID
+    userID
+    createdAt
+    updatedAt
+    userFcmTokensId
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteTokenMutationVariables,
+  APITypes.DeleteTokenMutation
 >;

@@ -47,6 +47,12 @@ export const userByEmail =
       lastname
       profileURL
       description
+      token{
+        items{
+          id
+          tokenID
+        }
+      }
     }
   }
 }
@@ -526,4 +532,32 @@ export const commentsByPost = /* GraphQL */ `query CommentsByPost(
 ` as GeneratedQuery<
   APITypes.CommentsByPostQueryVariables,
   APITypes.CommentsByPostQuery
+>;
+export const tokensByUser = /* GraphQL */ `query TokensByUser(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelTokenFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  tokensByUser(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      tokenID
+      userID
+      createdAt
+    }
+  }
+}
+` as GeneratedQuery<
+  APITypes.TokensByUserQueryVariables,
+  APITypes.TokensByUserQuery
 >;

@@ -1509,3 +1509,87 @@ export const listReports = /* GraphQL */ `query ListReports(
   APITypes.ListReportsQueryVariables,
   APITypes.ListReportsQuery
 >;
+export const getToken = /* GraphQL */ `query GetToken($id: ID!) {
+  getToken(id: $id) {
+    id
+    tokenID
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userFcmTokensId
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetTokenQueryVariables, APITypes.GetTokenQuery>;
+export const listTokens = /* GraphQL */ `query ListTokens(
+  $filter: ModelTokenFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listTokens(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      tokenID
+      userID
+      createdAt
+      updatedAt
+      userFcmTokensId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListTokensQueryVariables,
+  APITypes.ListTokensQuery
+>;
+export const tokensByUser = /* GraphQL */ `query TokensByUser(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelTokenFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  tokensByUser(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      tokenID
+      userID
+      createdAt
+      updatedAt
+      userFcmTokensId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.TokensByUserQueryVariables,
+  APITypes.TokensByUserQuery
+>;

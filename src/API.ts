@@ -83,6 +83,7 @@ export type User = {
   comments?: ModelCommentConnection | null,
   replies?: ModelReplyConnection | null,
   notifications?: ModelNotificationConnection | null,
+  fcmTokens?: ModelTokenConnection | null,
   createdAt: string,
   updatedAt: string,
   owner?: string | null,
@@ -200,7 +201,7 @@ export type ModelUserChatConnection = {
 export type UserChat = {
   __typename: "UserChat",
   id: string,
-  unreadMessageCount?: number | null,
+  unreadMessageCount: number,
   lastMessage: string,
   role: string,
   isMuted?: boolean | null,
@@ -266,6 +267,24 @@ export type Notification = {
   createdAt: string,
   updatedAt: string,
   userNotificationsId?: string | null,
+  owner?: string | null,
+};
+
+export type ModelTokenConnection = {
+  __typename: "ModelTokenConnection",
+  items:  Array<Token | null >,
+  nextToken?: string | null,
+};
+
+export type Token = {
+  __typename: "Token",
+  id: string,
+  tokenID: string,
+  userID: string,
+  user?: User | null,
+  createdAt: string,
+  updatedAt: string,
+  userFcmTokensId?: string | null,
   owner?: string | null,
 };
 
@@ -433,7 +452,7 @@ export type DeleteReplyInput = {
 
 export type CreateUserChatInput = {
   id?: string | null,
-  unreadMessageCount?: number | null,
+  unreadMessageCount: number,
   lastMessage: string,
   role: string,
   isMuted?: boolean | null,
@@ -722,6 +741,38 @@ export type DeleteReportInput = {
   id: string,
 };
 
+export type CreateTokenInput = {
+  id?: string | null,
+  tokenID: string,
+  userID: string,
+  createdAt?: string | null,
+  userFcmTokensId?: string | null,
+};
+
+export type ModelTokenConditionInput = {
+  tokenID?: ModelStringInput | null,
+  userID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelTokenConditionInput | null > | null,
+  or?: Array< ModelTokenConditionInput | null > | null,
+  not?: ModelTokenConditionInput | null,
+  updatedAt?: ModelStringInput | null,
+  userFcmTokensId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type UpdateTokenInput = {
+  id: string,
+  tokenID?: string | null,
+  userID?: string | null,
+  createdAt?: string | null,
+  userFcmTokensId?: string | null,
+};
+
+export type DeleteTokenInput = {
+  id: string,
+};
+
 export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
   email?: ModelStringInput | null,
@@ -940,6 +991,19 @@ export type ModelReportConnection = {
   nextToken?: string | null,
 };
 
+export type ModelTokenFilterInput = {
+  id?: ModelIDInput | null,
+  tokenID?: ModelStringInput | null,
+  userID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelTokenFilterInput | null > | null,
+  or?: Array< ModelTokenFilterInput | null > | null,
+  not?: ModelTokenFilterInput | null,
+  userFcmTokensId?: ModelIDInput | null,
+  owner?: ModelStringInput | null,
+};
+
 export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   email?: ModelSubscriptionStringInput | null,
@@ -959,6 +1023,7 @@ export type ModelSubscriptionUserFilterInput = {
   userCommentsId?: ModelSubscriptionIDInput | null,
   userRepliesId?: ModelSubscriptionIDInput | null,
   userNotificationsId?: ModelSubscriptionIDInput | null,
+  userFcmTokensId?: ModelSubscriptionIDInput | null,
   owner?: ModelStringInput | null,
 };
 
@@ -1145,6 +1210,17 @@ export type ModelSubscriptionReportFilterInput = {
   owner?: ModelStringInput | null,
 };
 
+export type ModelSubscriptionTokenFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  tokenID?: ModelSubscriptionStringInput | null,
+  userID?: ModelSubscriptionIDInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionTokenFilterInput | null > | null,
+  or?: Array< ModelSubscriptionTokenFilterInput | null > | null,
+  owner?: ModelStringInput | null,
+};
+
 export type CreateUserMutationVariables = {
   input: CreateUserInput,
   condition?: ModelUserConditionInput | null,
@@ -1221,8 +1297,8 @@ export type CreatePostMutation = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    commentCount: number,
     type: string,
+    commentCount: number,
     createdAt: string,
     updatedAt: string,
     userPostsId?: string | null,
@@ -1243,8 +1319,8 @@ export type UpdatePostMutation = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    commentCount: number,
     type: string,
+    commentCount: number,
     createdAt: string,
     updatedAt: string,
     userPostsId?: string | null,
@@ -1265,8 +1341,8 @@ export type DeletePostMutation = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    commentCount: number,
     type: string,
+    commentCount: number,
     createdAt: string,
     updatedAt: string,
     userPostsId?: string | null,
@@ -1403,7 +1479,7 @@ export type CreateUserChatMutation = {
   createUserChat?:  {
     __typename: "UserChat",
     id: string,
-    unreadMessageCount?: number | null,
+    unreadMessageCount: number,
     lastMessage: string,
     role: string,
     isMuted?: boolean | null,
@@ -1426,7 +1502,7 @@ export type UpdateUserChatMutation = {
   updateUserChat?:  {
     __typename: "UserChat",
     id: string,
-    unreadMessageCount?: number | null,
+    unreadMessageCount: number,
     lastMessage: string,
     role: string,
     isMuted?: boolean | null,
@@ -1449,7 +1525,7 @@ export type DeleteUserChatMutation = {
   deleteUserChat?:  {
     __typename: "UserChat",
     id: string,
-    unreadMessageCount?: number | null,
+    unreadMessageCount: number,
     lastMessage: string,
     role: string,
     isMuted?: boolean | null,
@@ -1813,6 +1889,60 @@ export type DeleteReportMutation = {
     message: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type CreateTokenMutationVariables = {
+  input: CreateTokenInput,
+  condition?: ModelTokenConditionInput | null,
+};
+
+export type CreateTokenMutation = {
+  createToken?:  {
+    __typename: "Token",
+    id: string,
+    tokenID: string,
+    userID: string,
+    createdAt: string,
+    updatedAt: string,
+    userFcmTokensId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type UpdateTokenMutationVariables = {
+  input: UpdateTokenInput,
+  condition?: ModelTokenConditionInput | null,
+};
+
+export type UpdateTokenMutation = {
+  updateToken?:  {
+    __typename: "Token",
+    id: string,
+    tokenID: string,
+    userID: string,
+    createdAt: string,
+    updatedAt: string,
+    userFcmTokensId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type DeleteTokenMutationVariables = {
+  input: DeleteTokenInput,
+  condition?: ModelTokenConditionInput | null,
+};
+
+export type DeleteTokenMutation = {
+  deleteToken?:  {
+    __typename: "Token",
+    id: string,
+    tokenID: string,
+    userID: string,
+    createdAt: string,
+    updatedAt: string,
+    userFcmTokensId?: string | null,
     owner?: string | null,
   } | null,
 };
@@ -2355,7 +2485,7 @@ export type GetUserChatQuery = {
   getUserChat?:  {
     __typename: "UserChat",
     id: string,
-    unreadMessageCount?: number | null,
+    unreadMessageCount: number,
     lastMessage: string,
     role: string,
     isMuted?: boolean | null,
@@ -2404,7 +2534,7 @@ export type ListUserChatsQuery = {
     items:  Array< {
       __typename: "UserChat",
       id: string,
-      unreadMessageCount?: number | null,
+      unreadMessageCount: number,
       lastMessage: string,
       role: string,
       isMuted?: boolean | null,
@@ -2435,7 +2565,7 @@ export type ChatsByUserQuery = {
     items:  Array< {
       __typename: "UserChat",
       id: string,
-      unreadMessageCount?: number | null,
+      unreadMessageCount: number,
       lastMessage: string,
       role: string,
       isMuted?: boolean | null,
@@ -2453,7 +2583,7 @@ export type ChatsByUserQuery = {
           items:  Array< {
             __typename: "UserChat",
             id: string,
-            unreadMessageCount?: number | null,
+            unreadMessageCount: number,
             lastMessage: string,
             role: string,
             isMuted?: boolean | null,
@@ -2506,7 +2636,7 @@ export type UserChatsByChatIDAndCreatedAtQuery = {
     items:  Array< {
       __typename: "UserChat",
       id: string,
-      unreadMessageCount?: number | null,
+      unreadMessageCount: number,
       lastMessage: string,
       role: string,
       isMuted?: boolean | null,
@@ -2569,7 +2699,7 @@ export type GetChatQuery = {
       items:  Array< {
         __typename: "UserChat",
         id: string,
-        unreadMessageCount?: number | null,
+        unreadMessageCount: number,
         lastMessage: string,
         role: string,
         isMuted?: boolean | null,
@@ -3218,6 +3348,85 @@ export type ListReportsQuery = {
   } | null,
 };
 
+export type GetTokenQueryVariables = {
+  id: string,
+};
+
+export type GetTokenQuery = {
+  getToken?:  {
+    __typename: "Token",
+    id: string,
+    tokenID: string,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userFcmTokensId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type ListTokensQueryVariables = {
+  filter?: ModelTokenFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListTokensQuery = {
+  listTokens?:  {
+    __typename: "ModelTokenConnection",
+    items:  Array< {
+      __typename: "Token",
+      id: string,
+      tokenID: string,
+      userID: string,
+      createdAt: string,
+      updatedAt: string,
+      userFcmTokensId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type TokensByUserQueryVariables = {
+  userID: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelTokenFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type TokensByUserQuery = {
+  tokensByUser?:  {
+    __typename: "ModelTokenConnection",
+    items:  Array< {
+      __typename: "Token",
+      id: string,
+      tokenID: string,
+      userID: string,
+      createdAt: string,
+      updatedAt: string,
+      userFcmTokensId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type OnCreateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
   owner?: string | null,
@@ -3259,6 +3468,10 @@ export type OnCreateUserSubscription = {
     } | null,
     notifications?:  {
       __typename: "ModelNotificationConnection",
+      nextToken?: string | null,
+    } | null,
+    fcmTokens?:  {
+      __typename: "ModelTokenConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -3310,6 +3523,10 @@ export type OnUpdateUserSubscription = {
       __typename: "ModelNotificationConnection",
       nextToken?: string | null,
     } | null,
+    fcmTokens?:  {
+      __typename: "ModelTokenConnection",
+      nextToken?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -3357,6 +3574,10 @@ export type OnDeleteUserSubscription = {
     } | null,
     notifications?:  {
       __typename: "ModelNotificationConnection",
+      nextToken?: string | null,
+    } | null,
+    fcmTokens?:  {
+      __typename: "ModelTokenConnection",
       nextToken?: string | null,
     } | null,
     createdAt: string,
@@ -3818,7 +4039,7 @@ export type OnCreateUserChatSubscription = {
   onCreateUserChat?:  {
     __typename: "UserChat",
     id: string,
-    unreadMessageCount?: number | null,
+    unreadMessageCount: number,
     lastMessage: string,
     role: string,
     isMuted?: boolean | null,
@@ -3864,7 +4085,7 @@ export type OnUpdateUserChatSubscription = {
   onUpdateUserChat?:  {
     __typename: "UserChat",
     id: string,
-    unreadMessageCount?: number | null,
+    unreadMessageCount: number,
     lastMessage: string,
     role: string,
     isMuted?: boolean | null,
@@ -3910,7 +4131,7 @@ export type OnDeleteUserChatSubscription = {
   onDeleteUserChat?:  {
     __typename: "UserChat",
     id: string,
-    unreadMessageCount?: number | null,
+    unreadMessageCount: number,
     lastMessage: string,
     role: string,
     isMuted?: boolean | null,
@@ -4508,6 +4729,99 @@ export type OnDeleteReportSubscription = {
     message: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnCreateTokenSubscriptionVariables = {
+  filter?: ModelSubscriptionTokenFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnCreateTokenSubscription = {
+  onCreateToken?:  {
+    __typename: "Token",
+    id: string,
+    tokenID: string,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userFcmTokensId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnUpdateTokenSubscriptionVariables = {
+  filter?: ModelSubscriptionTokenFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnUpdateTokenSubscription = {
+  onUpdateToken?:  {
+    __typename: "Token",
+    id: string,
+    tokenID: string,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userFcmTokensId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnDeleteTokenSubscriptionVariables = {
+  filter?: ModelSubscriptionTokenFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnDeleteTokenSubscription = {
+  onDeleteToken?:  {
+    __typename: "Token",
+    id: string,
+    tokenID: string,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    userFcmTokensId?: string | null,
     owner?: string | null,
   } | null,
 };

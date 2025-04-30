@@ -48,6 +48,10 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
       nextToken
       __typename
     }
+    fcmTokens {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -98,6 +102,10 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
       nextToken
       __typename
     }
+    fcmTokens {
+      nextToken
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -145,6 +153,10 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
       __typename
     }
     notifications {
+      nextToken
+      __typename
+    }
+    fcmTokens {
       nextToken
       __typename
     }
@@ -1334,4 +1346,100 @@ export const onDeleteReport = /* GraphQL */ `subscription OnDeleteReport(
 ` as GeneratedSubscription<
   APITypes.OnDeleteReportSubscriptionVariables,
   APITypes.OnDeleteReportSubscription
+>;
+export const onCreateToken = /* GraphQL */ `subscription OnCreateToken(
+  $filter: ModelSubscriptionTokenFilterInput
+  $owner: String
+) {
+  onCreateToken(filter: $filter, owner: $owner) {
+    id
+    tokenID
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userFcmTokensId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateTokenSubscriptionVariables,
+  APITypes.OnCreateTokenSubscription
+>;
+export const onUpdateToken = /* GraphQL */ `subscription OnUpdateToken(
+  $filter: ModelSubscriptionTokenFilterInput
+  $owner: String
+) {
+  onUpdateToken(filter: $filter, owner: $owner) {
+    id
+    tokenID
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userFcmTokensId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateTokenSubscriptionVariables,
+  APITypes.OnUpdateTokenSubscription
+>;
+export const onDeleteToken = /* GraphQL */ `subscription OnDeleteToken(
+  $filter: ModelSubscriptionTokenFilterInput
+  $owner: String
+) {
+  onDeleteToken(filter: $filter, owner: $owner) {
+    id
+    tokenID
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    userFcmTokensId
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteTokenSubscriptionVariables,
+  APITypes.OnDeleteTokenSubscription
 >;
