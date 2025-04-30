@@ -2,11 +2,11 @@
 import { createContext, useState, ReactNode, useEffect } from 'react';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getMessaging, requestPermission, getToken } from '@react-native-firebase/messaging';
-import { getApp } from '@react-native-firebase/app';
+import { getMessaging, requestPermission, getToken, deleteToken } from '@react-native-firebase/messaging';
 
 import client from '../client';
-import { userByEmail } from '../customGraphql/customQueries';
+import { tokensByUser, userByEmail } from '../customGraphql/customQueries';
+import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
 import { User } from '../API';
 
 interface AuthContextType {
@@ -27,14 +27,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isSignedIn, setSignedIn] = useState<boolean>(false);
   const [userEmail, setUserEmail] = useState<string>('');
   const [ fetchCounter, setFetchCounter ] = useState(0);
+  const [ tokenDynamoID, setTokenDynamoID ] = useState<string>();
 
   //Signs out of the app and clears cached data
   const logout = async () => {
     setSignedIn(false);
     setUserEmail('');
     setCurrUser(undefined);
+    removeToken();
     await signOut();
     AsyncStorage.clear();
+  }
+
+  const removeToken = async () => {
+    if(!tokenDynamoID) return;
+    deleteToken(getMessaging());
+    try {
+      await client.graphql({
+        query: deleteTokenItem,
+        variables: {
+          input: {
+            id: tokenDynamoID
+          }
+        },
+        authMode: 'userPool'
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const registerTokenToBackend = async (tokenID: string) => {
+    if(!currUser) return;
+    try {
+      const tokenData = await client.graphql({
+        query: tokensByUser,
+        variables: {userID: currUser.id},
+        authMode: 'userPool'
+      });
+      const exists = tokenData.data.tokensByUser.items.some((item) => item.id === tokenDynamoID);
+      if(!exists){
+        const res = await client.graphql({
+          query: createToken,
+          variables: {
+            input: {
+              tokenID: tokenID,
+              userID: currUser.id,
+            }
+          },
+          authMode: 'userPool'
+        })
+        setTokenDynamoID(res.data.createToken.id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const triggerFetch = () => {
@@ -65,11 +112,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const getNotificationPermission = async () => {
       try{
         const messaging = getMessaging();
-        const authStatus = await messaging.requestPermission();
+        const authStatus = await requestPermission(messaging);
         if (authStatus > 0) {
-          console.log('Getting FCM token...');
-          const token = await messaging.getToken();
-          console.log('FCM Token:', token);
+          const token = await getToken(messaging);
+          await registerTokenToBackend(token); 
         } else {
           console.log('Permission not granted, cannot get token');
         }
@@ -95,6 +141,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
     getUserAttributes();
   }, [userEmail, fetchCounter]);
+
+  //Subscription to listen for new tokens.
+  useEffect(() => {
+    const messaging = getMessaging();
+    const unsubscribe = messaging.onTokenRefresh(async (newToken) => {
+      await registerTokenToBackend(newToken); 
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, setSignedIn,

@@ -19,6 +19,7 @@ type User @model @auth(
   comments: [Comment] @hasMany
   replies: [Reply] @hasMany
   notifications: [Notification] @hasMany
+  fcmTokens: [Token] @hasMany
 }
 
 type Post @model @auth(
@@ -187,4 +188,17 @@ type Report @model @auth(
   reportedItemType: String!
   reason: String!
   message: String!
+}
+
+type Token @model @auth(
+  rules: [
+    { allow: owner },
+    { allow: private }
+  ]
+) { 
+  id: ID!
+  tokenID: String!
+  userID: ID! @index(name: "tokensByUser", queryField: "tokensByUser", sortKeyFields: ["createdAt"])
+  user: User @belongsTo(fields:["userID"])
+  createdAt: AWSDateTime!
 }

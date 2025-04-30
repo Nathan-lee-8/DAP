@@ -326,3 +326,27 @@ export const createReport = /* GraphQL */ `mutation CreateReport(
   APITypes.CreateReportMutationVariables,
   APITypes.CreateReportMutation
 >;
+export const createToken = /* GraphQL */ `mutation CreateToken(
+  $input: CreateTokenInput!
+  $condition: ModelTokenConditionInput
+) {
+  createToken(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateTokenMutationVariables,
+  APITypes.CreateTokenMutation
+>;
+export const deleteTokenItem = /* GraphQL */ `mutation DeleteToken(
+  $input: DeleteTokenInput!
+  $condition: ModelTokenConditionInput
+) {
+  deleteToken(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteTokenMutationVariables,
+  APITypes.DeleteTokenMutation
+>;
