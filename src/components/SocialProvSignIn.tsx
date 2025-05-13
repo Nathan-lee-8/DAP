@@ -35,7 +35,7 @@ const SocialProvSignIn = ({setLoading}: any) => {
       if(user.email) setUserEmail(user.email);
       console.log(user);
     } catch (error) {
-      console.log('Error fetching user attributes:', error);
+      console.log('Error signing in with Google:', error);
       Alert.alert('Error', 'Sign In Failed');
     } finally {
       setLoading(false);

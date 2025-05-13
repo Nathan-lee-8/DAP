@@ -47,7 +47,7 @@ export const userByEmail =
       lastname
       profileURL
       description
-      token{
+      fcmTokens{
         items{
           id
           tokenID
