@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { View, Text, ActivityIndicator, FlatList, TouchableOpacity, Alert,
+import { View, Text, ActivityIndicator, FlatList, Alert,
  KeyboardAvoidingView, TextInput, Platform } from "react-native";
 import styles from "../styles/Styles";
 import { useEffect } from "react";
@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import client from "../client";
 import { commentsByPost } from "../customGraphql/customQueries";
 import { createComment, createReply, updateComment, updateReply 
-  } from "../customGraphql/customMutations";
+} from "../customGraphql/customMutations";
 import { Comment } from "../API";
 
 import Icon from '@react-native-vector-icons/ionicons';
@@ -44,20 +44,6 @@ const ListComments = ({postID, header, customPadding}: any) => {
       console.log(error);
     } finally {
       setLoading(false);
-    }
-  }
-
-  const loadComments = async () => {
-    try{
-      const storedComments = await AsyncStorage.getItem('Comments');
-      if(storedComments){
-        setComments(JSON.parse(storedComments));
-        setLoading(false);
-        return;
-      }
-      await fetchComments();
-    } catch (error) {
-      console.log('Error loading cached news feed', error);
     }
   }
 

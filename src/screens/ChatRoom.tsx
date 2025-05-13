@@ -107,13 +107,13 @@ const ChatRoom = ( { route, navigation } : any) => {
       if(parts){
         let URLs: (string | undefined)[] = [];
         setParticipants(parts.filter((item): item is UserChat => {
-          if(item.userID !== currUser.id){ 
-            URLs.push(item.user?.profileURL || undefined)
+          if(item?.userID !== currUser.id){ 
+            URLs.push(item?.user?.profileURL || undefined)
           }
-          return item.userID !== currUser.id;
+          return item?.userID !== currUser.id;
         }));
         setURLs(URLs);
-        const myUser = parts.find((item): item is UserChat => item.userID === currUser.id)
+        const myUser = parts.find((item): item is UserChat => item?.userID === currUser.id)
         setMyUserChat(myUser);
         if(myUser?.role === 'Admin'){
           setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
