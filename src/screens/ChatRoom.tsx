@@ -43,7 +43,7 @@ const ChatRoom = ( { route, navigation } : any) => {
 
   //update title anytime participants changes
   useEffect( () => {
-    if(chat?.name) setTitle(chat.name);
+    if(chat?.name && chat.name !== 'Chat name') setTitle(chat.name);
     else{
       var temptitle = participants.map((item) => 
         `${item.user?.firstname} ${item.user?.lastname}`).filter(Boolean).join(', ');
