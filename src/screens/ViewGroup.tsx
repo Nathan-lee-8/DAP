@@ -5,8 +5,8 @@ import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
 import { getGroup } from '../customGraphql/customQueries';
-import { createUserGroup, deleteUserGroup, deletePost, deleteGroup, createReport
- } from '../customGraphql/customMutations';
+import { createUserGroup, deleteUserGroup, deletePost, deleteGroup, createReport,
+   createNotification } from '../customGraphql/customMutations';
 import { Group, Post, UserGroup, User } from '../API'
 
 import { AuthContext } from "../context/AuthContext";
@@ -62,7 +62,9 @@ const ViewGroup = ( {route, navigation} : any) => {
       const userData = groupData.members?.items?.map((item: any) => item.user);
       if(userData) setUsers(userData);
       if(posts) setPosts(posts);
-      const myUserGroup = groupData.members?.items?.find((member) => member?.user?.id === currUser.id);
+      const myUserGroup = groupData.members?.items?.find((member) => 
+        member?.user?.id === currUser.id
+      );
       if(myUserGroup) setMyUserGroup(myUserGroup);
       if(!myUserGroup){
         if(group?.isPublic){
@@ -95,7 +97,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   const handleJoinGroup = async () => {
     if(myUserGroup !== undefined) return;
 
-    if(group?.isPublic){
+    if(group?.type === 'Public'){
       try{
         await client.graphql({
           query: createUserGroup,
@@ -110,12 +112,48 @@ const ViewGroup = ( {route, navigation} : any) => {
         })
         Alert.alert('Success', 'Group joined successfully.');
         fetchCurrentData();
+        group?.members?.items.map(async (member) => {
+          if(member?.role === 'Admin' || member?.role === 'Owner'){
+            await client.graphql({
+              query: createNotification,
+              variables: {
+                input: {
+                  type: 'New Member',
+                  content: currUser.firstname + " " + currUser.lastname 
+                    + ' has joined ' + group.groupName,
+                  userID: member.userID
+                }
+              },
+              authMode: 'userPool'
+            })
+          }
+        })
       } catch (error){ 
         console.log('Error', error);
       }
     }else{
-      //Send alert to group member or group admin to allow 
-      Alert.alert('not implemented yet', 'send a message to the owner to add you to the group');
+      group?.members?.items.map(async (member) => {
+        if(member?.role === 'Admin' || member?.role === 'Owner'){
+          try{
+             await client.graphql({
+              query: createNotification,
+              variables: {
+                input: {
+                  type: 'Request Join',
+                  content: currUser.firstname + " " + currUser.lastname 
+                    + ' has request to join ' + group.groupName,
+                  userID: member.userID,
+                  groupID: groupID,
+                  targetUserID: currUser.id
+                }
+              },
+              authMode: 'userPool'
+            })
+          }catch(error){
+            console.log(error);
+          }
+        }
+      })
     }
   }
 
@@ -332,7 +370,8 @@ const ViewGroup = ( {route, navigation} : any) => {
     return( 
       <View>
         <View style={styles.groupInfoContainer}>
-          <Icon name="ellipsis-horizontal-sharp" style={styles.groupOptionsButton} size={20} 
+          <Icon name="ellipsis-horizontal-sharp" style={styles.groupOptionsButton} 
+            size={20} 
             color={'black'}
             onPress={() => setModalVisible(true)}
           />
@@ -360,20 +399,20 @@ const ViewGroup = ( {route, navigation} : any) => {
           </View>
           <View style={{flexDirection: 'row', marginTop: 5}}>
             <Text>{group?.members?.items.length} members </Text>
-            {group?.isPublic ? (
+            {group?.type === 'Public' ? (
               <Icon name="lock-open" size={18}/>
-            ) : (
+            ) : group?.type === 'Private' ? (
               <Icon name="lock-closed" size={18}/>
-            )}
+            ) : []}
           </View>
           <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
             {myUserGroup !== undefined ? (
               <Text style={{textAlign: 'center'}}>Joined</Text>
-            ) : !group?.isPublic ? (
+            ) : group?.type === 'Private' ? (
               <Text style={{textAlign: 'center', fontSize: 12}}>Request Join</Text>
-            ) : (
+            ) : group?.type === 'Public' ? (
               <Text style={{textAlign: 'center'}}>Join Group</Text>
-            )}
+            ) :  []}
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={createGroupPost} style={styles.postContentTouchable}>
@@ -385,7 +424,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     )
   }
   
-  if(!group?.isPublic && myUserGroup === undefined){
+  if(myUserGroup === undefined && group?.type !== 'Public'){
     return (
       <View style={styles.container}>
       <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>

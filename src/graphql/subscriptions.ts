@@ -1111,6 +1111,10 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup(
       nextToken
       __typename
     }
+    notifications {
+      nextToken
+      __typename
+    }
     posts {
       nextToken
       __typename
@@ -1138,6 +1142,10 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup(
     memberCount
     type
     members {
+      nextToken
+      __typename
+    }
+    notifications {
       nextToken
       __typename
     }
@@ -1171,6 +1179,10 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup(
       nextToken
       __typename
     }
+    notifications {
+      nextToken
+      __typename
+    }
     posts {
       nextToken
       __typename
@@ -1194,7 +1206,35 @@ export const onCreateNotification = /* GraphQL */ `subscription OnCreateNotifica
     type
     content
     userID
+    groupID
+    targetUserID
     user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      memberCount
+      type
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    targetUser {
       id
       email
       firstname
@@ -1227,7 +1267,35 @@ export const onUpdateNotification = /* GraphQL */ `subscription OnUpdateNotifica
     type
     content
     userID
+    groupID
+    targetUserID
     user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      memberCount
+      type
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    targetUser {
       id
       email
       firstname
@@ -1260,7 +1328,35 @@ export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotifica
     type
     content
     userID
+    groupID
+    targetUserID
     user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      memberCount
+      type
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    targetUser {
       id
       email
       firstname
