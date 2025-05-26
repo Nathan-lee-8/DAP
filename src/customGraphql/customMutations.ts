@@ -350,3 +350,15 @@ export const deleteTokenItem = /* GraphQL */ `mutation DeleteToken(
   APITypes.DeleteTokenMutationVariables,
   APITypes.DeleteTokenMutation
 >;
+export const createNotification = /* GraphQL */ `mutation CreateNotification(
+  $input: CreateNotificationInput!
+  $condition: ModelNotificationConditionInput
+) {
+  createNotification(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateNotificationMutationVariables,
+  APITypes.CreateNotificationMutation
+>;

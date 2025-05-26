@@ -1251,8 +1251,8 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           createdAt
           updatedAt
           owner
-          __typename
-        }
+      __typename
+    }
         createdAt
         updatedAt
         owner
@@ -1293,13 +1293,13 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
             owner
             __typename
           }
-          nextToken
-          __typename
-        }
+      nextToken
+      __typename
+    }
         commentCount
         type
-        createdAt
-        updatedAt
+    createdAt
+    updatedAt
         userPostsId
         owner
         __typename
@@ -1384,7 +1384,35 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
     type
     content
     userID
+    groupID
+    targetUserID
     user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      groupURL
+      description
+      isPublic
+      memberCount
+      type
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    targetUser {
       id
       email
       firstname
@@ -1419,6 +1447,8 @@ export const listNotifications = /* GraphQL */ `query ListNotifications(
       type
       content
       userID
+      groupID
+      targetUserID
       createdAt
       updatedAt
       userNotificationsId
@@ -1454,6 +1484,8 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
       type
       content
       userID
+      groupID
+      targetUserID
       createdAt
       updatedAt
       userNotificationsId
@@ -1467,6 +1499,43 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
 ` as GeneratedQuery<
   APITypes.NotificationsByUserQueryVariables,
   APITypes.NotificationsByUserQuery
+>;
+export const notificationsByGroup = /* GraphQL */ `query NotificationsByGroup(
+  $groupID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelNotificationFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  notificationsByGroup(
+    groupID: $groupID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      type
+      content
+      userID
+      groupID
+      targetUserID
+      createdAt
+      updatedAt
+      userNotificationsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.NotificationsByGroupQueryVariables,
+  APITypes.NotificationsByGroupQuery
 >;
 export const getReport = /* GraphQL */ `query GetReport($id: ID!) {
   getReport(id: $id) {

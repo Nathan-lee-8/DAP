@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "695148103493",
+    "project_id": "dapsocial-6d8dc",
+    "storage_bucket": "dapsocial-6d8dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695148103493:android:9b810e9640d214376ee02c",
+        "android_client_info": {
+          "package_name": "com.dap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGL9ikGk070RtA2KD-enLhjWs18R2vozk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:695148103493:android:34dd30f9b48d401d6ee02c",
+        "android_client_info": {
+          "package_name": "com.nathanhlee.dap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGL9ikGk070RtA2KD-enLhjWs18R2vozk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
