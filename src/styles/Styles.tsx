@@ -411,6 +411,17 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     marginBottom: 10
   },
+  notificationModalOverlay:{
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    justifyContent: 'flex-end',
+  },
+  notificationModalContainer:{
+    height: '90%',
+    width: '100%',
+    backgroundColor: colorBackground,
+    borderRadius: 10
+  },
 
   /** comment Section */
   commentUserImg: {
@@ -661,7 +672,7 @@ const styles = StyleSheet.create({
   backContainer: {
     flexDirection: 'row',
     position: 'absolute',
-    top: Platform.OS === 'ios'? '10%' : 20,
+    top: Platform.OS === 'ios'? 60 : 20,
     left: 10,
     zIndex: 1,
   },
@@ -691,10 +702,18 @@ const styles = StyleSheet.create({
     padding: 5,
     zIndex: 1
   },
+  groupNotificationIcon:{
+    position: 'absolute',
+    top: 0,
+    right: 35,
+    padding: 5,
+    zIndex: 1
+  },
   groupNameText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: textColor,
+    maxWidth: '85%'
   },
   groupDescriptionText: {
     fontSize: 14,

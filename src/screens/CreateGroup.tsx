@@ -52,7 +52,7 @@ const CreateGroup = ( {navigation} : any) => {
             groupURL: groupURI,
             isPublic: type !== 'Hidden',
             type: type,
-            memberCount: addedMembers.length + 1
+            memberCount: 0
           }
         },
         authMode:'userPool'
