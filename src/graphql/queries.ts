@@ -1251,8 +1251,8 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           createdAt
           updatedAt
           owner
-      __typename
-    }
+          __typename
+        }
         createdAt
         updatedAt
         owner
@@ -1293,14 +1293,43 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
             owner
             __typename
           }
+          nextToken
+          __typename
+        }
+        commentCount
+        type
+        createdAt
+        updatedAt
+        userPostsId
+        owner
+        __typename
+      }
       nextToken
       __typename
     }
-        commentCount
+    notifications{
+      items{
+        id
         type
-    createdAt
-    updatedAt
-        userPostsId
+        content
+        userID
+        targetUser{
+          id
+          email
+          firstname
+          lastname
+          fullname
+          profileURL
+          description
+          createdAt
+          updatedAt
+          owner
+          __typename
+        }
+        groupID
+        targetUserID
+        createdAt
+        updatedAt
         owner
         __typename
       }

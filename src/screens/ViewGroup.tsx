@@ -27,8 +27,10 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
+  const [ notificationModalVisible, setNotificationModalVisible ] = useState(false);
   const [ reportMessage, setReportMessage ] = useState("");
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
+  const [ requested, setRequested ] = useState(false);
   const [ users, setUsers] = useState<User[]>([]);
   const flatListRef = useRef<FlatList>(null);
 
@@ -77,6 +79,14 @@ const ViewGroup = ( {route, navigation} : any) => {
       }else if(myUserGroup?.role === 'Admin'){
         setOptions(['View Members', 'Invite', 'Edit', 'Report', 'Leave'])
       }
+
+      //see if user has already requested to join group
+      groupData.notifications?.items.map((item) => {
+        if(item?.targetUser?.id === currUser.id){
+          setRequested(true);
+        }
+      })
+
     } catch (error: any) {
       console.log(error);
     } finally {
@@ -95,7 +105,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   }
   
   const handleJoinGroup = async () => {
-    if(myUserGroup !== undefined) return;
+    if(myUserGroup !== undefined || requested) return;
 
     if(group?.type === 'Public'){
       try{
@@ -121,7 +131,8 @@ const ViewGroup = ( {route, navigation} : any) => {
                   type: 'New Member',
                   content: currUser.firstname + " " + currUser.lastname 
                     + ' has joined ' + group.groupName,
-                  userID: member.userID
+                  userID: member.userID,
+                  groupID: group.id
                 }
               },
               authMode: 'userPool'
@@ -370,6 +381,12 @@ const ViewGroup = ( {route, navigation} : any) => {
     return( 
       <View>
         <View style={styles.groupInfoContainer}>
+          {(myUserGroup?.role === 'Owner' || myUserGroup?.role === 'Admin') && 
+            <Icon name="notifications-outline" size={20} style={styles.groupNotificationIcon}
+              color={group?.notifications && group?.notifications?.items.length > 0 ? 'blue' : 'black'}
+              onPress={() => setNotificationModalVisible(true)}
+            />
+          }
           <Icon name="ellipsis-horizontal-sharp" style={styles.groupOptionsButton} 
             size={20} 
             color={'black'}
@@ -406,7 +423,9 @@ const ViewGroup = ( {route, navigation} : any) => {
             ) : []}
           </View>
           <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
-            {myUserGroup !== undefined ? (
+            {requested ? (
+              <Text style={{textAlign: 'center'}}>Requested</Text>
+            ) : myUserGroup !== undefined ? (
               <Text style={{textAlign: 'center'}}>Joined</Text>
             ) : group?.type === 'Private' ? (
               <Text style={{textAlign: 'center', fontSize: 12}}>Request Join</Text>
@@ -586,6 +605,32 @@ const ViewGroup = ( {route, navigation} : any) => {
             <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
               <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Notification Modal */}
+      <Modal 
+        transparent={true} 
+        visible={notificationModalVisible} 
+        onRequestClose={() => setNotificationModalVisible(false)}  
+      >
+        <View style={styles.notificationModalOverlay}>
+          <View style={styles.notificationModalContainer}>
+            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
+              onPress={() => setNotificationModalVisible(false)}
+            /> 
+            <FlatList
+              data={group?.notifications?.items}
+              renderItem={({item}) => {
+                return (
+                  <View>
+                    <Text>{item?.type}</Text>
+                    <Text>{item?.content}</Text>
+                  </View>
+                )
+              }}
+            />
           </View>
         </View>
       </Modal>

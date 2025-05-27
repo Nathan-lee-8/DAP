@@ -348,6 +348,20 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
       }
       nextToken
     }
+    notifications {
+      items{
+        id
+        type
+        content
+        targetUser{
+          id
+          firstname
+          lastname
+          fullname
+        }
+      }
+      nextToken
+    }
   }
 }
 ` as GeneratedQuery<APITypes.GetGroupQueryVariables, APITypes.GetGroupQuery>;
