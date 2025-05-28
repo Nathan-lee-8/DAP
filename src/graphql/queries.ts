@@ -1313,6 +1313,10 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
         type
         content
         userID
+        groupID
+        targetUserID
+        onClickID
+        hidden
         targetUser{
           id
           email
@@ -1326,8 +1330,6 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           owner
           __typename
         }
-        groupID
-        targetUserID
         createdAt
         updatedAt
         owner
@@ -1415,6 +1417,8 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
     userID
     groupID
     targetUserID
+    onClickID
+    hidden
     user {
       id
       email
@@ -1478,6 +1482,8 @@ export const listNotifications = /* GraphQL */ `query ListNotifications(
       userID
       groupID
       targetUserID
+      onClickID
+      hidden
       createdAt
       updatedAt
       userNotificationsId
@@ -1515,6 +1521,8 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
       userID
       groupID
       targetUserID
+      onClickID
+      hidden
       createdAt
       updatedAt
       userNotificationsId
@@ -1552,6 +1560,8 @@ export const notificationsByGroup = /* GraphQL */ `query NotificationsByGroup(
       userID
       groupID
       targetUserID
+      onClickID
+      hidden
       createdAt
       updatedAt
       userNotificationsId

@@ -6,8 +6,8 @@ import { useFocusEffect } from "@react-navigation/native";
 import client from '../client';
 import { getGroup } from '../customGraphql/customQueries';
 import { createUserGroup, deleteUserGroup, deletePost, deleteGroup, createReport,
-   createNotification } from '../customGraphql/customMutations';
-import { Group, Post, UserGroup, User } from '../API'
+   createNotification, deleteNotification} from '../customGraphql/customMutations';
+import { Group, Post, UserGroup, User, Notification } from '../API'
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles'
@@ -24,6 +24,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ post, setPosts ] = useState<Post[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ myUserGroup, setMyUserGroup ] = useState<UserGroup>();
+  const [ notifications, setNotifications] = useState<Notification[]>([]);
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
@@ -79,7 +80,10 @@ const ViewGroup = ( {route, navigation} : any) => {
       }else if(myUserGroup?.role === 'Admin'){
         setOptions(['View Members', 'Invite', 'Edit', 'Report', 'Leave'])
       }
-
+      const validNotifications = groupData.notifications?.items.filter(
+        (item): item is Notification => item?.targetUser != null
+      ) || [];
+      setNotifications(validNotifications);
       //see if user has already requested to join group
       groupData.notifications?.items.map((item) => {
         if(item?.targetUser?.id === currUser.id){
@@ -128,11 +132,12 @@ const ViewGroup = ( {route, navigation} : any) => {
               query: createNotification,
               variables: {
                 input: {
-                  type: 'New Member',
+                  type: 'Group',
                   content: currUser.firstname + " " + currUser.lastname 
                     + ' has joined ' + group.groupName,
                   userID: member.userID,
-                  groupID: group.id
+                  groupID: group.id,
+                  onClickID: group.id
                 }
               },
               authMode: 'userPool'
@@ -150,12 +155,13 @@ const ViewGroup = ( {route, navigation} : any) => {
               query: createNotification,
               variables: {
                 input: {
-                  type: 'Request Join',
+                  type: 'Group',
                   content: currUser.firstname + " " + currUser.lastname 
-                    + ' has request to join ' + group.groupName,
+                    + ' has requested to join ' + group.groupName,
                   userID: member.userID,
                   groupID: groupID,
-                  targetUserID: currUser.id
+                  targetUserID: currUser.id,
+                  onClickID: group.id
                 }
               },
               authMode: 'userPool'
@@ -373,6 +379,58 @@ const ViewGroup = ( {route, navigation} : any) => {
     }
   }
 
+  const handleDeleteNotification = async (itemID: string) => {
+    setNotifications(prev => prev.filter(item => item.id !== itemID));
+    try{
+      await client.graphql({
+        query: deleteNotification,
+        variables: {
+          input: {
+            id: itemID
+          }
+        },
+        authMode: 'userPool'
+      })
+    }catch(error){
+      console.log(error);
+    }
+  }
+
+  const handleAcceptRequest = async (item: Notification) => {
+    if(!item?.targetUser){
+      Alert.alert('Error', 'Error accepting request');
+      return;
+    }
+    try{
+      await client.graphql({
+        query: createUserGroup,
+        variables: {
+          input: {
+            userID: item?.targetUser?.id,
+            groupID: groupID,
+            role: 'Member'
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log('userAdded');
+      await client.graphql({
+        query: deleteNotification,
+        variables: {
+          input: {
+            id: item.id
+          }
+        },
+        authMode: 'userPool'
+      })
+      console.log('notification deleted');
+      fetchCurrentData();
+      Alert.alert('Success', 'Request accepted');
+    }catch(error){
+      console.log(error);
+    }
+  }
+
   if(loading){
     return <ActivityIndicator size="large" color="#0000ff" />
   }
@@ -381,7 +439,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     return( 
       <View>
         <View style={styles.groupInfoContainer}>
-          {(myUserGroup?.role === 'Owner' || myUserGroup?.role === 'Admin') && 
+          {group?.type === 'Private' && (myUserGroup?.role === 'Owner' || myUserGroup?.role === 'Admin') && 
             <Icon name="notifications-outline" size={20} style={styles.groupNotificationIcon}
               color={group?.notifications && group?.notifications?.items.length > 0 ? 'blue' : 'black'}
               onPress={() => setNotificationModalVisible(true)}
@@ -620,16 +678,36 @@ const ViewGroup = ( {route, navigation} : any) => {
             <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
               onPress={() => setNotificationModalVisible(false)}
             /> 
+            <Text style={styles.title}>Requests</Text>
             <FlatList
-              data={group?.notifications?.items}
-              renderItem={({item}) => {
-                return (
-                  <View>
-                    <Text>{item?.type}</Text>
-                    <Text>{item?.content}</Text>
+              data={notifications}
+              renderItem={({item}) => 
+                <View style={styles.notificationItem}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <ImgComponent uri={item.targetUser?.profileURL || 'default'}/>
+                    <Text style={{fontSize: 20, marginLeft: 10}}>
+                      {item.targetUser?.firstname + " " + item.targetUser?.lastname}
+                    </Text>
                   </View>
-                )
-              }}
+                  <View style={{flexDirection: 'row', justifyContent:'flex-end'}}>
+                    <TouchableOpacity style={styles.acceptJoinButton}
+                      onPress={() => handleAcceptRequest(item)}
+                    >
+                      <Text>Accept</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.rejectJoinButton} 
+                      onPress={() => handleDeleteNotification(item.id)}
+                    >
+                      <Text style={{color: 'red'}}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              }
+              ListEmptyComponent={
+                <View>
+                  <Text style={styles.noResultsMsg}>No Requests</Text>
+                </View>
+              }
             />
           </View>
         </View>

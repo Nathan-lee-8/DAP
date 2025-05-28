@@ -324,17 +324,6 @@ const styles = StyleSheet.create({
   addedUserText: {
     fontSize: 16,
   },
-  notificationOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)'
-  },
-  notificationHeader:{
-    height: Platform.OS === 'ios' ? '10%' : '7%',
-  },
-  notificationContainer: {
-    flex: 1,
-    backgroundColor: colorBackground
-  },
   imageOverlay:{
     flex: 1,
     justifyContent:'flex-end'
@@ -411,6 +400,8 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     marginBottom: 10
   },
+
+  /* Notification Section */
   notificationModalOverlay:{
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
@@ -421,6 +412,37 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: colorBackground,
     borderRadius: 10
+  },
+  notificationOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)'
+  },
+  notificationHeader:{
+    height: Platform.OS === 'ios' ? '10%' : '7%',
+  },
+  notificationContainer: {
+    flex: 1,
+    backgroundColor: colorBackground
+  },
+  notificationItem:{
+    marginTop: 5,
+    marginHorizontal: 10,
+    padding: 10,
+    backgroundColor: colorPrimary,
+  },
+  rejectJoinButton:{
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    margin: 5,
+    borderRadius: 10,
+    backgroundColor: '#ccc',
+  },
+  acceptJoinButton:{
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    margin: 5,
+    borderRadius: 10,
+    backgroundColor: '#ccc',
   },
 
   /** comment Section */

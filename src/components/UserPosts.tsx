@@ -32,7 +32,7 @@ const UserPosts = ( { userID, isPrivate } : {userID: string, isPrivate?: boolean
       });
       const fetchedPosts = response.data.postsByUser.items || [];
       var filteredPosts = fetchedPosts.filter((item) => !posts.includes(item));
-      if(isPrivate) filteredPosts = filteredPosts.filter((item) => item?.group?.isPublic !== false);
+      if(isPrivate) filteredPosts = filteredPosts.filter((item) => item?.group?.type === 'Public');
       if(refresh) setPosts(filteredPosts);
       else setPosts((prev) => [...prev, ...filteredPosts]);
       setNextToken(response.data.postsByUser.nextToken);
