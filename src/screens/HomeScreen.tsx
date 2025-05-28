@@ -139,10 +139,12 @@ const HomeScreen = ( {navigation} : any) => {
         <View style={styles.notificationOverlay}>
         <TouchableOpacity style={styles.notificationHeader} onPress={() => setModalVisible(false)}/>
           <View style={styles.notificationContainer}>
-            <Icon name="close-outline" size={35} style={styles.editProfileButton}
+            <Icon name="close-outline" size={35} style={styles.closeReportModalButton}
               onPress={() => setModalVisible(false)}
             />
-            <Notifications/>
+            
+            <Text style={styles.title}>Notifications</Text>
+            <Notifications closeNotificationModal={() => setModalVisible(false)}/>
           </View>
         </View>
       </Modal>

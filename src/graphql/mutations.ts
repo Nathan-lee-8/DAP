@@ -601,6 +601,8 @@ export const createNotification = /* GraphQL */ `mutation CreateNotification(
     userID
     groupID
     targetUserID
+    onClickID
+    hidden
     createdAt
     updatedAt
     userNotificationsId
@@ -623,6 +625,8 @@ export const updateNotification = /* GraphQL */ `mutation UpdateNotification(
     userID
     groupID
     targetUserID
+    onClickID
+    hidden
     createdAt
     updatedAt
     userNotificationsId
@@ -645,6 +649,8 @@ export const deleteNotification = /* GraphQL */ `mutation DeleteNotification(
     userID
     groupID
     targetUserID
+    onClickID
+    hidden
     createdAt
     updatedAt
     userNotificationsId

@@ -112,6 +112,7 @@ export const postsByUser =
         id
         groupName
         isPublic
+        type
       }
       createdAt
     }
@@ -353,11 +354,12 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
         id
         type
         content
+        onClickID
         targetUser{
           id
           firstname
           lastname
-          fullname
+          profileURL
         }
       }
       nextToken
@@ -487,6 +489,7 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
       content
       userID
       createdAt
+      onClickID
     }
     nextToken
   }

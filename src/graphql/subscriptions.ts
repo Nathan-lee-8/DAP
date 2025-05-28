@@ -1208,6 +1208,8 @@ export const onCreateNotification = /* GraphQL */ `subscription OnCreateNotifica
     userID
     groupID
     targetUserID
+    onClickID
+    hidden
     user {
       id
       email
@@ -1269,6 +1271,8 @@ export const onUpdateNotification = /* GraphQL */ `subscription OnUpdateNotifica
     userID
     groupID
     targetUserID
+    onClickID
+    hidden
     user {
       id
       email
@@ -1330,6 +1334,8 @@ export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotifica
     userID
     groupID
     targetUserID
+    onClickID
+    hidden
     user {
       id
       email
