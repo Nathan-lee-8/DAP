@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Platform, Alert,
   ActivityIndicator, KeyboardAvoidingView, ScrollView } from 'react-native';
 
 import client from '../client';
-import { createUserGroup, createGroup, deleteUserGroup, deleteGroup, updateGroup 
-} from '../customGraphql/customMutations';
+import { createUserGroup, createGroup, deleteUserGroup, deleteGroup, updateGroup, 
+  createNotification } from '../customGraphql/customMutations';
 import { User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
@@ -75,6 +75,20 @@ const CreateGroup = ( {navigation} : any) => {
         })
         console.log(member.firstname, "added successfully");
         addedMembers.push(userGroupData.data.createUserGroup.id);
+        client.graphql({
+          query: createNotification,
+          variables: {
+            input: {
+              type: 'Group',
+              content: currUser.firstname + " " + currUser.lastname
+                + ' added you to ' + groupName,
+              userID: member.id,
+              groupID: groupID,
+              onClickID: groupID
+            }
+          },
+          authMode: 'userPool'
+        }).catch(() => {});
       };
 
       //Add Self

@@ -710,8 +710,8 @@ const styles = StyleSheet.create({
     backgroundColor: colorPrimary,
   },
   joinButton: {
+    alignSelf: 'flex-start',
     padding: 5,
-    width: width * 0.22,
     borderWidth: 1,
     borderColor: '#888',
     marginTop: 10,

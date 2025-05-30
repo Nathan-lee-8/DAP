@@ -65,13 +65,11 @@ const ViewMembers = ( {route, navigation} : any) => {
           },
           authMode: 'userPool'
         })
-        console.log(item.user?.firstname + " chat created");
         addedMembers.push(targetUserChat.data.createUserChat.id);
       })
       Alert.alert('Success', 'GroupChat Successfully Created');
     } catch (error) {
-      console.log(error);
-      Alert.alert('Error', 'Something went wrong');
+      Alert.alert('Error', 'There was an issue creating the Chatroom');
     } finally {
       setLoading(false);
     }

@@ -330,25 +330,6 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
       }
       nextToken
     }
-    posts {
-      items {
-        id
-        content
-        postURL
-        groupID
-        userID
-        user{
-          id
-          firstname
-          lastname
-          profileURL
-        }
-        commentCount
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
     notifications {
       items{
         id
@@ -367,6 +348,43 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
   }
 }
 ` as GeneratedQuery<APITypes.GetGroupQueryVariables, APITypes.GetGroupQuery>;
+export const postsByDate = /* GraphQL */ `query PostsByDate(
+  $groupID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelPostFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  postsByDate(
+    groupID: $groupID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      content
+      postURL
+      user{
+        id
+        firstname
+        lastname
+        profileURL
+      }
+      commentCount
+      createdAt
+      updatedAt
+    }
+    nextToken
+  }
+}
+` as GeneratedQuery<
+  APITypes.PostsByDateQueryVariables,
+  APITypes.PostsByDateQuery
+>;
 export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
   getPost(id: $id) {
     id
