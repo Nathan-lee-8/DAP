@@ -6,7 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import client from '../client';
 import { getChat } from '../customGraphql/customQueries';
 import { createMessage, updateUserChat, deleteUserChat, createUserChat,
-deleteChat, deleteMessage } from '../customGraphql/customMutations';
+  deleteChat, deleteMessage } from '../customGraphql/customMutations';
 import { onCreateMessage } from '../customGraphql/customSubscriptions';
 import  { Message, UserChat, Chat, User } from '../API';
 
@@ -123,7 +123,7 @@ const ChatRoom = ( { route, navigation } : any) => {
       }
       setNextToken(chatData?.messages?.nextToken);
     } catch (error: any) {
-      console.log(error);
+      Alert.alert('Error', 'Could not find Chat');
     } finally {
       setLoading(false);
     }
@@ -231,7 +231,6 @@ const ChatRoom = ( { route, navigation } : any) => {
         },
         authMode: 'userPool'
       });
-      console.log('left chat');
       navigation.reset({
         index: 0,
         routes: [ { name: 'MainTabs', params: { screen: 'Messages' } } ]
@@ -248,15 +247,15 @@ const ChatRoom = ( { route, navigation } : any) => {
         },
         authMode: 'userPool'
       })
-      console.log("Msg sent")
     } catch (error){ 
-      console.log('Error', error);
+      Alert.alert('Error', 'There was an issue leaving the chat');
     }
   }
 
   const handleInvite = async () => {
     setInviteModalVisible(false);
     const userIDs = addedMembers.map((item: any) => item.id);
+    console.log(userIDs);
     try{
       for(const userID of userIDs){
         await client.graphql({
@@ -267,19 +266,30 @@ const ChatRoom = ( { route, navigation } : any) => {
               chatID: chatID,
               unreadMessageCount: 0,
               lastMessage: myUserChat?.lastMessage || "",
-              lastMessageAt: myUserChat?.lastMessageAt || Date.now().toString(),
+              lastMessageAt: myUserChat?.lastMessageAt || new Date().toISOString(),
               role: 'Member'
             }
           },
           authMode: 'userPool'
         });
-        console.log('userAdded');
       }
+      var addedMemberNames = addedMembers.map((item) => 
+        `${item.firstname} ${item.lastname}`).filter(Boolean).join(', ');
+      await client.graphql({
+        query: createMessage,
+        variables: {
+          input: {
+            senderID: currUser.id,
+            content: currUser.fullname + " added " + addedMemberNames + " to the chat",
+            chatID: chatID,
+            type: 'System'
+          }
+        },
+        authMode: 'userPool'
+      })
     } catch (error){
-      console.log(error);
-    } 
-    navigation.goBack();
-    Alert.alert('Success', 'User(s) successfully added');
+      Alert.alert('Error', 'Failed to add User(s) to Chat');
+    }
   }
 
   const handleAddMember = (user: User) => {

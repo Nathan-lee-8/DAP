@@ -4,10 +4,10 @@ import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal
 import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
-import { getGroup } from '../customGraphql/customQueries';
+import { getGroup, postsByDate } from '../customGraphql/customQueries';
 import { createUserGroup, deleteUserGroup, deletePost, deleteGroup, createReport,
    createNotification, deleteNotification} from '../customGraphql/customMutations';
-import { Group, Post, UserGroup, User, Notification } from '../API'
+import { Group, Post, UserGroup, User, Notification, ModelSortDirection } from '../API'
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles'
@@ -20,82 +20,31 @@ import ImgComponent from "../components/ImgComponent";
 
 const ViewGroup = ( {route, navigation} : any) => {
   const groupID = route.params.groupID;
+  const [ loading, setLoading ] = useState(true);
   const [ group, setGroup ] = useState<Group>();
   const [ post, setPosts ] = useState<Post[]>([]);
-  const [ loading, setLoading ] = useState(true);
+  const [ postNextToken, setPostNextToken ] = useState<string | null | undefined>(null);
+  const [ users, setUsers] = useState<User[]>([]);
   const [ myUserGroup, setMyUserGroup ] = useState<UserGroup>();
+  const [ options, setOptions ] = useState(['Report']);
+  const [ requestButtonText, setRequestButtonText ] = useState("Join");
   const [ notifications, setNotifications] = useState<Notification[]>([]);
+
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const [ notificationModalVisible, setNotificationModalVisible ] = useState(false);
+
   const [ reportMessage, setReportMessage ] = useState("");
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
-  const [ requested, setRequested ] = useState(false);
-  const [ users, setUsers] = useState<User[]>([]);
   const flatListRef = useRef<FlatList>(null);
 
-  const [ options, setOptions ] = useState(['View Members', 'Report', 'Leave']);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
-  if(!currUser) return;
-
-  const fetchCurrentData = async () => {
-    try{
-      const currGroup = await client.graphql({
-        query: getGroup,
-        variables: {
-          id: groupID
-        },
-        authMode:'userPool'
-      })
-      const groupData = currGroup.data.getGroup;
-      console.log("fetched from viewgroup");
-      if(groupData == null) {
-        console.log('error', 'Group is null');
-        return;
-      }
-      setGroup(groupData);
-      let posts = groupData.posts?.items?.filter((item): item is Post => item !== null);
-      posts = posts?.sort((a, b) => {
-        const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return dateB - dateA;
-      });
-      const userData = groupData.members?.items?.map((item: any) => item.user);
-      if(userData) setUsers(userData);
-      if(posts) setPosts(posts);
-      const myUserGroup = groupData.members?.items?.find((member) => 
-        member?.user?.id === currUser.id
-      );
-      if(myUserGroup) setMyUserGroup(myUserGroup);
-      if(!myUserGroup){
-        if(group?.isPublic){
-          setOptions(['View Members', 'Report']);
-        }else {
-          setOptions(['Report']);
-        }
-      }else if(myUserGroup?.role  === 'Owner' || myUserGroup?.role === 'Admin'){
-        setOptions(['View Members', 'Invite', 'Edit', 'Delete'])
-      }else if(myUserGroup?.role === 'Admin'){
-        setOptions(['View Members', 'Invite', 'Edit', 'Report', 'Leave'])
-      }
-      const validNotifications = groupData.notifications?.items.filter(
-        (item): item is Notification => item?.targetUser != null
-      ) || [];
-      setNotifications(validNotifications);
-      //see if user has already requested to join group
-      groupData.notifications?.items.map((item) => {
-        if(item?.targetUser?.id === currUser.id){
-          setRequested(true);
-        }
-      })
-
-    } catch (error: any) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+  if(!currUser) {
+    Alert.alert('Error', 'Unable to view group');
+    navigation.goBack();
+    return;
   }
 
   useFocusEffect(
@@ -104,12 +53,94 @@ const ViewGroup = ( {route, navigation} : any) => {
     }, [])
   );
 
+  const fetchCurrentData = async () => {
+    try{
+      //Fetch group data
+      const currGroup = await client.graphql({
+        query: getGroup,
+        variables: {
+          id: groupID
+        },
+        authMode:'userPool'
+      })
+      
+      //Set Group data, return to previous page on error
+      const groupData = currGroup.data.getGroup;
+      if(groupData == null) {
+        Alert.alert('Error', 'Unable to view group');
+        navigation.goBack();
+        return;
+      }
+      setGroup(groupData);
+
+      //fetch current posts and set posts & nextToken state
+      const currPosts = await client.graphql({
+        query: postsByDate,
+        variables: {
+          groupID: groupID,
+          sortDirection: ModelSortDirection.DESC,
+          limit: 10,
+          nextToken: postNextToken
+        }
+      })
+      setPostNextToken(currPosts.data.postsByDate.nextToken);
+      setPosts(currPosts.data.postsByDate.items);
+
+      //get User Data to as array for members in group
+      const userData = groupData.members?.items?.map((item: any) => item.user);
+      if(userData) setUsers(userData);
+
+      //Get My User Group to see role & set options based on role
+      const myUserGroup = groupData.members?.items?.find((member) => 
+        member?.user?.id === currUser.id
+      );
+      if(myUserGroup){ //already in the group
+        setMyUserGroup(myUserGroup)
+        setRequestButtonText("Joined");
+        if(myUserGroup?.role  === 'Owner' || myUserGroup?.role === 'Admin'){
+          setOptions(['View Members', 'Invite', 'Edit', 'Delete'])
+        }else if(myUserGroup?.role === 'Admin'){
+          setOptions(['View Members', 'Invite', 'Edit', 'Report', 'Leave'])
+        }else{
+          setOptions(['View Members', 'Report', 'Leave'])
+        }
+      }else{ //not part of group
+        if(groupData.type === 'Public'){
+          setOptions(['View Members', 'Report']);
+          setRequestButtonText('Join Group')
+        }else{
+          setOptions(['Report']);
+          setRequestButtonText('Request Join')
+        }
+      }
+
+      //Filter out null values and set notifications
+      const validNotifications = groupData.notifications?.items.filter(
+        (item): item is Notification => item?.targetUser != null
+      ) || [];
+      setNotifications(validNotifications);
+
+      //see if user has already requested to join group
+      groupData.notifications?.items.map((item) => {
+        if(item?.targetUser?.id === currUser.id){
+          setRequestButtonText("Requested");
+        }
+      })
+    } catch (error: any) {
+      Alert.alert('Error', 'Could not find Group');
+      navigation.goBack();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  //Navigate to create Post page
   const createGroupPost = () => {
     navigation.navigate('CreatePost', {groupID: groupID, isPublic: group?.isPublic});
   }
   
   const handleJoinGroup = async () => {
-    if(myUserGroup !== undefined || requested) return;
+    if(myUserGroup !== undefined || requestButtonText === 'Requested') return;
 
     if(group?.type === 'Public'){
       try{
@@ -126,49 +157,46 @@ const ViewGroup = ( {route, navigation} : any) => {
         })
         Alert.alert('Success', 'Group joined successfully.');
         fetchCurrentData();
-        group?.members?.items.map(async (member) => {
-          if(member?.role === 'Admin' || member?.role === 'Owner'){
-            await client.graphql({
-              query: createNotification,
-              variables: {
-                input: {
-                  type: 'Group',
-                  content: currUser.firstname + " " + currUser.lastname 
-                    + ' has joined ' + group.groupName,
-                  userID: member.userID,
-                  groupID: group.id,
-                  onClickID: group.id
-                }
-              },
-              authMode: 'userPool'
-            })
-          }
-        })
-      } catch (error){ 
-        console.log('Error', error);
+      }catch(error){
+        Alert.alert('Error', 'Issue joining Group');
       }
-    }else{
       group?.members?.items.map(async (member) => {
         if(member?.role === 'Admin' || member?.role === 'Owner'){
-          try{
-             await client.graphql({
-              query: createNotification,
-              variables: {
-                input: {
-                  type: 'Group',
-                  content: currUser.firstname + " " + currUser.lastname 
-                    + ' has requested to join ' + group.groupName,
-                  userID: member.userID,
-                  groupID: groupID,
-                  targetUserID: currUser.id,
-                  onClickID: group.id
-                }
-              },
-              authMode: 'userPool'
-            })
-          }catch(error){
-            console.log(error);
-          }
+          client.graphql({
+            query: createNotification,
+            variables: {
+              input: {
+                type: 'Group',
+                content: currUser.firstname + " " + currUser.lastname 
+                  + ' has joined ' + group.groupName,
+                userID: member.userID,
+                groupID: group.id,
+                onClickID: group.id
+              }
+            },
+            authMode: 'userPool'
+          }).catch(() => {})
+        }
+      })
+    }else{
+      setRequestButtonText('Requested');
+      group?.members?.items.map(async (member) => {
+        if(member?.role === 'Admin' || member?.role === 'Owner'){
+          client.graphql({
+            query: createNotification,
+            variables: {
+              input: {
+                type: 'Group',
+                content: currUser.firstname + " " + currUser.lastname 
+                  + ' has requested to join ' + group.groupName,
+                userID: member.userID,
+                groupID: groupID,
+                targetUserID: currUser.id,
+                onClickID: group.id
+              }
+            },
+            authMode: 'userPool'
+          }).catch(() => {})
         }
       })
     }
@@ -199,12 +227,9 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   const handleLeaveGroup = () => {
     Alert.alert(
-      "Leave Group",
-      "Are you sure you want to leave this group?",
+      "Leave Group", "Are you sure you want to leave this group?",
       [
-        {
-          text: "Cancel",
-        },
+        { text: "Cancel" },
         { text: "Leave", onPress: leaveGroup}
       ]
     );
@@ -223,13 +248,12 @@ const ViewGroup = ( {route, navigation} : any) => {
         },
         authMode: 'userPool'
       });
-      console.log('user removed');
       navigation.reset({
         index: 0,
         routes: [ { name: 'MainTabs', params: { screen: 'Groups' } } ]
       });
     } catch (error: any) {
-      console.log('Error', error.message);
+      Alert.alert('Error', 'There was an issue leaving the group');
     }
   }   
 
@@ -254,6 +278,20 @@ const ViewGroup = ( {route, navigation} : any) => {
           authMode: 'userPool'
         });
         console.log('userAdded');
+        client.graphql({
+          query: createNotification,
+          variables: {
+            input: {
+              type: 'Group',
+              content: currUser.firstname + " " + currUser.lastname
+                + ' added you to ' + group?.groupName,
+              userID: memberID,
+              groupID: groupID,
+              onClickID: groupID
+            }
+          },
+          authMode: 'userPool'
+        }).catch(() => {});
       } catch (error){
         console.log(error);
       }
@@ -265,12 +303,9 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   const handleDeleteGroup = () => {
     Alert.alert(
-      "Delete Group",
-      "Are you sure you want to delete this group?",
+      "Delete Group", "Are you sure you want to delete this group?",
       [
-        {
-          text: "Cancel",
-        },
+        { text: "Cancel" },
         { text: "Delete", onPress: deleteGroupAndPosts}
       ]
     );
@@ -392,7 +427,7 @@ const ViewGroup = ( {route, navigation} : any) => {
         authMode: 'userPool'
       })
     }catch(error){
-      console.log(error);
+      Alert.alert('Error', 'An issue occured while deleting the notification')
     }
   }
 
@@ -413,7 +448,6 @@ const ViewGroup = ( {route, navigation} : any) => {
         },
         authMode: 'userPool'
       })
-      console.log('userAdded');
       await client.graphql({
         query: deleteNotification,
         variables: {
@@ -423,11 +457,10 @@ const ViewGroup = ( {route, navigation} : any) => {
         },
         authMode: 'userPool'
       })
-      console.log('notification deleted');
       fetchCurrentData();
       Alert.alert('Success', 'Request accepted');
     }catch(error){
-      console.log(error);
+      Alert.alert('Error', 'There was an issue accepting this request');
     }
   }
 
@@ -481,15 +514,7 @@ const ViewGroup = ( {route, navigation} : any) => {
             ) : []}
           </View>
           <TouchableOpacity style={styles.joinButton} onPress={handleJoinGroup}>
-            {requested ? (
-              <Text style={{textAlign: 'center'}}>Requested</Text>
-            ) : myUserGroup !== undefined ? (
-              <Text style={{textAlign: 'center'}}>Joined</Text>
-            ) : group?.type === 'Private' ? (
-              <Text style={{textAlign: 'center', fontSize: 12}}>Request Join</Text>
-            ) : group?.type === 'Public' ? (
-              <Text style={{textAlign: 'center'}}>Join Group</Text>
-            ) :  []}
+            <Text>{requestButtonText}</Text>
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={createGroupPost} style={styles.postContentTouchable}>
@@ -562,7 +587,6 @@ const ViewGroup = ( {route, navigation} : any) => {
         }
       />
 
-      
       {/* Options Modal */}
       <Modal
         transparent={true} 

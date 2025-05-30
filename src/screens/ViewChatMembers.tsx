@@ -4,7 +4,7 @@ import { View, Text, FlatList, Modal, TouchableOpacity, Alert, TextInput
 import styles from '../styles/Styles';
 
 import client from "../client";
-import { deleteUserChat, createReport, updateUserChat 
+import { deleteUserChat, createReport, updateUserChat, createMessage 
 } from "../customGraphql/customMutations";
 import { UserChat } from "../API";
 
@@ -77,6 +77,18 @@ const ChatMembers = ( {route, navigation} : any ) => {
     }catch(error){
       Alert.alert('Error', 'Error removing user');
     }
+    client.graphql({
+      query: createMessage, 
+      variables: {
+        input: {
+          senderID: currUser.id,
+          content: `${currUser.fullname} removed ${selectedUser.user?.firstname} ${selectedUser.user?.lastname}`,
+          chatID: chatData.id,
+          type: 'System'
+        },
+      },
+      authMode: 'userPool'
+    }).catch(() => {})
   }
 
   const handleReport = async () => {
