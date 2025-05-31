@@ -426,6 +426,7 @@ const styles = StyleSheet.create({
   },
   notificationItem:{
     marginTop: 5,
+    marginBottom: 100,
     marginHorizontal: 10,
     padding: 10,
     backgroundColor: colorPrimary,
@@ -443,6 +444,11 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 10,
     backgroundColor: '#ccc',
+  },
+  stackItem: {
+    position: 'absolute',
+    backgroundColor: colorPrimary,
+    borderRadius: 6,
   },
 
   /** comment Section */
