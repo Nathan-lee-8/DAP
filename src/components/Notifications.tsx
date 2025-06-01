@@ -4,7 +4,7 @@ import { View, Text, FlatList, ActivityIndicator,
 
 import client from '../client';
 import { notificationsByUser } from "../customGraphql/customQueries";
-import { deleteNotification } from "../customGraphql/customMutations";
+import { deleteNotification, updateNotification } from "../customGraphql/customMutations";
 import { ModelSortDirection, Notification } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
@@ -26,6 +26,7 @@ const Notifications = ( {closeNotificationModal}: any ) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
 
   const fetchNotifications = async () => {
+    setLoading(true);
     try{
       const notifData = await client.graphql({
         query: notificationsByUser,
@@ -39,22 +40,7 @@ const Notifications = ( {closeNotificationModal}: any ) => {
       })
       setNextToken(notifData.data.notificationsByUser.nextToken);
       const notificationList = notifData.data.notificationsByUser.items;
-      const groupData = (data : any) => {
-        const groupMap = new Map();
-      
-        data.forEach((item : any)  => {
-          if (!groupMap.has(item.onClickID)) {
-            groupMap.set(item.onClickID, []);
-          }
-          groupMap.get(item.onClickID).push(item);
-        });
-      
-        // Return groups in the order their first item appeared
-        return Array.from(groupMap.values());
-      };
-
-      const groupedNotifications = groupData(notificationList);
-      setNotifications(groupedNotifications);
+      setNotifications(notificationList);
     } catch (error: any) {
       console.log(error);
     } finally {
@@ -83,7 +69,19 @@ const Notifications = ( {closeNotificationModal}: any ) => {
     }
   }
 
-  const handleNav = (item: Notification) => {
+  const handleNav = async (item: Notification) => {
+    if(!item.hidden){
+      client.graphql({
+        query: updateNotification,
+        variables: {
+          input: {
+            id: item.id,
+            hidden: true
+          }
+        },
+        authMode: 'userPool'
+      }).catch((error: any) => console.log(error))
+    }
     closeNotificationModal();
     if(item.type === 'Group'){
       navigation.navigate('ViewGroup', { groupID: item.onClickID });
@@ -103,16 +101,14 @@ const Notifications = ( {closeNotificationModal}: any ) => {
       <FlatList
         data={notifications}
         renderItem={({item}) => 
-          <TouchableOpacity style={styles.notificationItem} onPress={() => handleNav(item[0])}>
-              {item.map((item : any, index : any) => (
-                <View key={item.id} style={[styles.stackItem, { top: index * 20 }]}>
-                  <Icon name="close-outline" size={20} onPress={() => handleRemoveNotification(item.id)}
-                    style={{ position: 'absolute', right: 5, top: 5, zIndex: 1}
-                  }/>
-                  <Text>{item.content}</Text>
-                  <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-                </View>
-              ))}
+          <TouchableOpacity style={ item?.hidden ? styles.notificationItem : styles.unreadItem } 
+            onPress={() => handleNav(item)}
+          >
+            <Text>{item.content}</Text>
+            <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
+            <Icon name="close-outline" size={20} onPress={() => handleRemoveNotification(item.id)}
+              style={{ position: 'absolute', right: 5, top: 5, zIndex: 1}
+            }/>
           </TouchableOpacity>
         }
         ListEmptyComponent={() => (

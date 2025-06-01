@@ -57,7 +57,7 @@ const UserPosts = ( { userID, isPrivate } : {userID: string, isPrivate?: boolean
           ref={flatListRef}
           data={posts}
           renderItem={({ item }) => 
-            <FormatPost item={item} groupData={item?.group ? [item?.group] : []}/>
+            <FormatPost item={item}/>
           }
           ListEmptyComponent={() => (
             <View>

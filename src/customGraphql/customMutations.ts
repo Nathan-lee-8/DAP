@@ -374,3 +374,15 @@ export const deleteNotification = /* GraphQL */ `mutation DeleteNotification(
   APITypes.DeleteNotificationMutationVariables,
   APITypes.DeleteNotificationMutation
 >;
+export const updateNotification = /* GraphQL */ `mutation UpdateNotification(
+  $input: UpdateNotificationInput!
+  $condition: ModelNotificationConditionInput
+) {
+  updateNotification(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateNotificationMutationVariables,
+  APITypes.UpdateNotificationMutation
+>;

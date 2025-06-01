@@ -1,6 +1,6 @@
 import { useState, useContext, useCallback } from 'react';
-import { View, FlatList, TouchableOpacity, Text, ActivityIndicator
-  } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator,
+  Dimensions} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import client  from '../client';
@@ -134,7 +134,7 @@ const MessageUsers = ( {navigation} : any) => {
                       />
                     )}
                   </View>
-                  <View style={styles.userInfoContainer}>
+                  <View style={{paddingHorizontal: 10, width: Dimensions.get('window').width * 0.70}}>
                     <Text style={styles.postAuthor} numberOfLines={1}>{chatname}</Text>
                     <Text style={styles.postContent} numberOfLines={1}>{item.lastMessage} </Text>
                   </View>  

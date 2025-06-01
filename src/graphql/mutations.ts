@@ -8,6 +8,57 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
+export const createUserFeed = /* GraphQL */ `mutation CreateUserFeed(
+  $input: CreateUserFeedInput!
+  $condition: ModelUserFeedConditionInput
+) {
+  createUserFeed(input: $input, condition: $condition) {
+    id
+    userID
+    postID
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateUserFeedMutationVariables,
+  APITypes.CreateUserFeedMutation
+>;
+export const updateUserFeed = /* GraphQL */ `mutation UpdateUserFeed(
+  $input: UpdateUserFeedInput!
+  $condition: ModelUserFeedConditionInput
+) {
+  updateUserFeed(input: $input, condition: $condition) {
+    id
+    userID
+    postID
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateUserFeedMutationVariables,
+  APITypes.UpdateUserFeedMutation
+>;
+export const deleteUserFeed = /* GraphQL */ `mutation DeleteUserFeed(
+  $input: DeleteUserFeedInput!
+  $condition: ModelUserFeedConditionInput
+) {
+  deleteUserFeed(input: $input, condition: $condition) {
+    id
+    userID
+    postID
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteUserFeedMutationVariables,
+  APITypes.DeleteUserFeedMutation
+>;
 export const createUser = /* GraphQL */ `mutation CreateUser(
   $input: CreateUserInput!
   $condition: ModelUserConditionInput
@@ -84,7 +135,6 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
     postURL
     groupID
     userID
-    type
     commentCount
     createdAt
     updatedAt
@@ -107,7 +157,6 @@ export const updatePost = /* GraphQL */ `mutation UpdatePost(
     postURL
     groupID
     userID
-    type
     commentCount
     createdAt
     updatedAt
@@ -130,7 +179,6 @@ export const deletePost = /* GraphQL */ `mutation DeletePost(
     postURL
     groupID
     userID
-    type
     commentCount
     createdAt
     updatedAt

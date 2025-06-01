@@ -2,32 +2,25 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateUserInput = {
+export type CreateUserFeedInput = {
   id?: string | null,
-  email: string,
-  firstname: string,
-  lastname: string,
-  fullname: string,
-  profileURL: string,
-  description?: string | null,
+  userID: string,
+  postID: string,
+  createdAt?: string | null,
 };
 
-export type ModelUserConditionInput = {
-  email?: ModelStringInput | null,
-  firstname?: ModelStringInput | null,
-  lastname?: ModelStringInput | null,
-  fullname?: ModelStringInput | null,
-  profileURL?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelUserConditionInput | null > | null,
-  or?: Array< ModelUserConditionInput | null > | null,
-  not?: ModelUserConditionInput | null,
+export type ModelUserFeedConditionInput = {
+  userID?: ModelIDInput | null,
+  postID?: ModelIDInput | null,
   createdAt?: ModelStringInput | null,
+  and?: Array< ModelUserFeedConditionInput | null > | null,
+  or?: Array< ModelUserFeedConditionInput | null > | null,
+  not?: ModelUserFeedConditionInput | null,
   updatedAt?: ModelStringInput | null,
   owner?: ModelStringInput | null,
 };
 
-export type ModelStringInput = {
+export type ModelIDInput = {
   ne?: string | null,
   eq?: string | null,
   le?: string | null,
@@ -67,6 +60,50 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
+export type ModelStringInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  size?: ModelSizeInput | null,
+};
+
+export type UserFeed = {
+  __typename: "UserFeed",
+  id: string,
+  userID: string,
+  postID: string,
+  post?: Post | null,
+  createdAt: string,
+  updatedAt: string,
+  owner?: string | null,
+};
+
+export type Post = {
+  __typename: "Post",
+  id: string,
+  content: string,
+  postURL?: Array< string | null > | null,
+  groupID: string,
+  userID: string,
+  user?: User | null,
+  group?: Group | null,
+  comments?: ModelCommentConnection | null,
+  commentCount: number,
+  createdAt: string,
+  updatedAt: string,
+  userPostsId?: string | null,
+  owner?: string | null,
+};
+
 export type User = {
   __typename: "User",
   id: string,
@@ -95,38 +132,62 @@ export type ModelPostConnection = {
   nextToken?: string | null,
 };
 
-export type Post = {
-  __typename: "Post",
+export type ModelUserChatConnection = {
+  __typename: "ModelUserChatConnection",
+  items:  Array<UserChat | null >,
+  nextToken?: string | null,
+};
+
+export type UserChat = {
+  __typename: "UserChat",
   id: string,
-  content: string,
-  postURL?: Array< string | null > | null,
-  groupID: string,
+  unreadMessageCount: number,
+  lastMessage: string,
+  role: string,
+  isMuted?: boolean | null,
   userID: string,
-  type: string,
+  chatID: string,
   user?: User | null,
-  group?: Group | null,
-  comments?: ModelCommentConnection | null,
-  commentCount: number,
+  chat?: Chat | null,
+  lastMessageAt: string,
   createdAt: string,
   updatedAt: string,
-  userPostsId?: string | null,
+  userChatsId?: string | null,
   owner?: string | null,
 };
 
-export type Group = {
-  __typename: "Group",
+export type Chat = {
+  __typename: "Chat",
   id: string,
-  groupName: string,
-  groupURL?: string | null,
-  description?: string | null,
-  isPublic: boolean,
-  memberCount: number,
-  type: string,
-  members?: ModelUserGroupConnection | null,
-  notifications?: ModelNotificationConnection | null,
-  posts?: ModelPostConnection | null,
+  name: string,
+  url?: string | null,
+  isGroup: boolean,
+  messages?: ModelMessageConnection | null,
+  participants?: ModelUserChatConnection | null,
   createdAt: string,
   updatedAt: string,
+  owner?: string | null,
+};
+
+export type ModelMessageConnection = {
+  __typename: "ModelMessageConnection",
+  items:  Array<Message | null >,
+  nextToken?: string | null,
+};
+
+export type Message = {
+  __typename: "Message",
+  id: string,
+  content: string,
+  msgURL?: Array< string | null > | null,
+  type?: string | null,
+  senderID: string,
+  chatID: string,
+  sender?: User | null,
+  chat?: Chat | null,
+  createdAt: string,
+  updatedAt: string,
+  userMessagesId?: string | null,
   owner?: string | null,
 };
 
@@ -147,6 +208,23 @@ export type UserGroup = {
   createdAt: string,
   updatedAt: string,
   userGroupsId?: string | null,
+  owner?: string | null,
+};
+
+export type Group = {
+  __typename: "Group",
+  id: string,
+  groupName: string,
+  groupURL?: string | null,
+  description?: string | null,
+  isPublic: boolean,
+  memberCount: number,
+  type: string,
+  members?: ModelUserGroupConnection | null,
+  notifications?: ModelNotificationConnection | null,
+  posts?: ModelPostConnection | null,
+  createdAt: string,
+  updatedAt: string,
   owner?: string | null,
 };
 
@@ -218,65 +296,6 @@ export type Reply = {
   owner?: string | null,
 };
 
-export type ModelUserChatConnection = {
-  __typename: "ModelUserChatConnection",
-  items:  Array<UserChat | null >,
-  nextToken?: string | null,
-};
-
-export type UserChat = {
-  __typename: "UserChat",
-  id: string,
-  unreadMessageCount: number,
-  lastMessage: string,
-  role: string,
-  isMuted?: boolean | null,
-  userID: string,
-  chatID: string,
-  user?: User | null,
-  chat?: Chat | null,
-  lastMessageAt: string,
-  createdAt: string,
-  updatedAt: string,
-  userChatsId?: string | null,
-  owner?: string | null,
-};
-
-export type Chat = {
-  __typename: "Chat",
-  id: string,
-  name: string,
-  url?: string | null,
-  isGroup: boolean,
-  messages?: ModelMessageConnection | null,
-  participants?: ModelUserChatConnection | null,
-  createdAt: string,
-  updatedAt: string,
-  owner?: string | null,
-};
-
-export type ModelMessageConnection = {
-  __typename: "ModelMessageConnection",
-  items:  Array<Message | null >,
-  nextToken?: string | null,
-};
-
-export type Message = {
-  __typename: "Message",
-  id: string,
-  content: string,
-  msgURL?: Array< string | null > | null,
-  type?: string | null,
-  senderID: string,
-  chatID: string,
-  sender?: User | null,
-  chat?: Chat | null,
-  createdAt: string,
-  updatedAt: string,
-  userMessagesId?: string | null,
-  owner?: string | null,
-};
-
 export type ModelTokenConnection = {
   __typename: "ModelTokenConnection",
   items:  Array<Token | null >,
@@ -293,6 +312,42 @@ export type Token = {
   updatedAt: string,
   userFcmTokensId?: string | null,
   owner?: string | null,
+};
+
+export type UpdateUserFeedInput = {
+  id: string,
+  userID?: string | null,
+  postID?: string | null,
+  createdAt?: string | null,
+};
+
+export type DeleteUserFeedInput = {
+  id: string,
+};
+
+export type CreateUserInput = {
+  id?: string | null,
+  email: string,
+  firstname: string,
+  lastname: string,
+  fullname: string,
+  profileURL: string,
+  description?: string | null,
+};
+
+export type ModelUserConditionInput = {
+  email?: ModelStringInput | null,
+  firstname?: ModelStringInput | null,
+  lastname?: ModelStringInput | null,
+  fullname?: ModelStringInput | null,
+  profileURL?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  and?: Array< ModelUserConditionInput | null > | null,
+  or?: Array< ModelUserConditionInput | null > | null,
+  not?: ModelUserConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
 };
 
 export type UpdateUserInput = {
@@ -315,7 +370,6 @@ export type CreatePostInput = {
   postURL?: Array< string | null > | null,
   groupID: string,
   userID: string,
-  type: string,
   commentCount: number,
   createdAt?: string | null,
   userPostsId?: string | null,
@@ -326,7 +380,6 @@ export type ModelPostConditionInput = {
   postURL?: ModelStringInput | null,
   groupID?: ModelIDInput | null,
   userID?: ModelIDInput | null,
-  type?: ModelStringInput | null,
   commentCount?: ModelIntInput | null,
   createdAt?: ModelStringInput | null,
   and?: Array< ModelPostConditionInput | null > | null,
@@ -335,22 +388,6 @@ export type ModelPostConditionInput = {
   updatedAt?: ModelStringInput | null,
   userPostsId?: ModelIDInput | null,
   owner?: ModelStringInput | null,
-};
-
-export type ModelIDInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-  size?: ModelSizeInput | null,
 };
 
 export type ModelIntInput = {
@@ -371,7 +408,6 @@ export type UpdatePostInput = {
   postURL?: Array< string | null > | null,
   groupID?: string | null,
   userID?: string | null,
-  type?: string | null,
   commentCount?: number | null,
   createdAt?: string | null,
   userPostsId?: string | null,
@@ -792,6 +828,40 @@ export type DeleteTokenInput = {
   id: string,
 };
 
+export type ModelUserFeedFilterInput = {
+  id?: ModelIDInput | null,
+  userID?: ModelIDInput | null,
+  postID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelUserFeedFilterInput | null > | null,
+  or?: Array< ModelUserFeedFilterInput | null > | null,
+  not?: ModelUserFeedFilterInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelUserFeedConnection = {
+  __typename: "ModelUserFeedConnection",
+  items:  Array<UserFeed | null >,
+  nextToken?: string | null,
+};
+
+export type ModelStringKeyConditionInput = {
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+};
+
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+
 export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
   email?: ModelStringInput | null,
@@ -814,19 +884,12 @@ export type ModelUserConnection = {
   nextToken?: string | null,
 };
 
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
 export type ModelPostFilterInput = {
   id?: ModelIDInput | null,
   content?: ModelStringInput | null,
   postURL?: ModelStringInput | null,
   groupID?: ModelIDInput | null,
   userID?: ModelIDInput | null,
-  type?: ModelStringInput | null,
   commentCount?: ModelIntInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
@@ -835,25 +898,6 @@ export type ModelPostFilterInput = {
   not?: ModelPostFilterInput | null,
   userPostsId?: ModelIDInput | null,
   owner?: ModelStringInput | null,
-};
-
-export type ModelStringKeyConditionInput = {
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-};
-
-export type ModelIntKeyConditionInput = {
-  eq?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  between?: Array< number | null > | null,
 };
 
 export type ModelCommentFilterInput = {
@@ -975,6 +1019,15 @@ export type ModelGroupConnection = {
   nextToken?: string | null,
 };
 
+export type ModelIntKeyConditionInput = {
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
+};
+
 export type ModelNotificationFilterInput = {
   id?: ModelIDInput | null,
   type?: ModelStringInput | null,
@@ -1027,26 +1080,14 @@ export type ModelTokenFilterInput = {
   owner?: ModelStringInput | null,
 };
 
-export type ModelSubscriptionUserFilterInput = {
+export type ModelSubscriptionUserFeedFilterInput = {
   id?: ModelSubscriptionIDInput | null,
-  email?: ModelSubscriptionStringInput | null,
-  firstname?: ModelSubscriptionStringInput | null,
-  lastname?: ModelSubscriptionStringInput | null,
-  fullname?: ModelSubscriptionStringInput | null,
-  profileURL?: ModelSubscriptionStringInput | null,
-  description?: ModelSubscriptionStringInput | null,
+  userID?: ModelSubscriptionIDInput | null,
+  postID?: ModelSubscriptionIDInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionUserFilterInput | null > | null,
-  or?: Array< ModelSubscriptionUserFilterInput | null > | null,
-  userPostsId?: ModelSubscriptionIDInput | null,
-  userChatsId?: ModelSubscriptionIDInput | null,
-  userMessagesId?: ModelSubscriptionIDInput | null,
-  userGroupsId?: ModelSubscriptionIDInput | null,
-  userCommentsId?: ModelSubscriptionIDInput | null,
-  userRepliesId?: ModelSubscriptionIDInput | null,
-  userNotificationsId?: ModelSubscriptionIDInput | null,
-  userFcmTokensId?: ModelSubscriptionIDInput | null,
+  and?: Array< ModelSubscriptionUserFeedFilterInput | null > | null,
+  or?: Array< ModelSubscriptionUserFeedFilterInput | null > | null,
   owner?: ModelStringInput | null,
 };
 
@@ -1080,13 +1121,35 @@ export type ModelSubscriptionStringInput = {
   notIn?: Array< string | null > | null,
 };
 
+export type ModelSubscriptionUserFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  email?: ModelSubscriptionStringInput | null,
+  firstname?: ModelSubscriptionStringInput | null,
+  lastname?: ModelSubscriptionStringInput | null,
+  fullname?: ModelSubscriptionStringInput | null,
+  profileURL?: ModelSubscriptionStringInput | null,
+  description?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionUserFilterInput | null > | null,
+  or?: Array< ModelSubscriptionUserFilterInput | null > | null,
+  userPostsId?: ModelSubscriptionIDInput | null,
+  userChatsId?: ModelSubscriptionIDInput | null,
+  userMessagesId?: ModelSubscriptionIDInput | null,
+  userGroupsId?: ModelSubscriptionIDInput | null,
+  userCommentsId?: ModelSubscriptionIDInput | null,
+  userRepliesId?: ModelSubscriptionIDInput | null,
+  userNotificationsId?: ModelSubscriptionIDInput | null,
+  userFcmTokensId?: ModelSubscriptionIDInput | null,
+  owner?: ModelStringInput | null,
+};
+
 export type ModelSubscriptionPostFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   content?: ModelSubscriptionStringInput | null,
   postURL?: ModelSubscriptionStringInput | null,
   groupID?: ModelSubscriptionIDInput | null,
   userID?: ModelSubscriptionIDInput | null,
-  type?: ModelSubscriptionStringInput | null,
   commentCount?: ModelSubscriptionIntInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
@@ -1248,6 +1311,54 @@ export type ModelSubscriptionTokenFilterInput = {
   owner?: ModelStringInput | null,
 };
 
+export type CreateUserFeedMutationVariables = {
+  input: CreateUserFeedInput,
+  condition?: ModelUserFeedConditionInput | null,
+};
+
+export type CreateUserFeedMutation = {
+  createUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type UpdateUserFeedMutationVariables = {
+  input: UpdateUserFeedInput,
+  condition?: ModelUserFeedConditionInput | null,
+};
+
+export type UpdateUserFeedMutation = {
+  updateUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteUserFeedMutationVariables = {
+  input: DeleteUserFeedInput,
+  condition?: ModelUserFeedConditionInput | null,
+};
+
+export type DeleteUserFeedMutation = {
+  deleteUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type CreateUserMutationVariables = {
   input: CreateUserInput,
   condition?: ModelUserConditionInput | null,
@@ -1324,7 +1435,6 @@ export type CreatePostMutation = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    type: string,
     commentCount: number,
     createdAt: string,
     updatedAt: string,
@@ -1346,7 +1456,6 @@ export type UpdatePostMutation = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    type: string,
     commentCount: number,
     createdAt: string,
     updatedAt: string,
@@ -1368,7 +1477,6 @@ export type DeletePostMutation = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    type: string,
     commentCount: number,
     createdAt: string,
     updatedAt: string,
@@ -1986,6 +2094,118 @@ export type DeleteTokenMutation = {
   } | null,
 };
 
+export type GetUserFeedQueryVariables = {
+  id: string,
+};
+
+export type GetUserFeedQuery = {
+  getUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    post?:  {
+      __typename: "Post",
+      id: string,
+      content: string,
+      postURL?: Array< string | null > | null,
+      groupID: string,
+      userID: string,
+      commentCount: number,
+      createdAt: string,
+      updatedAt: string,
+      userPostsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListUserFeedsQueryVariables = {
+  filter?: ModelUserFeedFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListUserFeedsQuery = {
+  listUserFeeds?:  {
+    __typename: "ModelUserFeedConnection",
+    items:  Array< {
+      __typename: "UserFeed",
+      id: string,
+      userID: string,
+      postID: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type PostsByUserFeedQueryVariables = {
+  userID: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelUserFeedFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type PostsByUserFeedQuery = {
+  postsByUserFeed?:  {
+    __typename: "ModelUserFeedConnection",
+    items:  Array< {
+      __typename: "UserFeed",
+      id: string,
+      userID: string,
+      postID: string,
+      post?:  {
+        __typename: "Post",
+        id: string,
+        content: string,
+        postURL?: Array< string | null > | null,
+        groupID: string,
+        userID: string,
+        user?:  {
+          __typename: "User",
+          id: string,
+          email: string,
+          firstname: string,
+          lastname: string,
+          fullname: string,
+          profileURL: string,
+          description?: string | null,
+          createdAt: string,
+          updatedAt: string,
+          owner?: string | null,
+        } | null,
+        group?:  {
+          __typename: "Group",
+          id: string,
+          groupName: string,
+          groupURL?: string | null,
+          description?: string | null,
+          isPublic: boolean,
+          memberCount: number,
+          type: string,
+          createdAt: string,
+          updatedAt: string,
+          owner?: string | null,
+        } | null,
+        commentCount: number,
+        createdAt: string,
+        updatedAt: string,
+        userPostsId?: string | null,
+        owner?: string | null,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type GetUserQueryVariables = {
   id: string,
 };
@@ -2072,7 +2292,6 @@ export type GetPostQuery = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    type: string,
     user?:  {
       __typename: "User",
       id: string,
@@ -2150,7 +2369,6 @@ export type ListPostsQuery = {
       postURL?: Array< string | null > | null,
       groupID: string,
       userID: string,
-      type: string,
       commentCount: number,
       createdAt: string,
       updatedAt: string,
@@ -2180,7 +2398,6 @@ export type PostsByDateQuery = {
       postURL?: Array< string | null > | null,
       groupID: string,
       userID: string,
-      type: string,
       commentCount: number,
       createdAt: string,
       updatedAt: string,
@@ -2223,37 +2440,6 @@ export type PostsByUserQuery = {
         owner?: string | null,
       } | null,
       userID: string,
-      type: string,
-      commentCount: number,
-      createdAt: string,
-      updatedAt: string,
-      userPostsId?: string | null,
-      owner?: string | null,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type PostsByCommentsQueryVariables = {
-  type: string,
-  commentCount?: ModelIntKeyConditionInput | null,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelPostFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type PostsByCommentsQuery = {
-  postsByComments?:  {
-    __typename: "ModelPostConnection",
-    items:  Array< {
-      __typename: "Post",
-      id: string,
-      content: string,
-      postURL?: Array< string | null > | null,
-      groupID: string,
-      userID: string,
-      type: string,
       commentCount: number,
       createdAt: string,
       updatedAt: string,
@@ -2276,6 +2462,10 @@ export type GetCommentQuery = {
     commentURL?: Array< string | null > | null,
     userID: string,
     postID: string,
+    replies?:  {
+      __typename: "ModelReplyConnection",
+      nextToken?: string | null,
+    } | null,
     user?:  {
       __typename: "User",
       id: string,
@@ -2296,7 +2486,6 @@ export type GetCommentQuery = {
       postURL?: Array< string | null > | null,
       groupID: string,
       userID: string,
-      type: string,
       commentCount: number,
       createdAt: string,
       updatedAt: string,
@@ -3073,7 +3262,6 @@ export type GroupsByUserQuery = {
               nextToken?: string | null,
             } | null,
             commentCount: number,
-            type: string,
             createdAt: string,
             updatedAt: string,
             owner?: string | null,
@@ -3192,7 +3380,6 @@ export type GetGroupQuery = {
           nextToken?: string | null,
         } | null,
         commentCount: number,
-        type: string,
         createdAt: string,
         updatedAt: string,
         userPostsId?: string | null,
@@ -3566,6 +3753,90 @@ export type TokensByUserQuery = {
   } | null,
 };
 
+export type OnCreateUserFeedSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFeedFilterInput | null,
+};
+
+export type OnCreateUserFeedSubscription = {
+  onCreateUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    post?:  {
+      __typename: "Post",
+      id: string,
+      content: string,
+      postURL?: Array< string | null > | null,
+      groupID: string,
+      userID: string,
+      commentCount: number,
+      createdAt: string,
+      updatedAt: string,
+      userPostsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateUserFeedSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFeedFilterInput | null,
+};
+
+export type OnUpdateUserFeedSubscription = {
+  onUpdateUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    post?:  {
+      __typename: "Post",
+      id: string,
+      content: string,
+      postURL?: Array< string | null > | null,
+      groupID: string,
+      userID: string,
+      commentCount: number,
+      createdAt: string,
+      updatedAt: string,
+      userPostsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteUserFeedSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFeedFilterInput | null,
+};
+
+export type OnDeleteUserFeedSubscription = {
+  onDeleteUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    post?:  {
+      __typename: "Post",
+      id: string,
+      content: string,
+      postURL?: Array< string | null > | null,
+      groupID: string,
+      userID: string,
+      commentCount: number,
+      createdAt: string,
+      updatedAt: string,
+      userPostsId?: string | null,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type OnCreateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
   owner?: string | null,
@@ -3738,7 +4009,6 @@ export type OnCreatePostSubscription = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    type: string,
     user?:  {
       __typename: "User",
       id: string,
@@ -3790,7 +4060,6 @@ export type OnUpdatePostSubscription = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    type: string,
     user?:  {
       __typename: "User",
       id: string,
@@ -3842,7 +4111,6 @@ export type OnDeletePostSubscription = {
     postURL?: Array< string | null > | null,
     groupID: string,
     userID: string,
-    type: string,
     user?:  {
       __typename: "User",
       id: string,
@@ -3918,7 +4186,6 @@ export type OnCreateCommentSubscription = {
       postURL?: Array< string | null > | null,
       groupID: string,
       userID: string,
-      type: string,
       commentCount: number,
       createdAt: string,
       updatedAt: string,
@@ -3969,7 +4236,6 @@ export type OnUpdateCommentSubscription = {
       postURL?: Array< string | null > | null,
       groupID: string,
       userID: string,
-      type: string,
       commentCount: number,
       createdAt: string,
       updatedAt: string,
@@ -4020,7 +4286,6 @@ export type OnDeleteCommentSubscription = {
       postURL?: Array< string | null > | null,
       groupID: string,
       userID: string,
-      type: string,
       commentCount: number,
       createdAt: string,
       updatedAt: string,

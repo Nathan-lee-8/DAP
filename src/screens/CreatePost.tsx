@@ -44,7 +44,6 @@ const CreatePost = ({route, navigation}: any) => {
             content: content,
             groupID: groupID,
             postURL: newPaths,
-            type: isPublic ? "Public" : "Private",
             userID: currUser.id,
             commentCount: 0
           }

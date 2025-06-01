@@ -22,6 +22,20 @@ type User @model @auth(
   fcmTokens: [Token] @hasMany
 }
 
+type UserFeed @model @auth(
+  rules: [
+    { allow: owner },
+    { allow: private, operations: [read] },
+    { allow: public, operations: [read] }
+  ]
+) {
+  id: ID!
+  userID: ID! @index(name:"postsByUserFeed", queryField: "postsByUserFeed", sortKeyFields: ["createdAt"])
+  postID: ID!
+  post: Post @hasOne(fields: ["postID"])
+  createdAt: AWSDateTime!
+}
+
 type Post @model @auth(
   rules: [
     { allow: owner },
@@ -34,7 +48,6 @@ type Post @model @auth(
   postURL: [String]
   groupID: ID! @index(name: "postsByDate", queryField: "postsByDate", sortKeyFields: ["createdAt"])
   userID: ID! @index(name: "postsByUser", queryField: "postsByUser", sortKeyFields: ["createdAt"])
-  type: String! @index(name: "postsByComments", queryField: "postsByComments", sortKeyFields: ["commentCount"])
   user: User @belongsTo(fields:["userID"])
   group: Group @belongsTo(fields: ["groupID"])
   comments: [Comment] @hasMany(indexName:"commentsByPost", fields: ["id"])

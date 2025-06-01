@@ -425,11 +425,18 @@ const styles = StyleSheet.create({
     backgroundColor: colorBackground
   },
   notificationItem:{
-    marginTop: 5,
-    marginBottom: 100,
+    padding: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
     marginHorizontal: 10,
-    padding: 10,
     backgroundColor: colorPrimary,
+  },
+  unreadItem:{
+    padding: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    marginHorizontal: 10,
+    backgroundColor: 'lightgrey',
   },
   rejectJoinButton:{
     paddingHorizontal: 10,
@@ -444,11 +451,6 @@ const styles = StyleSheet.create({
     margin: 5,
     borderRadius: 10,
     backgroundColor: '#ccc',
-  },
-  stackItem: {
-    position: 'absolute',
-    backgroundColor: colorPrimary,
-    borderRadius: 6,
   },
 
   /** comment Section */
