@@ -22,7 +22,7 @@ import ImgComponent from "./ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import Comments from './ListComments';
 
-const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => {
+const FormatPost = ( {item} : {item : Post}) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const { width } = Dimensions.get('window');
   const [ currentIndex, setCurrentIndex ] = useState(0);
@@ -50,15 +50,6 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
   const visitProfile = (item : any) => {
     if(item.user.id === currUser.id) return;
     navigation.navigate('ViewProfile', { userID: item.user.id });
-  }
-
-  const getGroupName = ( id? : string) => {
-    const res = groupData?.flatMap(group => {
-      if(group.id === id){
-        return group.groupName;
-      }
-    })
-    return res;
   }
 
   const onScroll = (event: any) => {
@@ -206,7 +197,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
             <ImgComponent uri={item.user.profileURL} style={styles.postProfileImg}/>
           </TouchableOpacity>
           <View style={styles.profileText}>
-            {groupData ? (
+            {item.group?.groupName ? (
               <View style={styles.postAuthor}>
                 <Text style={styles.bold} 
                   onPress={() => visitProfile(item)}
@@ -220,7 +211,7 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {getGroupName(item.groupID)}
+                  {item.group.groupName}
                 </Text>
               </View>
             ) : (
@@ -236,9 +227,9 @@ const FormatPost = ( {item, groupData} : {item : Post, groupData?: Group[]}) => 
       ) : (
         <View style={styles.postAuthor}>
           <Text style={styles.bold} onPress={() => navigation.navigate('ViewGroup', {groupID: item.groupID})}>
-            {getGroupName(item.groupID)}
+            {item.group?.groupName}
           </Text>
-      </View>
+        </View>
       )}
       
       <TouchableOpacity  onPress={ () => clickPost(item.id)}>

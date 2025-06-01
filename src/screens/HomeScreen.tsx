@@ -3,8 +3,8 @@ import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpaci
   Modal} from 'react-native';
 
 import client from '../client';
-import { groupPosts } from '../customGraphql/customQueries';
-import { ModelSortDirection, Post, Group } from '../API';
+import { postsByUserFeed } from '../customGraphql/customQueries';
+import { ModelSortDirection, Post, Group, UserFeed } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,10 +17,10 @@ import Notifications from '../components/Notifications';
  * Displays the active News feed for the current user
  */
 const HomeScreen = ( {navigation} : any) => {
-  const [newsFeed, setNewsFeed] = useState<Post[]>([]);
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [newsFeed, setNewsFeed] = useState<UserFeed[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
+  const [nextToken, setNextToken] = useState<string | null | undefined>(null);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
 
@@ -45,8 +45,7 @@ const HomeScreen = ( {navigation} : any) => {
         const data = JSON.parse(cachedData);
         const fiveMin = 5 * 60 * 1000;
         if (Date.now() - data.timestamp < fiveMin) {
-          setNewsFeed(data.posts);
-          setGroups(data.groupData);
+          setNewsFeed(data.newsFeedData);
           setLoading(false);
           return;
         }
@@ -67,38 +66,27 @@ const HomeScreen = ( {navigation} : any) => {
     setLoading(true);
     try{
       const res = await client.graphql({
-        query: groupPosts,
+        query: postsByUserFeed,
         variables: {
           userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
+          limit: 10,
+          nextToken: nextToken
         },
         authMode: 'userPool'
       }); 
-      const userGroupData = res.data.groupsByUser.items
-
-      let groupData = userGroupData.flatMap(group => { return (group.group  || []) })
-        .filter(group => group !== null);
-      setGroups(groupData);
-
-      let posts = userGroupData.flatMap(userGroup => {
-        return (userGroup.group?.posts?.items || []).filter((post): post is Post => post !== null);
-      }).sort((a, b) => {
-        const dateA = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return dateB - dateA;
-      });
-      setNewsFeed(posts);
-
+      const newsFeedData = res.data.postsByUserFeed.items;
+      
+      setNewsFeed(newsFeedData);
+      setNextToken(res.data.postsByUserFeed.nextToken);
+      
       await AsyncStorage.setItem('newsFeedCache', JSON.stringify({
-        posts,
-        groupData,
+        newsFeedData,
         timestamp: Date.now(),
       }));
       console.log(`Fetched from fetchnewsfeed.`);
     } catch (error: any) {
-      if(error.messsage) console.log('Error fetching news feed', error.message);
-      else if(error.errors) console.log('Error fetching news feed', error.errors);
-      else console.log('Error fetching news feed', error);
+      console.log('Error fetching news feed', error);
     } finally {
       setLoading(false);
     }
@@ -116,7 +104,10 @@ const HomeScreen = ( {navigation} : any) => {
         <FlatList
           data={newsFeed}
           renderItem={({ item }) => {
-            return <FormatPost item={item} groupData={groups}/>
+            if(!item.post) return null;
+            return(
+             <FormatPost item={item.post}/>
+            )
           }}
           ListEmptyComponent={() => (
             <View>

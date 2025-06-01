@@ -123,54 +123,6 @@ export const postsByUser =
   APITypes.PostsByUserQueryVariables,
   APITypes.PostsByUserQuery
 >;
-export const groupPosts = /* GraphQL */ `query GroupsByUser(
-  $userID: ID!
-  $updatedAt: ModelStringKeyConditionInput
-  $sortDirection: ModelSortDirection
-  $filter: ModelUserGroupFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  groupsByUser(
-    userID: $userID
-    updatedAt: $updatedAt
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      group{
-        id
-        groupName
-        posts{
-          items {
-            id
-            content
-            postURL
-            groupID
-            user{
-              id
-              email
-              firstname
-              lastname
-              profileURL
-            }
-            commentCount
-            createdAt
-          }
-          nextToken
-        }
-      }
-    }
-    nextToken
-  }
-}
-` as GeneratedQuery<
-  APITypes.GroupsByUserQueryVariables,
-  APITypes.GroupsByUserQuery
->;
 export const groupsByUser = /* GraphQL */ `query GroupsByUser(
   $userID: ID!
   $updatedAt: ModelStringKeyConditionInput
@@ -453,38 +405,6 @@ export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
   APITypes.GroupsByMemberCountQueryVariables,
   APITypes.GroupsByMemberCountQuery
 >;
-export const postsByComments = /* GraphQL */ `query PostsByComments(
-  $type: String!
-  $commentCount: ModelIntKeyConditionInput
-  $sortDirection: ModelSortDirection
-  $filter: ModelPostFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  postsByComments(
-    type: $type
-    commentCount: $commentCount
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      content
-      postURL
-      groupID
-      userID
-      type
-      commentCount
-    }
-    nextToken
-  }
-}
-` as GeneratedQuery<
-  APITypes.PostsByCommentsQueryVariables,
-  APITypes.PostsByCommentsQuery
->;
 export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
   $userID: ID!
   $createdAt: ModelStringKeyConditionInput
@@ -508,6 +428,7 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
       userID
       createdAt
       onClickID
+      hidden
     }
     nextToken
   }
@@ -595,4 +516,50 @@ export const tokensByUser = /* GraphQL */ `query TokensByUser(
 ` as GeneratedQuery<
   APITypes.TokensByUserQueryVariables,
   APITypes.TokensByUserQuery
+>;
+export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelUserFeedFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  postsByUserFeed(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      post {
+        id
+        content
+        postURL
+        user{
+          id
+          email
+          firstname
+          lastname
+          profileURL
+        }
+        group{
+          id
+          groupName
+        }
+        commentCount
+        createdAt
+        updatedAt
+      }
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.PostsByUserFeedQueryVariables,
+  APITypes.PostsByUserFeedQuery
 >;

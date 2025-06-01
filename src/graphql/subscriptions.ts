@@ -8,6 +8,87 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
+export const onCreateUserFeed = /* GraphQL */ `subscription OnCreateUserFeed($filter: ModelSubscriptionUserFeedFilterInput) {
+  onCreateUserFeed(filter: $filter) {
+    id
+    userID
+    postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateUserFeedSubscriptionVariables,
+  APITypes.OnCreateUserFeedSubscription
+>;
+export const onUpdateUserFeed = /* GraphQL */ `subscription OnUpdateUserFeed($filter: ModelSubscriptionUserFeedFilterInput) {
+  onUpdateUserFeed(filter: $filter) {
+    id
+    userID
+    postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateUserFeedSubscriptionVariables,
+  APITypes.OnUpdateUserFeedSubscription
+>;
+export const onDeleteUserFeed = /* GraphQL */ `subscription OnDeleteUserFeed($filter: ModelSubscriptionUserFeedFilterInput) {
+  onDeleteUserFeed(filter: $filter) {
+    id
+    userID
+    postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteUserFeedSubscriptionVariables,
+  APITypes.OnDeleteUserFeedSubscription
+>;
 export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
   $filter: ModelSubscriptionUserFilterInput
   $owner: String
@@ -180,7 +261,6 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
     postURL
     groupID
     userID
-    type
     user {
       id
       email
@@ -233,7 +313,6 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
     postURL
     groupID
     userID
-    type
     user {
       id
       email
@@ -286,7 +365,6 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
     postURL
     groupID
     userID
-    type
     user {
       id
       email
@@ -362,7 +440,6 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
       postURL
       groupID
       userID
-      type
       commentCount
       createdAt
       updatedAt
@@ -414,7 +491,6 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
       postURL
       groupID
       userID
-      type
       commentCount
       createdAt
       updatedAt
@@ -466,7 +542,6 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
       postURL
       groupID
       userID
-      type
       commentCount
       createdAt
       updatedAt

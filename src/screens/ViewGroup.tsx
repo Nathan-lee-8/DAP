@@ -136,7 +136,7 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   //Navigate to create Post page
   const createGroupPost = () => {
-    navigation.navigate('CreatePost', {groupID: groupID, isPublic: group?.isPublic});
+    navigation.navigate('CreatePost', {groupID: groupID, isPublic: group?.type === 'Public'});
   }
   
   const handleJoinGroup = async () => {

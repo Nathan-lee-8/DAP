@@ -8,6 +8,126 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
+export const getUserFeed = /* GraphQL */ `query GetUserFeed($id: ID!) {
+  getUserFeed(id: $id) {
+    id
+    userID
+    postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetUserFeedQueryVariables,
+  APITypes.GetUserFeedQuery
+>;
+export const listUserFeeds = /* GraphQL */ `query ListUserFeeds(
+  $filter: ModelUserFeedFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listUserFeeds(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      userID
+      postID
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListUserFeedsQueryVariables,
+  APITypes.ListUserFeedsQuery
+>;
+export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
+  $userID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelUserFeedFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  postsByUserFeed(
+    userID: $userID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      userID
+      postID
+      post {
+        id
+        content
+        postURL
+        groupID
+        userID
+        user{
+          id
+          email
+          firstname
+          lastname
+          fullname
+          profileURL
+          description
+          createdAt
+          updatedAt
+          owner
+          __typename
+        }
+        group{
+          id
+          groupName
+          groupURL
+          description
+          isPublic
+          memberCount
+          type
+          createdAt
+          updatedAt
+          owner
+          __typename
+        }
+        commentCount
+        createdAt
+        updatedAt
+        userPostsId
+        owner
+        __typename
+      }
+      createdAt
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.PostsByUserFeedQueryVariables,
+  APITypes.PostsByUserFeedQuery
+>;
 export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
   getUser(id: $id) {
     id
@@ -90,7 +210,6 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
     postURL
     groupID
     userID
-    type
     user {
       id
       email
@@ -165,7 +284,6 @@ export const listPosts = /* GraphQL */ `query ListPosts(
       postURL
       groupID
       userID
-      type
       commentCount
       createdAt
       updatedAt
@@ -200,7 +318,6 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       postURL
       groupID
       userID
-      type
       commentCount
       createdAt
       updatedAt
@@ -251,7 +368,6 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
         __typename
       }
       userID
-      type
       commentCount
       createdAt
       updatedAt
@@ -267,44 +383,6 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
   APITypes.PostsByUserQueryVariables,
   APITypes.PostsByUserQuery
 >;
-export const postsByComments = /* GraphQL */ `query PostsByComments(
-  $type: String!
-  $commentCount: ModelIntKeyConditionInput
-  $sortDirection: ModelSortDirection
-  $filter: ModelPostFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  postsByComments(
-    type: $type
-    commentCount: $commentCount
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      content
-      postURL
-      groupID
-      userID
-      type
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.PostsByCommentsQueryVariables,
-  APITypes.PostsByCommentsQuery
->;
 export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
   getComment(id: $id) {
     id
@@ -312,6 +390,10 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
     commentURL
     userID
     postID
+    replies {
+      nextToken
+      __typename
+    }
     user {
       id
       email
@@ -331,7 +413,6 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
       postURL
       groupID
       userID
-      type
       commentCount
       createdAt
       updatedAt
@@ -1170,7 +1251,6 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
               __typename
             }
             commentCount
-            type
             createdAt
             updatedAt
             owner
@@ -1297,7 +1377,6 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           __typename
         }
         commentCount
-        type
         createdAt
         updatedAt
         userPostsId

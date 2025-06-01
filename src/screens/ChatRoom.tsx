@@ -280,7 +280,7 @@ const ChatRoom = ( { route, navigation } : any) => {
         variables: {
           input: {
             senderID: currUser.id,
-            content: currUser.fullname + " added " + addedMemberNames + " to the chat",
+            content: currUser.fullname + " added " + addedMemberNames,
             chatID: chatID,
             type: 'System'
           }
