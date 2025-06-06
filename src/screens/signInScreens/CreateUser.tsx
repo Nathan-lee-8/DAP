@@ -41,11 +41,12 @@ const CreateUser = () => {
           input: { 
             email: userEmail.trim().toLowerCase(), 
             firstname: firstname.trim(), 
-            fullname: 
-              firstname.trim().toLocaleLowerCase() + " " +
+            fullname: firstname.trim().toLocaleLowerCase() + " " +
               lastname.trim().toLocaleLowerCase(),
             lastname: lastname.trim(),
-            profileURL: 'defaultUser'
+            profileURL: 'defaultUser',
+            unreadChatCount: 0,
+            unreadNotificationCount: 0
           },
         },
         authMode: 'userPool'

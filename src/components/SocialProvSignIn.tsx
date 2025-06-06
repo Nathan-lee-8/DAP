@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
-const SocialProvSignIn = ({setLoading}: any) => {
+const SocialProvSignIn = ( {setLoading} : any ) => {
   const authContext = useContext(AuthContext);
   if(!authContext) return;
   const { setUserEmail } = authContext;

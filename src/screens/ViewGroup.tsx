@@ -5,7 +5,7 @@ import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
 import { getGroup, postsByDate } from '../customGraphql/customQueries';
-import { createUserGroup, deleteUserGroup, deletePost, deleteGroup, createReport,
+import { createUserGroup, deleteUserGroup, deleteGroup, createReport,
    createNotification, deleteNotification} from '../customGraphql/customMutations';
 import { Group, Post, UserGroup, User, Notification, ModelSortDirection } from '../API'
 
@@ -306,69 +306,29 @@ const ViewGroup = ( {route, navigation} : any) => {
       "Delete Group", "Are you sure you want to delete this group?",
       [
         { text: "Cancel" },
-        { text: "Delete", onPress: deleteGroupAndPosts}
+        { text: "Delete", onPress: async () => {
+            try {
+              if(!group){
+                Alert.alert('Error', 'Error deleting group');
+                return;
+              }
+              await client.graphql({
+                query: deleteGroup,
+                variables: {
+                  input: {
+                    id: group.id
+                  }
+                },
+                authMode: 'userPool'
+              })
+              navigation.goBack();
+            } catch (error) {
+              Alert.alert('Error', 'Error deleting group');
+            }
+          }
+        }
       ]
     );
-  }
-
-  const deleteGroupAndPosts = async () => {
-    if(!group){
-      Alert.alert('Error', 'Error deleting group');
-      return;
-    }
-    // delete all Group Posts
-    const postIDs = group.posts ? group.posts?.items.map((item: any) => item.id) : [];
-    for(const postID of postIDs){
-      try{
-        await client.graphql({
-          query: deletePost,
-          variables: {
-            input: {
-              id: postID
-            }
-          },
-          authMode: 'userPool'
-        })
-        console.log(postID, " post deleted");
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    // delete all user Groups
-    const participantIDs = group.members ? group.members?.items.map((item : any) => item.id) : [];
-    for(const partID of participantIDs){
-      try{
-        await client.graphql({
-          query: deleteUserGroup,
-          variables: {
-            input: {
-              id: partID
-            }
-          },
-          authMode: 'userPool'
-        })
-        console.log(partID, " userGroup deleted");
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    // Delete group
-    try{
-      await client.graphql({
-        query: deleteGroup,
-        variables: {
-          input: {
-            id: group.id
-          }
-        },
-        authMode: 'userPool'
-      })
-      console.log(group.id, " group deleted");
-    } catch (error) {
-      console.log(error);
-    }
-    navigation.pop(2);
-    Alert.alert('Success', 'Group successfully deleted')
   }
 
   const handleAddMember = async (user: User) => {
@@ -448,20 +408,32 @@ const ViewGroup = ( {route, navigation} : any) => {
         },
         authMode: 'userPool'
       })
-      await client.graphql({
-        query: deleteNotification,
-        variables: {
-          input: {
-            id: item.id
-          }
-        },
-        authMode: 'userPool'
-      })
       fetchCurrentData();
       Alert.alert('Success', 'Request accepted');
     }catch(error){
       Alert.alert('Error', 'There was an issue accepting this request');
     }
+    client.graphql({
+      query: deleteNotification,
+      variables: {
+        input: {
+          id: item.id
+        }
+      },
+      authMode: 'userPool'
+    }).catch(() => {});
+    client.graphql({
+      query: createNotification,
+      variables: {
+        input: {
+          type: 'Group',
+          content: 'Your request to join ' + group?.groupName + ' has been accepted',
+          userID: item?.targetUser?.id,
+          onClickID: groupID
+        }
+      },
+      authMode: 'userPool'
+    }).catch(() => {})
   }
 
   if(loading){

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, TextInput,
   Modal } from "react-native";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, useDerivedValue,
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, useDerivedValue, 
   runOnJS } from 'react-native-reanimated';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
@@ -13,7 +13,7 @@ import { GlobalParamList } from "../types/rootStackParamTypes";
 
 import client from "../client";
 import { deletePost, deleteComment, createReport } from "../customGraphql/customMutations";
-import { Post, Group } from "../API";
+import { Post } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
 import moment from "moment";
@@ -22,7 +22,7 @@ import ImgComponent from "./ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import Comments from './ListComments';
 
-const FormatPost = ( {item} : {item : Post}) => {
+const FormatPost = ( {item} : {item: Post} ) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const { width } = Dimensions.get('window');
   const [ currentIndex, setCurrentIndex ] = useState(0);
@@ -89,24 +89,6 @@ const FormatPost = ( {item} : {item : Post}) => {
 
   //delete all post and comments
   const handleDelete = async () => {
-    if(item.comments){
-      item.comments.items.map( async (comment: any) => {
-        try{
-          await client.graphql({
-            query: deleteComment,
-            variables: {
-              input: {
-                id: comment.id
-              }
-            },
-            authMode: 'userPool'
-          });
-          console.log(comment.id, "successfully deleted comment");
-        }catch (error : any){
-          console.log(error);
-        }
-      })
-    }
     if(item){
       try{
         await client.graphql({

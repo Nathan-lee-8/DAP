@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
   Modal, TextInput } from "react-native";
   
 import client from "../client";
-import {  createChat, createUserChat, deleteUserGroup, createReport,
+import { createChat, createUserChat, deleteUserGroup, createReport,
   updateUserGroup } from "../customGraphql/customMutations";
 import { UserGroup } from "../API";
 
@@ -12,7 +12,7 @@ import styles from '../styles/Styles';
 import ImgComponent from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 
-const ViewMembers = ( {route, navigation} : any) => {
+const ViewMembers = ( {route, navigation} : any ) => {
   const group = route.params.group;
   const [ userGroups, setUserGroups ] = useState(group.members.items);
   const [ loading, setLoading ] = useState(false);

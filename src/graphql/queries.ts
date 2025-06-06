@@ -91,6 +91,8 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
           fullname
           profileURL
           description
+          unreadChatCount
+          unreadNotificationCount
           createdAt
           updatedAt
           owner
@@ -137,6 +139,8 @@ export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
     fullname
     profileURL
     description
+    unreadChatCount
+    unreadNotificationCount
     createdAt
     updatedAt
     owner
@@ -158,6 +162,8 @@ export const listUsers = /* GraphQL */ `query ListUsers(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -190,6 +196,8 @@ export const userByEmail = /* GraphQL */ `query UserByEmail(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -218,6 +226,8 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -237,6 +247,9 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
           lastname
           fullname
           profileURL
+          description
+          unreadChatCount
+          unreadNotificationCount
           createdAt
           updatedAt
           owner
@@ -786,6 +799,8 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
               fullname
               profileURL
               description
+              unreadChatCount
+              unreadNotificationCount
               createdAt
               updatedAt
               owner
@@ -881,6 +896,8 @@ export const getChat = /* GraphQL */ `query GetChat(
           email
           profileURL
           description
+          unreadChatCount
+          unreadNotificationCount
           createdAt
           updatedAt
           owner
@@ -913,6 +930,8 @@ export const getChat = /* GraphQL */ `query GetChat(
           email
           profileURL
           description
+          unreadChatCount
+          unreadNotificationCount
           createdAt
           updatedAt
           owner
@@ -1230,6 +1249,8 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
               lastname
               profileURL
               description
+              unreadChatCount
+              unreadNotificationCount
               createdAt
               updatedAt
               owner
@@ -1328,6 +1349,8 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           fullname
           profileURL
           description
+          unreadChatCount
+          unreadNotificationCount
           createdAt
           updatedAt
           owner
@@ -1356,6 +1379,8 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           fullname
           profileURL
           description
+          unreadChatCount
+          unreadNotificationCount
           createdAt
           updatedAt
           owner
@@ -1395,7 +1420,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
         groupID
         targetUserID
         onClickID
-        hidden
+        read
         targetUser{
           id
           email
@@ -1404,6 +1429,8 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
           fullname
           profileURL
           description
+          unreadChatCount
+          unreadNotificationCount
           createdAt
           updatedAt
           owner
@@ -1497,7 +1524,7 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
     groupID
     targetUserID
     onClickID
-    hidden
+    read
     user {
       id
       email
@@ -1562,7 +1589,7 @@ export const listNotifications = /* GraphQL */ `query ListNotifications(
       groupID
       targetUserID
       onClickID
-      hidden
+      read
       createdAt
       updatedAt
       userNotificationsId
@@ -1601,7 +1628,7 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
       groupID
       targetUserID
       onClickID
-      hidden
+      read
       createdAt
       updatedAt
       userNotificationsId
@@ -1640,7 +1667,7 @@ export const notificationsByGroup = /* GraphQL */ `query NotificationsByGroup(
       groupID
       targetUserID
       onClickID
-      hidden
+      read
       createdAt
       updatedAt
       userNotificationsId

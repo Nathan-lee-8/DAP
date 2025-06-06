@@ -82,7 +82,8 @@ const ChatMembers = ( {route, navigation} : any ) => {
       variables: {
         input: {
           senderID: currUser.id,
-          content: `${currUser.fullname} removed ${selectedUser.user?.firstname} ${selectedUser.user?.lastname}`,
+          content: `${currUser.firstname} ${currUser.lastname} removed ` +
+            `${selectedUser.user?.firstname} ${selectedUser.user?.lastname}`,
           chatID: chatData.id,
           type: 'System'
         },

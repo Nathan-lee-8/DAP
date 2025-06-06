@@ -47,6 +47,8 @@ export const userByEmail =
       lastname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       fcmTokens{
         items{
           id
@@ -428,7 +430,7 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
       userID
       createdAt
       onClickID
-      hidden
+      read
     }
     nextToken
   }

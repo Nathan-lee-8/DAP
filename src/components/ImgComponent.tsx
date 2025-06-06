@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import FastImage from 'react-native-fast-image';
 
-const ImgComponent = ({ uri, style, resizeMode} : {uri: string; style?: any; resizeMode? : any}) => {
-  const [error, setError] = useState(false);
+const ImgComponent = ( {uri, style, resizeMode} : {uri: string; style?: any; resizeMode? : any} ) => {
+  const [ error, setError ] = useState(false);
   if(error) uri = 'defaultUser';
   const getStyle = () => {
     if(style) return style;

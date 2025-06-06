@@ -18,7 +18,7 @@ const imagePicker = async () => {
   return file.uri;
 }
 
-const getImgURI = async ( fileURI: string, filename: string) => {
+const getImgURI = async (fileURI: string, filename: string) => {
   try{
     const fileType = 'image/jpeg';
     const response = await fetch(fileURI);

@@ -33,10 +33,24 @@ const HomeScreen = ( {navigation} : any) => {
       headerRight: () => (
         <TouchableOpacity style={{marginRight: 15}} onPress={() => setModalVisible(true)} >
           <Icon name="notifications-outline" size={24} />
+          {currUser && currUser?.unreadNotificationCount > 0 && 
+            <View style={{
+              position: 'absolute',
+              backgroundColor: 'red',
+              borderRadius: 10,
+              width: 10,
+              height: 10,
+              right: 0,
+              top: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1
+            }}/>
+          }
         </TouchableOpacity>
       )
     })
-  })
+  }, [currUser])
 
   const loadNewsFeed = async () => {
     try {

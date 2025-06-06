@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert, FlatList,
   KeyboardAvoidingView, Platform} from 'react-native';
 
 import client from '../client';
-import { createChat, createUserChat, createMessage, deleteChat, deleteMessage,
-  deleteUserChat } from '../customGraphql/customMutations';
+import { createChat, createUserChat, createMessage, createNotification,
+  deleteChat } from '../customGraphql/customMutations';
 import { User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
@@ -12,17 +12,24 @@ import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import SearchBar from '../components/SearchBar';
 
-//TODO: Add rollback in case of failure, create Loading screen
+/** CHANGE: Send a message to create chatroom -> button press or message send
+ ** UPDATE: ability to upload image on this page? 
+ * Page to create Chatroom with chatname, image, and invited users
+ * Optional user param to start with a target User already in the chat room
+*/
 const CreateChat = ({ route, navigation }: any) => {
   const initalUser = route.params.user ? [route.params.user] : [];
-  const [targetUsers, setTargetUsers] = useState<User[]>(initalUser);
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [chatname, setChatname] = useState('Chat name');
+  const [ targetUsers, setTargetUsers ] = useState<User[]>(initalUser);
+  const [ chatname, setChatname ] = useState('Chat name');
+  const [ message, setMessage ] = useState('');
+  const [ loading, setLoading ] = useState(false);
+
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
+  //Creates a chat room with metadata unless message is empty or target 
+  //chat members are not set
   const createChatRoom = async () => {
     if (message === '') {
       Alert.alert("Error", "Please enter a message");
@@ -31,13 +38,11 @@ const CreateChat = ({ route, navigation }: any) => {
       Alert.alert("Error", "No target selected.");
       return;
     }
-    var chatID = null;
-    var firstMsgID = null;
-    const addedMembers = [];
-
+    let tempChatID: string | undefined;
     try {
       setLoading(true);
 
+      //Create ChatRoom
       const chat = await client.graphql({
         query: createChat,
         variables: {
@@ -49,14 +54,16 @@ const CreateChat = ({ route, navigation }: any) => {
         authMode: 'userPool'
       });
       console.log("chat created");
-      chatID = chat.data.createChat.id;
-
-      const myUserChat = await client.graphql({
+      
+      const chatID = chat.data.createChat.id;
+      tempChatID = chatID;
+      //Create current user User Chat
+      await client.graphql({
         query: createUserChat,
         variables: {
           input: {
             userID: currUser.id,
-            chatID: chat.data.createChat.id,
+            chatID: chatID,
             unreadMessageCount: 0,
             lastMessage: message,
             lastMessageAt: new Date().toISOString(),
@@ -66,15 +73,15 @@ const CreateChat = ({ route, navigation }: any) => {
         authMode: 'userPool'
       })
       console.log("senderChat created");
-      addedMembers.push(myUserChat.data.createUserChat.id);
 
+      //create User Chat and notifications for each target user
       targetUsers.map(async (user: User) => {
-        const targetUserChat = await client.graphql({
+        await client.graphql({
           query: createUserChat,
           variables: {
             input: {
               userID: user.id,
-              chatID: chat.data.createChat.id,
+              chatID: chatID,
               unreadMessageCount: 1,
               lastMessage: message,
               lastMessageAt: new Date().toISOString(),
@@ -84,22 +91,33 @@ const CreateChat = ({ route, navigation }: any) => {
           authMode: 'userPool'
         })
         console.log(user.firstname + " chat created");
-        addedMembers.push(targetUserChat.data.createUserChat.id);
+        client.graphql({
+          query: createNotification,
+          variables: {
+            input: {
+              userID: user.id,
+              content: currUser.fullname + " added you to a chat",
+              type: 'Chat',
+              onClickID: chatID,
+            }
+          },
+          authMode: 'userPool'
+        }).catch(() => {})
       })
 
-      const msgData = await client.graphql({
+      //Send message in chat
+      await client.graphql({
         query: createMessage,
         variables: {
           input: {
             senderID: currUser.id,
             content: message,
-            chatID: chat.data.createChat.id,
+            chatID: chatID,
           }
         },
         authMode: 'userPool'
       })
       console.log("Msg sent")
-      firstMsgID = msgData.data.createMessage.id;
 
       navigation.reset({
         index: 1,
@@ -109,73 +127,31 @@ const CreateChat = ({ route, navigation }: any) => {
             name: 'ChatRoom', params: { chatID: chat.data.createChat.id }
           }],
       });
-    } catch (error: any) {
-      rollBack(addedMembers, chatID, firstMsgID);
-      console.log(error);
+    } catch {
+      Alert.alert('Error', 'Unable to create Chat');
+      if(tempChatID){
+        client.graphql({
+          query: deleteChat,
+          variables: {
+            input: {
+              id: tempChatID
+            }
+          },
+          authMode: 'userPool'
+        }).catch(() => {});
+      }
     } finally {
       setLoading(false);
     }
   }
 
-  const rollBack = async (addedMembers: string[], chatID: string | null, firstMsgID: string | null) => {
-    //Delete Members (Userchats)
-    if (firstMsgID) {
-      try {
-        await client.graphql({
-          query: deleteMessage,
-          variables: {
-            input: {
-              id: firstMsgID
-            }
-          },
-          authMode: 'userPool'
-        })
-      } catch (error) {
-        console.log(`Failed to rollback first message ID: ${firstMsgID}:`, error);
-      }
-    }
-
-    if (addedMembers.length > 0) {
-      for (const member of addedMembers) {
-        try {
-          await client.graphql({
-            query: deleteUserChat,
-            variables: {
-              input: {
-                id: member
-              }
-            },
-            authMode: 'userPool'
-          })
-        } catch (error) {
-          console.log(`Failed to rollback member ID: ${member}:`, error);
-        }
-      }
-    }
-
-    //delete Chat
-    if (chatID) {
-      try {
-        await client.graphql({
-          query: deleteChat,
-          variables: {
-            input: {
-              id: chatID
-            }
-          },
-          authMode: 'userPool'
-        })
-      } catch (error) {
-        console.log(`Failed to rollback chat ID: ${chatID}:`, error);
-      }
-    }
-  }
-
+  //adds member to list of users to add to chat
   const handleUserSelected = (user: User) => {
     if (targetUsers.includes(user)) return;
     setTargetUsers([...targetUsers, user]);
   }
 
+  //removes member from list of users to add to chat
   const handleRemoveUser = (userID: string) => {
     setTargetUsers(targetUsers.filter((user) => user.id !== userID));
   }

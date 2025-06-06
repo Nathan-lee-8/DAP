@@ -16,28 +16,32 @@ import { imagePicker, getImgURI } from '../components/addImg';
 import LinearGradient from 'react-native-linear-gradient';
 
 /**
- * @returns 
+ * Page to allow user to Create a group with other users and customize groupname,
+ * description, groupImage and privacy settings
  */
-const CreateGroup = ( {navigation} : any) => {
-  const [groupName, setGroupName] = useState('');
-  const [description, setDescription] = useState('');
-  const [members, setMembers] = useState<User[]>([]);
-  const [groupURI, setGroupURL] = useState<string>('defaultGroup');
-  const [loading, setLoading] = useState(false);
-  const [goNext, setGoNext] = useState(false);
-  const [type, setType] = useState('Public');
+const CreateGroup = ({ navigation }: any) => {
+  const [ groupName, setGroupName ] = useState('');
+  const [ description, setDescription ] = useState('');
+  const [ groupURI, setGroupURL ] = useState<string>('defaultGroup');
+  const [ privacy, setPrivacy ] = useState('Public');
+  const [ members, setMembers ] = useState<User[]>([]);
+
+  const [ loading, setLoading ] = useState(false);
+  const [ goNext, setGoNext ] = useState(false);
+
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
   
+  //Triggered when CreateGroup Button Pressed. Takes user inputs and creates a group,
+  // sending notifications to each member then navigates to newly created group 
   const addGroup = async () => {
     if(groupName.trim() === ''){
       Alert.alert('Error', 'Please enter a group name before creating a group');
       return;
     }
-    var groupID = null;
-    const addedMembers = [];
 
+    let tempGroupID: string | undefined;
     try{ 
       setLoading(true);
       setGoNext(false);
@@ -50,19 +54,32 @@ const CreateGroup = ( {navigation} : any) => {
             groupName: groupName,
             description: description,
             groupURL: groupURI,
-            isPublic: type !== 'Hidden',
-            type: type,
+            isPublic: privacy !== 'Hidden',
+            type: privacy,
             memberCount: 0
           }
         },
         authMode:'userPool'
       })
       console.log("Group created Successfully");
-      groupID = groupData.data.createGroup.id;
+      var groupID = groupData.data.createGroup.id;
 
-      //Add Members 
+      //Add Self
+      await client.graphql({
+        query: createUserGroup,
+        variables: { 
+          input: {
+            userID: currUser.id,
+            role: "Owner",
+            groupID: groupID
+          }
+        },
+        authMode:'userPool'
+      })
+
+      //Add Members & send notifications to each
       for(const member of members){
-        const userGroupData = await client.graphql({
+        await client.graphql({
           query: createUserGroup,
           variables: {
             input: {
@@ -74,7 +91,6 @@ const CreateGroup = ( {navigation} : any) => {
           authMode:'userPool'
         })
         console.log(member.firstname, "added successfully");
-        addedMembers.push(userGroupData.data.createUserGroup.id);
         client.graphql({
           query: createNotification,
           variables: {
@@ -90,22 +106,7 @@ const CreateGroup = ( {navigation} : any) => {
           authMode: 'userPool'
         }).catch(() => {});
       };
-
-      //Add Self
-      const selfData = await client.graphql({
-        query: createUserGroup,
-        variables: { 
-          input: {
-            userID: currUser.id,
-            role: "Owner",
-            groupID: groupID
-          }
-        },
-        authMode:'userPool'
-      })
       console.log("Self added successfully");
-      addedMembers.push(selfData.data.createUserGroup.id);
-
       if(groupURI !== 'defaultGroup') handleUploadImage(groupID);
 
       navigation.reset({
@@ -115,20 +116,30 @@ const CreateGroup = ( {navigation} : any) => {
             { name: 'ViewGroup', params: { groupID: groupID } 
         }],
       });
-    } catch (error) {
-      console.log(error);
-      rollBack(addedMembers, groupID);
+    } catch {
+      Alert.alert('Error', 'Failed to create group');
+      if(tempGroupID){
+        client.graphql({
+          query: deleteGroup,
+          variables: {
+            input: {
+              id: tempGroupID
+            }
+          },
+          authMode:'userPool'
+        }).catch(() => {});
+      }
     } finally {
       setLoading(false);
     }
   }
 
+  //uploads group Image to s3
   const handleUploadImage = async (groupID: string) => {
-    //upload image to s3
     try{
       const uri = await getImgURI(groupURI, `public/groupPictures/${groupID}/profile/${Date.now()}.jpg`);
       if(!uri) throw new Error('Image not selected');
-      client.graphql({
+      await client.graphql({
         query: updateGroup,
         variables: {
           input: {
@@ -144,45 +155,7 @@ const CreateGroup = ( {navigation} : any) => {
     }
   }
 
-  //Rollback any graphql entries for group or member upon failure
-  const rollBack = async (addedMembers: string[], groupID: string | null) => {
-    //Delete Members
-    if(addedMembers.length > 0){
-      for(const member of addedMembers){
-        try{
-          await client.graphql({
-            query: deleteUserGroup,
-            variables: {
-              input: {
-                id: member
-              }
-            },
-            authMode:'userPool'
-          })
-        } catch (error) {
-          console.log(`Failed to rollback member ID: ${member}:`, error);
-        }
-      }
-    }
-    //Delete group
-    if(groupID){
-      try{
-        await client.graphql({
-          query: deleteGroup,
-          variables: {
-            input: {
-              id: groupID
-            }
-          },
-          authMode:'userPool'
-        })
-      } catch (error) {
-        console.log(`Failed to rollback group ID: ${groupID}:`, error);
-      }
-    }
-  }
-
-  //Adds user to group onPress
+  //Adds user to list of members to add to group
   const getUser = (user: User) => {
     if(members.includes(user)){
       return;
@@ -190,13 +163,14 @@ const CreateGroup = ( {navigation} : any) => {
     setMembers([...members, user]);
   }
 
-  //Removes user from group onPress
+  //Removes user from list of members to add to group
   const removeUser = (user: User) => {
     if(members.includes(user)){
       setMembers(members.filter((member) => member !== user));
     }
   }
   
+  //Retrieves the local filepath to user image
   const getFilePath = async () => {
     try{
       var uri = await imagePicker();
@@ -207,20 +181,13 @@ const CreateGroup = ( {navigation} : any) => {
     }
   }
 
-  const handleGoNext = () => {
-    if(groupName.trim() === ""){
-      Alert.alert("Error", "Please enter a valid group name.");
-      return;
-    }
-    setGoNext(true);
-  }
-
   if(loading) {
     return(
       <ActivityIndicator size="large" color="#0000ff" />
     )
   }
 
+  //Second page to add Users to group
   if(goNext) {
     return(
       <View style={styles.container}>
@@ -231,7 +198,9 @@ const CreateGroup = ( {navigation} : any) => {
               <View style={styles.searchUserContainer}>
                 <View style={styles.listUserContainer}>
                   <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
-                  <Text style={[styles.postContent, {marginLeft: 10}]}>{item?.firstname + ' ' + item?.lastname}</Text>
+                  <Text style={[styles.postContent, {marginLeft: 10}]}>
+                    {item?.firstname + ' ' + item?.lastname}
+                  </Text>
                   <TouchableOpacity style={{marginLeft: 'auto'}} onPress={()=> removeUser(item)}>
                     <Icon name="remove-circle-outline" size={25}/>
                   </TouchableOpacity>
@@ -266,6 +235,7 @@ const CreateGroup = ( {navigation} : any) => {
     )
   }
 
+  //Page to set Metadata: group image, groupName, description & privacy
   return(
     <View style={styles.container}>
       <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}} 
@@ -301,34 +271,34 @@ const CreateGroup = ( {navigation} : any) => {
         <View style={styles.groupPrivacyContainer}>
           <Text style={[styles.privacyText, {padding: 10}]}>Visibility</Text>
 
-          <TouchableOpacity style={styles.privacyOptionContainer} onPress={() => setType('Public')}>
+          <TouchableOpacity style={styles.privacyOptionContainer} onPress={() => setPrivacy('Public')}>
             <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-open" size={20}/>
             <View style={{flexDirection: 'column'}}>
               <Text style={styles.privacyText}>Public</Text>
               <Text>Anyone can find and join.</Text>
             </View>
             <View style={styles.privacyIcon}>
-              <View style={type === 'Public' ? styles.privacyIconSelected : null}/>
+              <View style={privacy === 'Public' ? styles.privacyIconSelected : null}/>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setType('Private')}>
+          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setPrivacy('Private')}>
             <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-closed" size={20}/>
             <View style={{flexDirection: 'column'}}>
               <Text style={styles.privacyText}>Private</Text>
               <Text>Anyone can find. Request to join.</Text>
             </View>
             <View style={styles.privacyIcon}>
-              <View style={type === 'Private' ? styles.privacyIconSelected : null}/>
+              <View style={privacy === 'Private' ? styles.privacyIconSelected : null}/>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setType('Hidden')}>
+          <TouchableOpacity style={styles.privacyOptionContainer}  onPress={() => setPrivacy('Hidden')}>
             <Icon style={{alignSelf: 'center', marginRight: 5}} name="lock-closed" size={20}/>
             <View style={{flexDirection: 'column'}}>
               <Text style={styles.privacyText}>Hidden</Text>
               <Text>Invite Only.</Text>
             </View>
             <View style={styles.privacyIcon}>
-              <View style={type === 'Hidden' ? styles.privacyIconSelected : null}/>
+              <View style={privacy === 'Hidden' ? styles.privacyIconSelected : null}/>
             </View>
           </TouchableOpacity>
 
@@ -339,7 +309,7 @@ const CreateGroup = ( {navigation} : any) => {
         style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >   
-        <TouchableOpacity style={styles.buttonBlack} onPress={handleGoNext}>
+        <TouchableOpacity style={styles.buttonBlack} onPress={() => setGoNext(true)}>
           <Text style={styles.buttonTextWhite}>Next</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>

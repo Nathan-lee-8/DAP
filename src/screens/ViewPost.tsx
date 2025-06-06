@@ -26,8 +26,6 @@ const ViewPost = ( {route} : any) => {
         },
         authMode: 'userPool'
       });
-      console.log("fetched from ViewPost");
-
       if(data.getPost) setPostData(data.getPost);
     } catch (error) {
       console.error('Error fetching post:', error);
@@ -41,7 +39,7 @@ const ViewPost = ( {route} : any) => {
   const header = () => {
     return (
       <View style={{marginBottom: 5}}>
-        {postData && <FormatPost item={postData} groupData={postData?.group ? [postData.group] : []}/>}
+        {postData && <FormatPost item={postData}/>}
       </View> 
     )
   }
