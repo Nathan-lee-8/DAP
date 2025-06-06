@@ -15,7 +15,7 @@ import { AuthContext } from '../context/AuthContext';
 import CommentComp from '../components/commentComponent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ListComments = ({postID, header, customPadding}: any) => {
+const ListComments = ( {postID, header, customPadding} : any ) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ comment, setComment ] = useState<string>('');

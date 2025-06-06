@@ -4,7 +4,8 @@ import { View, Text, FlatList, ActivityIndicator,
 
 import client from '../client';
 import { notificationsByUser } from "../customGraphql/customQueries";
-import { deleteNotification, updateNotification } from "../customGraphql/customMutations";
+import { deleteNotification, updateNotification, updateUser 
+} from "../customGraphql/customMutations";
 import { ModelSortDirection, Notification } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
@@ -16,11 +17,14 @@ import { GlobalParamList } from "../types/rootStackParamTypes";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import moment from "moment";
 
-const Notifications = ( {closeNotificationModal}: any ) => {
-  const [notifications, setNotifications] = useState<any>([]);
-  const [loading, setLoading] = useState(true);
-  const [nextToken, setNextToken] = useState<string | null | undefined>(null);
+const Notifications = ( {closeNotificationModal} : any ) => {
+  const [ notifications, setNotifications ] = useState<any>([]);
+  const [ loading, setLoading ] = useState(true);
+  const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
+  const authContext = useContext(AuthContext);
+  if(!authContext) return;
   const currUser = useContext(AuthContext)?.currUser;
+  const triggerFetch = useContext(AuthContext)?.triggerFetch;
   if(!currUser) return;
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -39,7 +43,7 @@ const Notifications = ( {closeNotificationModal}: any ) => {
         authMode:'userPool'
       })
       setNextToken(notifData.data.notificationsByUser.nextToken);
-      const notificationList = notifData.data.notificationsByUser.items;
+      const notificationList = notifData.data.notificationsByUser.items.filter((item) => item.type !== 'Message');
       setNotifications(notificationList);
     } catch (error: any) {
       console.log(error);
@@ -70,24 +74,39 @@ const Notifications = ( {closeNotificationModal}: any ) => {
   }
 
   const handleNav = async (item: Notification) => {
-    if(!item.hidden){
+    if(!item.read){
       client.graphql({
         query: updateNotification,
         variables: {
           input: {
             id: item.id,
-            hidden: true
+            read: true
           }
         },
         authMode: 'userPool'
       }).catch((error: any) => console.log(error))
+      client.graphql({
+        query: updateUser,
+        variables: {
+          input: {
+            id: currUser.id,
+            unreadNotificationCount: ((currUser.unreadNotificationCount - 1) >= 0) ? 
+              currUser.unreadNotificationCount - 1 : 0,
+          }
+        },
+        authMode: 'userPool'
+      }).catch((error: any) => console.log(error))
+      .finally(() => {
+        if(triggerFetch) triggerFetch();
+      });
     }
+
     closeNotificationModal();
     if(item.type === 'Group'){
       navigation.navigate('ViewGroup', { groupID: item.onClickID });
     }else if(item.type === 'Post'){
       navigation.navigate('ViewPost', { postID: item.onClickID });
-    }else if(item.type === 'Message'){
+    }else if(item.type === 'Chat'){
       navigation.navigate('ChatRoom', { chatID: item.onClickID });
     }
   }

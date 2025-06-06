@@ -70,6 +70,8 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
     lastname
     fullname
     profileURL
+    unreadChatCount
+    unreadNotificationCount
     description
     createdAt
     updatedAt
@@ -93,6 +95,8 @@ export const updateUser = /* GraphQL */ `mutation UpdateUser(
     fullname
     profileURL
     description
+    unreadChatCount
+    unreadNotificationCount
     createdAt
     updatedAt
     owner
@@ -650,7 +654,7 @@ export const createNotification = /* GraphQL */ `mutation CreateNotification(
     groupID
     targetUserID
     onClickID
-    hidden
+    read
     createdAt
     updatedAt
     userNotificationsId
@@ -674,7 +678,7 @@ export const updateNotification = /* GraphQL */ `mutation UpdateNotification(
     groupID
     targetUserID
     onClickID
-    hidden
+    read
     createdAt
     updatedAt
     userNotificationsId
@@ -698,7 +702,7 @@ export const deleteNotification = /* GraphQL */ `mutation DeleteNotification(
     groupID
     targetUserID
     onClickID
-    hidden
+    read
     createdAt
     updatedAt
     userNotificationsId

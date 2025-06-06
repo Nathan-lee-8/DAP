@@ -9,14 +9,14 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import ProfilePicture from './ImgComponent';
 
-const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:any, remove?: any}) => {
-  const [search, setSearch] = useState<string>('');
-  const [data, setData] = useState<User[]>([]);
+const SearchBar = ( {userPressed, width, remove} : {userPressed?:any, width?:any, remove?: any} ) => {
+  const [ search, setSearch ] = useState<string>('');
+  const [ data, setData ] = useState<User[]>([]);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
-  const fetchUsers = async ( search: string) => {
+  const fetchUsers = async (search: string) => {
     try{
       const usersByEmail = await client.graphql({
         query: listUsers,
@@ -52,7 +52,7 @@ const SearchBar = ( { userPressed, width, remove } : {userPressed?:any, width?:a
     }
   };
   
-  const handleSearch = async (query: string) => {
+  const handleSearch = async ( query: string ) => {
     
     setSearch(query);
     if(query === '') {

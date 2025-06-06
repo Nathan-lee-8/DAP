@@ -1,4 +1,5 @@
 import { useContext } from 'react';
+import { View, Text} from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -106,7 +107,27 @@ const BottomTabs = () => {
         }}/>
       <BottomTab.Screen name="Messages" component={Messaging} 
         options={{ lazy: true, headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="chatbubbles-outline" size={30} />
+          tabBarIcon: () => {
+            return(
+              <View>
+                <Icon name="chatbubbles-outline" size={30} />
+                {currUser.unreadChatCount > 0 && 
+                  <View style={{
+                    position: 'absolute',
+                    backgroundColor: 'red',
+                    borderRadius: 10,
+                    width: 10,
+                    height: 10,
+                    right: 0,
+                    top: 0,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1
+                  }}/>
+                }
+              </View>
+            )
+          }
         }} />
       <BottomTab.Screen name="Groups" component={Groups} 
         options={{ lazy: true, headerTitleAlign:'center',

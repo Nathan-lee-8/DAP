@@ -11,7 +11,7 @@ import moment from 'moment';
 import ImgComponent from './ImgComponent';
 import { AuthContext } from '../context/AuthContext';
 
-const CommentComp = ( {item, handleKeyboard, refreshComments, index } : any) => {
+const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ options, setOptions ] = useState(["Report"]);
   const [ reportMessage, setReportMessage ] = useState("");
@@ -23,16 +23,16 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index } : any) => 
 
   const handleOptionButton = (option: string) => {
     setModalVisible(false);
-    if(option === "Report"){
+    if(option === "Report") {
       setReportModalVisible(true);
-    } else if(option === "Edit"){
+    }else if(option === "Edit"){
       if(itemPressed) handleKeyboard(itemPressed, "Edit Reply", index)
       else handleKeyboard(item, "Edit", index);
       setDarkened(true);
       setTimeout(() => {
         setDarkened(false);
       }, 1000);
-    } else if(option === "Delete"){
+    }else if(option === "Delete"){
       Alert.alert(
         "Delete",
         "Are you sure you want Delete this comment?",
@@ -105,7 +105,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index } : any) => 
     }
   }
 
-  const handleReplyLongPress = ( replyData: any) => { 
+  const handleReplyLongPress = (replyData: any) => { 
     if(replyData.userID === currUser.id){
       setOptions(["Edit", "Delete"]);
     } else {
@@ -133,7 +133,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index } : any) => 
     }, 1000);
   }
 
-  const getCompactTimeAgo = (date : string) => {
+  const getCompactTimeAgo = (date: string) => {
     const now = moment();
     const created = moment.utc(date).local();
     const duration = moment.duration(now.diff(created));

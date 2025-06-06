@@ -5,8 +5,8 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../client';
 import { getChat } from '../customGraphql/customQueries';
-import { createMessage, updateUserChat, deleteUserChat, createUserChat,
-  deleteChat, deleteMessage } from '../customGraphql/customMutations';
+import { createMessage, updateUserChat, deleteUserChat, createUserChat, deleteChat,
+  updateUser, createNotification } from '../customGraphql/customMutations';
 import { onCreateMessage } from '../customGraphql/customSubscriptions';
 import  { Message, UserChat, Chat, User } from '../API';
 
@@ -39,6 +39,7 @@ const ChatRoom = ( { route, navigation } : any) => {
  
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
+  const triggerFetch = authContext?.triggerFetch;
   if(!currUser) return;
 
   //update title anytime participants changes
@@ -81,6 +82,7 @@ const ChatRoom = ( { route, navigation } : any) => {
     }, [chatID])
   );
 
+  //Get Chat metadata and set chat, messages, users, urls, nexttoken and myUser
   const fetchChat = async () => {
     if(loading) return;
     setLoading(true);
@@ -129,6 +131,8 @@ const ChatRoom = ( { route, navigation } : any) => {
     }
   };
 
+  //When user leaves chatroom: reset unread count to 0 & 
+  //decrement user's unread chat count by 1
   const handleGoBack = async () => {
     if(myUserChat && myUserChat.unreadMessageCount !== 0){
       await client.graphql({
@@ -141,10 +145,25 @@ const ChatRoom = ( { route, navigation } : any) => {
         },
         authMode: 'userPool'
       });
+      await client.graphql({
+        query: updateUser,
+        variables: {
+          input: {
+            id: currUser.id,
+            unreadChatCount: ((currUser.unreadChatCount - 1) >= 0) ? 
+              currUser.unreadChatCount - 1 : 0,
+          }
+        },
+        authMode: 'userPool'
+      }).catch((error: any) => console.log(error))
+      .finally(() => {
+        if(triggerFetch) triggerFetch();
+      });
     }
     navigation.goBack();
   }
 
+  //Send current message unless message is empty
   const sendMessage = async () => {
     if(currMessage === '' || !chat ) return;
     try {
@@ -160,29 +179,12 @@ const ChatRoom = ( { route, navigation } : any) => {
         authMode: 'userPool'
       });
       setMessage('');
-      console.log('msg sent');
     } catch (error) {
-      console.error("Failed to send message:", error);
+      Alert.alert('Error', "Failed to send message");
     }
   };
 
-  const scrollToBottom = () => {
-    flatListRef.current?.scrollToOffset({
-      offset: 0,
-      animated: true,
-    });
-  };
-
-  const getMsgStyle = (id: string) => {
-    if(id === currUser.id) return styles.myMessage;
-    return styles.otherMessage;
-  }
-
-  const getMsgContainerStyle = (id: string) => {
-    if(id === currUser.id) return styles.myMessageContainer;
-    return styles.otherMessageContainer;
-  }
-
+  //Handles menu option buttons
   const handleOptionButton = (option: string) => {
     if(option === 'View Members'){
       navigation.navigate('ViewChatMembers', 
@@ -240,7 +242,7 @@ const ChatRoom = ( { route, navigation } : any) => {
         variables: {
           input: {
             senderID: currUser.id,
-            content: currUser.firstname + " left the chat",
+            content: currUser.firstname + " " + currUser.lastname + " left the chat",
             chatID: chatID,
             type: 'System'
           }
@@ -272,6 +274,18 @@ const ChatRoom = ( { route, navigation } : any) => {
           },
           authMode: 'userPool'
         });
+        client.graphql({
+          query: createNotification,
+          variables: {
+            input: {
+              userID: userID,
+              content: currUser.fullname + " added you to a chat",
+              type: 'Chat',
+              onClickID: chatID,
+            }
+          },
+          authMode: 'userPool'
+        }).catch(() => {})
       }
       var addedMemberNames = addedMembers.map((item) => 
         `${item.firstname} ${item.lastname}`).filter(Boolean).join(', ');
@@ -280,7 +294,7 @@ const ChatRoom = ( { route, navigation } : any) => {
         variables: {
           input: {
             senderID: currUser.id,
-            content: currUser.fullname + " added " + addedMemberNames,
+            content: currUser.firstname + " " + currUser.lastname + " added " + addedMemberNames,
             chatID: chatID,
             type: 'System'
           }
@@ -323,74 +337,42 @@ const ChatRoom = ( { route, navigation } : any) => {
         },
         { 
           text: "Delete", 
-          onPress: deleteChatAndMessages
+          onPress: async () => {
+            try{
+              await client.graphql({
+                query: deleteChat,
+                variables: {
+                  input: {
+                    id: chatID
+                  }
+                },
+                authMode: 'userPool'
+              })
+              navigation.goBack();
+            } catch (error) {
+              Alert.alert('Error', 'There was an issue deleting the chatroom');
+            }
+          }
         }
       ]
     );
   }
 
-  const deleteChatAndMessages = async () => {
-    //delete messages
-    const chatIDs = chat?.messages?.items.map( (item : any) => item.id);
-    if(chatIDs){
-      for( const chatID of chatIDs){
-        try{
-          await client.graphql({
-            query: deleteMessage,
-            variables: {
-              input: {
-                id: chatID
-              }
-            },
-            authMode: 'userPool'
-          })
-          console.log(chatID, " message deleted");
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }
-
-    //delete userChats
-    const userChatIDs = chat?.participants?.items.map( (item: any) => item.id);
-    if(userChatIDs){
-      for(const userChatID of userChatIDs){
-        try{
-          await client.graphql({
-            query: deleteUserChat,
-            variables: {
-              input: {
-                id: userChatID
-              }
-            },
-            authMode: 'userPool'
-          })
-          console.log(userChatID, " user chat deleted");
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    }
-    
-    //delete chat
-    try{
-      await client.graphql({
-        query: deleteChat,
-        variables: {
-          input: {
-            id: chatID
-          }
-        },
-        authMode: 'userPool'
-      })
-      console.log(chatID, " chat deleted");
-    } catch (error) {
-      console.log(error);
-    }
-    navigation.reset({
-      index: 0,
-      routes: [ { name: 'MainTabs', params: { screen: 'Messages' } } ]
+  const scrollToBottom = () => {
+    flatListRef.current?.scrollToOffset({
+      offset: 0,
+      animated: true,
     });
+  };
+
+  const getMsgStyle = (id: string) => {
+    if(id === currUser.id) return styles.myMessage;
+    return styles.otherMessage;
+  }
+
+  const getMsgContainerStyle = (id: string) => {
+    if(id === currUser.id) return styles.myMessageContainer;
+    return styles.otherMessageContainer;
   }
 
   return(

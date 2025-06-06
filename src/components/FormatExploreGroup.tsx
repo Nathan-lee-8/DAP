@@ -3,7 +3,7 @@ import styles from "../styles/Styles";
 import ImgComponent from "./ImgComponent";
 import LinearGradient from 'react-native-linear-gradient';
 
-const FormatExploreGroup = ({item}: any) => {
+const FormatExploreGroup = ( {item} : any ) => {
   return (  
     <View style={styles.exploreGroupContainer}>
       <Text numberOfLines={6} style={styles.exploreDescription}>{item.description}</Text>

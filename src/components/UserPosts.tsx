@@ -10,12 +10,12 @@ import styles from '../styles/Styles';
 import { ModelSortDirection } from '../API';
 import FormatPost from './FormatPost';
 
-const UserPosts = ( { userID, isPrivate } : {userID: string, isPrivate?: boolean }) => {
-  if(!userID) return (<View style={styles.noResultsMsg}> <Text>Error retriving posts</Text></View>);
+const UserPosts = ( {userID, isPrivate} : {userID: string, isPrivate?: boolean} ) => {
+  if(!userID) return <View style={styles.noResultsMsg}><Text>Error retriving posts</Text></View>;
 
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [nextToken, setNextToken] = useState<string | null | undefined>(null);
+  const [ posts, setPosts ] = useState<Post[]>([]);
+  const [ loading, setLoading ] = useState(true);
+  const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const flatListRef = useRef<FlatList<Post>>(null);
 
   const fetchPosts = async (refresh?: boolean) => {

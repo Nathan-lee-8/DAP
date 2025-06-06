@@ -12,6 +12,8 @@ type User @model @auth(
   fullname: String!
   profileURL: String!
   description: String
+  unreadChatCount: Int!
+  unreadNotificationCount: Int!
   posts: [Post] @hasMany
   chats: [UserChat] @hasMany
   messages: [Message] @hasMany
@@ -31,7 +33,7 @@ type UserFeed @model @auth(
 ) {
   id: ID!
   userID: ID! @index(name:"postsByUserFeed", queryField: "postsByUserFeed", sortKeyFields: ["createdAt"])
-  postID: ID!
+  postID: ID! @index(name: "userFeedByPostID", queryField: "userFeedByPostID")
   post: Post @hasOne(fields: ["postID"])
   createdAt: AWSDateTime!
 }
@@ -190,7 +192,7 @@ type Notification @model @auth(
   groupID: ID @index(name: "notificationsByGroup", queryField: "notificationsByGroup", sortKeyFields: ["createdAt"])
   targetUserID: ID
   onClickID: ID!
-  hidden: Boolean
+  read: Boolean
   user: User @belongsTo(fields:["userID"])
   group: Group @belongsTo(fields:["groupID"])
   targetUser: User @belongsTo(fields: ["targetUserID"])
