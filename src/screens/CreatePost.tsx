@@ -1,36 +1,35 @@
 import { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, 
-  ActivityIndicator, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Keyboard,
+  ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 
 import client from '../client';
 import { createPost } from '../customGraphql/customMutations';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
-import { imagePicker, getImgURI } from '../components/addImg';
+import { mediaPicker, getMediaURI } from '../components/addMedia';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 
 const CreatePost = ({route, navigation}: any) => {
-  const { groupID, isPublic } = route.params;
+  const { groupID } = route.params;
   const [ content, setContent ] = useState('');
-  const [ filepaths, setFilepaths ] = useState<string[]>([]);
+  const [ media, setMedia ] = useState<any[]>([]);
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
   const getFilePath = async () => {
-    if(filepaths.length > 12){
+    if(media.length > 12){
       Alert.alert('Max 12 images uploaded at once');
       return;
     }
-    var uri = await imagePicker();
-    if(uri === null){
+    var file = await mediaPicker();
+    if(!file?.uri){
       return;
     };
-    setFilepaths([...filepaths.filter((item) => item !== null), uri]);
+    setMedia([...media, file.uri]);
   }
 
   const sendPost = async () => {
@@ -67,8 +66,8 @@ const CreatePost = ({route, navigation}: any) => {
   const handleUploadFilepaths = async () => {
     try{
       const newPaths = await Promise.all(
-        filepaths.map(async (item, index) => {
-          const uri = await getImgURI(item, `public/groupPictures/${groupID}/${Date.now()}_${index}.jpg`);
+        media.map(async (item, index) => {
+          const uri = await getMediaURI(item, `public/groupPictures/${groupID}/${Date.now()}_${index}.jpg`);
           return uri ? 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri : null;
         })
       )
@@ -79,7 +78,7 @@ const CreatePost = ({route, navigation}: any) => {
   }
 
   const handleRemoveItem = (uri: string) => {
-    setFilepaths(filepaths.filter((item) => item !== uri));
+    setMedia(media.filter((item) => item.uri !== uri));
   }
 
   if(loading) {
@@ -111,7 +110,7 @@ const CreatePost = ({route, navigation}: any) => {
         </View>
         <View style={{paddingLeft: 10}}>
           <FlatList
-            data={filepaths}
+            data={media}
             numColumns={4}
             keyExtractor={(index) => index.toString()}
             renderItem={({ item }) => (
