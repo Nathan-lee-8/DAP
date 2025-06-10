@@ -1,13 +1,12 @@
 import { useEffect, useState, useContext, useCallback, useLayoutEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
-  Modal} from 'react-native';
+  Modal, Alert} from 'react-native';
 
 import client from '../client';
 import { postsByUserFeed } from '../customGraphql/customQueries';
-import { ModelSortDirection, Post, Group, UserFeed } from '../API';
+import { ModelSortDirection, UserFeed } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/Styles';
 import FormatPost from '../components/FormatPost';
 import Icon from '@react-native-vector-icons/ionicons';
@@ -25,8 +24,8 @@ const HomeScreen = ( {navigation} : any) => {
   const currUser = authContext?.currUser;
 
   useEffect(() => {
-    loadNewsFeed();
-  }, [currUser]);
+    fetchNewsFeed();
+  }, [currUser?.id]);
 
   useLayoutEffect(()=> {
     navigation.setOptions({
@@ -36,41 +35,16 @@ const HomeScreen = ( {navigation} : any) => {
           {currUser && currUser?.unreadNotificationCount > 0 && 
             <View style={{
               position: 'absolute',
-              backgroundColor: 'red',
-              borderRadius: 10,
-              width: 10,
-              height: 10,
               right: 0,
-              top: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1
-            }}/>
+              top: -10,
+            }}>
+              <Text style={{fontWeight: 700, color: 'red'}}>{currUser.unreadNotificationCount}</Text>
+            </View>
           }
         </TouchableOpacity>
       )
     })
-  }, [currUser])
-
-  const loadNewsFeed = async () => {
-    try {
-      const cachedData = await AsyncStorage.getItem('newsFeedCache');
-      if (cachedData) {
-        const data = JSON.parse(cachedData);
-        const fiveMin = 5 * 60 * 1000;
-        if (Date.now() - data.timestamp < fiveMin) {
-          setNewsFeed(data.newsFeedData);
-          setLoading(false);
-          return;
-        }
-      }
-      await fetchNewsFeed();
-    } catch (error) {
-      console.log('Error loading cached news feed', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [currUser?.unreadNotificationCount])
 
   const fetchNewsFeed = async () => {
     if(!currUser) {
@@ -94,13 +68,9 @@ const HomeScreen = ( {navigation} : any) => {
       setNewsFeed(newsFeedData);
       setNextToken(res.data.postsByUserFeed.nextToken);
       
-      await AsyncStorage.setItem('newsFeedCache', JSON.stringify({
-        newsFeedData,
-        timestamp: Date.now(),
-      }));
       console.log(`Fetched from fetchnewsfeed.`);
-    } catch (error: any) {
-      console.log('Error fetching news feed', error);
+    } catch {
+      Alert.alert('Error', 'Error fetching news feed');
     } finally {
       setLoading(false);
     }
@@ -108,7 +78,7 @@ const HomeScreen = ( {navigation} : any) => {
 
   const onRefresh = useCallback(() => {
     fetchNewsFeed();
-  }, [currUser]);
+  }, [currUser?.id]);
 
   return (
     <View style={styles.container}>

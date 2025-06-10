@@ -9,6 +9,7 @@ import client from '../client';
 import { tokensByUser, userByEmail } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
 import { User } from '../API';
+import { onCreateNotification } from '../customGraphql/customSubscriptions';
 
 interface AuthContextType {
   isSignedIn: boolean;
@@ -94,7 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     getNotificationPermission();
     return () => { isMounted = false };
-  }, [currUser]);
+  }, [currUser?.id]);
 
   //Subscription to listen for new tokens.
   useEffect(() => {
@@ -103,6 +104,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       await registerTokenToBackend(newToken); 
     });
     return () => unsubscribe();
+  }, []);
+
+  //Subscription to listen for new Notifications
+  useEffect(() => {
+    const subscription = client.graphql({
+      query: onCreateNotification,
+      variables:{
+        filter: {
+          userID: { eq: currUser?.id }
+        }
+      },
+      authMode: 'userPool'
+    }).subscribe({
+      next: ({ data }) => {
+        console.log('new notification received', data);
+        triggerFetch();
+      },
+      error: (error) => {
+        console.warn(error);
+      }
+    })
+    return () => subscription.unsubscribe();
   }, []);
 
   //Signs out of the app and clears cached data

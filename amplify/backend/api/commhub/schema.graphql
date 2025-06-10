@@ -182,7 +182,8 @@ type Group @model @auth(
 type Notification @model @auth(
   rules: [
     { allow: owner },
-    { allow: private }
+    { allow: private },
+    { allow: public, operations: [create] }
   ]
 ) { 
   id: ID!

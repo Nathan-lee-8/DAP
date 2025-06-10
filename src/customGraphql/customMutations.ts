@@ -273,7 +273,7 @@ export const deleteComment = /* GraphQL */ `mutation DeleteComment(
   deleteComment(input: $input, condition: $condition) {
     id
   }
-}s
+}
 ` as GeneratedMutation<
   APITypes.DeleteCommentMutationVariables,
   APITypes.DeleteCommentMutation

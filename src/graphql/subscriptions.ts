@@ -1285,45 +1285,6 @@ export const onCreateNotification = /* GraphQL */ `subscription OnCreateNotifica
     targetUserID
     onClickID
     read
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      groupURL
-      description
-      isPublic
-      memberCount
-      type
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    targetUser {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     createdAt
     updatedAt
     userNotificationsId
