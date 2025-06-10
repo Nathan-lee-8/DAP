@@ -13,8 +13,16 @@ import { Comment } from "../API";
 import Icon from '@react-native-vector-icons/ionicons';
 import { AuthContext } from '../context/AuthContext';
 import CommentComp from '../components/commentComponent';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
+/** 
+ * Retrieves and displays all comments for the given postID. Allows the 
+ * user to comment on the post, reply to commments on the post or delete/edit
+ * comments/replies. 
+ * 
+ * @param postID: The PostID of the post to retrieve comments for
+ * @param header: either the post itself or 'Notification' header for modal
+ * @param customPadding: variable to adjust for modal vs page display
+ */
 const ListComments = ( {postID, header, customPadding} : any ) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
   const [ loading, setLoading ] = useState(true);
@@ -27,6 +35,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return <ActivityIndicator size="large" color="#0000ff" />;
 
+  //retreives all comments for given post
   const fetchComments = async () => {
     try{
       const commentData = await client.graphql({
@@ -38,7 +47,6 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
       })
       const commentList = commentData.data.commentsByPost.items;
       setComments(commentList);
-      await AsyncStorage.setItem('Comments', JSON.stringify(commentList));
       console.log('fetched comments');
     } catch (error: any) {
       console.log(error);
@@ -51,6 +59,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
     fetchComments();
   }, []);
 
+  //posts the comment to the given post
   const postComment = async () => {
     try {
       await client.graphql({
@@ -64,12 +73,12 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       });
-      console.log("posted Comment");
     } catch (error) {
-      console.error('Error creating comment:', error);
+      Alert.alert('Error', 'There was an issue posting this comment');
     }
   }
 
+  //posts the comment to the target comment
   const postReply = async () => {
     try {
       await client.graphql({

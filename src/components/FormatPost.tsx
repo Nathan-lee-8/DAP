@@ -7,12 +7,12 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, useDerivedValue
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useNavigationState } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { GlobalParamList } from "../types/rootStackParamTypes";
 
 import client from "../client";
-import { deletePost, deleteComment, createReport } from "../customGraphql/customMutations";
+import { deletePost, createReport } from "../customGraphql/customMutations";
 import { Post } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
@@ -37,6 +37,11 @@ const FormatPost = ( {item} : {item: Post} ) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
+  const currentRouteName = useNavigationState((state) => {
+    const route = state.routes[state.index];
+    return route.name;
+  });
+
   useEffect(() => {
     if(item.user?.id === currUser.id || item.userID === currUser.id){
       setOptions(["Edit", "Delete"]);
@@ -44,7 +49,9 @@ const FormatPost = ( {item} : {item: Post} ) => {
   }, [currUser])
 
   const clickPost = (itemID : string) => {
-    navigation.navigate('ViewPost', { postID: itemID });
+    if(currentRouteName !== 'ViewPost'){
+      navigation.navigate('ViewPost', { postID: itemID });
+    }
   }
   
   const visitProfile = (item : any) => {
@@ -101,6 +108,9 @@ const FormatPost = ( {item} : {item: Post} ) => {
           authMode: 'userPool'
         });
         console.log(item.id, "successfully deleted post");
+        if(currentRouteName === 'ViewPost'){
+          navigation.goBack();
+        }
       }catch (error : any){
         console.log(error);
       }
@@ -189,7 +199,9 @@ const FormatPost = ( {item} : {item: Post} ) => {
                 </Text>
                 <Text> posted in </Text>
                 <Text style={styles.bold} 
-                  onPress={() => navigation.navigate('ViewGroup', {groupID: item.groupID})}
+                  onPress={() => {
+                    if(item.group) navigation.navigate('ViewGroup', {groupID: item.group.id})
+                  }}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
@@ -211,6 +223,10 @@ const FormatPost = ( {item} : {item: Post} ) => {
           <Text style={styles.bold} onPress={() => navigation.navigate('ViewGroup', {groupID: item.groupID})}>
             {item.group?.groupName}
           </Text>
+          <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
+            color={'black'}
+            onPress={() => setModalVisible(true)}
+          />
         </View>
       )}
       

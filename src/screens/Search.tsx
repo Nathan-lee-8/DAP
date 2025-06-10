@@ -8,13 +8,12 @@ import { GlobalParamList } from '../types/rootStackParamTypes';
   
 import client from '../client';
 import { listGroups, groupsByMemberCount, groupsByUser } from '../customGraphql/customQueries';
-import { Group, User, ModelSortDirection } from '../API';
+import { Group, User, UserGroup, ModelSortDirection } from '../API';
 
 import styles from '../styles/Styles';
 import SearchBar from '../components/SearchBar';
 import ProfilePicture from '../components/ImgComponent';
 import FormatExploreGroup from '../components/FormatExploreGroup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../context/AuthContext';
 
 const Search = ( {navigation} : any) => {
@@ -26,21 +25,9 @@ const Search = ( {navigation} : any) => {
   if(!currUser) return;
 
   useEffect(() => {
-    loadExplorer();
+    fetchExplorer();
   }, []);
 
-  const loadExplorer = async () => { 
-    try{
-      let exploreData = await AsyncStorage.getItem('explore');
-      if(exploreData !== null){
-        setExplore(JSON.parse(exploreData));
-      }else{
-        fetchExplorer();
-      }
-    }catch(error){
-      console.log(error);
-    }
-  }
 
   const fetchExplorer = async () => {
     try{
@@ -54,23 +41,22 @@ const Search = ( {navigation} : any) => {
         authMode:'userPool'
       })
       const allGroups = data.data.groupsByMemberCount.items;
-      console.log('fetched from explorer');
-      let myGroupData = await AsyncStorage.getItem('groups');
-      if(myGroupData === null){
-        const groups = await client.graphql({
-          query: groupsByUser,
-          variables: { 
-            userID: currUser.id,
-            sortDirection: ModelSortDirection.DESC
-          },
-          authMode: 'userPool'
-        });
-        myGroupData = JSON.stringify(groups.data.groupsByUser.items);
-        AsyncStorage.setItem('groups', myGroupData);
-      }
-      const filteredData = allGroups.filter((item) => !myGroupData.includes(item.id));
+      
+      const groups = await client.graphql({
+        query: groupsByUser,
+        variables: { 
+          userID: currUser.id,
+          sortDirection: ModelSortDirection.DESC
+        },
+        authMode: 'userPool'
+      });
+
+      const myGroupData = groups.data.groupsByUser.items;
+      const myGroupIDs = myGroupData.map((item: UserGroup) => item.group?.id);
+      
+      const filteredData = allGroups.filter((item) => !myGroupIDs.includes(item.id));
       setExplore(filteredData);
-      AsyncStorage.setItem('explore', JSON.stringify(filteredData));
+
     }catch(error){
       console.log(error);
     } finally {

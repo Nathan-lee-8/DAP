@@ -8,7 +8,6 @@ import { groupsByUser } from '../customGraphql/customQueries';
 import { UserGroup, ModelSortDirection } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../styles/Styles';
@@ -33,7 +32,6 @@ const Groups = ( {navigation} : any ) => {
       });
       const groupData = groups.data.groupsByUser.items;
       console.log("fetched groups data");
-      AsyncStorage.setItem('groups', JSON.stringify(groupData));
       setGroup(groupData);
     } catch (error: any) {
       console.error("Error fetching user groups:", error);

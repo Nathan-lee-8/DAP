@@ -63,8 +63,8 @@ const ChatRoom = ( { route, navigation } : any) => {
         },
         authMode: 'userPool'
       }).subscribe({
-        next: (value : any) => {
-          const newMessage = value.data.onCreateMessage;
+        next: ({data}) => {
+          const newMessage = data.onCreateMessage;
           setMessages((prev) => {
             if(!newMessage || prev.find((msg) => msg.id === newMessage.id)){
               return prev;

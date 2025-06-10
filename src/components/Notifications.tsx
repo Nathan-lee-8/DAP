@@ -23,8 +23,8 @@ const Notifications = ( {closeNotificationModal} : any ) => {
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const authContext = useContext(AuthContext);
   if(!authContext) return;
-  const currUser = useContext(AuthContext)?.currUser;
-  const triggerFetch = useContext(AuthContext)?.triggerFetch;
+  const currUser = authContext.currUser;
+  const triggerFetch = authContext.triggerFetch;
   if(!currUser) return;
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -50,6 +50,21 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     } finally {
       setLoading(false);
     }
+
+    //reset notification count to 0
+    client.graphql({
+      query: updateUser,
+      variables: {
+        input: {
+          id: currUser.id,
+          unreadNotificationCount: 0
+        }
+      },
+      authMode: 'userPool'
+    }).catch((error: any) => console.log(error))
+    .finally(() => {
+      triggerFetch();
+    });
   }
 
   useEffect(() => {
@@ -85,20 +100,6 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         },
         authMode: 'userPool'
       }).catch((error: any) => console.log(error))
-      client.graphql({
-        query: updateUser,
-        variables: {
-          input: {
-            id: currUser.id,
-            unreadNotificationCount: ((currUser.unreadNotificationCount - 1) >= 0) ? 
-              currUser.unreadNotificationCount - 1 : 0,
-          }
-        },
-        authMode: 'userPool'
-      }).catch((error: any) => console.log(error))
-      .finally(() => {
-        if(triggerFetch) triggerFetch();
-      });
     }
 
     closeNotificationModal();
@@ -120,7 +121,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
       <FlatList
         data={notifications}
         renderItem={({item}) => 
-          <TouchableOpacity style={ item?.hidden ? styles.notificationItem : styles.unreadItem } 
+          <TouchableOpacity style={ item.read ? styles.notificationItem : styles.unreadItem } 
             onPress={() => handleNav(item)}
           >
             <Text>{item.content}</Text>

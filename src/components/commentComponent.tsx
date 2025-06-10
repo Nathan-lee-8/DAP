@@ -14,10 +14,11 @@ import { AuthContext } from '../context/AuthContext';
 const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ options, setOptions ] = useState(["Report"]);
-  const [ reportMessage, setReportMessage ] = useState("");
-  const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const [ itemPressed, setItemPressed ] = useState<any>();
   const [ darkened, setDarkened ] = useState(false);
+
+  const [ reportMessage, setReportMessage ] = useState("");
+  const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
@@ -106,6 +107,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
   }
 
   const handleReplyLongPress = (replyData: any) => { 
+    console.log(replyData);
     if(replyData.userID === currUser.id){
       setOptions(["Edit", "Delete"]);
     } else {
