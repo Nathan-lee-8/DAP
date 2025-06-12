@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Keyboard,
   ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
+import { Video } from 'react-native-video';
 
 import client from '../client';
 import { createPost } from '../customGraphql/customMutations';
@@ -29,7 +30,7 @@ const CreatePost = ({route, navigation}: any) => {
     if(!file?.uri){
       return;
     };
-    setMedia([...media, file.uri]);
+    setMedia([...media, file]);
   }
 
   const sendPost = async () => {
@@ -49,17 +50,16 @@ const CreatePost = ({route, navigation}: any) => {
         },
         authMode: 'userPool'
       })
-      console.log('Post created successfully');
-    } catch (error: any) {
-      console.log('Error creating post', error);
-    } finally {
-      setLoading(false);
       Alert.alert('Success','Post Created', [{
         text: 'OK',
         onPress: () => {
           navigation.goBack();
         }
       }])
+    } catch {
+      Alert.alert('Error', 'There was an issue creating the post')
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -67,8 +67,8 @@ const CreatePost = ({route, navigation}: any) => {
     try{
       const newPaths = await Promise.all(
         media.map(async (item, index) => {
-          const uri = await getMediaURI(item, `public/groupPictures/${groupID}/${Date.now()}_${index}.jpg`);
-          return uri ? 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri : null;
+          const uri = await getMediaURI(item, `${Date.now()}_${index}`);
+          return uri ? `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/groupPictures/${groupID}/${uri}` : null;
         })
       )
       return newPaths.filter((path) => path !== null);
@@ -77,8 +77,8 @@ const CreatePost = ({route, navigation}: any) => {
     }
   }
 
-  const handleRemoveItem = (uri: string) => {
-    setMedia(media.filter((item) => item.uri !== uri));
+  const handleRemoveItem = (item: any) => {
+    setMedia(media.filter((file) => file.uri !== item.uri));
   }
 
   if(loading) {
@@ -112,12 +112,21 @@ const CreatePost = ({route, navigation}: any) => {
           <FlatList
             data={media}
             numColumns={4}
-            keyExtractor={(index) => index.toString()}
+            keyExtractor={(_,index) => index.toString()}
             renderItem={({ item }) => (
               <View style={styles.postImageContainer}>
-                <ImgComponent uri={item || 'defaultUser'} 
-                  style={{height: 90, width: 90}} 
-                />
+                {item.fileName?.endsWith('.mp4') || item.type?.startsWith('video') ? (
+                  <Video
+                    source={{ uri: item.uri }}
+                    style={{ width: 90, height: 90 }}
+                    resizeMode="contain"
+                    controls
+                  />
+                ) : (
+                  <ImgComponent uri={item || 'defaultUser'} 
+                    style={{height: 90, width: 90}} 
+                  />
+                )}
                 <Icon style={styles.removeIcon} name="remove-circle-outline" size={20}
                   onPress={() => handleRemoveItem(item)}
                 />
