@@ -3,7 +3,7 @@ import { uploadData } from '@aws-amplify/storage';
 
 const mediaPicker = async () => {
   const result = await launchImageLibrary({
-    mediaType: 'photo',
+    mediaType: 'mixed',
     presentationStyle: 'fullScreen',
     quality: 0.8,
   });
@@ -20,11 +20,12 @@ const mediaPicker = async () => {
 
 const getMediaURI = async (file: any, filename: string) => {
   try{
-    const fileType = file.type || 'image/jpeg';
+    const fileType = file.type || (file.fileName.endsWith('.mp4') ? 'video/mp4': 'image/jpeg');
     const response = await fetch(file.uri);
     const blob = await response.blob(); 
 
-    const key = filename || file.fileName || `media-${Date.now()}.jpg`;
+    let extension = file.fileName?.split('.').pop() || (fileType.includes('video') ? 'mp4' : 'jpg')
+    const key = filename ? filename + extension : `media-${Date.now()}.${extension}`;
 
     const uploadResult = await uploadData({
       path: key,
