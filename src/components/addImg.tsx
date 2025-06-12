@@ -1,6 +1,11 @@
 import { launchImageLibrary } from "react-native-image-picker";
 import { uploadData } from "@aws-amplify/storage";
 
+/**
+ * Open users image library and allows user to select an image
+ * 
+ * @returns URI of the image
+*/ 
 const imagePicker = async () => { 
   const result = await launchImageLibrary({
     mediaType: 'photo',
@@ -18,6 +23,13 @@ const imagePicker = async () => {
   return file.uri;
 }
 
+/**
+ * Stores image in S3
+ * 
+ * @param fileURI - URI of image to be uploaded
+ * @param filename - Name of image to be uploaded
+ * @returns path of image in S3
+*/
 const getImgURI = async (fileURI: string, filename: string) => {
   try{
     const fileType = 'image/jpeg';

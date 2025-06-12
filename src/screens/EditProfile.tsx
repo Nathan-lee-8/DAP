@@ -1,4 +1,4 @@
-import { useContext, useState, useCallback} from 'react';
+import { useContext, useState, useCallback, useLayoutEffect } from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, 
   KeyboardAvoidingView, ScrollView, Modal, FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -14,13 +14,13 @@ import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
 //Update to get user data from authContext
-const EditProfile = () => {
+const EditProfile = ( {navigation} : any ) => {
   const [ loading, setLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
   const [ modalVisible, setModalVisible ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) return;
-  const { currUser, setCurrUser } = authContext;
+  const { currUser, setCurrUser, logout } = authContext;
   if(!currUser) return;
      
   //use temp values to hold data until user saves
@@ -28,6 +28,16 @@ const EditProfile = () => {
   const [ tempLast, setTempLast ] = useState(currUser.lastname);
   const [ tempURL , setTempURL ] =  useState(currUser.profileURL);
   const [ description, setDescription ] = useState<string | undefined>(currUser.description || undefined);
+
+   useLayoutEffect(()=> {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
+          <Text style={styles.buttonTextBlue}>Log Out</Text>
+        </TouchableOpacity>
+      )
+    })
+  }, [currUser.email])
 
   const addProfileImg = async () => {
     try {

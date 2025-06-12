@@ -1,5 +1,5 @@
 import { useState, useContext, useRef } from 'react';
-import { View, TextInput, FlatList, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, FlatList, TouchableOpacity, Text, Alert } from 'react-native';
 
 import client from '../client';
 import { listUsers } from '../customGraphql/customQueries';
@@ -9,13 +9,25 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import ProfilePicture from './ImgComponent';
 
-const SearchBar = ( {userPressed, width, remove} : {userPressed?:any, width?:any, remove?: any} ) => {
+/**
+ * 
+ * @param userPressed - dynamic function to handle what to do when user is Pressed:
+ *  returns the user object to the parent component
+ * @param width - Custom width of the search bar
+ * @param remove - Array of Users to exclude from the search 
+ * @returns 
+ */
+const SearchBar = ( {userPressed, width, remove} : 
+  {userPressed?: any, width?: any, remove?: any} ) => {
+
   const [ search, setSearch ] = useState<string>('');
   const [ data, setData ] = useState<User[]>([]);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
+  //Fetch users that have a matching email or matching name to the search sequence
+  //and merge and display the matching users while filtering out 'remove' users
   const fetchUsers = async (search: string) => {
     try{
       const usersByEmail = await client.graphql({
@@ -46,30 +58,27 @@ const SearchBar = ( {userPressed, width, remove} : {userPressed?:any, width?:any
         return true;
       });
       setData(filteredData);
-      console.log('Fetched from searchbar.');
-    } catch (error) {
-      console.log('Error fetching users', error);
+    } catch {
+      Alert.alert('Error', 'Could not find users');
     }
   };
   
+  //reduce fetch calls to search by creating a debounce after user keyboard input
   const handleSearch = async ( query: string ) => {
-    
     setSearch(query);
     if(query === '') {
-      
       setData([]);
       return;
     }
-
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
     }
-
     debounceTimeout.current = setTimeout(() => {
       fetchUsers(query);
     }, 500); 
   };
 
+  //Returns the user Object to parent component
   const handleOnPress = (user: User) => {
     if(remove) setData([]);
     if(userPressed) userPressed(user);

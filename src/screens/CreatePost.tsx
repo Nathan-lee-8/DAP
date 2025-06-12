@@ -12,6 +12,11 @@ import { mediaPicker, getMediaURI } from '../components/addMedia';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 
+/**
+ * Allows the User upload video or images with content and post it to the target 
+ * group. 
+ * @param groupID - ID of the group to write the post to
+ */
 const CreatePost = ({route, navigation}: any) => {
   const { groupID } = route.params;
   const [ content, setContent ] = useState('');
@@ -21,18 +26,23 @@ const CreatePost = ({route, navigation}: any) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
+  //Opens user's media picker and adds chosen media to upload queue
   const getFilePath = async () => {
     if(media.length > 12){
       Alert.alert('Max 12 images uploaded at once');
       return;
     }
     var file = await mediaPicker();
-    if(!file?.uri){
-      return;
-    };
-    setMedia([...media, file]);
+    if(file !== null) setMedia([...media, file]);
   }
 
+  //removes media item from upload queue
+  const handleRemoveItem = (item: any) => {
+    setMedia(media.filter((file) => file.uri !== item.uri));
+  }
+
+  //takes media and uploads to S3 before creating the post with associated filepaths
+  //and content. Returns to Group page.
   const sendPost = async () => {
     setLoading(true);
     const newPaths = await handleUploadFilepaths();
@@ -63,12 +73,13 @@ const CreatePost = ({route, navigation}: any) => {
     }
   }
 
+  //uploads all uri's in media to s3 and returns new s3 filepaths 
   const handleUploadFilepaths = async () => {
     try{
       const newPaths = await Promise.all(
         media.map(async (item, index) => {
-          const uri = await getMediaURI(item, `${Date.now()}_${index}`);
-          return uri ? `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/groupPictures/${groupID}/${uri}` : null;
+          const uri = await getMediaURI(item, `public/groupPictures/${groupID}/${Date.now()}_${index}`);
+          return uri ? `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}` : null;
         })
       )
       return newPaths.filter((path) => path !== null);
@@ -77,15 +88,7 @@ const CreatePost = ({route, navigation}: any) => {
     }
   }
 
-  const handleRemoveItem = (item: any) => {
-    setMedia(media.filter((file) => file.uri !== item.uri));
-  }
-
-  if(loading) {
-    return(
-      <ActivityIndicator size="large" color="#0000ff" />
-    )
-  }
+  if(loading) return <ActivityIndicator size="large" color="#0000ff"/>
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -123,7 +126,7 @@ const CreatePost = ({route, navigation}: any) => {
                     controls
                   />
                 ) : (
-                  <ImgComponent uri={item || 'defaultUser'} 
+                  <ImgComponent uri={item.uri || 'defaultUser'} 
                     style={{height: 90, width: 90}} 
                   />
                 )}

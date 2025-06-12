@@ -1,6 +1,11 @@
 import { launchImageLibrary } from 'react-native-image-picker';
 import { uploadData } from '@aws-amplify/storage';
 
+/**
+ * Open users Media library and allows user to select an image or video
+ * 
+ * @returns URI of the media
+*/ 
 const mediaPicker = async () => {
   const result = await launchImageLibrary({
     mediaType: 'mixed',
@@ -18,6 +23,13 @@ const mediaPicker = async () => {
   return file;
 }
 
+/**
+ * Stores media in S3
+ * 
+ * @param fileURI - URI of image/video to be uploaded
+ * @param filename - Name of image/video to be uploaded
+ * @returns path of image/video in S3
+*/
 const getMediaURI = async (file: any, filename: string) => {
   try{
     const fileType = file.type || (file.fileName.endsWith('.mp4') ? 'video/mp4': 'image/jpeg');
@@ -25,7 +37,7 @@ const getMediaURI = async (file: any, filename: string) => {
     const blob = await response.blob(); 
 
     let extension = file.fileName?.split('.').pop() || (fileType.includes('video') ? 'mp4' : 'jpg')
-    const key = filename ? filename + extension : `media-${Date.now()}.${extension}`;
+    const key = filename + extension;
 
     const uploadResult = await uploadData({
       path: key,

@@ -1,34 +1,78 @@
 import { useState, useContext } from 'react';
-import { View, Text, FlatList, Modal, TouchableOpacity, Alert, TextInput, 
-  Pressable } from 'react-native';
+import { View, Text, FlatList, Modal, TouchableOpacity, Alert, Pressable 
+} from 'react-native';
 
 import client from '../client';
-import { deleteComment, createReport, deleteReply } from '../customGraphql/customMutations';
+import { deleteComment, deleteReply } from '../customGraphql/customMutations';
+import { Reply } from '../API';
 
-import Icon from '@react-native-vector-icons/ionicons';
+import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import moment from 'moment';
 import ImgComponent from './ImgComponent';
-import { AuthContext } from '../context/AuthContext';
+import Report from './Report';
 
-const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
+/**
+ * Displays the comment and all replies to the given comment.
+ * Press and hold the comment or a reply for a list of options to either delete, edit, 
+ * report, or reply to the comment/reply
+ * 
+ * @param item - The current comment to display and its' nested replies
+ * @param keyboardTarget - function to set the keyboard target, index, and type so the 
+ *  ListComments component knows which reply or comment to target & scroll to and 
+ *  whether the user wants to reply or edit 
+ * @param refreshComments - function to pull latest comment list after a delete
+ * @param index - The position of the comment in list
+ */
+const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ options, setOptions ] = useState(["Report"]);
-  const [ itemPressed, setItemPressed ] = useState<any>();
+  const [ targetReply, setTargetReply ] = useState<Reply>(); 
   const [ darkened, setDarkened ] = useState(false);
 
-  const [ reportMessage, setReportMessage ] = useState("");
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
+  /**
+   * Sets the options that are displayed when the user long presses a comment or reply
+   * and sets the target reply if a reply is pressed, then opens the options modal.
+   * Allows edits and deletes if users owns the item but only reports if not.
+   * @param replyData - the item if a reply is pressed, empty if the comment is pressed
+   */
+  const handleLongPress = (replyData?: any) => { 
+    if(replyData){
+      if(replyData.userID === currUser.id){
+        setOptions(["Edit", "Delete"]);
+      } else {
+        setOptions(["Report"]);
+      }
+      setTargetReply(replyData);
+    }else{
+      if(comment.userID === currUser.id){
+        setOptions(["Edit", "Delete"]);
+      }else{
+        setOptions(["Report"]);
+      }
+      setTargetReply(undefined);
+    }
+    setModalVisible(true);
+  }
+
+  /**
+   * Handles the option selected by the user:
+   * Report - opens the report modal
+   * Edit - sets the keyboards target to edit the comment or reply
+   * Delete - deletes the comment or reply
+   * @param option - The current option selected by the User
+   */
   const handleOptionButton = (option: string) => {
     setModalVisible(false);
     if(option === "Report") {
       setReportModalVisible(true);
     }else if(option === "Edit"){
-      if(itemPressed) handleKeyboard(itemPressed, "Edit Reply", index)
-      else handleKeyboard(item, "Edit", index);
+      if(targetReply) keyboardTarget(targetReply, "Edit Reply", index)
+      else keyboardTarget(comment, "Edit", index);
       setDarkened(true);
       setTimeout(() => {
         setDarkened(false);
@@ -44,25 +88,31 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
           },
           { 
             text: "Delete", 
-            onPress: () => handleDeleteComment(item.id)
+            onPress: () => handleDeleteComment(comment.id)
           }
         ]
       );
     }
   }
 
+  /**
+   * Deletes a reply if user is targeting a reply and deletes the comment if not.
+   * Lambda deletes replies on comment deletion
+   * @param itemID the item we want to delete
+   */
   const handleDeleteComment = async (itemID: string) => {
     try{
-      if(itemPressed){
+      if(targetReply){
         await client.graphql({
           query: deleteReply,
           variables: {
             input: {
-              id: itemPressed.id
+              id: targetReply.id
             }
           },
           authMode: 'userPool'
         })
+        setTargetReply(undefined);
       }else{
         await client.graphql({
           query: deleteComment,
@@ -81,60 +131,20 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
     }
   }
 
-  const handleReport = async () => {
-    if(reportMessage === "") return;
-    var itemType = (itemPressed) ?  "Reply" : "Comment";
-    var currItemID = (itemPressed) ? itemPressed.id : item.id;
-    try{
-      await client.graphql({
-        query: createReport,
-        variables: {
-          input: {
-            reporterID: currUser.id,
-            reportedItemID: currItemID,
-            reportedItemType: itemType,
-            reason: reportMessage, // UPDATE REASON WITH TYPES
-            message: reportMessage,
-          }
-        },
-        authMode: 'userPool'
-      })
-      Alert.alert('Success', 'Report sent successfully');
-      setReportModalVisible(false);
-    }catch(error){
-      Alert.alert('Error', 'Failed to send report');
-    }
-  }
-
-  const handleReplyLongPress = (replyData: any) => { 
-    console.log(replyData);
-    if(replyData.userID === currUser.id){
-      setOptions(["Edit", "Delete"]);
-    } else {
-      setOptions(["Report"]);
-    }
-    setItemPressed(replyData);
-    setModalVisible(true);
-  }
-
-  const handleCommentPress = () => {
-    if(item.userID === currUser.id){
-      setOptions(["Edit", "Delete"]);
-    
-    }else{
-      setOptions(["Report"]);
-    }
-    setModalVisible(true);
-  }
-
-  const handleReply = (item: any, index: number) => {
-    handleKeyboard(item, "Reply", index);
+  /**
+   * Sets the keyboard target to this comment for the listComments component to 
+   * know which comment to reply to
+   * @param index - The current position of this comment
+   */
+  const handleReply = (index: number) => {
+    keyboardTarget(comment, "Reply", index);
     setDarkened(true);
     setTimeout(() => {
       setDarkened(false);
     }, 1000);
   }
 
+  // Helper function to format the date of the reply/comment into a x-days ago format
   const getCompactTimeAgo = (date: string) => {
     const now = moment();
     const created = moment.utc(date).local();
@@ -158,30 +168,33 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
 
   return(
     <View style={darkened ? styles.commentContainerPressed : styles.commentContainer}>
-      <Pressable onLongPress={handleCommentPress}
+      {/* Display comment content */}
+      <Pressable onLongPress={() => handleLongPress()}
         style={({ pressed }) => [
           styles.profileSection,
           { opacity: pressed ? 0.5 : 1 }
         ]}
         >
-        <ImgComponent style={styles.commentUserImg} uri={item?.user?.profileURL || 'defaultUser'}/>
+        <ImgComponent style={styles.commentUserImg} uri={comment?.user?.profileURL || 'defaultUser'}/>
         <View style={styles.profileText}>
           <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.bold, {fontWeight: 500}]}>{item?.user?.firstname + " " + item?.user?.lastname}</Text>
-            <Text style={styles.commentDate}>{getCompactTimeAgo(item.createdAt)}</Text>
+            <Text style={[styles.bold, {fontWeight: 500}]}>{comment?.user?.firstname + " " + comment?.user?.lastname}</Text>
+            <Text style={styles.commentDate}>{getCompactTimeAgo(comment.createdAt)}</Text>
           </View>
-          <Text style={[styles.postContent, {marginBottom: 0}]}>{item?.content}</Text>
-          <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(item, index)}>
+          <Text style={[styles.postContent, {marginBottom: 0}]}>{comment?.content}</Text>
+          <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(index)}>
             <Text style={styles.replyText}>Reply</Text>
           </TouchableOpacity>
         </View>
       </Pressable>
+      
+      {/* Display replies to comment */}
       <FlatList
-        data={item.replies.items}
+        data={comment.replies.items}
         renderItem={(reply) => {
           const replyData = reply.item;
           return(
-            <Pressable onLongPress={() => handleReplyLongPress(replyData)}
+            <Pressable onLongPress={() => handleLongPress(replyData)}
               style={({ pressed }) => [
                 {marginLeft: 40},
                 { opacity: pressed ? 0.5 : 1 }
@@ -195,7 +208,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
                     <Text style={styles.commentDate}>{getCompactTimeAgo(replyData.createdAt)}</Text>
                   </View>
                   <Text style={styles.postContent}>{replyData?.content}</Text>
-                  <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(item, index)}>
+                  <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(index)}>
                     <Text style={styles.replyText}>Reply</Text>
                   </TouchableOpacity>
                 </View>
@@ -205,6 +218,7 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
         }}
       />
 
+      {/* Options Modal */}
       <Modal 
         transparent={true} 
         visible={modalVisible} 
@@ -232,32 +246,17 @@ const CommentComp = ( {item, handleKeyboard, refreshComments, index} : any) => {
         </View>
       </Modal>
 
+      {/* Report Modal */}
       <Modal 
         transparent={true} 
         visible={reportModalVisible} 
         onRequestClose={() => setReportModalVisible(false)}  
       >
-        <View style={styles.reportModalOverLay}>
-          <View style={styles.reportModalContainer}>
-            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
-              onPress={() => setReportModalVisible(false)}
-            /> 
-            <Text style={styles.title}>Report</Text>
-            <Text style={styles.reportModalText}>
-              Thank you for keeping DAP communities safe. What is the purpose of this report?
-            </Text>
-            <TextInput
-              value={reportMessage}
-              onChangeText={setReportMessage}
-              style={styles.reportInput}
-              placeholder="Add a note"
-              multiline={true}
-            />
-            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
-              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Report 
+          type={(targetReply) ?  "Reply" : "Comment"} 
+          itemID={(targetReply) ? targetReply.id : comment.id} 
+          setReportModalVisible={setReportModalVisible}
+        />
       </Modal>
     </View>
   )

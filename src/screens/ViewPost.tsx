@@ -39,7 +39,7 @@ const ViewPost = ( {route} : any) => {
   const header = () => {
     return (
       <View style={{marginBottom: 5}}>
-        {postData && <FormatPost item={postData}/>}
+        {postData && <FormatPost post={postData} destination={'ViewPost'}/>}
       </View> 
     )
   }

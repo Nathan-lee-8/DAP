@@ -5,6 +5,7 @@ import { SignInParamList } from '../../types/rootStackParamTypes';
 import styles from '../../styles/Styles';
 import ImgComponent from '../../components/ImgComponent';
 
+//Initial welcome screen, navigates to SignIn or SignUp screens
 const Welcome = () => {
   const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
 

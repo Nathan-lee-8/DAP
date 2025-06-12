@@ -1,26 +1,20 @@
-import { useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Modal, TextInput, Alert
- } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
 
 import client from '../client';
 import { getUser } from '../customGraphql/customQueries';
-import { createReport } from '../customGraphql/customMutations';
 import { User } from '../API';
 
 import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ImgComponent';
-import Icon from '@react-native-vector-icons/ionicons';
-import { AuthContext } from '../context/AuthContext';
+import Report from '../components/Report';
 
 const ViewProfiles = ( { route, navigation } : any) => {
   const targetUserID = route.params.userID;
   const [ targetUser, setTargetUser ] = useState<User>();
   const [ loading, setLoading ] = useState(true);
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
-  const [ reportMessage, setReportMessage ] = useState("");
-  const currUser = useContext(AuthContext)?.currUser
-  if(!currUser) return;
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,29 +38,6 @@ const ViewProfiles = ( { route, navigation } : any) => {
     fetchProfile();
   }, []);
 
-  const handleReport = async () => {
-    if(reportMessage === "") return;
-    try{
-      await client.graphql({
-        query: createReport,
-        variables: {
-          input: {
-            reporterID: currUser.id,
-            reportedItemID: targetUserID,
-            reportedItemType: "User",
-            reason: reportMessage, // UPDATE REASON WITH TYPES
-            message: reportMessage,
-          }
-        },
-        authMode: 'userPool'
-      })
-      Alert.alert('Success', 'Report sent successfully');
-      setReportModalVisible(false);
-    }catch(error){
-      Alert.alert('Error', 'Failed to send report');
-    }
-  }
-
   if(loading) return (<ActivityIndicator size="large" color="#0000ff" />);
   if(!targetUser) {
     return <Text style={styles.noResultsMsg}>Error: User not found</Text>
@@ -74,6 +45,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
 
   return(
     <View style={styles.container}>
+      {/* User Profile Section */}
       <View style={styles.viewUserProfileSection}>
         <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
         <View style={styles.userInfoContainer}>
@@ -94,33 +66,21 @@ const ViewProfiles = ( { route, navigation } : any) => {
           </TouchableOpacity>
         </View>
       </View>
-      <UserPosts userID={targetUser.id} isPrivate={true}/>
+
+      {/* List of User Posts */}
+      <UserPosts userID={targetUser.id}/>
+
+      {/* Report Modal */}
       <Modal 
         transparent={true} 
         visible={reportModalVisible} 
         onRequestClose={() => setReportModalVisible(false)}  
       >
-        <View style={styles.reportModalOverLay}>
-          <View style={styles.reportModalContainer}>
-            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
-              onPress={() => setReportModalVisible(false)}
-            /> 
-            <Text style={styles.title}>Report</Text>
-            <Text style={styles.reportModalText}>
-              Thank you for keeping DAP communities safe. What is the purpose of this report?
-            </Text>
-            <TextInput
-              value={reportMessage}
-              onChangeText={setReportMessage}
-              style={styles.reportInput}
-              placeholder="Add a note"
-              multiline={true}
-            />
-            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
-              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Report 
+          type={'User'} 
+          itemID={targetUserID} 
+          setReportModalVisible={setReportModalVisible}
+        />
       </Modal>
     </View>
   )

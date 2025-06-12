@@ -17,24 +17,32 @@ import ImgComponent from '../components/ImgComponent';
 import SearchBar from '../components/SearchBar';
 import moment from 'moment';
 
+/**
+ * Screen to display a given Chatroom based on the ChatID. ChatRooms allow users 
+ * view and send messages to other users or groups. 
+ * @param chatID - The ID of the given ChatRoom to display
+ */
 const ChatRoom = ( { route, navigation } : any) => {
   const chatID = route.params.chatID;
-  const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
-  const [ loading, setLoading ] = useState<boolean>(false);
-  const [ currMessage, setMessage ] = useState<string>('');
+  const [ chat, setChat ] = useState<Chat>();
   const [ participants, setParticipants ] = useState<UserChat[]>([]);
   const [ myUserChat, setMyUserChat ] = useState<UserChat>();
-  const [ chat, setChat ] = useState<Chat>();
+
   const [ title, setTitle ] = useState<string>('default');
   const [ displayURLs, setURLs ] = useState<(string | undefined)[]>([]);
   const [ messages, setMessages ] = useState<Message[]>([]);
+  const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const flatListRef = useRef<FlatList<Message>>(null);
 
+  const [ currMessage, setMessage ] = useState<string>('');
+  const [ loading, setLoading ] = useState<boolean>(false);
+
+  const [ options, setOptions ] = useState(['View Members', 'Leave']);
   const [ modalVisible, setModalVisible ] = useState(false);
+
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
   const [ users, setUsers ] = useState<User[]>([]);
-  const [ options, setOptions ] = useState(['View Members', 'Leave']);
   const inviteFlatListRef = useRef<FlatList>(null);
  
   const authContext = useContext(AuthContext);
@@ -131,8 +139,8 @@ const ChatRoom = ( { route, navigation } : any) => {
     }
   };
 
-  //When user leaves chatroom: reset unread count to 0 & 
-  //decrement user's unread chat count by 1
+  //When user leaves chatroom: reset unread count to 0 & decrement user's unread 
+  //chat count by 1
   const handleGoBack = async () => {
     if(myUserChat && myUserChat.unreadMessageCount !== 0){
       await client.graphql({
@@ -222,6 +230,8 @@ const ChatRoom = ( { route, navigation } : any) => {
     );
   }
 
+  //Deletes the current UserChat removing user from the group
+  //sends a System message in Chat that user has left
   const leaveChat = async () => {
     try{
       await client.graphql({
@@ -254,10 +264,12 @@ const ChatRoom = ( { route, navigation } : any) => {
     }
   }
 
+  //adds each member added by the invite modal to the group and send them a notification
+  //that they've been added to the group. Sends an admin message to chat that members have
+  //been added
   const handleInvite = async () => {
     setInviteModalVisible(false);
     const userIDs = addedMembers.map((item: any) => item.id);
-    console.log(userIDs);
     try{
       for(const userID of userIDs){
         await client.graphql({
@@ -306,6 +318,7 @@ const ChatRoom = ( { route, navigation } : any) => {
     }
   }
 
+  //Adds member to add to group queue
   const handleAddMember = (user: User) => {
     setAddedMembers([...addedMembers, user]);
     setTimeout(() => {
@@ -313,6 +326,7 @@ const ChatRoom = ( { route, navigation } : any) => {
     }, 100);
   }
 
+  //removes member from add to group queue
   const removeMember = (user: User) => {
     setAddedMembers(addedMembers => addedMembers.filter(item => item !== user));
     setTimeout(() => {
@@ -326,6 +340,8 @@ const ChatRoom = ( { route, navigation } : any) => {
     });
   };
 
+  //Deletes the current chat after User confirmation. Lambda cascade deletes
+  //messages and UserChats
   const handleDeleteChat = async () => {
     Alert.alert(
       "Delete Chat",
@@ -365,11 +381,11 @@ const ChatRoom = ( { route, navigation } : any) => {
     });
   };
 
+  //Msg and container styles based on Sent or Recieved
   const getMsgStyle = (id: string) => {
     if(id === currUser.id) return styles.myMessage;
     return styles.otherMessage;
   }
-
   const getMsgContainerStyle = (id: string) => {
     if(id === currUser.id) return styles.myMessageContainer;
     return styles.otherMessageContainer;
@@ -474,6 +490,8 @@ const ChatRoom = ( { route, navigation } : any) => {
           <Icon style={styles.commentButton} onPress={sendMessage}  name="send" size={30} />
         </View>
       </KeyboardAvoidingView>
+
+      {/* ChatRoom Options Modal */}
       <Modal 
         transparent={true} 
         visible={modalVisible} 
@@ -501,6 +519,8 @@ const ChatRoom = ( { route, navigation } : any) => {
           </TouchableOpacity>
         </View>
       </Modal>
+
+      {/* Invite User Modal */}
       <Modal 
         transparent={true} 
         visible={inviteModalVisible} 
