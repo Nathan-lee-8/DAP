@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Platform,
+import { View, Text, FlatList, ActivityIndicator, Platform, Alert,
   RefreshControl } from 'react-native';
 
 import client from '../client';
@@ -10,14 +10,25 @@ import styles from '../styles/Styles';
 import { ModelSortDirection } from '../API';
 import FormatPost from './FormatPost';
 
-const UserPosts = ( {userID, isPrivate} : {userID: string, isPrivate?: boolean} ) => {
-  if(!userID) return <View style={styles.noResultsMsg}><Text>Error retriving posts</Text></View>;
-
+/**
+ * Component to display all posts that a given user has posted
+ * @param userID - The User ID of the user we want to display posts for
+ */
+const UserPosts = ( {userID} : {userID: string} ) => {
+  if(!userID){
+    Alert.alert('Error', 'User not found')
+    return;
+  }
   const [ posts, setPosts ] = useState<Post[]>([]);
   const [ loading, setLoading ] = useState(true);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const flatListRef = useRef<FlatList<Post>>(null);
 
+  useEffect(() => {
+    fetchPosts(true);
+  }, []);
+
+  //Retreive all posts from given user and next Token
   const fetchPosts = async (refresh?: boolean) => {
     try {
       const response = await client.graphql({
@@ -31,22 +42,17 @@ const UserPosts = ( {userID, isPrivate} : {userID: string, isPrivate?: boolean} 
         authMode: 'userPool'
       });
       const fetchedPosts = response.data.postsByUser.items || [];
-      var filteredPosts = fetchedPosts.filter((item) => !posts.includes(item));
-      if(isPrivate) filteredPosts = filteredPosts.filter((item) => item?.group?.type === 'Public');
+      var filteredPosts = fetchedPosts.filter((item) => !posts.includes(item))
+        .filter((item) => item?.group?.type === 'Public');
       if(refresh) setPosts(filteredPosts);
       else setPosts((prev) => [...prev, ...filteredPosts]);
       setNextToken(response.data.postsByUser.nextToken);
-      console.log('fetched from userPosts');
-    } catch (error) {
-      console.log('Error getting posts', error);
+    } catch {
+      Alert.alert('Error', 'There was an issue fetching posts');
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchPosts(true);
-  }, []);
 
   return (
     <View style={{flex: 1}}>
@@ -57,7 +63,7 @@ const UserPosts = ( {userID, isPrivate} : {userID: string, isPrivate?: boolean} 
           ref={flatListRef}
           data={posts}
           renderItem={({ item }) => 
-            <FormatPost item={item}/>
+            <FormatPost post={item} destination={'Profile'}/>
           }
           ListEmptyComponent={() => (
             <View>

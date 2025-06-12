@@ -90,7 +90,7 @@ const HomeScreen = ( {navigation} : any) => {
           renderItem={({ item }) => {
             if(!item.post) return null;
             return(
-             <FormatPost item={item.post}/>
+             <FormatPost post={item.post} destination={'Home'}/>
             )
           }}
           ListEmptyComponent={() => (

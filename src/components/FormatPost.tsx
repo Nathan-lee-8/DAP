@@ -1,91 +1,98 @@
 import { useContext, useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, TextInput,
-  Modal } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, Dimensions, Alert, Modal 
+} from "react-native";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, useDerivedValue, 
   runOnJS } from 'react-native-reanimated';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 
-import { useNavigation, useNavigationState } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { GlobalParamList } from "../types/rootStackParamTypes";
 
 import client from "../client";
-import { deletePost, createReport } from "../customGraphql/customMutations";
+import { deletePost } from "../customGraphql/customMutations";
 import { Post } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
+import Icon from "@react-native-vector-icons/ionicons";
 import moment from "moment";
 import styles from "../styles/Styles";
 import ImgComponent from "./ImgComponent";
-import Icon from "@react-native-vector-icons/ionicons";
 import Comments from './ListComments';
+import Report from "./Report";
 
-const FormatPost = ( {item} : {item: Post} ) => {
+/**
+ * 
+ * 
+ * @param post - The current post to display
+ * @param destination - Where this post is being displayed: 'Home', 'Profile', 'Group', or 'ViewPost'
+ */
+const FormatPost = ( {post, destination} : {post: Post, destination: string} ) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const { width } = Dimensions.get('window');
+  const [ customPadding, setCustomPadding ] = useState(310);
   const [ currentIndex, setCurrentIndex ] = useState(0);
+
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ imageModalVisible, setImageModalVisible ] = useState(false);
   const [ commentModalVisible, setCommentModalVisible ] = useState(false);
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
-  const [ reportMessage, setReportMessage ] = useState("");
+
   const [ options, setOptions ] = useState(["Report"]);
-  const [ customPadding, setCustomPadding ] = useState(310);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  const currentRouteName = useNavigationState((state) => {
-    const route = state.routes[state.index];
-    return route.name;
-  });
-
+  //Sets the options and allows edits and deletes if user owns the post
   useEffect(() => {
-    if(item.user?.id === currUser.id || item.userID === currUser.id){
+    if(post.user?.id === currUser.id || post.userID === currUser.id){
       setOptions(["Edit", "Delete"]);
     }
   }, [currUser])
 
+  //Navigates to full page display of the given post unless already there
   const clickPost = (itemID : string) => {
-    if(currentRouteName !== 'ViewPost'){
+    if(destination !== 'ViewPost'){
       navigation.navigate('ViewPost', { postID: itemID });
     }
   }
   
-  const visitProfile = (item : any) => {
-    if(item.user.id === currUser.id) return;
-    navigation.navigate('ViewProfile', { userID: item.user.id });
+  //navigates to the profile of the user unless it is the current user
+  const visitProfile = () => {
+    if(!post.user || post.user.id === currUser.id) return;
+    navigation.navigate('ViewProfile', { userID: post.user.id });
   }
 
+  //helper to know what index we are on while scrolling through images
   const onScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.floor(contentOffsetX / (width * 0.88)); // Calculate the index of the current image
+    const index = Math.floor(contentOffsetX / (width * 0.88));
     setCurrentIndex(index);
   };
 
+  //opens the sharing UI to allow User to share the post 
   const handleShare = async () => {
     try {
-      // Download all media
-      const downloadedFiles = item.postURL
-        ? await Promise.all(item.postURL
+      const downloadedFiles = post.postURL
+        ? await Promise.all(post.postURL
           .filter((url): url is string => typeof url === 'string')
           .map(downloadMediaToLocal))
         : [];
   
       const shareOptions = {
         title: 'Check out this post!',
-        message: item.content,
+        message: post.content,
         urls: downloadedFiles.length > 0 ? downloadedFiles : undefined,
       };
-  
       await Share.open(shareOptions);
-    } catch (err) {
-      console.log('Share error:', err);
+    } catch {
+      Alert.alert('Error', 'Failed to share post.')
     }
   }
 
+  //Helper function to download the file to local to prepare sharing
   const downloadMediaToLocal = async (url: string): Promise<string> => {
     const filename = url.split('/').pop() || `file_${Date.now()}`;
     const localPath = `${RNFS.TemporaryDirectoryPath}${filename}`;
@@ -96,31 +103,38 @@ const FormatPost = ( {item} : {item: Post} ) => {
 
   //delete all post and comments
   const handleDelete = async () => {
-    if(item){
+    if(post){
       try{
         await client.graphql({
           query: deletePost,
           variables: {
             input: {
-              id: item.id
+              id: post.id
             }
           },
           authMode: 'userPool'
         });
-        console.log(item.id, "successfully deleted post");
-        if(currentRouteName === 'ViewPost'){
+        console.log(post.id, "successfully deleted post");
+        if(destination === 'ViewPost'){
           navigation.goBack();
         }
       }catch (error : any){
-        console.log(error);
+        Alert.alert('Error', 'There was an issue deleting the post');
       }
     }
   }
 
+  /**
+   * handles the option that the user pressed in the option modal: Edit, Delete, Report
+   * - Edit: navigates to the edit post screen
+   * - Delete: deletes the post
+   * - Report: opens the report modal
+   * @param option - The option the User pressed 
+   */
   const handleOptionButton = (option: string) => {
     setModalVisible(false);
     if(option === "Edit"){
-      navigation.navigate('EditPost', { currPost: item});
+      navigation.navigate('EditPost', { currPost: post});
     }else if(option === "Delete"){
       Alert.alert('Alert','Are you sure you would like to delete this', [
         { text: 'Cancel' },
@@ -133,29 +147,7 @@ const FormatPost = ( {item} : {item: Post} ) => {
     }
   }
 
-  const handleReport = async () => {
-    if(reportMessage === "") return; 
-    try{
-      await client.graphql({
-        query: createReport,
-        variables: {
-          input: {
-            reporterID: currUser.id,
-            reportedItemID: item.id,
-            reportedItemType: "Post",
-            reason: reportMessage, // UPDATE REASON WITH TYPES
-            message: reportMessage,
-          }
-        },
-        authMode: 'userPool'
-      })
-      Alert.alert('Success', 'Report sent successfully');
-      setReportModalVisible(false);
-    }catch(error){
-      Alert.alert('Error', 'Failed to send report');
-    }
-  }
-
+  //Helpers to snap image to fit on scroll
   const heightPercent = useSharedValue(70);
   const panComments = Gesture.Pan().onUpdate((event) => {
     if (event.translationY < -100) {
@@ -169,10 +161,10 @@ const FormatPost = ( {item} : {item: Post} ) => {
     }
   })
 
+  //Helpers to adjust height of images if keyboard is displayed or not
   const animatedStyle = useAnimatedStyle(() => ({
     height: `${heightPercent.value}%`,
   }));
-
   useDerivedValue(() => {
     if (heightPercent.value >= 90) {
       runOnJS(setCustomPadding)(120);
@@ -183,60 +175,62 @@ const FormatPost = ( {item} : {item: Post} ) => {
   
   return (  
     <View style={styles.postContainer}>
-      {item?.user?.firstname ? (
-        <TouchableOpacity style={styles.profileSection} onPress={() => clickPost(item.id)}> 
-          <TouchableOpacity onPress={() => visitProfile(item)}>
-            <ImgComponent uri={item.user.profileURL} style={styles.postProfileImg}/>
+      {/* Title display: Omit Name & image in Profile, Omit GroupName in Group */}
+      {destination !== 'Profile' && post.user ? ( // if displayed anywhere but Profile
+        <TouchableOpacity style={styles.profileSection} onPress={() => clickPost(post.id)}> 
+          <TouchableOpacity onPress={visitProfile}>
+            <ImgComponent uri={post.user.profileURL} style={styles.postProfileImg}/>
           </TouchableOpacity>
           <View style={styles.profileText}>
-            {item.group?.groupName ? (
+            {destination !== 'Group' && post.group ? ( // if displayed not in groups show groupname
               <View style={styles.postAuthor}>
                 <Text style={styles.bold} 
-                  onPress={() => visitProfile(item)}
+                  onPress={visitProfile}
                   numberOfLines={1}
                 >
-                  {item.user.firstname + " " + item.user.lastname}
+                  {post.user.firstname + " " + post.user.lastname}
                 </Text>
                 <Text> posted in </Text>
                 <Text style={styles.bold} 
                   onPress={() => {
-                    if(item.group) navigation.navigate('ViewGroup', {groupID: item.group.id})
+                    if(post.group) navigation.navigate('ViewGroup', {groupID: post.group.id})
                   }}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {item.group.groupName}
+                  {post.group.groupName}
                 </Text>
               </View>
-            ) : (
-              <Text>{item.user.firstname + " " + item.user.lastname}</Text>
+            ) : ( // If displayed in groups omit groupname
+              <Text>{post.user.firstname + " " + post.user.lastname}</Text>
             )}
-            <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
+            <Text style={styles.postDate}>{moment(post.createdAt).fromNow()}</Text>
           </View>
           <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
             color={'black'}
             onPress={() => setModalVisible(true)}
           />
         </TouchableOpacity>
-      ) : (
+      ) : ( // Posts displayed in 'Profile' 
         <View style={styles.postAuthor}>
-          <Text style={styles.bold} onPress={() => navigation.navigate('ViewGroup', {groupID: item.groupID})}>
-            {item.group?.groupName}
+          <Text style={styles.bold} onPress={() => navigation.navigate('ViewGroup', {groupID: post.groupID})}>
+            {post.group?.groupName}
           </Text>
-          <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} 
-            color={'black'}
+          <Icon name="ellipsis-horizontal-sharp" style={styles.postOptions} size={20} color={'black'}
             onPress={() => setModalVisible(true)}
           />
         </View>
       )}
       
-      <TouchableOpacity  onPress={ () => clickPost(item.id)}>
-        <Text style={styles.postContent} numberOfLines={5}>{item.content}</Text>
+      <TouchableOpacity  onPress={ () => clickPost(post.id)}>
+        <Text style={styles.postContent} numberOfLines={5}>{post.content}</Text>
       </TouchableOpacity>
-      {item.postURL &&
+
+      {/* Post media display list */}
+      {post.postURL &&
         <View>
           <FlatList
-            data={item.postURL}
+            data={post.postURL}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => setImageModalVisible(true)}>
                 <ImgComponent uri={item || 'defautUser'} 
@@ -255,17 +249,18 @@ const FormatPost = ( {item} : {item: Post} ) => {
             snapToAlignment="center"
           />
           <View style={styles.paginationContainer}>
-            {item.postURL.length > 1 && item?.postURL.map((_, index) => (
+            {post.postURL.length > 1 && post?.postURL.map((_, index) => (
               <View key={index} style={[ styles.dot, currentIndex === index && styles.activeDot ]}/>
             ))}
           </View>
         </View>
       }
 
-      <TouchableOpacity style={styles.interactSection} onPress={() => clickPost(item.id)}>
+      {/* Interaction section for sharing and View comments */}
+      <TouchableOpacity style={styles.interactSection} onPress={() => clickPost(post.id)}>
         <View style={styles.commentSection}>
           <Icon name="chatbubble-outline" size={15}/>
-          <Text> {item.commentCount}</Text>
+          <Text> {post.commentCount}</Text>
         </View>
         <TouchableOpacity style={styles.shareSection} onPress={handleShare}>
           <Icon name="arrow-redo-outline" size={15}/>
@@ -315,7 +310,7 @@ const FormatPost = ( {item} : {item: Post} ) => {
               />
             </View>
             <FlatList
-              data={item.postURL}
+              data={post.postURL}
               renderItem={({ item }) => (
                 <View>
                   <ImgComponent uri={item || 'defautUser'} 
@@ -335,7 +330,7 @@ const FormatPost = ( {item} : {item: Post} ) => {
               snapToAlignment="center"
             />
             <View style={styles.paginationContainer}>
-              {item.postURL && item?.postURL.length > 1 && item?.postURL?.map((_, index) => (
+              {post.postURL && post?.postURL.length > 1 && post?.postURL?.map((_, index) => (
                 <View key={index} style={[ styles.dot, currentIndex === index && styles.activeDot ]}/>
               ))}
               <Icon name="chatbubble-outline" size={40} style={styles.imageCommentIcon} color={'grey'}
@@ -353,7 +348,7 @@ const FormatPost = ( {item} : {item: Post} ) => {
                 <GestureDetector gesture={panComments}>
                   <Animated.View style={[styles.commentModalContainer, animatedStyle]} >
                     <Text style={styles.title}>Comments</Text>
-                    <Comments postID={item.id} customPadding={customPadding} />
+                    <Comments postID={post.id} customPadding={customPadding} />
                   </Animated.View>
                 </GestureDetector>
               </View>
@@ -368,27 +363,11 @@ const FormatPost = ( {item} : {item: Post} ) => {
         visible={reportModalVisible} 
         onRequestClose={() => setReportModalVisible(false)}  
       >
-        <View style={styles.reportModalOverLay}>
-          <View style={styles.reportModalContainer}>
-            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
-              onPress={() => setReportModalVisible(false)}
-            /> 
-            <Text style={styles.title}>Report</Text>
-            <Text style={styles.reportModalText}>
-              Thank you for keeping DAP communities safe. What is the purpose of this report?
-            </Text>
-            <TextInput
-              value={reportMessage}
-              onChangeText={setReportMessage}
-              style={styles.reportInput}
-              placeholder="Add a note"
-              multiline={true}
-            />
-            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
-              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Report
+          type={"Post"}
+          itemID={post.id}
+          setReportModalVisible={setReportModalVisible}
+        />
       </Modal>
     </View>
   )

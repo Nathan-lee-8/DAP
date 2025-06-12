@@ -1,16 +1,14 @@
 import { useContext, useState } from "react";
-import { View, Text, FlatList, Modal, TouchableOpacity, Alert, TextInput
-} from "react-native";
+import { View, Text, FlatList, Modal, TouchableOpacity, Alert } from "react-native";
 import styles from '../styles/Styles';
 
 import client from "../client";
-import { deleteUserChat, createReport, updateUserChat, createMessage 
-} from "../customGraphql/customMutations";
+import { deleteUserChat, updateUserChat, createMessage } from "../customGraphql/customMutations";
 import { UserChat } from "../API";
 
 import ImgComponent from "../components/ImgComponent";
 import { AuthContext } from "../context/AuthContext";
-import Icon from "@react-native-vector-icons/ionicons";
+import Report from "../components/Report";
 
 const ChatMembers = ( {route, navigation} : any ) => {
   const chatData = route.params.chatData;
@@ -19,7 +17,6 @@ const ChatMembers = ( {route, navigation} : any ) => {
   const [ options, setOptions ] = useState(['View Profile', 'Report']); 
   const [ selectedUser, setSelectedUser ] = useState<UserChat>();
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
-  const [ reportMessage, setReportMessage ] = useState("");
   const [ roleModalVisible, setRoleModalVisible ] = useState(false);
   const [ roleOptions, setRoleOptions ] = useState(['Owner', 'Admin', 'Member'])
   const currUser = useContext(AuthContext)?.currUser;
@@ -92,29 +89,6 @@ const ChatMembers = ( {route, navigation} : any ) => {
     }).catch(() => {})
   }
 
-  const handleReport = async () => {
-    if(reportMessage === "" || !selectedUser) return;
-    try{
-      await client.graphql({
-        query: createReport,
-        variables: {
-          input: {
-            reporterID: currUser.id,
-            reportedItemID: selectedUser.id,
-            reportedItemType: "User",
-            reason: reportMessage, // UPDATE REASON WITH TYPES
-            message: reportMessage,
-          }
-        },
-        authMode: 'userPool'
-      })
-      Alert.alert('Success', 'Report sent successfully');
-      setReportModalVisible(false);
-    }catch(error){
-      Alert.alert('Error', 'Failed to send report');
-    }
-  }
-
   const updateRole = async (role: string) => {
     setRoleModalVisible(false);
     if(!selectedUser){
@@ -177,6 +151,8 @@ const ChatMembers = ( {route, navigation} : any ) => {
           )
         }}
       />
+
+      {/* Post Options Modal */}
       <Modal 
         transparent={true} 
         visible={modalVisible} 
@@ -213,27 +189,11 @@ const ChatMembers = ( {route, navigation} : any ) => {
         visible={reportModalVisible} 
         onRequestClose={() => setReportModalVisible(false)}  
       >
-        <View style={styles.reportModalOverLay}>
-          <View style={styles.reportModalContainer}>
-            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
-              onPress={() => setReportModalVisible(false)}
-            /> 
-            <Text style={styles.title}>Report</Text>
-            <Text style={styles.reportModalText}>
-              Thank you for keeping DAP communities safe. What is the purpose of this report?
-            </Text>
-            <TextInput
-              value={reportMessage}
-              onChangeText={setReportMessage}
-              style={styles.reportInput}
-              placeholder="Add a note"
-              multiline={true}
-            />
-            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
-              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Report
+          type={"User"}
+          itemID={(selectedUser) ? selectedUser.id : ""}
+          setReportModalVisible={setReportModalVisible}
+        />
       </Modal>
 
       {/*Role Modal */}

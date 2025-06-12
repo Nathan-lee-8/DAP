@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { View, Text, FlatList, ActivityIndicator,
+import { View, Text, FlatList, ActivityIndicator, Alert,
   RefreshControl, TouchableOpacity} from "react-native";
 
 import client from '../client';
@@ -17,6 +17,11 @@ import { GlobalParamList } from "../types/rootStackParamTypes";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import moment from "moment";
 
+/**
+ * Retrieves and displays all notifications for the Users. Resets notification
+ * count to 0 when opened. 
+ * @param closeNotificationModal - Function to close the overlay  
+ */
 const Notifications = ( {closeNotificationModal} : any ) => {
   const [ notifications, setNotifications ] = useState<any>([]);
   const [ loading, setLoading ] = useState(true);
@@ -24,11 +29,16 @@ const Notifications = ( {closeNotificationModal} : any ) => {
   const authContext = useContext(AuthContext);
   if(!authContext) return;
   const currUser = authContext.currUser;
-  const triggerFetch = authContext.triggerFetch;
+  const { triggerFetch } = authContext;
   if(!currUser) return;
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
 
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  //retreives all notifications and nexttoken and resets notification count to 0
   const fetchNotifications = async () => {
     setLoading(true);
     try{
@@ -43,10 +53,12 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         authMode:'userPool'
       })
       setNextToken(notifData.data.notificationsByUser.nextToken);
-      const notificationList = notifData.data.notificationsByUser.items.filter((item) => item.type !== 'Message');
+      const notificationList = notifData.data.notificationsByUser.items.filter((item) => 
+        item.type !== 'Message'
+      );
       setNotifications(notificationList);
-    } catch (error: any) {
-      console.log(error);
+    } catch {
+      Alert.alert('Error', 'Issue fetching notifications')
     } finally {
       setLoading(false);
     }
@@ -67,10 +79,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     });
   }
 
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
-
+  //Deletes the prssed notification
   const handleRemoveNotification = async (itemID: string) => {
     setNotifications((prev: any) => prev.filter((item: any) => item.id !== itemID));
     try{
@@ -83,11 +92,13 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         },
         authMode: 'userPool'
       })
-    }catch(error){
-      console.log(error);
+    } catch {
+      Alert.alert('Error', 'Issue deleting notification');
     }
   }
 
+  //Marks the current pressed notification as read and navigates to the 
+  //proper post, group or chat after closing the notification modal
   const handleNav = async (item: Notification) => {
     if(!item.read){
       client.graphql({
@@ -112,9 +123,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     }
   }
 
-  if(loading){
-    return <ActivityIndicator size="large" color="#0000ff" />
-  }
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (
     <View style={styles.container}>
@@ -126,7 +135,8 @@ const Notifications = ( {closeNotificationModal} : any ) => {
           >
             <Text>{item.content}</Text>
             <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-            <Icon name="close-outline" size={20} onPress={() => handleRemoveNotification(item.id)}
+            <Icon name="close-outline" size={20} 
+              onPress={() => handleRemoveNotification(item.id)}
               style={{ position: 'absolute', right: 5, top: 5, zIndex: 1}
             }/>
           </TouchableOpacity>

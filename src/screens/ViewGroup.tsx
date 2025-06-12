@@ -1,12 +1,12 @@
 import { useState, useCallback, useContext, useRef } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal,
-  RefreshControl, KeyboardAvoidingView, Platform, TextInput } from "react-native";
+  RefreshControl, KeyboardAvoidingView, Platform } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
 import { getGroup, postsByDate } from '../customGraphql/customQueries';
-import { createUserGroup, deleteUserGroup, deleteGroup, createReport,
-   createNotification, deleteNotification} from '../customGraphql/customMutations';
+import { createUserGroup, deleteUserGroup, deleteGroup, createNotification, 
+  deleteNotification } from '../customGraphql/customMutations';
 import { Group, Post, UserGroup, User, Notification, ModelSortDirection } from '../API'
 
 import { AuthContext } from "../context/AuthContext";
@@ -17,6 +17,7 @@ import FormatPost from "../components/FormatPost";
 import LinearGradient from "react-native-linear-gradient";
 import SearchBar from "../components/SearchBar";
 import ImgComponent from "../components/ImgComponent";
+import Report from "../components/Report";
 
 const ViewGroup = ( {route, navigation} : any) => {
   const groupID = route.params.groupID;
@@ -35,7 +36,6 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const [ notificationModalVisible, setNotificationModalVisible ] = useState(false);
 
-  const [ reportMessage, setReportMessage ] = useState("");
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
   const flatListRef = useRef<FlatList>(null);
 
@@ -350,29 +350,6 @@ const ViewGroup = ( {route, navigation} : any) => {
     });
   };
 
-  const handleReport = async () => {
-    if(reportMessage === "") return;
-    try{
-      await client.graphql({
-        query: createReport,
-        variables: {
-          input: {
-            reporterID: currUser.id,
-            reportedItemID: groupID,
-            reportedItemType: "Group",
-            reason: reportMessage, // UPDATE REASON WITH TYPES
-            message: reportMessage,
-          }
-        },
-        authMode: 'userPool'
-      })
-      Alert.alert('Success', 'Report sent successfully');
-      setReportModalVisible(false);
-    }catch(error){
-      Alert.alert('Error', 'Failed to send report');
-    }
-  }
-
   const handleDeleteNotification = async (itemID: string) => {
     setNotifications(prev => prev.filter(item => item.id !== itemID));
     try{
@@ -540,7 +517,7 @@ const ViewGroup = ( {route, navigation} : any) => {
         renderItem={({item}) => {
           if(!item) return <View></View>
           return(
-            <FormatPost item={item} />
+            <FormatPost post={item} destination={"Group"}/>
           )
         }}
         ListEmptyComponent={() => (
@@ -639,27 +616,11 @@ const ViewGroup = ( {route, navigation} : any) => {
         visible={reportModalVisible} 
         onRequestClose={() => setReportModalVisible(false)}  
       >
-        <View style={styles.reportModalOverLay}>
-          <View style={styles.reportModalContainer}>
-            <Icon style={styles.closeReportModalButton} name={'close-outline'} size={30} 
-              onPress={() => setReportModalVisible(false)}
-            /> 
-            <Text style={styles.title}>Report</Text>
-            <Text style={styles.reportModalText}>
-              Thank you for keeping DAP communities safe. What is the purpose of this report?
-            </Text>
-            <TextInput
-              value={reportMessage}
-              onChangeText={setReportMessage}
-              style={styles.reportInput}
-              placeholder="Add a note"
-              multiline={true}
-            />
-            <TouchableOpacity style={styles.reportModalButton} onPress={handleReport}>
-              <Text style={{textAlign: 'center', fontSize: 18}}>Report</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Report 
+          type={"Group"}
+          itemID={groupID}
+          setReportModalVisible={setReportModalVisible}
+        />
       </Modal>
 
       {/* Notification Modal */}

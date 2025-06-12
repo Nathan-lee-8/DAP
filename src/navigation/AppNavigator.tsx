@@ -30,8 +30,6 @@ import ViewMembers from '../screens/ViewMembers';
 import ViewChatMembers from '../screens/ViewChatMembers';
 import EditPost from '../screens/EditPost';
 import EditChat from '../screens/EditChat';
-
-import LogOutButton from '../components/LogOutButton';
 import ImageComponent from '../components/ImgComponent';
 
 const SignInStack = createNativeStackNavigator();
@@ -58,7 +56,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer linking={linking}>
-      {isSignedIn && currUser ? (
+      {isSignedIn && currUser ? ( //Signed in Screens
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
@@ -77,11 +75,11 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers} options={{title: 'Members'}}/>
           <GlobalStack.Screen name="EditChat" component={EditChat} options={{title: 'Edit Chat'}}/>
         </GlobalStack.Navigator>
-      ) : isSignedIn && !currUser ? (
+      ) : isSignedIn && !currUser ? ( //Screens User has not created an account
         <SignInStack.Navigator initialRouteName='CreateUser' >
           <SignInStack.Screen name="CreateUser" component={CreateUser} options={{headerShown: false}} />
         </SignInStack.Navigator>
-      ) : (
+      ) : ( //Sign-in Sign-up Screens
         <SignInStack.Navigator initialRouteName='Welcome' >
           <SignInStack.Screen name="Welcome" component={Welcome} options={{headerShown: false}} />
           <SignInStack.Screen name="SignIn" component={SignIn} options={{title: 'Sign In', headerTitleAlign: 'center'}} />
@@ -94,6 +92,7 @@ const AppNavigator = () => {
   )
 };
 
+/** Bottom Tab Screens */
 const BottomTabs = () => {
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
@@ -138,7 +137,7 @@ const BottomTabs = () => {
           tabBarIcon: () => <Icon name="search-outline" size={30} />
         }} />
       <BottomTab.Screen name="Profile" component={EditProfile}
-        options={{  headerTitleAlign:'center', headerRight: LogOutButton,
+        options={{ lazy: true, headerTitleAlign:'center',
           tabBarIcon: () => <ImageComponent uri={currUser.profileURL || 'defaultUser'}/>
         }} />
     </BottomTab.Navigator>

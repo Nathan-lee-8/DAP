@@ -1,4 +1,3 @@
-// context/AuthContext.tsx
 import { createContext, useState, ReactNode, useEffect } from 'react';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
