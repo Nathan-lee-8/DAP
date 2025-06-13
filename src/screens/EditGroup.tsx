@@ -11,6 +11,12 @@ import { imagePicker, getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
+/**
+ * Displays the group name, image, description and privacy and allows the user
+ * to make changes to each of these fields.
+ * 
+ * @param group - The group that is being edited
+ */
 const EditGroup = ( {route, navigation} : any ) => {
   const group = route.params.group;
   const [ loading, setLoading ] = useState(false);
@@ -21,15 +27,8 @@ const EditGroup = ( {route, navigation} : any ) => {
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
-  const getFilePath = async () => {
-    var uri = await imagePicker();
-    if(uri === null){ 
-      Alert.alert("Alert", "No image selected")
-      return;
-    };
-    setFilepath(uri);      
-  }
-
+  //If filepath is not matching, uploads to s3 and returns new filepath. Then checks if name, 
+  //description, image, or privacy is changed and updates the group. Navigates back to group.
   const handleEditGroup = async () => {
     try{
       setLoading(true);
@@ -56,15 +55,24 @@ const EditGroup = ( {route, navigation} : any ) => {
           },
           authMode: 'userPool'
         })
-        console.log(group.id, "updated successfully");
+        Alert.alert('Success', 'Group updated successfully')
       }
-    } catch(error){
-      console.log(error);
+    } catch {
+      Alert.alert('Error', 'There was an issue updating the group');
     } finally{
       setLoading(false);
       navigation.goBack();
-      Alert.alert('Success', 'Group updated successfully')
     }
+  }
+
+  //Opens image picker to update group image
+  const getFilePath = async () => {
+    var uri = await imagePicker();
+    if(uri === null){ 
+      Alert.alert("Alert", "No image selected")
+      return;
+    };
+    setFilepath(uri);      
   }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />

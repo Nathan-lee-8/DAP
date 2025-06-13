@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Alert } from 'react-native';
 
 import client from '../client';
 import { getUser } from '../customGraphql/customQueries';
@@ -10,33 +10,40 @@ import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ImgComponent';
 import Report from '../components/Report';
 
+/**
+ * Screen to display the name, email, profile image, description, 
+ * and all the posts of the current user. 
+ * 
+ * @param userID - the user that we want to view the profile of
+ */
 const ViewProfiles = ( { route, navigation } : any) => {
   const targetUserID = route.params.userID;
   const [ targetUser, setTargetUser ] = useState<User>();
   const [ loading, setLoading ] = useState(true);
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
-
+  
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await client.graphql({
-          query: getUser,
-          variables: { 
-            id: targetUserID,
-          },
-          authMode: 'userPool'
-        });
-        const user = response.data.getUser;
-        if(user)setTargetUser(user);
-        console.log('fetched User');
-      } catch (error) {
-        console.log('Error getting posts', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProfile();
   }, []);
+
+  //retreives target Users profile data
+  const fetchProfile = async () => {
+    try {
+      const response = await client.graphql({
+        query: getUser,
+        variables: { 
+          id: targetUserID,
+        },
+        authMode: 'userPool'
+      });
+      const user = response.data.getUser;
+      if(user)setTargetUser(user);
+    } catch {
+      Alert.alert('Error', 'Could not find User');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if(loading) return (<ActivityIndicator size="large" color="#0000ff" />);
   if(!targetUser) {

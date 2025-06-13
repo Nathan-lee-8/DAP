@@ -10,27 +10,26 @@ import { imagePicker, getImgURI } from '../components/addImg';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
+/**
+ * Displays chat name and chat image and allows user to update both fields.
+ * 
+ * @param currChat - the current chat to be updated
+ */
 const EditChat = ( {route, navigation} : any) => {
   const chat = route.params.currChat;
   const [ filepath, setFilepath ] = useState<string>(chat.url);
   const [ name, setName ] = useState<string>(chat.name);
   const [ loading, setLoading ] = useState<boolean>(false);
 
-  const getFilePath = async () => {
-    var uri = await imagePicker();
-    if(uri === null){ 
-      Alert.alert("Alert", "No image selected")
-      return;
-    };
-    setFilepath(uri);      
-  }
-
+  //if chat images is changed, upload to s3 and update new filepath. Update chat 
+  //image and chat name to db if either have changed. Navigates back to chatroom.
   const handleSaveChanges = async () => {
     try{
       setLoading(true);
       var imgURI = filepath;
       if(filepath !== chat.url){
-        var uri = await getImgURI(filepath, `public/chatPictures/${chat.id}/profile/${Date.now()}.jpg`);
+        var uri = await getImgURI(filepath, 
+          `public/chatPictures/${chat.id}/profile/${Date.now()}.jpg`);
         imgURI = 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri;
       }
       if(name !== chat.name || imgURI !== chat.url){
@@ -45,15 +44,24 @@ const EditChat = ( {route, navigation} : any) => {
           },
           authMode: 'userPool'
         })
-        console.log(chat.id, 'updated');
+        Alert.alert("Success", "Chat updated successfully");
       }
     } catch (error) {
-      console.log(error);
+      Alert.alert('Error', 'There was an issue updating Chat');
     } finally {
       setLoading(false);
       navigation.goBack();
-      Alert.alert("Success", "Chat updated successfully");
     }
+  }
+
+  //opens media picker to choose new chat image
+  const getFilePath = async () => {
+    var uri = await imagePicker();
+    if(uri === null){ 
+      Alert.alert("Alert", "No image selected");
+      return;
+    };
+    setFilepath(uri);      
   }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />;

@@ -42,7 +42,6 @@ const ChatRoom = ( { route, navigation } : any) => {
 
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
-  const [ users, setUsers ] = useState<User[]>([]);
   const inviteFlatListRef = useRef<FlatList>(null);
  
   const authContext = useContext(AuthContext);
@@ -67,7 +66,9 @@ const ChatRoom = ( { route, navigation } : any) => {
       const subscription = client.graphql({
         query: onCreateMessage,
         variables: {
-            filter: { chatID: { eq: chatID } },
+          filter: { 
+            chatID: { eq: chatID }
+          },
         },
         authMode: 'userPool'
       }).subscribe({
@@ -90,11 +91,12 @@ const ChatRoom = ( { route, navigation } : any) => {
     }, [chatID])
   );
 
-  //Get Chat metadata and set chat, messages, users, urls, nexttoken and myUser
+  //Get Chat metadata and set chat, messages, urls, nexttoken and myUser
   const fetchChat = async () => {
     if(loading) return;
     setLoading(true);
     try{
+      //retreive and set chat
       const chat = await client.graphql({
         query: getChat,
         variables: { 
@@ -106,40 +108,43 @@ const ChatRoom = ( { route, navigation } : any) => {
       });
       const chatData = chat.data.getChat;
       if(chatData) setChat(chatData);
+
+      //filter and set messages with logic for nextToken refresh
       if(chatData?.messages){
         const newChat = chatData.messages.items
           .filter((item): item is Message => item !== null && !messages.includes(item))
         setMessages((prev) => [...prev, ...newChat])
       }
+      
+      //loop through participant and set my userChat, options and url
       let parts = chatData?.participants?.items.filter(item => item !== null);
-      const userData = parts?.map((item: any) => item.user)
-      if(userData) setUsers(userData);
-      if(parts){
-        let URLs: (string | undefined)[] = [];
-        setParticipants(parts.filter((item): item is UserChat => {
-          if(item?.userID !== currUser.id){ 
-            URLs.push(item?.user?.profileURL || undefined)
+      let URLs: (string)[] = [];
+      parts?.map((participant) => {
+        if(!participant.user) return;
+        if(participant.user.id === currUser.id){ //if my Userchat, set roles and options
+          setMyUserChat(participant);
+
+          let currUsersChat = participant;
+          if(currUsersChat.role === 'Admin'){
+            setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
+          }else if(currUsersChat.role === 'Owner'){
+            setOptions(['View Members', 'Invite', 'Edit', 'Delete'])
           }
-          return item?.userID !== currUser.id;
-        }));
-        setURLs(URLs);
-        const myUser = parts.find((item): item is UserChat => item?.userID === currUser.id)
-        setMyUserChat(myUser);
-        if(myUser?.role === 'Admin'){
-          setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
-        }else if(myUser?.role === 'Owner'){
-          setOptions(['View Members', 'Invite', 'Edit', 'Delete'])
+        }else{ //set chat header images
+          URLs.push(participant.user.profileURL)
         }
-      }
+      })
+      setURLs(URLs);
+
       setNextToken(chatData?.messages?.nextToken);
-    } catch (error: any) {
+    } catch {
       Alert.alert('Error', 'Could not find Chat');
     } finally {
       setLoading(false);
     }
   };
 
-  //When user leaves chatroom: reset unread count to 0 & decrement user's unread 
+  //When user leaves chatroom set unread chat count to 0 & decrement users unread 
   //chat count by 1
   const handleGoBack = async () => {
     if(myUserChat && myUserChat.unreadMessageCount !== 0){
@@ -164,9 +169,7 @@ const ChatRoom = ( { route, navigation } : any) => {
         },
         authMode: 'userPool'
       }).catch((error: any) => console.log(error))
-      .finally(() => {
-        if(triggerFetch) triggerFetch();
-      });
+      .finally(() => { if(triggerFetch) triggerFetch() });
     }
     navigation.goBack();
   }
@@ -187,7 +190,7 @@ const ChatRoom = ( { route, navigation } : any) => {
         authMode: 'userPool'
       });
       setMessage('');
-    } catch (error) {
+    } catch {
       Alert.alert('Error', "Failed to send message");
     }
   };
@@ -214,24 +217,14 @@ const ChatRoom = ( { route, navigation } : any) => {
   }
   
   const handleLeaveChat = () => {
-    Alert.alert(
-      "Leave Chat",
-      "Are you sure you want to leave this chat?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        { 
-          text: "Leave", 
-          onPress: leaveChat
-        }
-      ]
-    );
+    Alert.alert("Leave Chat", "Are you sure you want to leave this chat?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Leave", onPress: leaveChat}
+    ]);
   }
 
-  //Deletes the current UserChat removing user from the group
-  //sends a System message in Chat that user has left
+  //Deletes the current UserChat removing user from the group and sends a System message
+  //in Chat that user has left
   const leaveChat = async () => {
     try{
       await client.graphql({
@@ -252,14 +245,14 @@ const ChatRoom = ( { route, navigation } : any) => {
         variables: {
           input: {
             senderID: currUser.id,
-            content: currUser.firstname + " " + currUser.lastname + " left the chat",
+            content: `${currUser.firstname} ${currUser.lastname} left the chat`,
             chatID: chatID,
             type: 'System'
           }
         },
         authMode: 'userPool'
       })
-    } catch (error){ 
+    } catch { 
       Alert.alert('Error', 'There was an issue leaving the chat');
     }
   }
@@ -291,7 +284,7 @@ const ChatRoom = ( { route, navigation } : any) => {
           variables: {
             input: {
               userID: userID,
-              content: currUser.fullname + " added you to a chat",
+              content: `${currUser.fullname} added you to a chat`,
               type: 'Chat',
               onClickID: chatID,
             }
@@ -306,14 +299,14 @@ const ChatRoom = ( { route, navigation } : any) => {
         variables: {
           input: {
             senderID: currUser.id,
-            content: currUser.firstname + " " + currUser.lastname + " added " + addedMemberNames,
+            content: `${currUser.firstname} ${currUser.lastname} added ${addedMemberNames}`,
             chatID: chatID,
             type: 'System'
           }
         },
         authMode: 'userPool'
       })
-    } catch (error){
+    } catch {
       Alert.alert('Error', 'Failed to add User(s) to Chat');
     }
   }
@@ -343,35 +336,25 @@ const ChatRoom = ( { route, navigation } : any) => {
   //Deletes the current chat after User confirmation. Lambda cascade deletes
   //messages and UserChats
   const handleDeleteChat = async () => {
-    Alert.alert(
-      "Delete Chat",
-      "Are you sure you want to delete this chat?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        { 
-          text: "Delete", 
-          onPress: async () => {
-            try{
-              await client.graphql({
-                query: deleteChat,
-                variables: {
-                  input: {
-                    id: chatID
-                  }
-                },
-                authMode: 'userPool'
-              })
-              navigation.goBack();
-            } catch (error) {
-              Alert.alert('Error', 'There was an issue deleting the chatroom');
-            }
-          }
+    Alert.alert("Delete Chat", "Are you sure you want to delete this chat?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", onPress: async () => {
+        try{
+          await client.graphql({
+            query: deleteChat,
+            variables: {
+              input: {
+                id: chatID
+              }
+            },
+            authMode: 'userPool'
+          })
+          navigation.goBack();
+        } catch {
+          Alert.alert('Error', 'There was an issue deleting the chatroom');
         }
-      ]
-    );
+      }}
+    ]);
   }
 
   const scrollToBottom = () => {
@@ -395,34 +378,24 @@ const ChatRoom = ( { route, navigation } : any) => {
     <View style={styles.container}>
       <View style={styles.messageHeaderContainer}>
         <View style={{flexDirection: 'row'}}>
-          <Icon style={{padding: 10, alignSelf: 'center'}} name='arrow-back-outline' size={25}
-            onPress={() => handleGoBack()}
+          <Icon style={{padding: 10, alignSelf: 'center'}} name='arrow-back-outline' 
+            size={25} onPress={() => handleGoBack()}
           />
           <View style={styles.URLSection}>
-            {chat?.url !== null ? (
-              <ImgComponent 
-                uri={chat?.url || 'defaultUser'} 
-                style={{height: 40, width: 40, borderRadius: 20}} 
-              />
+            {chat && chat.url ? (
+              <ImgComponent uri={chat.url} style={styles.chatImageDefault}/>
             ) : displayURLs.length > 1 ? (
               displayURLs.slice(0, 2).map((uri, index) => (
-                <ImgComponent 
-                  key={index} 
-                  uri={uri || 'defaultUser'} 
-                  style={{ 
-                    position: 'absolute', 
-                    top: index * 10,
-                    left: index * 10 + 5 , 
-                    zIndex: displayURLs.length - index,   
-                    height: 26,
-                    width: 26,
-                    borderRadius: 13,
+                <ImgComponent key={index} uri={uri || 'defaultUser'} 
+                  style={{ position: 'absolute', height: 26, width: 26, borderRadius: 13,
+                    top: index * 10, left: index * 10 + 5, 
+                    zIndex: displayURLs.length - index,
                   }} 
                 />
               ))
             ) : (
               <ImgComponent uri={displayURLs[0] || 'defaultUser'} 
-                style={{height: 40, width: 40, borderRadius: 20}} 
+                style={styles.chatImageDefault} 
               />
             )}
           </View>
@@ -443,9 +416,7 @@ const ChatRoom = ( { route, navigation } : any) => {
           const prevTime = prevItem ? moment(prevItem.createdAt) : null;
           const shouldShowDate = !prevTime || !currTime.isSame(prevTime, 'day');
           if(item.type === 'System') return(
-            <View>
-              <Text style={styles.systemMessage}>{item?.content}</Text>
-            </View>
+            <View><Text style={styles.systemMessage}>{item?.content}</Text></View>
           )
           return (
             <View>
@@ -487,7 +458,7 @@ const ChatRoom = ( { route, navigation } : any) => {
             autoCapitalize='sentences'
             onChangeText={(text) => setMessage(text)}
           />
-          <Icon style={styles.commentButton} onPress={sendMessage}  name="send" size={30} />
+          <Icon style={styles.commentButton} onPress={sendMessage} name="send" size={30} />
         </View>
       </KeyboardAvoidingView>
 
@@ -504,8 +475,7 @@ const ChatRoom = ( { route, navigation } : any) => {
               keyExtractor={(option) => option}
               style={{height: 'auto', width: '100%'}}
               renderItem={({ item: option }) => (
-                <TouchableOpacity 
-                  style={styles.optionButton} 
+                <TouchableOpacity style={styles.optionButton} 
                   onPress={() => handleOptionButton(option)}
                 >
                   <Text style={styles.buttonTextBlack}>{option}</Text>
@@ -513,8 +483,9 @@ const ChatRoom = ( { route, navigation } : any) => {
               )}
             />
           </View>
-          
-          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+          <TouchableOpacity style={styles.closeOverlayButton} 
+            onPress={() => setModalVisible(false)}
+          >
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -528,15 +499,21 @@ const ChatRoom = ( { route, navigation } : any) => {
         animationType="slide"
       >
         <View style={styles.searchModalOverlay}>
-          <TouchableOpacity style={styles.searchModalSpacer} onPress={() => setInviteModalVisible(false)}/>
+          <TouchableOpacity style={styles.searchModalSpacer} 
+            onPress={() => setInviteModalVisible(false)}
+          />
           <View style={styles.searchModalHeader}>
-            <TouchableOpacity onPress={() => setInviteModalVisible(false)} style={styles.closeSearchButton}>
+            <TouchableOpacity style={styles.closeSearchButton}
+              onPress={() => setInviteModalVisible(false)} 
+            >
               <Text style={styles.closeSearchButtonText}>Cancel</Text>
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Search User</Text>
           </View>
           <View style={styles.searchModalContainer}>
-            <SearchBar userPressed={handleAddMember} remove={[...addedMembers, ...users]}/>
+            <SearchBar userPressed={handleAddMember} 
+              remove={[...addedMembers, ...participants.map(item => item.user)]}
+            />
             <View style={{marginTop: 'auto'}}>
               <FlatList
                 ref={inviteFlatListRef}
@@ -545,10 +522,12 @@ const ChatRoom = ( { route, navigation } : any) => {
                 renderItem={({item}) => {
                   return (
                     <View>
-                      <TouchableOpacity style={styles.removeIcon} onPress={() => removeMember(item)}>
-                        <Icon name="remove-circle-outline" size={25}/>
-                      </TouchableOpacity>
-                      <ImgComponent style={styles.addedUserImg} uri={item.profileURL || 'defaultUser'}/>
+                      <Icon name="remove-circle-outline" style={styles.removeIcon} size={25} 
+                        onPress={() => removeMember(item)}
+                      />
+                      <ImgComponent style={styles.addedUserImg} 
+                        uri={item.profileURL || 'defaultUser'}
+                      />
                     </View>
                   )
                 }}

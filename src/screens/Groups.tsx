@@ -1,6 +1,6 @@
 
 import { useContext, useEffect, useState, useCallback } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl
+import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl, Alert
  } from 'react-native';
  
 import client from '../client';
@@ -12,6 +12,10 @@ import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../styles/Styles';
 
+/**
+ * Displays list of groups that the current user is a part of and displays
+ * component to navigate to CreateGroup screen
+ */
 const Groups = ( {navigation} : any ) => {
   const [group, setGroup] = useState<UserGroup[]>([]);
   const [loading, setLoading] = useState(false);
@@ -19,6 +23,15 @@ const Groups = ( {navigation} : any ) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
+  useEffect(() => {
+    fetchGroups();
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    fetchGroups();
+  }, []);
+
+  //Retreives current groups user is a part of 
   const fetchGroups = async () => {
     setLoading(true);
     try{
@@ -31,38 +44,23 @@ const Groups = ( {navigation} : any ) => {
         authMode: 'userPool'
       });
       const groupData = groups.data.groupsByUser.items;
-      console.log("fetched groups data");
       setGroup(groupData);
-    } catch (error: any) {
-      console.error("Error fetching user groups:", error);
+    } catch {
+      Alert.alert('Error', 'Failed to get groups');
     } finally{
       setLoading(false);
     }
   }
 
-  useEffect(() => {
-    fetchGroups();
-  }, []);
-
-  const onRefresh = useCallback(() => {
-    fetchGroups();
-  }, []);
-  
   const createGroup = () => {
     navigation.navigate('CreateGroup');
   }
+
   const viewGroup = (item: any) => {
     navigation.navigate('ViewGroup', { groupID: item.group.id });
   }
 
-  if (loading) {
-    return (
-      <View >
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
+  if (loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (
     <View style={styles.container}>
@@ -77,19 +75,20 @@ const Groups = ( {navigation} : any ) => {
                     style={{height: 40, width: 40, borderRadius: 20}} />
                   <View style={styles.userInfoContainer}>
                     <Text style={styles.postAuthor}>{item.group?.groupName}</Text>
-                    <Text style={styles.postDate} numberOfLines={1}>{item.group?.description || "No description"}</Text>
+                    <Text style={styles.postDate} numberOfLines={1}>
+                      {item.group?.description || "No description"}
+                    </Text>
                   </View>
                 </View>
-                
-                <Text style={styles.memberText}>{item.group?.memberCount || 0} members</Text>
+                <Text style={styles.memberText}>
+                  {item.group?.memberCount || 0} members
+                </Text>
               </View>
             </TouchableOpacity>
           )
         }}
         ListEmptyComponent={
-          <View>
-            <Text style={styles.noResultsMsg}>No groups found.</Text>
-          </View>
+          <View><Text style={styles.noResultsMsg}>No groups found.</Text></View>
         }
         refreshControl={
           <RefreshControl
@@ -100,8 +99,9 @@ const Groups = ( {navigation} : any ) => {
           />
         }
       />
-      
-      <Icon name="add-circle-outline" style={styles.createButton} size={50}  onPress={createGroup}/>
+      <Icon name="add-circle-outline" style={styles.createButton} size={50} 
+        onPress={createGroup}
+      />
     </View>
   );
 };

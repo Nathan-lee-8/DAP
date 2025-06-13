@@ -606,6 +606,11 @@ const styles = StyleSheet.create({
     height: 40,
     paddingVertical: 10,
   },
+  chatImageDefault: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+  },
   memberText: {
     fontSize: 12,
     color: '#888',
