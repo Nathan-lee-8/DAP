@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Platform, Alert,
   ActivityIndicator, KeyboardAvoidingView, ScrollView } from 'react-native';
 
 import client from '../client';
-import { createUserGroup, createGroup, deleteUserGroup, deleteGroup, updateGroup, 
+import { createUserGroup, createGroup, deleteGroup, updateGroup, 
   createNotification } from '../customGraphql/customMutations';
 import { User } from '../API';
 

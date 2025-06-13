@@ -13,7 +13,8 @@ import Icon from '@react-native-vector-icons/ionicons';
 import Notifications from '../components/Notifications';
 
 /**
- * Displays the active News feed for the current user
+ * Displays the active News feed for the current user and the notification count.
+ * Allows the user to refresh the news feed and open/view notifications.
  */
 const HomeScreen = ( {navigation} : any) => {
   const [newsFeed, setNewsFeed] = useState<UserFeed[]>([]);
@@ -22,23 +23,27 @@ const HomeScreen = ( {navigation} : any) => {
   const [nextToken, setNextToken] = useState<string | null | undefined>(null);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
+  if(!currUser) return;
 
   useEffect(() => {
     fetchNewsFeed();
   }, [currUser?.id]);
 
+  const onRefresh = useCallback(() => {
+    fetchNewsFeed();
+  }, [currUser?.id]);
+
+  //updates the unread notification count on the notification icon in header
   useLayoutEffect(()=> {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity style={{marginRight: 15}} onPress={() => setModalVisible(true)} >
           <Icon name="notifications-outline" size={24} />
           {currUser && currUser?.unreadNotificationCount > 0 && 
-            <View style={{
-              position: 'absolute',
-              right: 0,
-              top: -10,
-            }}>
-              <Text style={{fontWeight: 700, color: 'red'}}>{currUser.unreadNotificationCount}</Text>
+            <View style={{position: 'absolute', right: 0, top: -10}}>
+              <Text style={{fontWeight: 700, color: 'red'}}>
+                {currUser.unreadNotificationCount}
+              </Text>
             </View>
           }
         </TouchableOpacity>
@@ -46,11 +51,8 @@ const HomeScreen = ( {navigation} : any) => {
     })
   }, [currUser?.unreadNotificationCount])
 
+  //retreives userfeed for the current User 
   const fetchNewsFeed = async () => {
-    if(!currUser) {
-      console.log("User ID is empty");
-      return;
-    };
     setLoading(true);
     try{
       const res = await client.graphql({
@@ -58,17 +60,13 @@ const HomeScreen = ( {navigation} : any) => {
         variables: {
           userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
-          limit: 10,
           nextToken: nextToken
         },
         authMode: 'userPool'
       }); 
       const newsFeedData = res.data.postsByUserFeed.items;
-      
       setNewsFeed(newsFeedData);
       setNextToken(res.data.postsByUserFeed.nextToken);
-      
-      console.log(`Fetched from fetchnewsfeed.`);
     } catch {
       Alert.alert('Error', 'Error fetching news feed');
     } finally {
@@ -76,40 +74,35 @@ const HomeScreen = ( {navigation} : any) => {
     }
   };
 
-  const onRefresh = useCallback(() => {
-    fetchNewsFeed();
-  }, [currUser?.id]);
-
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <FlatList
-          data={newsFeed}
-          renderItem={({ item }) => {
-            if(!item.post) return null;
-            return(
-             <FormatPost post={item.post} destination={'Home'}/>
-            )
-          }}
-          ListEmptyComponent={() => (
-            <View>
-              <TouchableOpacity onPress={() => navigation.navigate('CreateGroup')}>
-                <Text style={styles.noResultsMsg}>New To DAP? Create or join a Group to get started!</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={onRefresh}
-              colors={['#9Bd35A', '#689F38']}
-              progressBackgroundColor="#ffffff" 
-            />
-          }
-        />
-      )}
+      <FlatList
+        data={newsFeed}
+        renderItem={({ item }) => {
+          if(!item.post) return null;
+          return(
+            <FormatPost post={item.post} destination={'Home'}/>
+          )
+        }}
+        ListEmptyComponent={() => (
+          <View>
+            <TouchableOpacity onPress={() => navigation.navigate('CreateGroup')}>
+              <Text style={styles.noResultsMsg}>New To DAP? Create or join a Group to get started!</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={onRefresh}
+            colors={['#9Bd35A', '#689F38']}
+            progressBackgroundColor="#ffffff" 
+          />
+        }
+      />
+      
+      {/* Notification Modal */}
       <Modal transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
         <View style={styles.notificationOverlay}>
         <TouchableOpacity style={styles.notificationHeader} onPress={() => setModalVisible(false)}/>
@@ -117,7 +110,6 @@ const HomeScreen = ( {navigation} : any) => {
             <Icon name="close-outline" size={35} style={styles.closeReportModalButton}
               onPress={() => setModalVisible(false)}
             />
-            
             <Text style={styles.title}>Notifications</Text>
             <Notifications closeNotificationModal={() => setModalVisible(false)}/>
           </View>

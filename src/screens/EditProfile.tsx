@@ -13,7 +13,12 @@ import UserPosts from '../components/UserPosts';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
-//Update to get user data from authContext
+/**
+ * Displays two different pages that allows the User to View their profile in standard
+ * View mode and Edit mode. In Edit mode, the user can change their profile picture,
+ * First and Last name, and Description. The user can also save or cancel the changes 
+ * they made.
+ */
 const EditProfile = ( {navigation} : any ) => {
   const [ loading, setLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
@@ -26,10 +31,11 @@ const EditProfile = ( {navigation} : any ) => {
   //use temp values to hold data until user saves
   const [ tempFirst, setTempFirst ] = useState(currUser.firstname);
   const [ tempLast, setTempLast ] = useState(currUser.lastname);
-  const [ tempURL , setTempURL ] =  useState(currUser.profileURL);
+  const [ tempURL , setTempURL ] = useState(currUser.profileURL);
   const [ description, setDescription ] = useState<string | undefined>(currUser.description || undefined);
 
-   useLayoutEffect(()=> {
+  //Logout button to run logout logic in AuthContext
+  useLayoutEffect(()=> {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
@@ -39,19 +45,19 @@ const EditProfile = ( {navigation} : any ) => {
     })
   }, [currUser.email])
 
-  const addProfileImg = async () => {
-    try {
-      setLoading(true);
-      const uri = await imagePicker();
-      if(uri === null) throw new Error('No Image Selected');
-      setTempURL(uri);
-    } catch (error: any) {
-       Alert.alert('Error', error.message);
-    } finally{
-      setLoading(false);
-    }
-  };
+  //reset the page to standard view instead of edit view and reverts any unsaved changes 
+  //to profilei mage
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setTempURL(currUser.profileURL);
+        setEditsOn(false);
+      };
+    }, [])
+  );
   
+  //Checks if name, lastname, image or description has changed and updates image to s3
+  //and updates changed user metadata
   const saveEdits = async() => {
     if(currUser.firstname === tempFirst && currUser.lastname === tempLast && 
       tempURL === currUser.profileURL && description === currUser.description
@@ -64,12 +70,10 @@ const EditProfile = ( {navigation} : any ) => {
       var tempProfileURL = tempURL;
       if(tempURL !== currUser.profileURL){
         const filepath = await getImgURI(tempURL, `public/profilePictures/${currUser.id}/${Date.now()}.jpg`);        
-        console.log("finished s3 upload");
         tempProfileURL = "https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath;
       }
       if(tempProfileURL === null) throw new Error('Upload failed');
       setTempURL(tempProfileURL);
-      console.log(tempProfileURL);
       const data = await client.graphql({
         query: updateUser,
         variables: {
@@ -84,25 +88,30 @@ const EditProfile = ( {navigation} : any ) => {
         authMode: 'userPool'
       });
       setCurrUser(data.data.updateUser);
-      console.log("Updated user to graphql", data);
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Success', 'Profile updated successfully');
+    } catch {
+      Alert.alert('Error', 'Failed to update Profile');
     } finally {
       setEditsOn(false);
       setLoading(false);
     }
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      // This will reset the state when the screen loses focus
-      return () => {
-        setTempURL(currUser.profileURL); // Reset state to initial value when leaving the page
-        setEditsOn(false);
-      };
-    }, [])
-  );
+  //Opens images picker to set new profile picture
+  const addProfileImg = async () => {
+    try {
+      setLoading(true);
+      const uri = await imagePicker();
+      if(uri === null) throw new Error('No Image Selected');
+      setTempURL(uri);
+    } catch (error: any) {
+       Alert.alert('Error', error.message);
+    } finally{
+      setLoading(false);
+    }
+  };
 
+  //handles option modal: switches to edit view when user selects edit option
   const handleOptionButton = ( option: string) => {
     setModalVisible(false);
     if(option === 'Edit'){
@@ -110,11 +119,10 @@ const EditProfile = ( {navigation} : any ) => {
     }
   }
 
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (
     <View style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : !editsOn ? (
+      {!editsOn ? ( //Edit View
         <View style={{flex: 1}}>
           <View style={styles.viewUserProfileSection}>
             <ImgComponent uri={currUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
@@ -129,7 +137,7 @@ const EditProfile = ( {navigation} : any ) => {
           </View>
           <UserPosts userID={currUser.id} />
         </View>
-      ) : (
+      ) : ( //Standard Profile View
         <View style={{flex: 1}}>
           <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}} 
             keyboardShouldPersistTaps='handled'
@@ -174,6 +182,8 @@ const EditProfile = ( {navigation} : any ) => {
           </KeyboardAvoidingView>
         </View>
       )}
+
+      {/* Options Modal */}
       <Modal
         transparent={true} 
         visible={modalVisible}
@@ -186,8 +196,7 @@ const EditProfile = ( {navigation} : any ) => {
               keyExtractor={(option) => option}
               style={{height: 'auto', width: '100%'}}
               renderItem={({ item: option }) => (
-                <TouchableOpacity 
-                  style={styles.optionButton} 
+                <TouchableOpacity style={styles.optionButton} 
                   onPress={() => handleOptionButton(option)}
                 >
                   <Text style={styles.buttonTextBlack}>{option}</Text>
@@ -195,14 +204,12 @@ const EditProfile = ( {navigation} : any ) => {
               )}
             />
           </View>
-          
           <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
     </View>
-    
   );
 };
 

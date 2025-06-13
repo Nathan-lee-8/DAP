@@ -19,6 +19,13 @@ import SearchBar from "../components/SearchBar";
 import ImgComponent from "../components/ImgComponent";
 import Report from "../components/Report";
 
+/**
+ * Display the group of the given GroupID along with all it's participants, posts,
+ * title, and description. Displays components to navigate to createpost page and 
+ * edit group or display member pages. 
+ * 
+ * @param groupID - ID of the group to Display 
+ */
 const ViewGroup = ( {route, navigation} : any) => {
   const groupID = route.params.groupID;
   const [ loading, setLoading ] = useState(true);
@@ -53,9 +60,10 @@ const ViewGroup = ( {route, navigation} : any) => {
     }, [])
   );
 
+  //Retreives the current group Data and sets Groups, Posts, and Participants
+  //also sets currUsers membership. sets group options based on membership role.
   const fetchCurrentData = async () => {
     try{
-      //Fetch group data
       const currGroup = await client.graphql({
         query: getGroup,
         variables: {
@@ -126,7 +134,7 @@ const ViewGroup = ( {route, navigation} : any) => {
           setRequestButtonText("Requested");
         }
       })
-    } catch (error: any) {
+    } catch {
       Alert.alert('Error', 'Could not find Group');
       navigation.goBack();
     } finally {
@@ -139,6 +147,9 @@ const ViewGroup = ( {route, navigation} : any) => {
     navigation.navigate('CreatePost', {groupID: groupID, isPublic: group?.type === 'Public'});
   }
   
+  //Join group button for users that are not part of the group. Automatically adds user to
+  //Group if it is public, and sends a request to join if it is private. FN should not be 
+  //accessible to non-members
   const handleJoinGroup = async () => {
     if(myUserGroup !== undefined || requestButtonText === 'Requested') return;
 
@@ -157,7 +168,7 @@ const ViewGroup = ( {route, navigation} : any) => {
         })
         Alert.alert('Success', 'Group joined successfully.');
         fetchCurrentData();
-      }catch(error){
+      } catch {
         Alert.alert('Error', 'Issue joining Group');
       }
       group?.members?.items.map(async (member) => {
@@ -167,8 +178,8 @@ const ViewGroup = ( {route, navigation} : any) => {
             variables: {
               input: {
                 type: 'Group',
-                content: currUser.firstname + " " + currUser.lastname 
-                  + ' has joined ' + group.groupName,
+                content: `${currUser.firstname} ${currUser.lastname} has joined ` + 
+                  `${group.groupName}`,
                 userID: member.userID,
                 groupID: group.id,
                 onClickID: group.id
@@ -187,8 +198,8 @@ const ViewGroup = ( {route, navigation} : any) => {
             variables: {
               input: {
                 type: 'Group',
-                content: currUser.firstname + " " + currUser.lastname 
-                  + ' has requested to join ' + group.groupName,
+                content: `${currUser.firstname} ${currUser.lastname}` + 
+                  ` has requested to join ${group.groupName}`,
                 userID: member.userID,
                 groupID: groupID,
                 targetUserID: currUser.id,
@@ -202,6 +213,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     }
   }
 
+  //on options press: navigates to the proper option handler
   const handleOptionButton = (option: string) => {
     setModalVisible(false);
     if(option === 'View Members'){
@@ -226,15 +238,13 @@ const ViewGroup = ( {route, navigation} : any) => {
   }
 
   const handleLeaveGroup = () => {
-    Alert.alert(
-      "Leave Group", "Are you sure you want to leave this group?",
-      [
-        { text: "Cancel" },
-        { text: "Leave", onPress: leaveGroup}
-      ]
-    );
+    Alert.alert("Leave Group", "Are you sure you want to leave this group?", [
+      { text: "Cancel" },
+      { text: "Leave", onPress: leaveGroup}
+    ]);
   }
 
+  //Removes current user from group by deleting UserGroup 
   const leaveGroup = async () => {
     const userGroupID = myUserGroup?.id;
     if(!userGroupID) return;
@@ -252,11 +262,14 @@ const ViewGroup = ( {route, navigation} : any) => {
         index: 0,
         routes: [ { name: 'MainTabs', params: { screen: 'Groups' } } ]
       });
-    } catch (error: any) {
+    } catch {
       Alert.alert('Error', 'There was an issue leaving the group');
     }
   }   
 
+  //takes all members that are in queue to be added to group and adds them to 
+  //the group by creating usergroup for each member. sends each added member
+  //a notification that they've been added
   const handleInvite = async () => {
     if(addedMembers.length === 0 ) {
       Alert.alert('Error', 'No members selected');
@@ -277,14 +290,13 @@ const ViewGroup = ( {route, navigation} : any) => {
           },
           authMode: 'userPool'
         });
-        console.log('userAdded');
         client.graphql({
           query: createNotification,
           variables: {
             input: {
               type: 'Group',
-              content: currUser.firstname + " " + currUser.lastname
-                + ' added you to ' + group?.groupName,
+              content: `${currUser.firstname}  ${currUser.lastname} added you to ` + 
+                `${group?.groupName}`,
               userID: memberID,
               groupID: groupID,
               onClickID: groupID
@@ -292,8 +304,8 @@ const ViewGroup = ( {route, navigation} : any) => {
           },
           authMode: 'userPool'
         }).catch(() => {});
-      } catch (error){
-        console.log(error);
+      } catch {
+        Alert.alert('Error', 'There was an issue adding the member(s)');
       }
     }
     setAddedMembers([]);
@@ -301,35 +313,34 @@ const ViewGroup = ( {route, navigation} : any) => {
     Alert.alert('Success', 'Group updated successfully');
   }
 
+  //Deletes teh current group. Lambda cascade deletes posts and userGroups
   const handleDeleteGroup = () => {
-    Alert.alert(
-      "Delete Group", "Are you sure you want to delete this group?",
-      [
-        { text: "Cancel" },
-        { text: "Delete", onPress: async () => {
-          try {
-            if(!group){
-              Alert.alert('Error', 'Error deleting group');
-              return;
-            }
-            await client.graphql({
-              query: deleteGroup,
-              variables: {
-                input: {
-                  id: group.id
-                }
-              },
-              authMode: 'userPool'
-            })
-            navigation.goBack();
-          } catch (error) {
+    Alert.alert("Delete Group", "Are you sure you want to delete this group?", [
+      { text: "Cancel" },
+      { text: "Delete", onPress: async () => {
+        try {
+          if(!group){
             Alert.alert('Error', 'Error deleting group');
+            return;
           }
-        }}
-      ]
-    );
+          await client.graphql({
+            query: deleteGroup,
+            variables: {
+              input: {
+                id: group.id
+              }
+            },
+            authMode: 'userPool'
+          })
+          navigation.goBack();
+        } catch {
+          Alert.alert('Error', 'Error deleting group');
+        }
+      }}
+    ]);
   }
 
+  //Adds member to queue to be added to group
   const handleAddMember = async (user: User) => {
     setAddedMembers([...addedMembers, user]);
     setTimeout(() => {
@@ -337,6 +348,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     }, 100);
   }
 
+  //removes member from the add to group queue
   const removeMember = (user: User) => {
     setAddedMembers(addedMembers => addedMembers.filter(item => item !== user));
     setTimeout(() => {
@@ -350,6 +362,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     });
   };
 
+  //Deletes the notification on Delete Icon press
   const handleDeleteNotification = async (itemID: string) => {
     setNotifications(prev => prev.filter(item => item.id !== itemID));
     try{
@@ -362,11 +375,12 @@ const ViewGroup = ( {route, navigation} : any) => {
         },
         authMode: 'userPool'
       })
-    }catch(error){
+    } catch {
       Alert.alert('Error', 'An issue occured while deleting the notification')
     }
   }
 
+  //If Admin or Owner accepts a join request, add the requesting user to the group
   const handleAcceptRequest = async (item: Notification) => {
     if(!item?.targetUser){
       Alert.alert('Error', 'Error accepting request');
@@ -386,7 +400,7 @@ const ViewGroup = ( {route, navigation} : any) => {
       })
       fetchCurrentData();
       Alert.alert('Success', 'Request accepted');
-    }catch(error){
+    } catch {
       Alert.alert('Error', 'There was an issue accepting this request');
     }
     client.graphql({
@@ -412,24 +426,25 @@ const ViewGroup = ( {route, navigation} : any) => {
     }).catch(() => {})
   }
 
-  if(loading){
-    return <ActivityIndicator size="large" color="#0000ff" />
-  }
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
+  //Header for the group that displays the Group name, description and member icons
   const headerComp = () => {
     return( 
       <View>
         <View style={styles.groupInfoContainer}>
-          {group?.type === 'Private' && (myUserGroup?.role === 'Owner' || myUserGroup?.role === 'Admin') && 
-            <Icon name="notifications-outline" size={20} style={styles.groupNotificationIcon}
-              color={group?.notifications && group?.notifications?.items.length > 0 ? 'blue' : 'black'}
+          {group?.type === 'Private' && 
+            (myUserGroup?.role === 'Owner' || myUserGroup?.role === 'Admin') && 
+            <Icon name="notifications-outline" size={20} 
+              style={styles.groupNotificationIcon}
+              color={group?.notifications && group?.notifications?.items.length > 0 ?
+                'blue' : 'black'
+              }
               onPress={() => setNotificationModalVisible(true)}
             />
           }
           <Icon name="ellipsis-horizontal-sharp" style={styles.groupOptionsButton} 
-            size={20} 
-            color={'black'}
-            onPress={() => setModalVisible(true)}
+            size={20} color={'black'} onPress={() => setModalVisible(true)}
           />
           <View>
             <Text style={styles.groupNameText}>{group?.groupName}</Text>
@@ -440,10 +455,8 @@ const ViewGroup = ( {route, navigation} : any) => {
               <ProfilePicture uri={item?.user?.profileURL || 'defaultUser'}
                 key={index}
                 style={{
-                  position: 'absolute',
-                  top: 10,
-                  left: index * 18,
-                  height: 30, width: 30, borderRadius: 15,
+                  position: 'absolute', height: 30, width: 30, borderRadius: 15,
+                  top: 10, left: index * 18
                 }}
               />
             ))}
@@ -466,7 +479,9 @@ const ViewGroup = ( {route, navigation} : any) => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={createGroupPost} style={styles.postContentTouchable}>
-          <ProfilePicture style={styles.postContentImg} uri={currUser.profileURL || 'defaultUser'}/>
+          <ProfilePicture style={styles.postContentImg} 
+            uri={currUser.profileURL || 'defaultUser'}
+          />
           <Text style={styles.postContentInput}>Post Content...</Text>
           <Icon name="send" size={30} style={styles.postContentButton}/>
         </TouchableOpacity>
@@ -474,7 +489,8 @@ const ViewGroup = ( {route, navigation} : any) => {
     )
   }
   
-  if(myUserGroup === undefined && group?.type !== 'Public'){
+  //If Group is Private: do not display post
+  if(myUserGroup === undefined && !group?.isPublic){
     return (
       <View style={styles.container}>
       <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>
@@ -496,6 +512,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     )
   }
 
+  //Diplay for if user is part of group or if group is public
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>

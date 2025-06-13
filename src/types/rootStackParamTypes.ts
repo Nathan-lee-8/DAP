@@ -4,10 +4,7 @@ export type SignInParamList = {
     Welcome: undefined;
     SignIn: undefined;
     SignUp: undefined;
-    Verify: {
-        email?: string;
-        password?: string;
-    };
+    Verify: {email?: string, password?: string};
     ResetPassword: undefined;
     CreateUser: undefined;
 };
@@ -36,14 +33,3 @@ export type LoggedInParamList = {
     Search: undefined;
     Profile: undefined;
 };
-
-export type Participant = {
-    __typename: "UserChat";
-    user?: {
-      __typename: "User";
-      id: string,
-      firstname?: string | null;
-      lastname?: string | null;
-      profileURL?: string | null;
-    } | null;
-} | null;

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 
 import client from '../client';
 import { getPost } from '../customGraphql/customQueries';
@@ -10,6 +10,11 @@ import styles from '../styles/Styles';
 import FormatPost from '../components/FormatPost';
 import Comments from '../components/ListComments';
 
+/**
+ * Displays the currnet post and it's comments in a full page view
+ * 
+ * @param postID - The ID of the post to view 
+ */
 const ViewPost = ( {route} : any) => {
   const postID = route.params.postID;
   const [postData, setPostData] = useState<Post>();
@@ -17,6 +22,11 @@ const ViewPost = ( {route} : any) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
+  useEffect(() => {
+    fetchPost();
+  }, [postID]);
+
+  //Retreives and sets the current post
   const fetchPost = async () => {
     try {
       const { data } = await client.graphql({
@@ -27,15 +37,12 @@ const ViewPost = ( {route} : any) => {
         authMode: 'userPool'
       });
       if(data.getPost) setPostData(data.getPost);
-    } catch (error) {
-      console.error('Error fetching post:', error);
+    } catch {
+      Alert.alert('Error', 'Failed to fetch post');
     }
   };
-  
-  useEffect(() => {
-    fetchPost();
-  }, [postID]);
 
+  //header component for the current post (the post itself)
   const header = () => {
     return (
       <View style={{marginBottom: 5}}>
@@ -44,6 +51,7 @@ const ViewPost = ( {route} : any) => {
     )
   }
 
+  //The commments of the post with the header included to ensure header scorlls
   return (
     <View style={styles.container}>
       <Comments postID={postID} header={header} customPadding={80}/>

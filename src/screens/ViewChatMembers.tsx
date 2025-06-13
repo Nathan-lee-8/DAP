@@ -10,6 +10,14 @@ import ImgComponent from "../components/ImgComponent";
 import { AuthContext } from "../context/AuthContext";
 import Report from "../components/Report";
 
+/**
+ * Displays all users that are in the chatroom and allows owners and admin to 
+ * edit roles or remove users from the chatroom. ChatRoom members can report or 
+ * View Members.
+ * 
+ * @param chatData - The current chatRoom
+ * @param userChats - The current users that are in the chat 
+ */
 const ChatMembers = ( {route, navigation} : any ) => {
   const chatData = route.params.chatData;
   const [ userChats, setUserChats ] = useState(route.params.userChats);
@@ -24,10 +32,13 @@ const ChatMembers = ( {route, navigation} : any ) => {
   const myUserChat = 
     userChats.find((userChat: UserChat) => userChat.userID === currUser.id);
 
+  //When user long presses on a participant: sets options for user and then displays 
+  //options. Either View Profile, Edit Roles, Remove User or report based on 
+  //users role and if they are in the chat or not.
   const handleUserPress = (item: UserChat) => {
     if(item.userID === currUser.id) setOptions(['Edit Role']);
     else if(!myUserChat){
-      setOptions(['View Profile']);
+      setOptions(['View Profile', 'Report']);
     } else if(myUserChat.role === 'Admin' || myUserChat.role === 'Owner') {
       setOptions(['View Profile', 'Edit Role', 'Remove']);
       if(item.userID === currUser.id) setOptions(['Edit Role'])
@@ -38,6 +49,8 @@ const ChatMembers = ( {route, navigation} : any ) => {
     setModalVisible(true);
   }
 
+  //Handles the option the user presses: Navigates to viewProfiles page, 
+  //Edits roles for users, & remove or reports a user
   const handleOptionButton = (option: string) => {
     if(option === 'View Profile'){
       navigation.navigate('ViewProfile', {userID: selectedUser?.userID})
@@ -54,12 +67,13 @@ const ChatMembers = ( {route, navigation} : any ) => {
     setModalVisible(false);
   }
 
+  //Fn to handle removing user from groupchat
   const handleRemoveUser = async () => {
     if(!selectedUser) {
       Alert.alert('Error', 'Error removing user');
       return;
     }
-    try{
+    try {
       await client.graphql({
         query: deleteUserChat,
         variables: {
@@ -69,9 +83,8 @@ const ChatMembers = ( {route, navigation} : any ) => {
         },
         authMode: 'userPool'
       });
-      setUserChats(userChats.filter((item: UserChat) => 
-        item.userID !== selectedUser.userID));
-    }catch(error){
+      setUserChats(userChats.filter((item: UserChat) => item.userID !== selectedUser.userID));
+    } catch {
       Alert.alert('Error', 'Error removing user');
     }
     client.graphql({
@@ -89,14 +102,15 @@ const ChatMembers = ( {route, navigation} : any ) => {
     }).catch(() => {})
   }
 
+  //Updates roles for users. Ensures at least one owner exists at all times
   const updateRole = async (role: string) => {
     setRoleModalVisible(false);
     if(!selectedUser){
       Alert.alert('Error updating roles')
       return;
     }
-    const ownerCount = userChats.filter((userGroup : UserChat) => 
-      userGroup.role === 'Owner').length;
+    const ownerCount = 
+      userChats.filter((userGroup : UserChat) => userGroup.role === 'Owner').length;
     if(selectedUser.userID === currUser.id && ownerCount <= 1){
       Alert.alert('Error', 'You must have at least one owner');
       return;
@@ -113,15 +127,12 @@ const ChatMembers = ( {route, navigation} : any ) => {
         authMode: 'userPool'
       })
       setUserChats((prevUserGroups : UserChat[]) =>
-        prevUserGroups.map(userGroup =>
-          userGroup.id === selectedUser.id
-            ? { ...userGroup, role: role }
-            : userGroup
+        prevUserGroups.map(userGroup => userGroup.id === selectedUser.id ? 
+          { ...userGroup, role: role } : userGroup
         )
       );
-    }catch(error) {
+    } catch {
       Alert.alert('Error', 'There was an issue updating roles');
-      console.log(error);    
     }
   }
 
@@ -165,8 +176,7 @@ const ChatMembers = ( {route, navigation} : any ) => {
               keyExtractor={(option) => option}
               style={{height: 'auto', width: '100%'}}
               renderItem={({ item: option }) => (
-                <TouchableOpacity 
-                  style={styles.optionButton} 
+                <TouchableOpacity style={styles.optionButton} 
                   onPress={() => handleOptionButton(option)}
                 >
                   <Text style={styles.buttonTextBlack}>{option}</Text>
@@ -174,7 +184,6 @@ const ChatMembers = ( {route, navigation} : any ) => {
               )}
             />
           </View>
-          
           <TouchableOpacity style={styles.closeOverlayButton} 
             onPress={() => setModalVisible(false)}
           >

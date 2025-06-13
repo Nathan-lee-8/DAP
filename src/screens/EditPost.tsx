@@ -11,6 +11,11 @@ import { imagePicker, getImgURI } from '../components/addImg';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 
+/**
+ * Displays the current post content and media and allows the user to edit both
+ * 
+ * @param currPost - The current Post to edit
+ */
 const EditPost = ( {route, navigation} : any ) => {
   const { currPost } = route.params;
   const [ content, setContent ] = useState(currPost.content);
@@ -20,27 +25,11 @@ const EditPost = ( {route, navigation} : any ) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  const getFilePath = async () => {
-    if(filepaths.length > 12){
-      Alert.alert('Max 12 images uploaded at once');
-      return;
-    }
-    var uri = await imagePicker();
-    if(uri === null){
-      Alert.alert('No image selected')
-      return;
-    };
-    setFilepaths([...filepaths.filter((item) => item !== null), uri]);
-  }
-
+  //updates the post unless contents and list of media are unchanged. Naviagtes 
+  //back to ViewPost page
   const sendPost = async () => {
     if(content === currPost.content && filepaths === currPost.postURL) {
-      Alert.alert('Success','Post updated successfully!', [{
-        text: 'OK',
-        onPress: () => {
-          navigation.goBack();
-        }
-      }])
+      Alert.alert('Success','Post updated successfully!');
       return;
     };
     setLoading(true);
@@ -59,50 +48,51 @@ const EditPost = ( {route, navigation} : any ) => {
         },
         authMode: 'userPool'
       })
-      Alert.alert('Success','Post updated successfully!', [{
-        text: 'OK',
-        onPress: () => {
-          navigation.goBack();
-        }
-      }])
-    } catch (error: any) {
-      console.log('Error creating post', error);
-      Alert.alert('Error','Error updating post', [{
-        text: 'OK',
-        onPress: () => {
-          navigation.goBack();
-        }
-      }])
+      Alert.alert('Success', 'Post updated successfully!')
+    } catch {
+      Alert.alert('Error', 'Error updating post')
     } finally {
+      navigation.goBack();
       setLoading(false);
     }
   }
 
+  //opens user's image picker to adds selected media to list of media 
+  const getFilePath = async () => {
+    if(filepaths.length > 12){
+      Alert.alert('Max 12 images uploaded at once');
+      return;
+    }
+    var uri = await imagePicker();
+    if(uri === null){
+      Alert.alert('No image selected');
+      return;
+    };
+    setFilepaths([...filepaths.filter((item) => item !== null), uri]);
+  }
+
+  //Removes selected media from post
+  const handleRemoveItem = (uri: string) => {
+    setFilepaths(filepaths.filter((item) => item !== uri));
+  }
+
+  //Uploads new media to s3, ignoring old media
   const handleUploadFilepaths = async () => {
     try{
       const newPaths = await Promise.all(
         filepaths.map(async (item, index) => {
           if(item.startsWith('https')) return item;
           const uri = await getImgURI(item, `public/groupPictures/${currPost.groupID}/${Date.now()}_${index}.jpg`);
-          console.log('running getimguri');
           return uri ? 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri : null;
         })
       )
       return newPaths.filter((path) => path !== null);
-    } catch (error) {
-      console.error('Error Uploading images', error)
+    } catch {
+      Alert.alert('Error Uploading images');
     }
   }
 
-  const handleRemoveItem = (uri: string) => {
-    setFilepaths(filepaths.filter((item) => item !== uri));
-  }
-
-  if(loading) {
-    return(
-      <ActivityIndicator size="large" color="#0000ff" />
-    )
-  }
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>

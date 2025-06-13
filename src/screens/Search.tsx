@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import { View, Text, TouchableOpacity, FlatList, TextInput, Keyboard, RefreshControl,
-  ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
+  ActivityIndicator, TouchableWithoutFeedback, 
+  Alert} from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,11 +17,18 @@ import ProfilePicture from '../components/ImgComponent';
 import FormatExploreGroup from '../components/FormatExploreGroup';
 import { AuthContext } from '../context/AuthContext';
 
-const Search = ( {navigation} : any) => {
-  const [searchTerm, setSearchTerm] = useState('Users');
-  const [selected, setSelected] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [exploreGroups, setExplore] = useState<Group[]>([]);
+/**
+ * Search Page that contains a search bar that allows searching for users or groups. 
+ * Toggle dropdown menu to switch between users and groups.
+ * Displays a list of users or groups based on the search term and selected option.
+ * Allows users to navigate to the profile or group page by tapping on the respective item.
+ * Displays an explore that shows most popular groups that user is not a part of.
+ */
+const Search = ( {navigation} : any ) => {
+  const [ searchTerm, setSearchTerm ] = useState('Users');
+  const [ selected, setSelected ] = useState(true);
+  const [ loading, setLoading ] = useState(false);
+  const [ exploreGroups, setExplore ] = useState<Group[]>([]);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
@@ -28,14 +36,15 @@ const Search = ( {navigation} : any) => {
     fetchExplorer();
   }, []);
 
-
+  //Retreives groups by popularity and retreives all current user's groups 
+  //and filters out groups the user is in. Displays in explore section.
   const fetchExplorer = async () => {
     try{
       const data = await client.graphql({
         query: groupsByMemberCount,
         variables: {
           type: "Public",
-          limit: 20,
+          limit: 10,
           sortDirection: ModelSortDirection.DESC
         },
         authMode:'userPool'
@@ -56,33 +65,29 @@ const Search = ( {navigation} : any) => {
       
       const filteredData = allGroups.filter((item) => !myGroupIDs.includes(item.id));
       setExplore(filteredData);
-
-    }catch(error){
-      console.log(error);
+    } catch {
+      Alert.alert('Error', 'Error fetching groups')
     } finally {
       setLoading(false);
     }
   }
 
+  //handles the dropdown to swap between user and group search
   const handleSelected = ( item : string) => {
     setSearchTerm(item);
     setSelected(true);
   }
 
+  //Navigates to group or User if pressed in search list
   const handleViewUser = ( user: User) => {
     navigation.navigate('ViewProfile', {userID: user.id});
   }
-
   const handleViewGroup = (groupID: string) => {
     navigation.navigate('ViewGroup', {groupID: groupID});
 
   }
 
-  if(loading) {
-    return(
-      <ActivityIndicator size="large" color="#0000ff" />
-    )
-  }
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (
     <View style={styles.container}>
@@ -100,8 +105,8 @@ const Search = ( {navigation} : any) => {
             data={['Users', 'Groups']}
             renderItem={({ item }) => {
               if(selected) return null;
-              var currStyle = styles.searchTermContainer;
-              if(item === searchTerm) currStyle = styles.searchTermSelected;
+              var currStyle = (item === searchTerm) ? 
+                styles.searchTermSelected : styles.searchTermContainer;
               return(
                 <TouchableOpacity style={currStyle} onPress={() => handleSelected(item)}>
                   <Text style={{textAlign: 'center'}}>{item}</Text>
@@ -134,11 +139,15 @@ const Search = ( {navigation} : any) => {
   )
 }
 
+/**
+ * Group seach function that searchs through groups when dropdown is set to groups.
+ */
 const GroupSearch = () => {
-  const [search, setSearch] = useState('');
-  const [data, setData] = useState<Group[]>();
+  const [ search, setSearch ] = useState('');
+  const [ data, setData ] = useState<Group[]>();
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  //retreive all groups that contains query while filtering out hidden grousp
   const fetchGroups = async (query: string) => {
     try{
       const groups = await client.graphql({
@@ -152,23 +161,21 @@ const GroupSearch = () => {
         authMode: 'userPool'
       });
       setData(groups.data.listGroups.items.filter((item) => item.type !== 'Hidden'));
-      console.log("fetchedGroups from search")
-    } catch (error) {
-      console.log(error);
+    } catch {
+      Alert.alert('Error', 'Error fetching groups');  
     }
   }
 
+  //sets debounce timeout to manage number of fetch calls 
   const handleSearch = async (query: string) => {
     setSearch(query);
     if(query === '') {
       setData([]);
       return;
     }
-
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
     }
-
     debounceTimeout.current = setTimeout(() => {
       fetchGroups(query);
     }, 500); 
@@ -201,7 +208,6 @@ const GroupSearch = () => {
                   <Text style={styles.postAuthor} numberOfLines={1}>{item.groupName}</Text>
                   <Text style={styles.postContent} numberOfLines={1}>{item.description}</Text>
                 </View>
-                
                 <Text style={styles.memberText}>{item.memberCount} members</Text>
               </View>
             </TouchableOpacity>
@@ -213,6 +219,5 @@ const GroupSearch = () => {
     
   )
 }
-
 
 export default Search;
