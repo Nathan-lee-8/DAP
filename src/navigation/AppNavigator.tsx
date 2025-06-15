@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AuthContext } from '../context/AuthContext';
 import Icon from '@react-native-vector-icons/ionicons';
+import styles from '../styles/Styles';
 
 import Welcome from '../screens/signInScreens/Welcome';
 import SignIn from '../screens/signInScreens/SignInScreen';
@@ -111,18 +112,7 @@ const BottomTabs = () => {
               <View>
                 <Icon name="chatbubbles-outline" size={30} />
                 {currUser.unreadChatCount > 0 && 
-                  <View style={{
-                    position: 'absolute',
-                    backgroundColor: 'red',
-                    borderRadius: 10,
-                    width: 10,
-                    height: 10,
-                    right: 0,
-                    top: 0,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1
-                  }}/>
+                  <View style={styles.unreadChatIcon}/>
                 }
               </View>
             )

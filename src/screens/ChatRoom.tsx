@@ -14,7 +14,7 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import ImgComponent from '../components/ImgComponent';
-import SearchBar from '../components/SearchBar';
+import { SearchBar } from '../components/SearchBar';
 import moment from 'moment';
 
 /**

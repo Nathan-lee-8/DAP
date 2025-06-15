@@ -10,7 +10,7 @@ import { User } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
-import SearchBar from '../components/SearchBar';
+import { SearchBar } from '../components/SearchBar';
 import ImgComponent from '../components/ImgComponent';
 import { imagePicker, getImgURI } from '../components/addImg';
 import LinearGradient from 'react-native-linear-gradient';
@@ -52,6 +52,7 @@ const CreateGroup = ({ navigation }: any) => {
         variables: {
           input: {
             groupName: groupName,
+            nameLowercase: groupName.toLowerCase(),
             description: description,
             groupURL: groupURI,
             isPublic: privacy !== 'Hidden',

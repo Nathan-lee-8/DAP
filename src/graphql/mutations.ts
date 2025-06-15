@@ -583,6 +583,7 @@ export const createGroup = /* GraphQL */ `mutation CreateGroup(
   createGroup(input: $input, condition: $condition) {
     id
     groupName
+    nameLowercase
     groupURL
     description
     isPublic
@@ -605,6 +606,7 @@ export const updateGroup = /* GraphQL */ `mutation UpdateGroup(
   updateGroup(input: $input, condition: $condition) {
     id
     groupName
+    nameLowercase
     groupURL
     description
     isPublic
@@ -627,6 +629,7 @@ export const deleteGroup = /* GraphQL */ `mutation DeleteGroup(
   deleteGroup(input: $input, condition: $condition) {
     id
     groupName
+    nameLowercase
     groupURL
     description
     isPublic

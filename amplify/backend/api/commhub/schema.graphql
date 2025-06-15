@@ -2,7 +2,7 @@ type User @model @auth(
   rules: [
     { allow: owner },
     { allow: private, operations: [read] },
-    { allow: public, operations: [read] }
+    { allow: public, operations: [read, update] }
   ]
 ) {
   id: ID!
@@ -168,6 +168,7 @@ type Group @model @auth(
 ) {
   id: ID!
   groupName: String!
+  nameLowercase: String!
   groupURL: String
   description: String
   isPublic: Boolean!

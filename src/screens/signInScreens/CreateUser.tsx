@@ -19,10 +19,7 @@ const CreateUser = () => {
   const [ lastname, setLastName ] = useState<string>('');
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
-  if(!authContext) {
-    console.log("Auth context not defined");
-    return null;
-  };
+  if(!authContext) return;
   const { userEmail, triggerFetch } = authContext;
 
   const handleSignUp = async () => {
@@ -51,12 +48,10 @@ const CreateUser = () => {
         },
         authMode: 'userPool'
       });
-      console.log('created graphql user');
       triggerFetch();
     } catch (error: any) {
       Alert.alert('Error', error.message);
       setLoading(false);
-      console.log(error);
     }
   };
 

@@ -101,6 +101,7 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
         group{
           id
           groupName
+          nameLowercase
           groupURL
           description
           isPublic
@@ -266,6 +267,7 @@ export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -370,6 +372,7 @@ export const postsByUser = /* GraphQL */ `query PostsByUser(
       group{ 
         id
         groupName
+        nameLowercase
         groupURL
         description
         isPublic
@@ -1125,6 +1128,7 @@ export const getUserGroup = /* GraphQL */ `query GetUserGroup($id: ID!) {
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1212,6 +1216,7 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
       group{
         id
         groupName
+        nameLowercase
         groupURL
         description
         isPublic
@@ -1330,6 +1335,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
   getGroup(id: $id) {
     id
     groupName
+    nameLowercase
     groupURL
     description
     isPublic
@@ -1460,6 +1466,7 @@ export const listGroups = /* GraphQL */ `query ListGroups(
     items {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1497,6 +1504,7 @@ export const groupsByMemberCount = /* GraphQL */ `query GroupsByMemberCount(
     items {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1541,6 +1549,7 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic

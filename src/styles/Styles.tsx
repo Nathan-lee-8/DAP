@@ -81,6 +81,18 @@ const styles = StyleSheet.create({
   gradient: {
     ...StyleSheet.absoluteFillObject,
   },
+  unreadChatIcon: {
+    position: 'absolute',
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 10,
+    height: 10,
+    right: 0,
+    top: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1
+  },
   
   /** Sign in and Sign up page */
   contentText: {

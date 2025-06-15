@@ -1,20 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
-import { SignInParamList } from '../../types/rootStackParamTypes';
 import styles from '../../styles/Styles';
 import ImgComponent from '../../components/ImgComponent';
 
 //Initial welcome screen, navigates to SignIn or SignUp screens
-const Welcome = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
+const Welcome = ({route} : any) => {
+  const navigation = route.navigation;
 
   const handleSignIn = () => {
     navigation.navigate('SignIn');
-  }
-
-  const handleSignUp = () => {
-    navigation.navigate('SignUp');
   }
 
   return (
@@ -25,9 +18,6 @@ const Welcome = () => {
       </View>
       <Text style={styles.announcement}>Interact with your community.</Text>
       <View style={{marginTop: 'auto'}}>
-        <TouchableOpacity style={styles.buttonBlack} onPress={handleSignUp}>
-          <Text style={styles.buttonTextWhite}>Sign Up</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.buttonWhite} onPress={handleSignIn}>
           <Text style={styles.buttonTextBlack}>Log In</Text>
         </TouchableOpacity>

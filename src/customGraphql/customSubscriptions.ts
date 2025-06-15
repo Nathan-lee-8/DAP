@@ -27,27 +27,23 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
   APITypes.OnCreateMessageSubscriptionVariables,
   APITypes.OnCreateMessageSubscription
 >;
-export const onCreateNotification = /* GraphQL */ `subscription OnCreateNotification(
-  $filter: ModelSubscriptionNotificationFilterInput
+export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
+  $filter: ModelSubscriptionUserFilterInput
   $owner: String
 ) {
-  onCreateNotification(filter: $filter, owner: $owner) {
+  onUpdateUser(filter: $filter, owner: $owner) {
     id
-    type
-    content
-    userID
-    groupID
-    targetUserID
-    onClickID
-    read
-    createdAt
-    updatedAt
-    userNotificationsId
+    email
+    firstname
+    lastname
+    fullname
+    profileURL
+    description
     owner
     __typename
   }
 }
 ` as GeneratedSubscription<
-  APITypes.OnCreateNotificationSubscriptionVariables,
-  APITypes.OnCreateNotificationSubscription
+  APITypes.OnUpdateUserSubscriptionVariables,
+  APITypes.OnUpdateUserSubscription
 >;

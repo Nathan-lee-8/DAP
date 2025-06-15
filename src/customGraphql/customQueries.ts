@@ -71,6 +71,7 @@ export const listGroups = /* GraphQL */ `query ListGroups(
     items {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
