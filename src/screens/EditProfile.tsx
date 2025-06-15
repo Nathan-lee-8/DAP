@@ -82,6 +82,7 @@ const EditProfile = ( {navigation} : any ) => {
             profileURL: tempProfileURL,
             firstname: tempFirst,
             lastname: tempLast,
+            fullname: tempFirst.toLowerCase() + " " + tempLast.toLowerCase(),
             description: description
           },
         },
@@ -104,8 +105,8 @@ const EditProfile = ( {navigation} : any ) => {
       const uri = await imagePicker();
       if(uri === null) throw new Error('No Image Selected');
       setTempURL(uri);
-    } catch (error: any) {
-       Alert.alert('Error', error.message);
+    } catch {
+       Alert.alert('Error', 'Issue loading image library');
     } finally{
       setLoading(false);
     }

@@ -3,7 +3,6 @@ import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, KeyboardAvoid
   ActivityIndicator, TouchableWithoutFeedback, Platform } from 'react-native';
 import { signUp } from '@aws-amplify/auth';
 import styles from '../../styles/Styles';
-import SocialProvSignIn from '../../components/SocialProvSignIn';
 
 /**
  * Creates a user profile in Cognito. Navigates to the Verify page to confirm 
@@ -12,7 +11,6 @@ import SocialProvSignIn from '../../components/SocialProvSignIn';
 const SignUp = ( {navigation} : any ) => {
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
-  const [ loading, setLoading ] = useState(false);
 
   const handleSignUp = async () => {
     if(email === '') {
@@ -36,8 +34,6 @@ const SignUp = ( {navigation} : any ) => {
       Alert.alert('Error', error.message);
     };
   };
-
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />;
 
   return (
     <View style={styles.container}>
@@ -71,9 +67,7 @@ const SignUp = ( {navigation} : any ) => {
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>
-        
       </TouchableWithoutFeedback>
-      <SocialProvSignIn setLoading={setLoading}/>
     </View>
   );
 };

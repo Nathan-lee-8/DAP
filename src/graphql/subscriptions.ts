@@ -277,6 +277,7 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -329,6 +330,7 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -381,6 +383,7 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1057,6 +1060,7 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1103,6 +1107,7 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1149,6 +1154,7 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1177,6 +1183,7 @@ export const onCreateGroup = /* GraphQL */ `subscription OnCreateGroup(
   onCreateGroup(filter: $filter, owner: $owner) {
     id
     groupName
+    nameLowercase
     groupURL
     description
     isPublic
@@ -1211,6 +1218,7 @@ export const onUpdateGroup = /* GraphQL */ `subscription OnUpdateGroup(
   onUpdateGroup(filter: $filter, owner: $owner) {
     id
     groupName
+    nameLowercase
     groupURL
     description
     isPublic
@@ -1245,6 +1253,7 @@ export const onDeleteGroup = /* GraphQL */ `subscription OnDeleteGroup(
   onDeleteGroup(filter: $filter, owner: $owner) {
     id
     groupName
+    nameLowercase
     groupURL
     description
     isPublic
@@ -1325,6 +1334,7 @@ export const onUpdateNotification = /* GraphQL */ `subscription OnUpdateNotifica
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic
@@ -1388,6 +1398,7 @@ export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotifica
     group {
       id
       groupName
+      nameLowercase
       groupURL
       description
       isPublic

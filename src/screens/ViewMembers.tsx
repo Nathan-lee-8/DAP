@@ -3,8 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator,
   Modal } from "react-native";
   
 import client from "../client";
-import { createChat, createUserChat, deleteUserGroup,
-  updateUserGroup } from "../customGraphql/customMutations";
+import { createChat, createUserChat, deleteUserGroup, updateUserGroup 
+} from "../customGraphql/customMutations";
 import { UserGroup } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
@@ -33,56 +33,8 @@ const ViewMembers = ( {route, navigation} : any ) => {
   if(!currUser) return;
   const myUserGroup = userGroups.find((item: any) => item?.userID === currUser.id);
 
-  //Create a chatroom with all members that are part of the group with the group's
-  //name and image
-  const handleCreateChat = async () => {
-    try {
-      const addedMembers = [];
-      setLoading(true);
-
-      const chat = await client.graphql({ //Create ChatRoom
-        query: createChat,
-        variables: {
-          input: {
-            name: group.groupName,
-            isGroup: true,
-            url: group.groupURL
-          }
-        },
-        authMode: 'userPool'
-      });
-
-      userGroups.map(async (item: UserGroup) => { //Create Participants
-        let role = 'Member';
-        if(item.userID === currUser.id){
-          role = 'Owner';
-        }
-        const targetUserChat = await client.graphql({
-          query: createUserChat,
-          variables: {
-            input: {
-              userID: item.userID,
-              chatID: chat.data.createChat.id,
-              unreadMessageCount: 0,
-              lastMessage: "",
-              lastMessageAt: Date.now().toString(),
-              role: role
-            }
-          },
-          authMode: 'userPool'
-        })
-        addedMembers.push(targetUserChat.data.createUserChat.id);
-      })
-      Alert.alert('Success', 'GroupChat Successfully Created');
-    } catch {
-      Alert.alert('Error', 'There was an issue creating the Chatroom');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  //If user is pressed, sets the options so admin and owner can edit and remove 
-  //while others can view and report users
+  //If user is pressed, sets options based on if user is non-member, member or 
+  //admin/owner
   const handleUserPressed = (item: UserGroup) => {
     if(item.userID === currUser.id) setOptions(['Edit Role']);
     else if(!myUserGroup){
@@ -97,7 +49,7 @@ const ViewMembers = ( {route, navigation} : any ) => {
     setModalVisible(true);
   }
 
-  //Once an option is pressed: fn navigates to proper handler
+  //Once an option is pressed navigates to proper handler for given option
   const handleOptionButton = async (option: string) => {
     if(option === 'View Profile'){
       navigation.navigate('ViewProfile', {userID: selectedUser?.userID})
@@ -171,6 +123,54 @@ const ViewMembers = ( {route, navigation} : any ) => {
       );
     } catch {
       Alert.alert('Error', 'There was an issue updating roles');
+    }
+  }
+
+  //Create a chatroom with all members that are part of the group with the group's
+  //name and image
+  const handleCreateChat = async () => {
+    try {
+      const addedMembers = [];
+      setLoading(true);
+
+      const chat = await client.graphql({ //Create ChatRoom
+        query: createChat,
+        variables: {
+          input: {
+            name: group.groupName,
+            isGroup: true,
+            url: group.groupURL
+          }
+        },
+        authMode: 'userPool'
+      });
+
+      userGroups.map(async (item: UserGroup) => { //Create Participants
+        let role = 'Member';
+        if(item.userID === currUser.id){
+          role = 'Owner';
+        }
+        const targetUserChat = await client.graphql({
+          query: createUserChat,
+          variables: {
+            input: {
+              userID: item.userID,
+              chatID: chat.data.createChat.id,
+              unreadMessageCount: 0,
+              lastMessage: "",
+              lastMessageAt: Date.now().toString(),
+              role: role
+            }
+          },
+          authMode: 'userPool'
+        })
+        addedMembers.push(targetUserChat.data.createUserChat.id);
+      })
+      Alert.alert('Success', 'GroupChat Successfully Created');
+    } catch {
+      Alert.alert('Error', 'There was an issue creating the Chatroom');
+    } finally {
+      setLoading(false);
     }
   }
 

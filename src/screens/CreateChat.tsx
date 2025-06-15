@@ -10,7 +10,7 @@ import { User } from '../API';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
-import SearchBar from '../components/SearchBar';
+import { SearchBar } from '../components/SearchBar';
 
 /** CHANGE: Send a message to create chatroom -> button press or message send
  ** UPDATE: ability to upload image on this page? 

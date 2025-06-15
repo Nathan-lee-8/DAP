@@ -8,7 +8,7 @@ import client from '../client';
 import { tokensByUser, userByEmail } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
 import { User } from '../API';
-import { onCreateNotification } from '../customGraphql/customSubscriptions';
+import { onUpdateUser } from '../customGraphql/customSubscriptions';
 
 interface AuthContextType {
   isSignedIn: boolean;
@@ -58,7 +58,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           variables: { email: userEmail.toLowerCase() },
           authMode: 'userPool'
         });
-        console.log('fetched user attributes');
         const users = data.data.userByEmail.items;
         if(users.length > 0) setCurrUser(users[0]);
         setSignedIn(true);
@@ -108,16 +107,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   //Subscription to listen for new Notifications
   useEffect(() => {
     const subscription = client.graphql({
-      query: onCreateNotification,
+      query: onUpdateUser,
       variables:{
         filter: {
-          userID: { eq: currUser?.id }
+          id: { eq: currUser?.id }
         }
       },
       authMode: 'userPool'
     }).subscribe({
-      next: ({ data }) => {
-        console.log('new notification received', data);
+      next: () => {
         triggerFetch();
       },
       error: (error) => {
@@ -125,7 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     })
     return () => subscription.unsubscribe();
-  }, []);
+  }, [currUser?.id]);
 
   //Signs out of the app and clears cached data
   const logout = async () => {

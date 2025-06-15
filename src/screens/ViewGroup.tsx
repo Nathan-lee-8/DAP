@@ -15,7 +15,7 @@ import ProfilePicture from "../components/ImgComponent";
 import Icon from "@react-native-vector-icons/ionicons";
 import FormatPost from "../components/FormatPost";
 import LinearGradient from "react-native-linear-gradient";
-import SearchBar from "../components/SearchBar";
+import { SearchBar } from "../components/SearchBar";
 import ImgComponent from "../components/ImgComponent";
 import Report from "../components/Report";
 

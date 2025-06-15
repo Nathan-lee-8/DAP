@@ -47,6 +47,7 @@ const EditGroup = ( {route, navigation} : any ) => {
             input: {
               id: group.id,
               groupName: name,
+              nameLowercase: name.toLowerCase(),
               description: description,
               groupURL: currURI,
               isPublic: type !== 'Hidden',
