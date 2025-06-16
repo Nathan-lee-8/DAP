@@ -1,13 +1,16 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, Keyboard,
   ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
+
+import Video from 'react-native-video';
+import { mediaPicker, getMediaURI } from '../components/addMedia';
+import { Asset } from 'react-native-image-picker';
 
 import client from '../client';
 import { updatePost } from '../customGraphql/customMutations';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
-import { imagePicker, getImgURI } from '../components/addImg';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 
@@ -19,16 +22,32 @@ import Icon from '@react-native-vector-icons/ionicons';
 const EditPost = ( {route, navigation} : any ) => {
   const { currPost } = route.params;
   const [ content, setContent ] = useState(currPost.content);
+
   const [ filepaths, setFilepaths ] = useState<string[]>(currPost.postURL);
+  const [ newMedia, setNewMedia ] = useState<Asset[]>([]);
+  const [ displayPaths, setDisplayPaths ] = useState<string[]>([]);
+
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
+  
+  //merge old filepath with new anytime user adds or removes media
+  useEffect(() => {
+    setDisplayPaths([ 
+      ...filepaths,  
+      ...newMedia
+        .map(item => item.uri)
+        .filter((uri): uri is string => typeof uri === 'string')
+    ])
+  }, [filepaths, newMedia])
 
   //updates the post unless contents and list of media are unchanged. Naviagtes 
   //back to ViewPost page
   const sendPost = async () => {
-    if(content === currPost.content && filepaths === currPost.postURL) {
+    if(content === currPost.content && newMedia.length === 0 &&
+      JSON.stringify(filepaths) === JSON.stringify(currPost.postURL) 
+    ) {
       Alert.alert('Success','Post updated successfully!');
       return;
     };
@@ -42,7 +61,7 @@ const EditPost = ( {route, navigation} : any ) => {
             id: currPost.id,
             content: content,
             groupID: currPost.groupID,
-            postURL: newPaths,
+            postURL: [...filepaths, ...newPaths],
             userID: currUser.id
           }
         },
@@ -63,32 +82,30 @@ const EditPost = ( {route, navigation} : any ) => {
       Alert.alert('Max 12 images uploaded at once');
       return;
     }
-    var uri = await imagePicker();
-    if(uri === null){
-      Alert.alert('No image selected');
-      return;
-    };
-    setFilepaths([...filepaths.filter((item) => item !== null), uri]);
+    var file = await mediaPicker();
+    if (file) setNewMedia(prev => [...prev, file as Asset]);
   }
 
   //Removes selected media from post
   const handleRemoveItem = (uri: string) => {
     setFilepaths(filepaths.filter((item) => item !== uri));
+    setNewMedia(newMedia.filter((item) => item.uri !== uri));
   }
 
   //Uploads new media to s3, ignoring old media
   const handleUploadFilepaths = async () => {
     try{
       const newPaths = await Promise.all(
-        filepaths.map(async (item, index) => {
-          if(item.startsWith('https')) return item;
-          const uri = await getImgURI(item, `public/groupPictures/${currPost.groupID}/${Date.now()}_${index}.jpg`);
-          return uri ? 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri : null;
+        newMedia.map(async (item, index) => {
+          const uri = await getMediaURI(item.uri, 
+            `public/groupPictures/${currPost.groupID}/${Date.now()}_${index}.jpg`);
+          return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`
         })
       )
       return newPaths.filter((path) => path !== null);
     } catch {
-      Alert.alert('Error Uploading images');
+      Alert.alert('Error', 'Error Uploading images');
+      return [];
     }
   }
 
@@ -113,15 +130,21 @@ const EditPost = ( {route, navigation} : any ) => {
         </View>
         <View style={{paddingLeft: 10}}>
           <FlatList
-            data={filepaths}
+            data={displayPaths}
             numColumns={4}
-            keyExtractor={(index) => index.toString()}
+            keyExtractor={(item) => item}
             renderItem={({ item }) => (
               <View style={styles.postImageContainer}>
-                <ImgComponent uri={item || 'defaultUser'} 
-                  style={{height: 90, width: 90}} 
-                />
-                <TouchableOpacity style={styles.removeIcon} onPress={() => handleRemoveItem(item)}>
+                {item.endsWith('.mp4') ? (
+                  <Video source={{ uri: item }} style={{ width: 90, height: 90 }}
+                    resizeMode="contain" controls
+                  />
+                ) : (              
+                  <ImgComponent uri={item} style={{height: 90, width: 90}}/>
+                )}
+                <TouchableOpacity style={styles.removeIcon} 
+                  onPress={() => handleRemoveItem(item)}
+                >
                   <Icon name="remove-circle-outline" size={20}/>
                 </TouchableOpacity>
               </View>

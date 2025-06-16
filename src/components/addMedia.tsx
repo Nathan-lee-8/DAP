@@ -12,6 +12,7 @@ const mediaPicker = async () => {
     presentationStyle: 'fullScreen',
     quality: 0.8,
   });
+  console.log(result);
 
   if (result.didCancel || result.errorCode) {
     return null;
@@ -32,11 +33,13 @@ const mediaPicker = async () => {
 */
 const getMediaURI = async (file: any, filename: string) => {
   try{
-    const fileType = file.type || (file.fileName.endsWith('.mp4') ? 'video/mp4': 'image/jpeg');
+    const fileType = file.type || (file.fileName.endsWith('.mp4') ? 
+      'video/mp4': 'image/jpeg');
     const response = await fetch(file.uri);
     const blob = await response.blob(); 
 
-    let extension = file.fileName?.split('.').pop() || (fileType.includes('video') ? 'mp4' : 'jpg')
+    let extension = file.fileName?.split('.').pop() || 
+      (fileType.includes('video') ? 'mp4' : 'jpg');
     const key = filename + extension;
 
     const uploadResult = await uploadData({
