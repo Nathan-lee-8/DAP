@@ -163,13 +163,13 @@ const ChatRoom = ( { route, navigation } : any) => {
         variables: {
           input: {
             id: currUser.id,
-            unreadChatCount: ((currUser.unreadChatCount - 1) >= 0) ? 
+            unreadChatCount: (currUser.unreadChatCount - 1) >= 0 ? 
               currUser.unreadChatCount - 1 : 0,
           }
         },
         authMode: 'userPool'
-      }).catch((error: any) => console.log(error))
-      .finally(() => { if(triggerFetch) triggerFetch() });
+      })
+      if(triggerFetch) triggerFetch();
     }
     navigation.goBack();
   }

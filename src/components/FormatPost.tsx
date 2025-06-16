@@ -6,6 +6,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, useDerivedValue
   runOnJS } from 'react-native-reanimated';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
+import Video from "react-native-video";
 
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -24,10 +25,14 @@ import Comments from './ListComments';
 import Report from "./Report";
 
 /**
- * 
+ * Component to take the current Post and display all the Post owner information, the post 
+ * content, and the interaction section. Click media to open full screen view of media and 
+ * click comments to open full screen view of comments. Click ellipses to view options to 
+ * edit, delete, or report the post.
  * 
  * @param post - The current post to display
- * @param destination - Where this post is being displayed: 'Home', 'Profile', 'Group', or 'ViewPost'
+ * @param destination - Where this post is being displayed: 'Home', 'Profile', 'Group', 
+ * or 'ViewPost'
  */
 const FormatPost = ( {post, destination} : {post: Post, destination: string} ) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
@@ -52,6 +57,44 @@ const FormatPost = ( {post, destination} : {post: Post, destination: string} ) =
     }
   }, [currUser])
 
+  //handles the option that the user pressed in the option modal: Edit, Delete, Report
+  const handleOptionButton = (option: string) => {
+    setModalVisible(false);
+    if(option === "Edit"){
+      navigation.navigate('EditPost', { currPost: post});
+    }else if(option === "Delete"){
+      Alert.alert('Alert','Are you sure you would like to delete this', [
+        { text: 'Cancel' },
+        { text: 'OK', onPress: () => handleDelete() }
+      ])
+    }else if(option === "Report"){
+      setReportModalVisible(true);
+    }else{
+      Alert.alert(option, "not implemented");
+    }
+  }
+
+  //delete all post and comments
+  const handleDelete = async () => {
+    if(post){
+      try{
+        await client.graphql({
+          query: deletePost,
+          variables: {
+            input: { id: post.id }
+          },
+          authMode: 'userPool'
+        });
+        if(destination === 'ViewPost'){
+          navigation.goBack();
+        }
+        Alert.alert('Success', 'Post deleted successfully');
+      } catch {
+        Alert.alert('Error', 'There was an issue deleting the post');
+      }
+    }
+  }
+
   //Navigates to full page display of the given post unless already there
   const clickPost = (itemID : string) => {
     if(destination !== 'ViewPost'){
@@ -65,21 +108,13 @@ const FormatPost = ( {post, destination} : {post: Post, destination: string} ) =
     navigation.navigate('ViewProfile', { userID: post.user.id });
   }
 
-  //helper to know what index we are on while scrolling through images
-  const onScroll = (event: any) => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.floor(contentOffsetX / (width * 0.88));
-    setCurrentIndex(index);
-  };
-
   //opens the sharing UI to allow User to share the post 
   const handleShare = async () => {
     try {
-      const downloadedFiles = post.postURL
-        ? await Promise.all(post.postURL
+      const downloadedFiles = post.postURL ? 
+        await Promise.all(post.postURL
           .filter((url): url is string => typeof url === 'string')
-          .map(downloadMediaToLocal))
-        : [];
+          .map(downloadMediaToLocal)) : [];
   
       const shareOptions = {
         title: 'Check out this post!',
@@ -101,51 +136,13 @@ const FormatPost = ( {post, destination} : {post: Post, destination: string} ) =
     return `file://${localPath}`;
   };
 
-  //delete all post and comments
-  const handleDelete = async () => {
-    if(post){
-      try{
-        await client.graphql({
-          query: deletePost,
-          variables: {
-            input: {
-              id: post.id
-            }
-          },
-          authMode: 'userPool'
-        });
-        console.log(post.id, "successfully deleted post");
-        if(destination === 'ViewPost'){
-          navigation.goBack();
-        }
-      }catch (error : any){
-        Alert.alert('Error', 'There was an issue deleting the post');
-      }
-    }
-  }
+  //helper to know index of media while scrolling through
+  const onScroll = (event: any) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.floor(contentOffsetX / (width * 0.88));
+    setCurrentIndex(index);
+  };
 
-  /**
-   * handles the option that the user pressed in the option modal: Edit, Delete, Report
-   * - Edit: navigates to the edit post screen
-   * - Delete: deletes the post
-   * - Report: opens the report modal
-   * @param option - The option the User pressed 
-   */
-  const handleOptionButton = (option: string) => {
-    setModalVisible(false);
-    if(option === "Edit"){
-      navigation.navigate('EditPost', { currPost: post});
-    }else if(option === "Delete"){
-      Alert.alert('Alert','Are you sure you would like to delete this', [
-        { text: 'Cancel' },
-        { text: 'OK', onPress: () => handleDelete() }
-      ])
-    }else if(option === "Report"){
-      setReportModalVisible(true);
-    }else{
-      Alert.alert(option, "not implemented");
-    }
-  }
 
   //Helpers to snap image to fit on scroll
   const heightPercent = useSharedValue(70);
@@ -175,7 +172,6 @@ const FormatPost = ( {post, destination} : {post: Post, destination: string} ) =
   
   return (  
     <View style={styles.postContainer}>
-      {/* Title display: Omit Name & image in Profile, Omit GroupName in Group */}
       {destination !== 'Profile' && post.user ? ( // if displayed anywhere but Profile
         <TouchableOpacity style={styles.profileSection} onPress={() => clickPost(post.id)}> 
           <TouchableOpacity onPress={visitProfile}>
@@ -313,13 +309,19 @@ const FormatPost = ( {post, destination} : {post: Post, destination: string} ) =
               data={post.postURL}
               renderItem={({ item }) => (
                 <View>
-                  <ImgComponent uri={item || 'defautUser'} 
-                    style={{
-                      width: width,
-                      height: '100%'
-                    }} 
-                    resizeMode={"contain"}
-                  />
+                  {item?.endsWith('.mp4') ? (
+                    <Video source={{ uri: item }} style={{ width: width, height: '100%' }}
+                      resizeMode="contain" controls
+                    />
+                  ):(
+                    <ImgComponent uri={item || 'defautUser'} 
+                      style={{
+                        width: width,
+                        height: '100%'
+                      }} 
+                      resizeMode={"contain"}
+                    />
+                  )}
                 </View>
               )}
               horizontal={true}

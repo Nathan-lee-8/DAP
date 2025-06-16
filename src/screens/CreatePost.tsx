@@ -9,6 +9,7 @@ import { createPost } from '../customGraphql/customMutations';
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import { mediaPicker, getMediaURI } from '../components/addMedia';
+import { Asset } from 'react-native-image-picker';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 
@@ -17,10 +18,10 @@ import Icon from '@react-native-vector-icons/ionicons';
  * group. 
  * @param groupID - ID of the group to write the post to
  */
-const CreatePost = ({route, navigation}: any) => {
+const CreatePost = ( {route, navigation}: any ) => {
   const { groupID } = route.params;
   const [ content, setContent ] = useState('');
-  const [ media, setMedia ] = useState<any[]>([]);
+  const [ media, setMedia ] = useState<Asset[]>([]);
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
@@ -33,11 +34,11 @@ const CreatePost = ({route, navigation}: any) => {
       return;
     }
     var file = await mediaPicker();
-    if(file !== null) setMedia([...media, file]);
+    if(file) setMedia(prev => [...prev, file as Asset]);
   }
 
   //removes media item from upload queue
-  const handleRemoveItem = (item: any) => {
+  const handleRemoveItem = (item: Asset) => {
     setMedia(media.filter((file) => file.uri !== item.uri));
   }
 
@@ -78,13 +79,14 @@ const CreatePost = ({route, navigation}: any) => {
     try{
       const newPaths = await Promise.all(
         media.map(async (item, index) => {
-          const uri = await getMediaURI(item, `public/groupPictures/${groupID}/${Date.now()}_${index}`);
-          return uri ? `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}` : null;
+          const uri = await getMediaURI(item.uri, 
+            `public/groupPictures/${groupID}/${Date.now()}_${index}`);
+          return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`;
         })
       )
       return newPaths.filter((path) => path !== null);
-    } catch (error) {
-      console.error('Error Uploading images', error)
+    } catch {
+      Alert.alert('Error', 'There was an issue uploading the media');
     }
   }
 
@@ -119,11 +121,8 @@ const CreatePost = ({route, navigation}: any) => {
             renderItem={({ item }) => (
               <View style={styles.postImageContainer}>
                 {item.fileName?.endsWith('.mp4') || item.type?.startsWith('video') ? (
-                  <Video
-                    source={{ uri: item.uri }}
-                    style={{ width: 90, height: 90 }}
-                    resizeMode="contain"
-                    controls
+                  <Video source={{ uri: item.uri }} style={{ width: 90, height: 90 }}
+                    resizeMode="contain" controls
                   />
                 ) : (
                   <ImgComponent uri={item.uri || 'defaultUser'} 
