@@ -229,12 +229,15 @@ const FormatPost = ( {post, destination} : {post: Post, destination: string} ) =
             data={post.postURL}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-                <ImgComponent uri={item || 'defautUser'} 
-                  style={{
-                    width: width - 30,
-                    height: 200,
-                  }} 
-                />
+                {item?.endsWith('.mp4') ? (
+                  <Video source={{uri: item}} style={{width: width - 30, height: 200}}
+                    resizeMode="cover" repeat={true}
+                  />
+                ):(
+                  <ImgComponent uri={item || 'defautUser'} 
+                    style={{ width: width - 30, height: 200 }} 
+                  />
+                )}
               </TouchableOpacity>
             )}
             horizontal={true}

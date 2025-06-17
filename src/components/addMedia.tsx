@@ -1,12 +1,13 @@
-import { launchImageLibrary, Asset } from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { uploadData } from '@aws-amplify/storage';
 import { Video } from 'react-native-compressor';
+import { Alert } from 'react-native';
 
 /**
- * Open users Media library and allows user to select an image or video and 
- * ensures video is < 5MB
+ * Open users Media library and allows user to select an image or video. Limits 
+ * videos to 30s and compresses if necessary.
  * 
- * @returns URI of the media
+ * @returns file object of selected image/video
 */ 
 const mediaPicker = async () => {
   const result = await launchImageLibrary({
@@ -23,31 +24,17 @@ const mediaPicker = async () => {
     return null;
   }
 
-  return file;
-}
-
-//compresses videos with max bitrate of 3MB/S and min of 1MB/s (30s video)
-const compressVideo = async (file: Asset) => {
-  if(!file.uri) return null;
-  if(!file.fileName?.endsWith('.mp4')) return file.uri;
-
-  const duration = file.duration ?? 30; 
-  const targetBitrate = (4 * 8 * 1024 * 1024) / duration;
-  const cappedBitRate = Math.min(targetBitrate, 3_000_000);
-  console.log(`Target bitrate: ${cappedBitRate} bps`);
-
-  try {
-    const compressedUri = await Video.compress(file.uri, {
-      compressionMethod: 'manual',
-      bitrate: cappedBitRate, 
-    });
-
-    return compressedUri;
-  } catch (error) {
-    console.error('Compression failed', error);
+  if(file.duration && file.duration > 30){
+    Alert.alert('Max video length is 30 seconds');
     return null;
   }
-};
+  if(file.fileName?.endsWith('.mp4') || file.type?.startsWith('video')){
+    const compressedUri = await Video.compress(file.uri, {compressionMethod: 'auto'});
+    if(compressedUri) file.uri = compressedUri;
+  }
+
+  return file;
+}
 
 /**
  * Stores media in S3
@@ -65,7 +52,7 @@ const getMediaURI = async (file: any, filename: string) => {
 
     let extension = file.fileName?.split('.').pop() || 
       (fileType.includes('video') ? 'mp4' : 'jpg');
-    const key = filename + extension;
+    const key = `${filename}.${extension}`;
 
     const uploadResult = await uploadData({
       path: key,
@@ -83,4 +70,4 @@ const getMediaURI = async (file: any, filename: string) => {
 };
 
 
-export { mediaPicker, getMediaURI, compressVideo };
+export { mediaPicker, getMediaURI };

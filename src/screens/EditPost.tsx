@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, Key
   ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 
 import Video from 'react-native-video';
-import { mediaPicker, getMediaURI, compressVideo } from '../components/addMedia';
+import { mediaPicker, getMediaURI } from '../components/addMedia';
 import { Asset } from 'react-native-image-picker';
 
 import client from '../client';
@@ -83,19 +83,14 @@ const EditPost = ( {route, navigation} : any ) => {
       Alert.alert('Max 12 images uploaded at once');
       return;
     }
+    setLoading(true);
     var file = await mediaPicker();
-    if (file && (file.fileName?.endsWith('.mp4') || file.type?.startsWith('video'))){
-      if(file.duration && file.duration > 30000){
-        Alert.alert('Error', 'Video must be less than 30 seconds');
-        return;
-      }else if(file.duration){
-        const compressedUri = await compressVideo(file);
-        if(compressedUri){
-          file = {...file, uri: compressedUri};
-        }
-      }
+    if(!file){
+      setLoading(false);
+      return;
     }
     setNewMedia(prev => [...prev, file as Asset]);
+    setLoading(false);
   }
 
   //Removes selected media from post
@@ -109,7 +104,7 @@ const EditPost = ( {route, navigation} : any ) => {
     try{
       const newPaths = await Promise.all(
         newMedia.map(async (item, index) => {
-          const uri = await getMediaURI(item.uri, 
+          const uri = await getMediaURI(item, 
             `public/groupPictures/${currPost.groupID}/${Date.now()}_${index}.jpg`);
           return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`
         })
