@@ -13,14 +13,14 @@ export type GlobalParamList = {
     MainTabs: undefined;
     ViewProfile: {userID: string};
     ViewFollowing: {userID: string};
-    ChatRoom: {chatID: string};
+    ViewChat: {chatID: string};
     CreateChat: {user?: User};
     CreateGroup: undefined;
     CreatePost: {groupID: string, isPublic: boolean};
     ViewGroup: {groupID: string};
     ViewPost: {postID: string};
     EditGroup: {group: Group};
-    ViewMembers: {group: Group};
+    ViewGroupMembers: {group: Group};
     ViewChatMembers: {chatData: Chat | undefined, userChats: UserChat[]};
     EditPost: {currPost: Post};
     EditChat: {currChat: Chat};

@@ -3,14 +3,14 @@ import { View, Text, Alert, TouchableOpacity, ActivityIndicator, TextInput, Plat
   KeyboardAvoidingView, ScrollView, Modal, FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
-import client from '../client'
-import { updateUser } from '../customGraphql/customMutations';
+import client from '../../client'
+import { updateUser } from '../../customGraphql/customMutations';
 
-import { AuthContext } from '../context/AuthContext';
-import { imagePicker, getImgURI } from '../components/addImg';
-import ImgComponent from '../components/ImgComponent';
-import UserPosts from '../components/UserPosts';
-import styles from '../styles/Styles';
+import { AuthContext } from '../../context/AuthContext';
+import { imagePicker, getImgURI } from '../../components/addImg';
+import ImgComponent from '../../components/ImgComponent';
+import UserPosts from '../../components/UserPosts';
+import styles from '../../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
 /**

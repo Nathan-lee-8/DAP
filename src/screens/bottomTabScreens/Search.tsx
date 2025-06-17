@@ -2,14 +2,14 @@ import { useState, useEffect, useContext } from 'react';
 import { View, Text, TouchableOpacity, FlatList, Keyboard, RefreshControl, Alert,
   ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
   
-import client from '../client';
-import {  groupsByMemberCount, groupsByUser } from '../customGraphql/customQueries';
-import { Group, User, UserGroup, ModelSortDirection } from '../API';
+import client from '../../client';
+import {  groupsByMemberCount, groupsByUser } from '../../customGraphql/customQueries';
+import { Group, User, UserGroup, ModelSortDirection } from '../../API';
 
-import styles from '../styles/Styles';
-import {SearchBar, GroupSearch} from '../components/SearchBar';
-import FormatExploreGroup from '../components/FormatExploreGroup';
-import { AuthContext } from '../context/AuthContext';
+import styles from '../../styles/Styles';
+import {SearchBar, GroupSearch} from '../../components/SearchBar';
+import FormatExploreGroup from '../../components/FormatExploreGroup';
+import { AuthContext } from '../../context/AuthContext';
 
 /**
  * Search Page that contains a search bar that allows searching for users or groups. 
