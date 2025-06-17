@@ -3,14 +3,14 @@ import { useContext, useEffect, useState, useCallback } from 'react';
 import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl, Alert
  } from 'react-native';
  
-import client from '../client';
-import { groupsByUser } from '../customGraphql/customQueries';
-import { UserGroup, ModelSortDirection } from '../API';
+import client from '../../client';
+import { groupsByUser } from '../../customGraphql/customQueries';
+import { UserGroup, ModelSortDirection } from '../../API';
 
-import { AuthContext } from '../context/AuthContext';
-import ImgComponent from '../components/ImgComponent';
+import { AuthContext } from '../../context/AuthContext';
+import ImgComponent from '../../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
-import styles from '../styles/Styles';
+import styles from '../../styles/Styles';
 
 /**
  * Displays list of groups that the current user is a part of and displays

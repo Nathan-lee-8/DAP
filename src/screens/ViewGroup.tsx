@@ -217,7 +217,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   const handleOptionButton = (option: string) => {
     setModalVisible(false);
     if(option === 'View Members'){
-      navigation.navigate('ViewMembers', {group: group});
+      navigation.navigate('ViewGroupMembers', {group: group});
     }else if(option === 'Edit'){
       handleEditGroup();
     }else if(option === 'Invite'){

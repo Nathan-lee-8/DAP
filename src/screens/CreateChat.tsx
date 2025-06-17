@@ -124,7 +124,7 @@ const CreateChat = ({ route, navigation }: any) => {
         routes: [
           { name: 'MainTabs', params: { screen: 'Messages' } },
           {
-            name: 'ChatRoom', params: { chatID: chat.data.createChat.id }
+            name: 'ViewChat', params: { chatID: chat.data.createChat.id }
           }],
       });
     } catch {

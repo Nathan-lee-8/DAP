@@ -2,15 +2,15 @@ import { useEffect, useState, useContext, useCallback, useLayoutEffect } from 'r
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
   Modal, Alert} from 'react-native';
 
-import client from '../client';
-import { postsByUserFeed } from '../customGraphql/customQueries';
-import { ModelSortDirection, UserFeed } from '../API';
+import client from '../../client';
+import { postsByUserFeed } from '../../customGraphql/customQueries';
+import { ModelSortDirection, UserFeed } from '../../API';
 
-import { AuthContext } from '../context/AuthContext';
-import styles from '../styles/Styles';
-import FormatPost from '../components/FormatPost';
+import { AuthContext } from '../../context/AuthContext';
+import styles from '../../styles/Styles';
+import FormatPost from '../../components/FormatPost';
 import Icon from '@react-native-vector-icons/ionicons';
-import Notifications from '../components/Notifications';
+import Notifications from '../../components/Notifications';
 
 /**
  * Displays the active News feed for the current user and the notification count.

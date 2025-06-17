@@ -18,7 +18,7 @@ import Report from "../components/Report";
  * 
  * @param group - The group that we are displaying list of users for
  */
-const ViewMembers = ( {route, navigation} : any ) => {
+const ViewGroupMembers = ( {route, navigation} : any ) => {
   const group = route.params.group;
   const [ userGroups, setUserGroups ] = useState(group.members.items);
   const [ loading, setLoading ] = useState(false);
@@ -286,4 +286,4 @@ const ViewMembers = ( {route, navigation} : any ) => {
   );
 }
 
-export default ViewMembers;
+export default ViewGroupMembers;

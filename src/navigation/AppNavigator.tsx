@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { View, Text} from 'react-native'
+import { View} from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -14,20 +14,21 @@ import Verify from '../screens/signInScreens/Verify';
 import ResetPassword from '../screens/signInScreens/ResetPassword';
 import CreateUser from '../screens/signInScreens/CreateUser';
 
-import Home from '../screens/HomeScreen';
-import Groups from '../screens/Groups';
-import Messaging from '../screens/Messaging';
-import EditProfile from '../screens/EditProfile';
-import ChatRoom from '../screens/ChatRoom';
+import Home from '../screens/bottomTabScreens/HomeScreen';
+import Groups from '../screens/bottomTabScreens/Groups';
+import Messaging from '../screens/bottomTabScreens/Messaging';
+import Search from '../screens/bottomTabScreens/Search';
+import EditProfile from '../screens/bottomTabScreens/EditProfile';
+
+import ViewChat from '../screens/ViewChat';
 import ViewProfiles from '../screens/ViewProfiles';
 import CreateChat from '../screens/CreateChat';
 import CreateGroup from '../screens/CreateGroup';
 import ViewGroup from '../screens/ViewGroup';
 import ViewPost from '../screens/ViewPost';
 import CreatePost from '../screens/CreatePost';
-import Search from '../screens/Search';
 import EditGroup from '../screens/EditGroup';
-import ViewMembers from '../screens/ViewMembers';
+import ViewGroupMembers from '../screens/ViewGroupMembers';
 import ViewChatMembers from '../screens/ViewChatMembers';
 import EditPost from '../screens/EditPost';
 import EditChat from '../screens/EditChat';
@@ -61,7 +62,7 @@ const AppNavigator = () => {
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
-          <GlobalStack.Screen name="ChatRoom" component={ChatRoom} 
+          <GlobalStack.Screen name="ViewChat" component={ViewChat} 
             options={{title: 'Messages', headerShown: false}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
@@ -71,7 +72,7 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
           <GlobalStack.Screen name="ViewPost" component={ViewPost} options={{title: 'Post'}}/>
           <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
-          <GlobalStack.Screen name="ViewMembers" component={ViewMembers} options={{title: 'View Members'}}/>
+          <GlobalStack.Screen name="ViewGroupMembers" component={ViewGroupMembers} options={{title: 'View Members'}}/>
           <GlobalStack.Screen name="EditPost" component={EditPost} options={{title: 'Edit Post'}}/>
           <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers} options={{title: 'Members'}}/>
           <GlobalStack.Screen name="EditChat" component={EditChat} options={{title: 'Edit Chat'}}/>

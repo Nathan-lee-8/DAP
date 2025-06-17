@@ -3,13 +3,13 @@ import { View, FlatList, TouchableOpacity, Text, ActivityIndicator, Dimensions,
   RefreshControl, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
-import client  from '../client';
-import { chatsByUser } from '../customGraphql/customQueries';
-import { ModelSortDirection, UserChat } from '../API';
+import client  from '../../client';
+import { chatsByUser } from '../../customGraphql/customQueries';
+import { ModelSortDirection, UserChat } from '../../API';
 
-import { AuthContext } from '../context/AuthContext';
-import styles from '../styles/Styles';
-import ImgComponent from '../components/ImgComponent';
+import { AuthContext } from '../../context/AuthContext';
+import styles from '../../styles/Styles';
+import ImgComponent from '../../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
 import moment from "moment";
 
@@ -57,7 +57,7 @@ const MessageUsers = ( {navigation}: any ) => {
 
   //Navigates to the ChatRoom page to view the selected Chat
   const handleOpenChatRoom = (chatRoom: UserChat) => {
-    navigation.navigate('ChatRoom', { chatID: chatRoom.chatID });
+    navigation.navigate('ViewChat', { chatID: chatRoom.chatID });
   }
 
   //Navigates to the CreateChat page to create a new Chat

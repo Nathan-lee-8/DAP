@@ -22,7 +22,7 @@ import moment from 'moment';
  * view and send messages to other users or groups. 
  * @param chatID - The ID of the given ChatRoom to display
  */
-const ChatRoom = ( { route, navigation } : any) => {
+const ViewChat = ( { route, navigation } : any) => {
   const chatID = route.params.chatID;
   const [ chat, setChat ] = useState<Chat>();
   const [ participants, setParticipants ] = useState<UserChat[]>([]);
@@ -549,4 +549,4 @@ const ChatRoom = ( { route, navigation } : any) => {
   )
 }
 
-export default ChatRoom;
+export default ViewChat;
