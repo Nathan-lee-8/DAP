@@ -1,8 +1,10 @@
-import { launchImageLibrary } from 'react-native-image-picker';
+import { launchImageLibrary, Asset } from 'react-native-image-picker';
 import { uploadData } from '@aws-amplify/storage';
+import { Video } from 'react-native-compressor';
 
 /**
- * Open users Media library and allows user to select an image or video
+ * Open users Media library and allows user to select an image or video and 
+ * ensures video is < 5MB
  * 
  * @returns URI of the media
 */ 
@@ -12,7 +14,6 @@ const mediaPicker = async () => {
     presentationStyle: 'fullScreen',
     quality: 0.8,
   });
-  console.log(result);
 
   if (result.didCancel || result.errorCode) {
     return null;
@@ -21,8 +22,32 @@ const mediaPicker = async () => {
   if (!file?.uri) {
     return null;
   }
+
   return file;
 }
+
+//compresses videos with max bitrate of 3MB/S and min of 1MB/s (30s video)
+const compressVideo = async (file: Asset) => {
+  if(!file.uri) return null;
+  if(!file.fileName?.endsWith('.mp4')) return file.uri;
+
+  const duration = file.duration ?? 30; 
+  const targetBitrate = (4 * 8 * 1024 * 1024) / duration;
+  const cappedBitRate = Math.min(targetBitrate, 3_000_000);
+  console.log(`Target bitrate: ${cappedBitRate} bps`);
+
+  try {
+    const compressedUri = await Video.compress(file.uri, {
+      compressionMethod: 'manual',
+      bitrate: cappedBitRate, 
+    });
+
+    return compressedUri;
+  } catch (error) {
+    console.error('Compression failed', error);
+    return null;
+  }
+};
 
 /**
  * Stores media in S3
@@ -58,4 +83,4 @@ const getMediaURI = async (file: any, filename: string) => {
 };
 
 
-export { mediaPicker, getMediaURI };
+export { mediaPicker, getMediaURI, compressVideo };

@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, Key
   ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
 
 import Video from 'react-native-video';
-import { mediaPicker, getMediaURI } from '../components/addMedia';
+import { mediaPicker, getMediaURI, compressVideo } from '../components/addMedia';
 import { Asset } from 'react-native-image-picker';
 
 import client from '../client';
@@ -76,14 +76,26 @@ const EditPost = ( {route, navigation} : any ) => {
     }
   }
 
-  //opens user's image picker to adds selected media to list of media 
+  //opens user's image picker to adds selected media to list of media. Ensure videos are 
+  //less than 30s and compresses videos to limit max bitrate of 3MB/s
   const getFilePath = async () => {
     if(filepaths.length > 12){
       Alert.alert('Max 12 images uploaded at once');
       return;
     }
     var file = await mediaPicker();
-    if (file) setNewMedia(prev => [...prev, file as Asset]);
+    if (file && (file.fileName?.endsWith('.mp4') || file.type?.startsWith('video'))){
+      if(file.duration && file.duration > 30000){
+        Alert.alert('Error', 'Video must be less than 30 seconds');
+        return;
+      }else if(file.duration){
+        const compressedUri = await compressVideo(file);
+        if(compressedUri){
+          file = {...file, uri: compressedUri};
+        }
+      }
+    }
+    setNewMedia(prev => [...prev, file as Asset]);
   }
 
   //Removes selected media from post
@@ -137,7 +149,7 @@ const EditPost = ( {route, navigation} : any ) => {
               <View style={styles.postImageContainer}>
                 {item.endsWith('.mp4') ? (
                   <Video source={{ uri: item }} style={{ width: 90, height: 90 }}
-                    resizeMode="contain" controls
+                    resizeMode="contain"
                   />
                 ) : (              
                   <ImgComponent uri={item} style={{height: 90, width: 90}}/>
