@@ -8,7 +8,7 @@ import { createPost } from '../customGraphql/customMutations';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
-import { mediaPicker, getMediaURI } from '../components/addMedia';
+import { mediaPicker, getMediaURI, compressVideo } from '../components/addMedia';
 import { Asset } from 'react-native-image-picker';
 import ImgComponent from '../components/ImgComponent';
 import Icon from '@react-native-vector-icons/ionicons';
@@ -27,14 +27,26 @@ const CreatePost = ( {route, navigation}: any ) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  //Opens user's media picker and adds chosen media to upload queue
+  //Opens user's media picker and adds chosen media to upload queue. Ensures 
+  //media is less than 30s if video then compresses to ensures <5MB. 
   const getFilePath = async () => {
     if(media.length > 12){
       Alert.alert('Max 12 images uploaded at once');
       return;
     }
     var file = await mediaPicker();
-    if(file) setMedia(prev => [...prev, file as Asset]);
+    if(file && (file.fileName?.endsWith('.mp4') || file.type?.startsWith('video'))){
+      if(file.duration && file.duration > 30000){
+        Alert.alert('Max video length is 30 seconds');
+        return;
+      }else if(file.duration){
+        const compressedUri = await compressVideo(file);
+        if(compressedUri){
+          file = {...file, uri: compressedUri};
+        }
+      }
+    }
+    setMedia(prev => [...prev, file as Asset]);
   }
 
   //removes media item from upload queue
@@ -122,7 +134,7 @@ const CreatePost = ( {route, navigation}: any ) => {
               <View style={styles.postImageContainer}>
                 {item.fileName?.endsWith('.mp4') || item.type?.startsWith('video') ? (
                   <Video source={{ uri: item.uri }} style={{ width: 90, height: 90 }}
-                    resizeMode="contain" controls
+                    resizeMode="contain"
                   />
                 ) : (
                   <ImgComponent uri={item.uri || 'defaultUser'} 
