@@ -33,7 +33,6 @@ const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) =
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
-
   /**
    * Sets the options that are displayed when the user long presses a comment or reply
    * and sets the target reply if a reply is pressed, then opens the options modal.
@@ -170,16 +169,19 @@ const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) =
     <View style={darkened ? styles.commentContainerPressed : styles.commentContainer}>
       {/* Display comment content */}
       <Pressable onLongPress={() => handleLongPress()}
-        style={({ pressed }) => [
-          styles.profileSection,
-          { opacity: pressed ? 0.5 : 1 }
-        ]}
-        >
-        <ImgComponent style={styles.commentUserImg} uri={comment?.user?.profileURL || 'defaultUser'}/>
+        style={({ pressed }) => [styles.profileSection, { opacity: pressed ? 0.5 : 1 }]}
+      >
+        <ImgComponent style={styles.commentUserImg} 
+          uri={comment?.user?.profileURL || 'defaultUser'}
+        />
         <View style={styles.profileText}>
           <View style={{flexDirection: 'row'}}>
-            <Text style={[styles.bold, {fontWeight: 500}]}>{comment?.user?.firstname + " " + comment?.user?.lastname}</Text>
-            <Text style={styles.commentDate}>{getCompactTimeAgo(comment.createdAt)}</Text>
+            <Text style={[styles.bold, {fontWeight: 500}]}>
+              {comment?.user?.firstname + " " + comment?.user?.lastname}
+            </Text>
+            <Text style={styles.commentDate}>
+              {getCompactTimeAgo(comment.createdAt)}
+            </Text>
           </View>
           <Text style={[styles.postContent, {marginBottom: 0}]}>{comment?.content}</Text>
           <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(index)}>
@@ -191,24 +193,26 @@ const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) =
       {/* Display replies to comment */}
       <FlatList
         data={comment.replies.items}
-        renderItem={(reply) => {
-          const replyData = reply.item;
+        renderItem={({item}) => {
           return(
-            <Pressable onLongPress={() => handleLongPress(replyData)}
-              style={({ pressed }) => [
-                {marginLeft: 40},
-                { opacity: pressed ? 0.5 : 1 }
-              ]}
+            <Pressable onLongPress={() => handleLongPress(item)}
+              style={({ pressed }) => [{marginLeft: 40}, { opacity: pressed ? 0.5 : 1 }]}
             >
               <View style={styles.profileSection}>
-                <ImgComponent uri={replyData?.user?.profileURL || 'defaultUser'}/>
+                <ImgComponent uri={item.user?.profileURL || 'defaultUser'}/>
                 <View style={styles.profileText}>
                   <View style={{flexDirection: 'row'}}>
-                    <Text style={[styles.bold, {fontWeight: 500}]}>{replyData?.user?.firstname + " " + replyData?.user?.lastname}</Text>
-                    <Text style={styles.commentDate}>{getCompactTimeAgo(replyData.createdAt)}</Text>
+                    <Text style={[styles.bold, {fontWeight: 500}]}>
+                      {`${item.user?.firstname} ${item.user?.lastname}`}
+                    </Text>
+                    <Text style={styles.commentDate}>
+                      {getCompactTimeAgo(item.createdAt)}
+                    </Text>
                   </View>
-                  <Text style={styles.postContent}>{replyData?.content}</Text>
-                  <TouchableOpacity style={{marginBottom:5}} onPress={() => handleReply(index)}>
+                  <Text style={styles.postContent}>{item.content}</Text>
+                  <TouchableOpacity style={{marginBottom:5}} 
+                    onPress={() => handleReply(index)}
+                  >
                     <Text style={styles.replyText}>Reply</Text>
                   </TouchableOpacity>
                 </View>
@@ -240,7 +244,9 @@ const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) =
               )}
             />
           </View>
-          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+          <TouchableOpacity style={styles.closeOverlayButton} 
+            onPress={() => setModalVisible(false)}
+          >
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
         </View>

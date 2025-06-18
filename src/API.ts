@@ -2943,6 +2943,7 @@ export type GetChatQuery = {
         __typename: "Message",
         id: string,
         content: string,
+        msgURL?: Array< string | null > | null,
         senderID: string,
         sender?:  {
           __typename: "User",
