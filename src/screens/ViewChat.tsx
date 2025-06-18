@@ -10,6 +10,10 @@ import { createMessage, updateUserChat, deleteUserChat, createUserChat, deleteCh
 import { onCreateMessage } from '../customGraphql/customSubscriptions';
 import  { Message, UserChat, Chat, User } from '../API';
 
+import { Asset } from 'react-native-image-picker';
+import Video from 'react-native-video';
+import { mediaPicker, getMediaURI } from '../components/addMedia';
+
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
@@ -35,7 +39,9 @@ const ViewChat = ( { route, navigation } : any) => {
   const flatListRef = useRef<FlatList<Message>>(null);
 
   const [ currMessage, setMessage ] = useState<string>('');
+  const [ media, setMedia ] = useState<Asset[]>([]);
   const [ loading, setLoading ] = useState<boolean>(false);
+  const [ iconsVisible, setIconsVisible ] = useState(false);
 
   const [ options, setOptions ] = useState(['View Members', 'Leave']);
   const [ modalVisible, setModalVisible ] = useState(false);
@@ -118,6 +124,7 @@ const ViewChat = ( { route, navigation } : any) => {
       
       //loop through participant and set my userChat, options and url
       let parts = chatData?.participants?.items.filter(item => item !== null);
+      if(parts) setParticipants(parts);
       let URLs: (string)[] = [];
       parts?.map((participant) => {
         if(!participant.user) return;
@@ -176,7 +183,8 @@ const ViewChat = ( { route, navigation } : any) => {
 
   //Send current message unless message is empty
   const sendMessage = async () => {
-    if(currMessage === '' || !chat ) return;
+    if((currMessage === '' && media.length === 0) || !chat ) return;
+    const newPaths = await handleUploadFilepaths() || [];
     try {
       await client.graphql({
         query: createMessage,
@@ -184,6 +192,7 @@ const ViewChat = ( { route, navigation } : any) => {
           input: {
             senderID: currUser.id,
             content: currMessage,
+            msgURL: newPaths,
             chatID: chat.id,
           },
         },
@@ -374,6 +383,47 @@ const ViewChat = ( { route, navigation } : any) => {
     return styles.otherMessageContainer;
   }
 
+  //Opens media library to choose video/image to add to message
+  const openLibrary = async () => {
+    setLoading(true);
+    if(media.length >= 8){
+      Alert.alert('Max 8 media files');
+      setLoading(false);
+      return;
+    }
+    var file = await mediaPicker();
+    if(!file){
+      setLoading(false);
+      return;
+    }
+    setMedia(prev => [...prev, file as Asset]);
+    setLoading(false);
+  }
+
+  //uploads all uri's in media to s3 and returns new s3 filepaths 
+  const handleUploadFilepaths = async () => {
+    try{
+      const newPaths = await Promise.all(
+        media.map(async (item, index) => {
+          const uri = await getMediaURI(item, 
+            `public/chatPictures/${chatID}/${Date.now()}_${index}`);
+          return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`;
+        })
+      )
+      return newPaths.filter((path) => path !== null);
+    } catch {
+      Alert.alert('Error', 'There was an issue uploading the media');
+    }
+  }
+
+  const removeMedia = (item: Asset) => {
+    setMedia(media.filter((file) => file.uri !== item.uri));
+  }
+
+  const openCamera = () => {
+    Alert.alert('not implemented yet');
+  }
+
   return(
     <View style={styles.container}>
       <View style={styles.messageHeaderContainer}>
@@ -405,7 +455,7 @@ const ViewChat = ( { route, navigation } : any) => {
           />
         </View>
       </View>
-      {loading && <ActivityIndicator size="small" color="#0000ff" />}
+      {/* Flatlist for Messages */}
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -425,14 +475,39 @@ const ViewChat = ( { route, navigation } : any) => {
                   {currTime.format('MMM D, YYYY')}
                 </Text>
               )}
-              <View style={getMsgContainerStyle(item?.senderID)}>
-                {item?.senderID !== currUser.id && 
-                  <ImgComponent uri={item?.sender?.profileURL|| 'defaultUser'}/>
+              {item.msgURL && item.msgURL.length > 0 &&
+                <FlatList
+                  data={item.msgURL}
+                  numColumns={4}
+                  keyExtractor={(_, index) => index.toString()}
+                  style={{
+                    marginLeft: item.senderID === currUser.id ? 'auto' : 15,
+                    marginRight: item.senderID === currUser.id ? 15 : 'auto',
+                    marginBottom: 5,
+                  }}
+                  renderItem={({ item }) => (
+                    item?.endsWith('.mp4') ? (
+                      <Video source={{ uri: item }} style={{ width: 90, height: 90 }}
+                        resizeMode="contain"
+                      />
+                    ) : (
+                      <ImgComponent uri={item || 'defaultUser'} 
+                        style={{height: 90, width: 90}} resizeMode='contain'
+                      />
+                    )
+                  )}
+                />
+              }
+              <View style={getMsgContainerStyle(item.senderID)}>
+                {item.senderID !== currUser.id && 
+                  <ImgComponent uri={item.sender?.profileURL|| 'defaultUser'}/>
                 }
-                <View style={getMsgStyle(item?.senderID)}>
-                  <Text>{item?.content}</Text>
-                </View>
-                {item?.senderID === currUser.id && 
+                {item.content && 
+                  <View style={getMsgStyle(item.senderID)}>
+                    <Text>{item.content}</Text>
+                  </View>
+                }
+                {item.senderID === currUser.id && 
                   <ImgComponent uri={currUser.profileURL}/>
                 }
               </View>
@@ -445,18 +520,64 @@ const ViewChat = ( { route, navigation } : any) => {
         onEndReachedThreshold={0.4}
         inverted
       />
+      {loading && <ActivityIndicator size="small" color="#0000ff" />}
+
+      {/* Keyboard/TextInput section */}
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={[styles.addCommentSection, {paddingBottom: 0}]}
         keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
       > 
+        {/* Flatlist for images/videos */}
+        {media.length > 0 && 
+          <FlatList
+            data={media}
+            keyExtractor={(_, index) => index.toString()}
+            style={{marginBottom: 10}}
+            horizontal
+            renderItem={({ item }) => (
+              <View style={{alignSelf: 'center'}}>
+                {item.type === 'image' ? (
+                  <ImgComponent uri={item.uri || 'defaultUser'} style={{width: 90, height: 90}}
+                    resizeMode={'contain'}
+                  />
+                ) : (
+                  <Video source={{ uri: item.uri }} style={{width: 90, height: 90}}
+                    resizeMode="contain"
+                  />
+                )}
+                <Icon name="remove-circle-outline" size={20} style={styles.removeIcon}
+                  onPress={() => removeMedia(item)}
+                />
+              </View>
+            )}
+          />
+        }
         <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30 : 0}}>
+          {iconsVisible ? (
+            <View style={{flexDirection: 'row'}}>
+              <Icon name="remove-circle" style={{marginRight: 5, alignSelf: 'center'}} 
+                size={25} onPress={() => setIconsVisible(false)}
+              />
+              <Icon name="camera-outline" style={{marginRight: 5}} size={30}
+                onPress={openCamera}
+              />
+              <Icon name="image-outline" style={{marginRight: 5}} size={30}
+                onPress={openLibrary}
+              />
+            </View>
+          ) : (
+            <Icon name="add-circle" style={{marginRight: 5, marginBottom: 10, alignSelf: 'center'}} 
+              size={25} onPress={() => setIconsVisible(true)}
+            />
+          )}
           <TextInput
             style={styles.commentInput}
             placeholder={'Type a message'}
             value={currMessage}
             autoCapitalize='sentences'
             onChangeText={(text) => setMessage(text)}
+            onFocus={() => setIconsVisible(false)}
           />
           <Icon style={styles.commentButton} onPress={sendMessage} name="send" size={30} />
         </View>

@@ -1,19 +1,21 @@
 import { useContext, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, FlatList,
-  KeyboardAvoidingView, Platform} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Platform,
+  KeyboardAvoidingView } from 'react-native';
 
 import client from '../client';
-import { createChat, createUserChat, createMessage, createNotification,
-  deleteChat } from '../customGraphql/customMutations';
+import { createChat, createUserChat, createMessage, createNotification, deleteChat,
+  updateChat } from '../customGraphql/customMutations';
 import { User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 import { SearchBar } from '../components/SearchBar';
+import ImgComponent from '../components/ImgComponent';
+import { imagePicker, getImgURI } from '../components/addImg';
 
-/** CHANGE: Send a message to create chatroom -> button press or message send
- ** UPDATE: ability to upload image on this page? 
+/** 
+ * UPDATE: ability to upload image on this page? 
  * Page to create Chatroom with chatname, image, and invited users
  * Optional user param to start with a target User already in the chat room
 */
@@ -21,6 +23,7 @@ const CreateChat = ({ route, navigation }: any) => {
   const initalUser = route.params.user ? [route.params.user] : [];
   const [ targetUsers, setTargetUsers ] = useState<User[]>(initalUser);
   const [ chatname, setChatname ] = useState('Chat name');
+  const [ chatImage, setChatImage ] = useState<string>('defaultUser');
   const [ message, setMessage ] = useState('');
   const [ loading, setLoading ] = useState(false);
 
@@ -49,14 +52,35 @@ const CreateChat = ({ route, navigation }: any) => {
           input: {
             name: chatname,
             isGroup: false,
+            url: chatImage
           }
         },
         authMode: 'userPool'
       });
       console.log("chat created");
-      
+
       const chatID = chat.data.createChat.id;
       tempChatID = chatID;
+
+      //upload image to s3 and update new filepath for chat
+      if(chatImage !== 'defaultUser'){
+        const imgURI = await getImgURI(chatImage, 
+          `public/chatPictures/${chatID}/profile/${Date.now()}`);
+        const filepath = `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${imgURI}`;
+        if(imgURI){
+          await client.graphql({
+            query: updateChat,
+            variables: {
+              input: {
+                id: chat.data.createChat.id,
+                url: filepath
+              }
+            },
+            authMode: 'userPool'
+          })
+        }
+      }
+
       //Create current user User Chat
       await client.graphql({
         query: createUserChat,
@@ -117,7 +141,6 @@ const CreateChat = ({ route, navigation }: any) => {
         },
         authMode: 'userPool'
       })
-      console.log("Msg sent")
 
       navigation.reset({
         index: 1,
@@ -156,11 +179,28 @@ const CreateChat = ({ route, navigation }: any) => {
     setTargetUsers(targetUsers.filter((user) => user.id !== userID));
   }
 
+  //opens library and sets filepath for user selected image
+  const openImageLibrary = async () => {
+    const uri = await imagePicker();
+    if(!uri) return;
+    setChatImage(uri);
+  }
+
   if (loading) return <Text style={styles.container}>Loading...</Text>;
 
   return (
     <View style={[styles.container, { justifyContent: "flex-end" }]}>
       <SearchBar userPressed={handleUserSelected} remove={targetUsers} />
+      <TouchableOpacity onPress={openImageLibrary}
+        style={{height: 120, width: 120, alignSelf: 'center', marginVertical: 10}}
+      >
+        <ImgComponent uri={chatImage || 'defaultGroup'} 
+          style={{height: 120, width: 120, borderRadius: 60, alignSelf:'center'}}
+        />
+        <Text style={{position: 'absolute', top: '40%', left: 20, fontSize: 18}}>
+          Add Image
+        </Text>
+      </TouchableOpacity>
       <View style={styles.editNameContainer}>
         <TextInput
           style={styles.chatNameText}
@@ -176,9 +216,9 @@ const CreateChat = ({ route, navigation }: any) => {
         renderItem={({ item }) => (
           <View style={{ flexDirection: 'row', margin: 3 }}>
             <Text>{item.firstname} {item.lastname} </Text>
-            <TouchableOpacity onPress={() => handleRemoveUser(item.id)}>
-              <Icon name="remove-circle-outline" size={20} />
-            </TouchableOpacity>
+            <Icon name="remove-circle-outline" size={20} 
+              onPress={() => handleRemoveUser(item.id)}
+            />
           </View>
         )}
         numColumns={3}
@@ -195,9 +235,7 @@ const CreateChat = ({ route, navigation }: any) => {
           value={message}
           onChangeText={setMessage}
         />
-        <TouchableOpacity style={styles.commentButton} onPress={createChatRoom} >
-          <Icon name="send" size={30} />
-        </TouchableOpacity>
+        <Icon name="send" style={styles.commentButton} onPress={createChatRoom} size={30}/>
       </KeyboardAvoidingView>
     </View>
   )

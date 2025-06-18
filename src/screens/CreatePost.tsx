@@ -32,7 +32,8 @@ const CreatePost = ( {route, navigation}: any ) => {
   const getFilePath = async () => {
     setLoading(true);
     if(media.length >= 12){
-      Alert.alert('Max 12 images uploaded at once');
+      Alert.alert('Max 12 media files');
+      setLoading(false);
       return;
     }
     var file = await mediaPicker();

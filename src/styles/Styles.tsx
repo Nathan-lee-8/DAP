@@ -520,6 +520,7 @@ const styles = StyleSheet.create({
   commentInput: {
     height: 35,
     flex: 1,
+    marginBottom: Platform.OS === 'ios' ? 0 : 10,
     borderColor: '#ccc',
     borderWidth: 1,
     backgroundColor: colorPrimary,
@@ -540,6 +541,8 @@ const styles = StyleSheet.create({
   },
   commentButton: {
     marginLeft: 10,
+    marginBottom: 10,
+    alignSelf: 'center'
   },
 
   /** Create Post Styles*/

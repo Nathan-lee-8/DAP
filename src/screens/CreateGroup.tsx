@@ -138,7 +138,8 @@ const CreateGroup = ({ navigation }: any) => {
   //uploads group Image to s3
   const handleUploadImage = async (groupID: string) => {
     try{
-      const uri = await getImgURI(groupURI, `public/groupPictures/${groupID}/profile/${Date.now()}.jpg`);
+      const uri = await getImgURI(groupURI, 
+        `public/groupPictures/${groupID}/profile/${Date.now()}.jpg`);
       if(!uri) throw new Error('Image not selected');
       await client.graphql({
         query: updateGroup,
@@ -173,13 +174,9 @@ const CreateGroup = ({ navigation }: any) => {
   
   //Retrieves the local filepath to user image
   const getFilePath = async () => {
-    try{
-      var uri = await imagePicker();
-      if(uri === null) throw new Error('Image not selected');
-      setGroupURL(uri);
-    } catch(error: any){
-      console.log(error.message);
-    }
+    var uri = await imagePicker();
+    if(uri === null) return;
+    setGroupURL(uri);
   }
 
   if(loading) {

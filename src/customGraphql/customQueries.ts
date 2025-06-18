@@ -176,6 +176,7 @@ export const getChat = /* GraphQL */ `query GetChat(
       items {
         id
         content
+        msgURL
         senderID
         sender{
           id

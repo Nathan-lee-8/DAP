@@ -12,7 +12,7 @@ import { Comment } from "../API";
 
 import Icon from '@react-native-vector-icons/ionicons';
 import { AuthContext } from '../context/AuthContext';
-import CommentComp from '../components/commentComponent';
+import CommentComp from './commentComponent';
 
 /** 
  * Retrieves and displays all comments for the given postID. Allows the 
@@ -136,9 +136,8 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       });
-      console.log("posted Reply");
-    } catch (error) {
-      console.error('Error creating comment:', error);
+    } catch {
+      Alert.alert('Error', 'Unable to post comment');
     }
   }
 
@@ -188,14 +187,11 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
       <FlatList
         ref={flatListRef}
         data={comments}
-        renderItem={({ item, index }) => {
-          return (
-            <CommentComp item={item} keyboardTarget={handleKeyboard} 
-              refreshComments={fetchComments} 
-              index={index}
-            />
-          )
-        }}
+        renderItem={({ item, index }) => (
+          <CommentComp comment={item} keyboardTarget={handleKeyboard} 
+            refreshComments={fetchComments} index={index}
+          />
+        )}
         ListEmptyComponent={() => (
           <View>
             <Text style={styles.noResultsMsg}>No Comments Available</Text>
