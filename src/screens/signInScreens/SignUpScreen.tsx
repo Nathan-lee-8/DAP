@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, KeyboardAvoidingView,
-  ActivityIndicator, TouchableWithoutFeedback, Platform } from 'react-native';
+  TouchableWithoutFeedback, Platform } from 'react-native';
+
 import { signUp } from '@aws-amplify/auth';
-import styles from '../../styles/Styles';
+import styles from '../../styles/SignInScreenStyles';
+import ImgComponent from '../../components/ImgComponent';
 
 /**
  * Creates a user profile in Cognito. Navigates to the Verify page to confirm 
@@ -11,13 +13,17 @@ import styles from '../../styles/Styles';
 const SignUp = ( {navigation} : any ) => {
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  const [ password2, setPassword2 ] = useState('');
 
   const handleSignUp = async () => {
     if(email === '') {
-      Alert.alert('Error', 'Please enter an email.');
+      Alert.alert('Error', 'Please enter a valid email.');
       return;
     }else if(password === '') {
       Alert.alert('Error', 'Please enter a password.');
+      return;
+    }else if( password !== password2){
+      Alert.alert('Error', 'Passwords do not match.');
       return;
     }
     try{
@@ -39,6 +45,8 @@ const SignUp = ( {navigation} : any ) => {
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
+          <ImgComponent uri="logo" style={styles.logoLarge}/>
+          <Text style={styles.loginText}>Create a Password</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -54,16 +62,23 @@ const SignUp = ( {navigation} : any ) => {
             value={password}
             onChangeText={setPassword}
           />
+          <TextInput
+            style={styles.input}
+            placeholder="Re-Enter Password"
+            secureTextEntry
+            value={password2}
+            onChangeText={setPassword2}
+          />
           <Text style={styles.note}>
             *Note: Password can not be changed until after account verification
           </Text>
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
-            <TouchableOpacity style={[styles.buttonBlack, {marginTop: 20}]} 
+            <TouchableOpacity style={[styles.loginBtn, {marginTop: 20}]} 
               onPress={ handleSignUp }
             >
-              <Text style={styles.buttonTextWhite}>Create Account</Text>
+              <Text style={styles.loginBtnText}>Continue</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>

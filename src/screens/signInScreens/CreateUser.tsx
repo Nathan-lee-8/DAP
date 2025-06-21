@@ -7,7 +7,8 @@ import client from '../../client';
 import { createUser } from '../../customGraphql/customMutations';
 
 import { AuthContext } from '../../context/AuthContext';
-import styles from '../../styles/Styles';
+import styles from '../../styles/SignInScreenStyles';
+import ImgComponent from '../../components/ImgComponent';
 
 /**
  * Accesses user inputted email, password, first and last name and creates a 
@@ -61,7 +62,8 @@ const CreateUser = () => {
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
-          <Text style={styles.title}>About you</Text>
+          <ImgComponent uri="logo" style={styles.logoLarge}/>
+          <Text style={styles.loginText}>About you</Text>
           <TextInput
             style={styles.input}
             value={firstname}
@@ -79,8 +81,8 @@ const CreateUser = () => {
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
-            <TouchableOpacity style={[styles.buttonBlack, {marginTop: 20}]} onPress={ handleSignUp }>
-              <Text style={styles.buttonTextWhite}>Create Account</Text>
+            <TouchableOpacity style={styles.signInBtn} onPress={ handleSignUp }>
+              <Text style={styles.loginBtnText}>Create Account</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>

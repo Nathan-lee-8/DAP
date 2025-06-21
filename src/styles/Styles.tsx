@@ -22,50 +22,24 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: 'black',
     justifyContent: 'center',
+    borderRadius: 5,
     margin: 5,
     marginHorizontal: 10,
-  },
-  buttonWhite: {
-    alignSelf: 'center',
-    width: width - 20,
-    height: 50,
-    borderWidth: 1,
-    borderColor: 'black',
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    margin: 5,
-    marginHorizontal: 10,
-  },
+  }, 
   buttonTextBlack: { 
     fontSize: 14,
     textAlign: 'center',
     color: 'black'
   },
-  buttonTextWhite: {
+  buttonTextWhite: { 
     fontSize: 14,
     textAlign: 'center',
-    alignSelf:'center',
     color: 'white'
   },
   buttonTextBlue: {
     fontSize: 16,
     color: 'blue'
   },
-  announcement: {
-    marginTop: 20,
-    fontSize: 60,
-    fontWeight: 'bold'
-  },
-  logo: {
-    width: 30,
-    height: 30,
-    alignSelf: 'center'
-  },
-  logoText: {
-    fontWeight: 'bold',
-    fontSize: 30,
-    marginLeft: 10,
-  },  
   noResultsMsg : {
     fontSize: 16,
     color: textColor,
@@ -93,29 +67,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 1
   },
-  
-  /** Sign in and Sign up page */
   contentText: {
     fontSize: 24,
     marginBottom: 60,
     color: textColor,
     alignSelf: 'center',
     textAlign: 'center',
-  },
-  formContainer: {
-    justifyContent: 'center',
-    padding: 20,
-    flex: 1,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    margin: 10,
-    marginTop: 0,
-    borderRadius: 5,
-    backgroundColor: colorPrimary
   },
   longInput: {
     height: 100,
@@ -127,27 +84,21 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     textAlignVertical: 'top',
     backgroundColor: colorPrimary
-  },
-  centeredRow:{
-    flexDirection: 'row',
-    textAlign: 'center',
-    justifyContent: 'center'
-  },
-  iconContainer: {
-    width: '100%',
-    padding: 20,
-    alignSelf: 'baseline',
-    alignItems: 'center',
-  },
-  icon: {
-    marginHorizontal: 10,
-    padding: 10,
-  },
+  },    
   label: {
     marginBottom: 5,
     marginLeft: 12,
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    margin: 10,
+    borderRadius: 5,
+    backgroundColor: colorPrimary
   },
   note: {
     marginTop: -10,
@@ -492,7 +443,6 @@ const styles = StyleSheet.create({
     fontWeight:400,
     fontSize: 12
   },
-
   addCommentSection: {
     height: 'auto',
     backgroundColor: 'white',
@@ -706,6 +656,29 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'black',
     backgroundColor: 'white',
+  },
+
+  /** Create Group section */
+  navButtonContainer:{
+    marginBottom: Platform.OS === 'ios' ? 60 : 40, 
+    margin: 20,
+    flexDirection: 'row'
+  },
+  nextButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 'auto',
+    padding: 5,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 5,
+  },
+  navButtonText:{
+    fontSize: 20,
+    color: 'black',
+    marginHorizontal: 10
   },
 
   /** Groups Section */
@@ -955,23 +928,21 @@ const styles = StyleSheet.create({
   },
   searchTermContainer: {
     height: 40,
-    width: 60,
-    alignContent:'center',
+    width: width * 0.2,
+    flexDirection: 'row',
     alignItems:'center',
+    textAlign:'center',
     justifyContent: 'center',
-    textAlign: 'center',
     borderWidth: 1,
-    borderColor: 'black',
+    borderColor: '#a3a3a3',
     backgroundColor: colorPrimary,
     zIndex: 1
   },
   searchTermSelected: {
     height: 40,
-    width: 60,
-    alignContent:'center',
+    width: width * 0.2,
     alignItems:'center',
     justifyContent: 'center',
-    textAlign: 'center',
     borderWidth: 1,
     borderColor: 'black',
     backgroundColor: 'grey',

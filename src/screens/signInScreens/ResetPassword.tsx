@@ -1,9 +1,11 @@
 import { useContext, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Alert, Text, Platform, Keyboard,
   TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
+
 import { resetPassword, confirmResetPassword, signIn } from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
-import styles from '../../styles/Styles';
+import styles from '../../styles/SignInScreenStyles';
+import ImgComponent from '../../components/ImgComponent';
 
 /**
  * Retrieves the code and password from the user. Resets the password in Cognito
@@ -15,7 +17,7 @@ const ResetPassword = () => {
     console.log("Auth context not defined");
     return null;
   }
-  const { setUserEmail, triggerFetch } = authContext;
+  const { setUserEmail } = authContext;
   const [ code, setCode ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ password1, setPassword1 ] = useState('');
@@ -54,18 +56,19 @@ const ResetPassword = () => {
     return (
       <View style={styles.container}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.formContainer}>
-          <Text style={styles.contentText}>Enter your email to reset your password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder='Enter email'
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TouchableOpacity style={[styles.buttonBlack, {marginBottom: 140}]} onPress={ handleResetPassword}>
-            <Text style={styles.buttonTextWhite}>Reset Password</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.formContainer}>
+            <ImgComponent uri="logo" style={styles.logoLarge}/>
+            <Text style={styles.loginText}>Enter your email to reset your password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder='Enter email'
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TouchableOpacity style={styles.loginBtn} onPress={ handleResetPassword}>
+              <Text style={styles.loginBtnText}>Reset Password</Text>
+            </TouchableOpacity>
+          </View>
         </TouchableWithoutFeedback>
       </View>
     )
@@ -75,10 +78,12 @@ const ResetPassword = () => {
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.formContainer}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
-          <Text style={styles.contentText}>Enter the confirmation code sent to: 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.formContainer}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        >
+          <ImgComponent uri="logo" style={styles.logoLarge}/>
+          <Text style={styles.loginText}>Enter the confirmation code sent to: 
             <Text style={{color: "#007BFF"}}> {email}</Text>
           </Text>
           <TextInput
@@ -101,8 +106,8 @@ const ResetPassword = () => {
             value={password1}
             onChangeText={setPassword1}
           />
-          <TouchableOpacity style={styles.buttonBlack} onPress={ confirmPasswordReset }>
-            <Text style={styles.buttonTextWhite}>Reset Password</Text>
+          <TouchableOpacity style={styles.loginBtn} onPress={ confirmPasswordReset }>
+            <Text style={styles.loginBtnText}>Reset Password</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>

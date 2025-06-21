@@ -125,29 +125,27 @@ const CreatePost = ( {route, navigation}: any ) => {
             <Text style={styles.buttonTextWhite}>Post</Text>
           </TouchableOpacity>
         </View>
-        <View style={{paddingLeft: 10}}>
-          <FlatList
-            data={media}
-            numColumns={4}
-            keyExtractor={(_,index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.postImageContainer}>
-                {item.fileName?.endsWith('.mp4') || item.type?.startsWith('video') ? (
-                  <Video source={{ uri: item.uri }} style={{ width: 90, height: 90 }}
-                    resizeMode="contain"
-                  />
-                ) : (
-                  <ImgComponent uri={item.uri || 'defaultUser'} 
-                    style={{height: 90, width: 90}} 
-                  />
-                )}
-                <Icon style={styles.removeIcon} name="remove-circle-outline" size={20}
-                  onPress={() => handleRemoveItem(item)}
+        <FlatList
+          data={media}
+          numColumns={4}
+          keyExtractor={(_,index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.postImageContainer}>
+              {item.fileName?.endsWith('.mp4') || item.type?.startsWith('video') ? (
+                <Video source={{ uri: item.uri }} style={{ width: 90, height: 90 }}
+                  resizeMode="contain"
                 />
-              </View>
-            )}
-          />
-        </View>
+              ) : (
+                <ImgComponent uri={item.uri || 'defaultUser'} 
+                  style={{height: 90, width: 90}} 
+                />
+              )}
+              <Icon style={styles.removeIcon} name="remove-circle-outline" size={20}
+                onPress={() => handleRemoveItem(item)}
+              />
+            </View>
+          )}
+        />
       </View>
     </TouchableWithoutFeedback>
   )

@@ -43,7 +43,7 @@ const UserPosts = ( {userID} : {userID: string} ) => {
       });
       const fetchedPosts = response.data.postsByUser.items || [];
       var filteredPosts = fetchedPosts.filter((item) => !posts.includes(item))
-        .filter((item) => item?.group?.type === 'Public');
+        .filter((item) => item.group?.type === 'Public');
       if(refresh) setPosts(filteredPosts);
       else setPosts((prev) => [...prev, ...filteredPosts]);
       setNextToken(response.data.postsByUser.nextToken);

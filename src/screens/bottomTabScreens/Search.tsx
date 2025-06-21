@@ -7,9 +7,10 @@ import {  groupsByMemberCount, groupsByUser } from '../../customGraphql/customQu
 import { Group, User, UserGroup, ModelSortDirection } from '../../API';
 
 import styles from '../../styles/Styles';
-import {SearchBar, GroupSearch} from '../../components/SearchBar';
+import { SearchBar, GroupSearch } from '../../components/SearchBar';
 import FormatExploreGroup from '../../components/FormatExploreGroup';
 import { AuthContext } from '../../context/AuthContext';
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Search Page that contains a search bar that allows searching for users or groups. 
@@ -86,13 +87,14 @@ const Search = ( {navigation} : any ) => {
     <View style={styles.container}>
       <View style={{flexDirection:'row'}}>
         {searchTerm === 'Users' ? (
-          <SearchBar width={'85%'} userPressed={handleViewUser}/>
+          <SearchBar width={'80%'} userPressed={handleViewUser}/>
         ) : searchTerm === 'Groups' ? (
           <GroupSearch />
         ) : null}
         <View style={styles.searchTermList}>
           <TouchableOpacity style={styles.searchTermContainer} onPress={() => setSelected(!selected)}>
-            <Text style={{textAlign: 'center'}}>{searchTerm}</Text>
+            <Text style={{marginHorizontal: 5}}>{searchTerm}</Text>
+            <Icon name={selected ? 'chevron-down' : 'chevron-up'} size={15} />
           </TouchableOpacity>
           <FlatList
             data={['Users', 'Groups']}

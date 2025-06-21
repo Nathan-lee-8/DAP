@@ -1,9 +1,11 @@
 import { useContext, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Alert, Text, Keyboard,
   TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from 'react-native';
+
 import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
-import styles from '../../styles/Styles';
+import styles from '../../styles/SignInScreenStyles';
+import ImgComponent from '../../components/ImgComponent';
 
 /**
  * Retrieves the email, firstname, and lastname entered from the sign up page and 
@@ -47,13 +49,14 @@ const VerifyScreen = ( {route} : any ) => {
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
-          <Text style={[styles.contentText, {alignContent: 'flex-start'}]}>
+          <ImgComponent uri="logo" style={styles.logoLarge}/>
+          <Text style={styles.loginText}>
             Verification email sent to: 
             <Text style={{color: "#007BFF"}}> {email}</Text>
           </Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter verification code"
+            placeholder="Verification code"
             value={code}
             onChangeText={setCode}
             keyboardType="numeric"
@@ -62,7 +65,7 @@ const VerifyScreen = ( {route} : any ) => {
           {!password &&
             <TextInput
               style={styles.input}
-              placeholder="Enter password used at account creation"
+              placeholder="Password"
               secureTextEntry
               value={password}
               onChangeText={setPassword}
@@ -71,11 +74,12 @@ const VerifyScreen = ( {route} : any ) => {
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
-            <TouchableOpacity style={styles.buttonBlack} onPress={ resendSignUp }>
-              <Text style={styles.buttonTextWhite}>Resend</Text>
+            <TouchableOpacity style={styles.signInBtn} onPress={ handleVerification }>
+              <Text style={styles.loginBtnText}>Verify</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.buttonWhite, {marginBottom: 80}]} onPress={ handleVerification }>
-              <Text style={styles.buttonTextBlack}>Verify</Text>
+            
+            <TouchableOpacity onPress={ resendSignUp} style={{marginTop: 20}}>
+              <Text style={styles.hyperlink}>Resend code</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>
         </View>
