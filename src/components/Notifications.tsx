@@ -119,7 +119,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     }else if(item.type === 'Post'){
       navigation.navigate('ViewPost', { postID: item.onClickID });
     }else if(item.type === 'Chat'){
-      navigation.navigate('ChatRoom', { chatID: item.onClickID });
+      navigation.navigate('ViewChat', { chatID: item.onClickID });
     }
   }
 

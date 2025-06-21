@@ -204,8 +204,8 @@ const ViewGroupMembers = ( {route, navigation} : any ) => {
       />
       {(myUserGroup?.role === 'Admin' || myUserGroup?.role === 'Owner') && 
         <View>
-          <TouchableOpacity style={styles.buttonWhite} onPress={handleCreateChat}>
-            <Text style={styles.buttonTextBlack}>Create Chat</Text>
+          <TouchableOpacity style={styles.buttonBlack} onPress={handleCreateChat}>
+            <Text style={styles.buttonTextWhite}>Create Chat</Text>
           </TouchableOpacity>
         </View>
       }

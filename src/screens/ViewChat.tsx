@@ -65,7 +65,35 @@ const ViewChat = ( { route, navigation } : any) => {
     }
   }, [participants]);
 
-  //get Chat data when gain focus and clean subscription when losing focus
+  //on open set unreadMessageCount to 0 & decrement unreadChatCount if neccessary
+  useEffect(() => {
+    if(myUserChat && myUserChat.unreadMessageCount !== 0){
+      client.graphql({
+        query: updateUserChat,
+        variables: {
+          input: {
+            id: myUserChat.id,
+            unreadMessageCount: 0,
+          },
+        },
+        authMode: 'userPool'
+      });
+      client.graphql({
+        query: updateUser,
+        variables: {
+          input: {
+            id: currUser.id,
+            unreadChatCount: (currUser.unreadChatCount - 1) >= 0 ? 
+              currUser.unreadChatCount - 1 : 0,
+          }
+        },
+        authMode: 'userPool'
+      })
+      if(triggerFetch) triggerFetch();
+    }
+  }, [myUserChat]);
+
+  //subscription to listen for incoming messages and display
   useFocusEffect(
     useCallback(() => {
       fetchChat();
@@ -151,36 +179,6 @@ const ViewChat = ( { route, navigation } : any) => {
     }
   };
 
-  //When user leaves chatroom set unread chat count to 0 & decrement users unread 
-  //chat count by 1
-  const handleGoBack = async () => {
-    if(myUserChat && myUserChat.unreadMessageCount !== 0){
-      await client.graphql({
-        query: updateUserChat,
-        variables: {
-          input: {
-            id: myUserChat.id,
-            unreadMessageCount: 0,
-          },
-        },
-        authMode: 'userPool'
-      });
-      await client.graphql({
-        query: updateUser,
-        variables: {
-          input: {
-            id: currUser.id,
-            unreadChatCount: (currUser.unreadChatCount - 1) >= 0 ? 
-              currUser.unreadChatCount - 1 : 0,
-          }
-        },
-        authMode: 'userPool'
-      })
-      if(triggerFetch) triggerFetch();
-    }
-    navigation.goBack();
-  }
-
   //Send current message unless message is empty
   const sendMessage = async () => {
     if((currMessage === '' && media.length === 0) || !chat ) return;
@@ -207,8 +205,7 @@ const ViewChat = ( { route, navigation } : any) => {
   //Handles menu option buttons
   const handleOptionButton = (option: string) => {
     if(option === 'View Members'){
-      navigation.navigate('ViewChatMembers', 
-        {chatData: chat, userChats: [myUserChat, ...participants]});
+      navigation.navigate('ViewChatMembers', {chatData: chat, userChats: participants});
     }else if( option === 'Leave'){
       handleLeaveChat();
     }else if(option === 'Invite'){
@@ -426,10 +423,11 @@ const ViewChat = ( { route, navigation } : any) => {
 
   return(
     <View style={styles.container}>
+      {/* page header section */}
       <View style={styles.messageHeaderContainer}>
         <View style={{flexDirection: 'row'}}>
           <Icon style={{padding: 10, alignSelf: 'center'}} name='arrow-back-outline' 
-            size={25} onPress={() => handleGoBack()}
+            size={25} onPress={() => navigation.goBack()}
           />
           <View style={styles.URLSection}>
             {chat && chat.url ? (
@@ -450,7 +448,7 @@ const ViewChat = ( { route, navigation } : any) => {
             )}
           </View>
           <Text style={styles.chatRoomName} numberOfLines={1}>{title}</Text>
-          <Icon style={{alignSelf:'center'}} name='ellipsis-horizontal-outline' size={25} 
+          <Icon style={{alignSelf:'center'}} name='ellipsis-horizontal' size={25} 
             onPress={() => setModalVisible(true)}
           />
         </View>
@@ -475,6 +473,7 @@ const ViewChat = ( { route, navigation } : any) => {
                   {currTime.format('MMM D, YYYY')}
                 </Text>
               )}
+              {/* Flatlist to display media in messages */}
               {item.msgURL && item.msgURL.length > 0 &&
                 <FlatList
                   data={item.msgURL}

@@ -126,9 +126,11 @@ const EditProfile = ( {navigation} : any ) => {
       {!editsOn ? ( //Edit View
         <View style={{flex: 1}}>
           <View style={styles.viewUserProfileSection}>
-            <ImgComponent uri={currUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
+            <ImgComponent uri={currUser.profileURL} style={styles.viewProfileURL}/>
             <View style={styles.userInfoContainer}>
-              <Text style={styles.postAuthor}>{currUser.firstname} {currUser.lastname} </Text>
+              <Text style={[styles.postAuthor, {fontWeight: '600'}]}>
+                {currUser.firstname} {currUser.lastname} 
+              </Text>
               <Text style={styles.postContent}>{currUser.email} </Text>
               <Text style={styles.postContent}>{currUser.description}</Text>
             </View>
@@ -144,11 +146,11 @@ const EditProfile = ( {navigation} : any ) => {
             keyboardShouldPersistTaps='handled'
           >
             <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-              <ImgComponent uri={tempURL || 'defaultUser' } style={styles.editProfileURL}/>
+              <ImgComponent uri={tempURL} style={styles.editProfileURL}/>
               <Text style={styles.uploadImageText}>Edit Image</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setEditsOn(false)} style={styles.editProfileButton}>
-              <Text style={styles.buttonTextBlue}>Cancel</Text>
+              <Text style={styles.noResultsMsg}>Cancel</Text>
             </TouchableOpacity>
             <Text style={styles.label}>First Name</Text>
             <TextInput
@@ -177,7 +179,9 @@ const EditProfile = ( {navigation} : any ) => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
           >   
-            <TouchableOpacity style={[styles.buttonBlack, {marginTop: 'auto'}]} onPress={saveEdits}>
+            <TouchableOpacity style={[styles.buttonBlack]} 
+              onPress={saveEdits}
+            >
               <Text style={styles.buttonTextWhite}>Save</Text>
             </TouchableOpacity>
           </KeyboardAvoidingView>

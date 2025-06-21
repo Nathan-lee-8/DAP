@@ -139,7 +139,9 @@ const MessageUsers = ( {navigation}: any ) => {
                   <View style={{
                     paddingHorizontal: 10, width: Dimensions.get('window').width * 0.70
                   }}>
-                    <Text style={styles.postAuthor}numberOfLines={1}>{chatname}</Text>
+                    <Text style={[styles.postAuthor, {fontWeight: '500'}]}numberOfLines={1}>
+                      {chatname}
+                    </Text>
                     <Text style={styles.postContent}numberOfLines={1}>
                       {item.lastMessage}
                     </Text>

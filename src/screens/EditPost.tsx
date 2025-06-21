@@ -130,43 +130,33 @@ const EditPost = ( {route, navigation} : any ) => {
           value={content}
           onChangeText={setContent}
         />
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity onPress={getFilePath} style={{marginLeft: 'auto'}}>
-            <Icon name="image-outline" size={30} color={"blue"}/>
+        <View style={styles.postFooter}>
+          <TouchableOpacity style={styles.addPostImgButton} onPress={getFilePath}>
+            <Text style={styles.buttonTextBlack}>Photos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.createPostButton} onPress={sendPost}>
+            <Text style={styles.buttonTextWhite}>Post</Text>
           </TouchableOpacity>
         </View>
-        <View style={{paddingLeft: 10}}>
-          <FlatList
-            data={displayPaths}
-            numColumns={4}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <View style={styles.postImageContainer}>
-                {item.endsWith('.mp4') ? (
-                  <Video source={{ uri: item }} style={{ width: 90, height: 90 }}
-                    resizeMode="contain"
-                  />
-                ) : (              
-                  <ImgComponent uri={item} style={{height: 90, width: 90}}/>
-                )}
-                <TouchableOpacity style={styles.removeIcon} 
-                  onPress={() => handleRemoveItem(item)}
-                >
-                  <Icon name="remove-circle-outline" size={20}/>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-        </View>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-        >   
-          <TouchableOpacity onPress={sendPost} style={styles.buttonBlack}>
-            <Text style={styles.buttonTextWhite}>Save</Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
+        <FlatList
+          data={displayPaths}
+          numColumns={4}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <View style={styles.postImageContainer}>
+              {item.endsWith('.mp4') ? (
+                <Video source={{ uri: item }} style={{width: 90, height: 90}}
+                  resizeMode="contain"
+                />
+              ) : (              
+                <ImgComponent uri={item} style={{height: 90, width: 90}}/>
+              )}
+              <Icon name="remove-circle-outline" size={20} style={styles.removeIcon} 
+                onPress={() => handleRemoveItem(item)}
+              />
+            </View>
+          )}
+        />
       </View>
     </TouchableWithoutFeedback>
   )

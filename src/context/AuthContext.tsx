@@ -35,11 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const checkAuthState = async () => {
       try {
         const user = await fetchUserAttributes();
-        if(user.email){ 
-          setUserEmail(user.email);
-        } else{
-          console.log('error getting user from cognito');
-        }
+        if(user.email) setUserEmail(user.email);
       } catch (error) {
         console.log('Error checking auth state:', error);
         await signOut();
@@ -48,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuthState();
   }, []);
 
-  //Sets current user data whenever userEmail is set
+  //Sets current user data whenever userEmail is set or custom triggered by fetchcounter
   useEffect(() => {
     if(!userEmail || userEmail === '') return;
     const getUserAttributes = async () => {
@@ -84,9 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           const token = await getToken(messaging);
           console.log('token:', token);
           await registerTokenToBackend(token); 
-        } else {
-          console.log('Permission not granted, cannot get token');
-        }
+        } 
       }catch(error){
         console.log(error);
       }

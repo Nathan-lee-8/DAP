@@ -219,14 +219,15 @@ const CreateGroup = ({ navigation }: any) => {
         />
         <KeyboardAvoidingView 
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
+          style={styles.navButtonContainer}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         >   
-          <TouchableOpacity style={styles.buttonWhite} onPress={() => setGoNext(false)}>
-            <Text style={styles.buttonTextBlack}>Back</Text>
+          <TouchableOpacity style={styles.backButton} onPress={() => setGoNext(false)}>
+            <Icon name="arrow-back" size={25}/>
+            <Text style={styles.navButtonText}>Back</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonBlack} onPress={addGroup}>
-            <Text style={styles.buttonTextWhite}>Save</Text>
+          <TouchableOpacity style={styles.nextButton} onPress={addGroup}>
+            <Text style={styles.navButtonText}>Save</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </View>
@@ -304,11 +305,12 @@ const CreateGroup = ({ navigation }: any) => {
       </ScrollView>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{marginBottom: Platform.OS === 'ios' ? 40 : 0, marginTop: 'auto'}}
+        style={styles.navButtonContainer}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
       >   
-        <TouchableOpacity style={styles.buttonBlack} onPress={() => setGoNext(true)}>
-          <Text style={styles.buttonTextWhite}>Next</Text>
+        <TouchableOpacity style={styles.nextButton} onPress={() => setGoNext(true)}>
+          <Text style={styles.navButtonText}>Next</Text>
+          <Icon name="arrow-forward" size={25}/>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>

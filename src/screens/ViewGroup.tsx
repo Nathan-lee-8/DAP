@@ -144,7 +144,7 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   //Navigate to create Post page
   const createGroupPost = () => {
-    navigation.navigate('CreatePost', {groupID: groupID, isPublic: group?.type === 'Public'});
+    navigation.navigate('CreatePost', {groupID: groupID});
   }
   
   //Join group button for users that are not part of the group. Automatically adds user to

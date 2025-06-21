@@ -6,21 +6,44 @@ import { signIn, fetchUserAttributes, signInWithRedirect } from '@aws-amplify/au
 import { Hub } from '@aws-amplify/core';
 import { AuthContext } from '../../context/AuthContext';
 import Icon from '@react-native-vector-icons/ionicons';
-import styles from '../../styles/Styles';
+import styles from '../../styles/SignInScreenStyles';
+import ImgComponent from '../../components/ImgComponent';
+
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SignInParamList } from '../../types/rootStackParamTypes';
 
 /**
  * Displays Inputs for user to sign in with email and password and Icon for user to sign
  * in with Google. Signs in using user input values and retrieves the User input email 
  * and password. Signs in with Cognito and sets user email.
  */
-const SignIn = ({route}: any) => {
-  const navigation = route.navigation;
+const SignIn = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) return;
   const { setUserEmail } = authContext;
+
+  //Signs in to cognito, navigates to verify if unverified & triggers signin through 
+  //authcontext if verified
+  const handleSignIn = async () => {
+    try{
+      const res = await signIn({ username: email.trim().toLowerCase(), password: password });
+      if(!res.isSignedIn){
+        Alert.alert('Error', 'Please verify your email before signing in.',[
+          { text: 'OK', onPress: () => navigation.navigate('Verify', {email: email}) }
+        ]);
+        return;
+      };
+      setUserEmail(email.trim().toLowerCase());
+    } catch {
+      Alert.alert('Error', 'Invalid email & password or account does not exist.');
+    };
+  };
 
   //Subscription to listen for social provider login response
   useEffect(() => {
@@ -38,23 +61,6 @@ const SignIn = ({route}: any) => {
     });
     return unsubscribe;
   }, []);
-
-  //Signs in to cognito, navigates to verify if unverified & triggers signin through 
-  //authcontext if verified
-  const handleSignIn = async () => {
-    try{
-      const res = await signIn({ username: email.trim().toLowerCase(), password: password });
-      if(!res.isSignedIn){
-        Alert.alert('Error', 'Please verify your email before signing in.',[
-          { text: 'OK', onPress: () => navigation.navigate('Verify', {email: email}) }
-        ]);
-        return;
-      };
-      setUserEmail(email.trim().toLowerCase());
-    } catch (error: any) {
-      Alert.alert('Error', 'Invalid email & password or account does not exist.');
-    };
-  };
 
   //handles social provider signin: sets User email triggering signin through authcontext
   const handleSocialProviderSignIn = async () => {
@@ -78,6 +84,8 @@ const SignIn = ({route}: any) => {
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={[styles.formContainer]}>
+          <ImgComponent uri="logo" style={styles.logoLarge}/>
+          <Text style={styles.loginText}>Log in</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter your email"
@@ -93,32 +101,35 @@ const SignIn = ({route}: any) => {
             value={password}
             onChangeText={ setPassword }
           />
-          <TouchableOpacity style={[styles.buttonBlack, {marginTop: 20}]} onPress={ handleSignIn }>
-            <Text style={styles.buttonTextWhite}>Sign In</Text>
+          <TouchableOpacity style={styles.signInBtn} onPress={ handleSignIn }>
+            <Text style={styles.loginBtnText}>Sign In</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonBlack} 
-            onPress={() => navigation.navigate('SignUp')}
+
+          <Text style={{textAlign:'center', marginVertical: 15}}>or</Text>
+
+          <TouchableOpacity style={styles.googleLoginContainer}
+            onPress={() => signInWithRedirect({ provider: 'Google' })}
           >
-            <Text style={styles.buttonTextWhite}>Sign Up</Text>
+            <Icon name="logo-google" size={25} />
+            <Text style={styles.label}>Continue with Google</Text>
           </TouchableOpacity>
-        </View>
-      </TouchableWithoutFeedback>
-      <View style={styles.centeredRow}>
-        <Text>Forgot Password? </Text>
-        <TouchableOpacity onPress={ resetPw }>
-          <Text style={{color: "#007BFF"}}>Reset Password</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={{width: '100%'}}>
-        <View style={styles.iconContainer}>
-          <Text style={styles.label}>Login with Google</Text>
-          <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity style={styles.icon} onPress={ () => signInWithRedirect({ provider: 'Google' }) }>
-              <Icon name="logo-google" size={35} color="#007BFF"/>
+
+
+          <View style={styles.centeredRow}>
+            <Text>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+              <Text style={styles.hyperlink}>Sign Up</Text> 
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.centeredRow}>
+            <Text>Forgot Password? </Text>
+            <TouchableOpacity onPress={ resetPw }>
+              <Text style={styles.hyperlink}>Reset Password</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </View>
   );
 };

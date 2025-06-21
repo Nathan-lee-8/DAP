@@ -56,7 +56,9 @@ const ViewProfiles = ( { route, navigation } : any) => {
       <View style={styles.viewUserProfileSection}>
         <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
         <View style={styles.userInfoContainer}>
-          <Text style={styles.postAuthor}>{targetUser.firstname} {targetUser.lastname}</Text>
+          <Text style={[styles.postAuthor, {fontWeight: '600'}]}>
+            {targetUser.firstname} {targetUser.lastname}
+          </Text>
           <Text style={styles.userContact}>{targetUser.email}</Text>
           <Text style={styles.userContact}>{targetUser.description || "No bio available"}</Text>
         </View>

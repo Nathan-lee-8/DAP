@@ -74,7 +74,7 @@ const Groups = ( {navigation} : any ) => {
                   <ImgComponent uri={item.group?.groupURL || "defaultGroup"} 
                     style={{height: 40, width: 40, borderRadius: 20}} />
                   <View style={styles.userInfoContainer}>
-                    <Text style={styles.postAuthor}>{item.group?.groupName}</Text>
+                    <Text style={[styles.postAuthor, {fontWeight: '500'}]}>{item.group?.groupName}</Text>
                     <Text style={styles.postDate} numberOfLines={1}>
                       {item.group?.description || "No description"}
                     </Text>
