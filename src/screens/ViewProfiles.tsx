@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Alert 
+} from 'react-native';
 
 import client from '../client';
 import { getUser } from '../customGraphql/customQueries';
@@ -37,7 +38,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
         authMode: 'userPool'
       });
       const user = response.data.getUser;
-      if(user)setTargetUser(user);
+      if(user) setTargetUser(user);
     } catch {
       Alert.alert('Error', 'Could not find User');
     } finally {
@@ -54,13 +55,17 @@ const ViewProfiles = ( { route, navigation } : any) => {
     <View style={styles.container}>
       {/* User Profile Section */}
       <View style={styles.viewUserProfileSection}>
-        <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} style={styles.viewProfileURL}/>
+        <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} 
+          style={styles.viewProfileURL}
+        />
         <View style={styles.userInfoContainer}>
           <Text style={[styles.postAuthor, {fontWeight: '600'}]}>
             {targetUser.firstname} {targetUser.lastname}
           </Text>
           <Text style={styles.userContact}>{targetUser.email}</Text>
-          <Text style={styles.userContact}>{targetUser.description || "No bio available"}</Text>
+          <Text style={styles.userContact}>
+            {targetUser.description || "No bio available"}
+          </Text>
         </View>
         <View style={{height: 80, flexDirection:'column'}}>
           <TouchableOpacity style={styles.messageUserButton} 

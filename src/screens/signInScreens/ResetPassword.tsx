@@ -14,7 +14,6 @@ import ImgComponent from '../../components/ImgComponent';
 const ResetPassword = () => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
-    console.log("Auth context not defined");
     return null;
   }
   const { setUserEmail } = authContext;

@@ -41,11 +41,15 @@ const UserPosts = ( {userID} : {userID: string} ) => {
         },
         authMode: 'userPool'
       });
-      const fetchedPosts = response.data.postsByUser.items || [];
-      var filteredPosts = fetchedPosts.filter((item) => !posts.includes(item))
+      const fetchedPosts = response.data.postsByUser.items
         .filter((item) => item.group?.type === 'Public');
-      if(refresh) setPosts(filteredPosts);
-      else setPosts((prev) => [...prev, ...filteredPosts]);
+      if(refresh){
+        setPosts(fetchedPosts);
+      } else{
+        var filteredPosts = fetchedPosts.filter((item) => item.group?.type === 'Public'
+          && !posts.some(existingItem => existingItem.id === item.id));
+        setPosts((prev) => [...prev, ...filteredPosts]);
+      }
       setNextToken(response.data.postsByUser.nextToken);
     } catch {
       Alert.alert('Error', 'There was an issue fetching posts');
@@ -63,7 +67,9 @@ const UserPosts = ( {userID} : {userID: string} ) => {
           ref={flatListRef}
           data={posts}
           renderItem={({ item }) => 
-            <FormatPost post={item} destination={'Profile'}/>
+            <FormatPost post={item} destination={'Profile'} 
+              refresh={() => fetchPosts(true)}
+            />
           }
           ListEmptyComponent={() => (
             <View>
@@ -75,7 +81,7 @@ const UserPosts = ( {userID} : {userID: string} ) => {
           maxToRenderPerBatch={5}
           windowSize={4}
           removeClippedSubviews={ Platform.OS === 'ios' ? false : true}
-          onEndReachedThreshold={0.35}
+          onEndReachedThreshold={0.3}
           refreshControl={
             <RefreshControl
               refreshing={loading}
@@ -87,13 +93,11 @@ const UserPosts = ( {userID} : {userID: string} ) => {
             />
           }
           onEndReached={ () => {
-            if(nextToken) fetchPosts();
+            if(nextToken) fetchPosts(false);
           }}
         />)}
     </View>
   );
 }
-
-
 
 export default UserPosts;

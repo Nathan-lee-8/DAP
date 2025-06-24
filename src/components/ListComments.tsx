@@ -25,6 +25,7 @@ import CommentComp from './commentComponent';
  */
 const ListComments = ( {postID, header, customPadding} : any ) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
+  const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const [ loading, setLoading ] = useState(true);
   const [ comment, setComment ] = useState<string>('');
   const [ operation, setOperation ] = useState("Comment");
@@ -36,21 +37,29 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
   if(!currUser) return <ActivityIndicator size="large" color="#0000ff" />;
 
   useEffect(() => {
-    fetchComments();
+    fetchComments(true);
   }, []);
 
   //retreives all comments for given post
-  const fetchComments = async () => {
+  const fetchComments = async ( refresh: boolean ) => {
     try{
       const commentData = await client.graphql({
         query: commentsByPost,
         variables: {
-          postID: postID
+          postID: postID,
+          nextToken: refresh ? null : nextToken
         },
         authMode:'userPool'
       })
       const commentList = commentData.data.commentsByPost.items;
-      setComments(commentList);
+      if(refresh){
+        setComments(commentList);
+      }else{
+        const uniqueComments = commentList.filter((newComment: Comment) =>
+          !comments.some((item: Comment) => item.id === newComment.id)
+        );
+        setComments((prev: any) => [...prev, ...uniqueComments]);
+      }
     } catch {
       Alert.alert('Error', 'There was an issue fetching comments');
     } finally {
@@ -100,7 +109,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
     }
     setComment("");
     setOperation("Comment");
-    fetchComments();
+    fetchComments(true);
   }
 
   //posts the comment to the given post
@@ -189,7 +198,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         data={comments}
         renderItem={({ item, index }) => (
           <CommentComp comment={item} keyboardTarget={handleKeyboard} 
-            refreshComments={fetchComments} index={index}
+            refreshComments={fetchComments(true)} index={index}
           />
         )}
         ListEmptyComponent={() => (
@@ -201,6 +210,10 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         ListHeaderComponent={header}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
+        onEndReached={() => {
+          if(nextToken) fetchComments(false)
+        }}
+        onEndReachedThreshold={0.3}
       />
       
       {/* Keyboard (TextInput) component */}

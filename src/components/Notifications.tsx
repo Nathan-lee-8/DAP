@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
-import { View, Text, FlatList, ActivityIndicator, Alert,
-  RefreshControl, TouchableOpacity} from "react-native";
+import { View, Text, FlatList, ActivityIndicator, Alert, RefreshControl, 
+  TouchableOpacity } from "react-native";
 
 import client from '../client';
 import { notificationsByUser } from "../customGraphql/customQueries";
@@ -47,54 +47,65 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         variables: {
           userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
-          nextToken: nextToken,
-          limit: 10
+          limit: 15
         },
         authMode:'userPool'
       })
       setNextToken(notifData.data.notificationsByUser.nextToken);
-      const notificationList = notifData.data.notificationsByUser.items.filter((item) => 
-        item.type !== 'Message'
-      );
+      const notificationList = notifData.data.notificationsByUser.items
+        .filter((item) => item.type !== 'Message');
       setNotifications(notificationList);
+
+      //reset notification count to 0 
+      await client.graphql({
+        query: updateUser,
+        variables: {
+          input: {
+            id: currUser.id,
+            unreadNotificationCount: 0
+          }
+        },
+        authMode: 'userPool'
+      });
+      triggerFetch();
+
     } catch {
       Alert.alert('Error', 'Issue fetching notifications')
     } finally {
       setLoading(false);
     }
+  }
 
-    //reset notification count to 0
+  const fetchNextBatch = () => {
     client.graphql({
-      query: updateUser,
+      query: notificationsByUser,
+      variables: {
+        userID: currUser.id,
+        sortDirection: ModelSortDirection.DESC,
+        limit: 15,
+        nextToken: nextToken
+      },
+      authMode:'userPool'
+    }).then((notifData) => {
+      const notifs = notifData.data.notificationsByUser.items.filter((item) =>
+        item !== null && !notifications.includes(item) && item.type !== 'Message'
+      );
+      setNotifications((prev: any) => [...prev, ...notifs]);
+    })
+}
+
+  //Deletes the pressed notification
+  const handleRemoveNotification = (itemID: string) => {
+    setNotifications((prev: any) => prev.filter((item: any) => item.id !== itemID));
+    client.graphql({
+      query: deleteNotification,
       variables: {
         input: {
-          id: currUser.id,
-          unreadNotificationCount: 0
+          id: itemID
         }
       },
       authMode: 'userPool'
-    }).catch((error: any) => console.log(error))
-    .finally(() => {
-      triggerFetch();
-    });
-  }
-
-  //Deletes the prssed notification
-  const handleRemoveNotification = async (itemID: string) => {
-    setNotifications((prev: any) => prev.filter((item: any) => item.id !== itemID));
-    try{
-      await client.graphql({
-        query: deleteNotification,
-        variables: {
-          input: {
-            id: itemID
-          }
-        },
-        authMode: 'userPool'
-      })
-    } catch {
-      Alert.alert('Error', 'Issue deleting notification');
-    }
+    }).catch(() => Alert.alert('Error', 'Issue deleting notification'))
   }
 
   //Marks the current pressed notification as read and navigates to the 
@@ -110,7 +121,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
           }
         },
         authMode: 'userPool'
-      }).catch((error: any) => console.log(error))
+      }).catch(() => {});
     }
 
     closeNotificationModal();
@@ -123,38 +134,52 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     }
   }
 
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
-
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={notifications}
-        renderItem={({item}) => 
-          <TouchableOpacity style={ item.read ? styles.notificationItem : styles.unreadItem } 
-            onPress={() => handleNav(item)}
-          >
-            <Text>{item.content}</Text>
-            <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-            <Icon name="close-outline" size={20} 
-              onPress={() => handleRemoveNotification(item.id)}
-              style={{ position: 'absolute', right: 5, top: 5, zIndex: 1}
-            }/>
-          </TouchableOpacity>
-        }
-        ListEmptyComponent={() => (
-          <View>
-            <Text style={styles.noResultsMsg}>No Notifications</Text>
-          </View>
-        )}
-         refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={fetchNotifications}
-            colors={['#9Bd35A', '#689F38']}
-            progressBackgroundColor="#ffffff" 
+    <View style={styles.notificationOverlay}>
+      <TouchableOpacity style={styles.notificationHeader} 
+        onPress={() => closeNotificationModal()}
+      />        
+      <View style={styles.notificationContainer}>
+        <Icon name="close-outline" style={styles.closeReportModalButton}
+          size={35} onPress={() => closeNotificationModal()}
+        />
+        <Text style={styles.title}>Notifications</Text>
+        
+        {loading ? ( <ActivityIndicator size="large" color="#0000ff" /> ) : (
+          <FlatList
+            data={notifications}
+            renderItem={({item}) => 
+              <TouchableOpacity onPress={() => handleNav(item)}
+                style={ item.read ? styles.notificationItem : styles.unreadItem } 
+              >
+                <Text>{item.content}</Text>
+                <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
+                <Icon name="close-outline" size={20} 
+                  onPress={() => handleRemoveNotification(item.id)}
+                  style={{ position: 'absolute', right: 5, top: 5, zIndex: 1}
+                }/>
+              </TouchableOpacity>
+            }
+            ListEmptyComponent={() => (
+              <View>
+                <Text style={styles.noResultsMsg}>No Notifications</Text>
+              </View>
+            )}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={fetchNotifications}
+                colors={['#9Bd35A', '#689F38']}
+                progressBackgroundColor="#ffffff" 
+              />
+            }
+            onEndReachedThreshold={0.3}
+            onEndReached={() => {
+              if(nextToken) fetchNextBatch();
+            }}
           />
-        }
-      />
+        )}
+      </View>
     </View>
   )
 }

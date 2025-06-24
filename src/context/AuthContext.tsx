@@ -78,7 +78,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const authStatus = await requestPermission(messaging);
         if (authStatus > 0 && isMounted) {
           const token = await getToken(messaging);
-          console.log('token:', token);
           await registerTokenToBackend(token); 
         } 
       }catch(error){
@@ -112,9 +111,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       next: () => {
         triggerFetch();
       },
-      error: (error) => {
-        console.warn(error);
-      }
     })
     return () => subscription.unsubscribe();
   }, [currUser?.id]);
@@ -130,22 +126,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   //deletes current token from backend on logout
-  const removeToken = async () => {
+  const removeToken = () => {
     if(!tokenDynamoID) return;
     deleteToken(getMessaging());
-    try {
-      await client.graphql({
-        query: deleteTokenItem,
-        variables: {
-          input: {
-            id: tokenDynamoID
-          }
-        },
-        authMode: 'userPool'
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    client.graphql({
+      query: deleteTokenItem,
+      variables: {
+        input: {
+          id: tokenDynamoID
+        }
+      },
+      authMode: 'userPool'
+    }).catch(() => {})
   }
 
   //Creates a new token in backend for current user if token doesn't already exists
@@ -178,9 +170,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const dbID = matchedToken?.id;
         setTokenDynamoID(dbID);
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch { }
   }
 
   return (

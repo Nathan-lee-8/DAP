@@ -25,16 +25,17 @@ import Comments from './ListComments';
 import Report from "./Report";
 
 /**
- * Component to take the current Post and display all the Post owner information, the post 
- * content, and the interaction section. Click media to open full screen view of media and 
- * click comments to open full screen view of comments. Click ellipses to view options to 
- * edit, delete, or report the post.
+ * Component to take the current Post and display all the Post owner information, 
+ * the post content, and the interaction section. Click media to open full screen 
+ * view of media and click comments to open full screen view of comments. Click
+ * ellipses to view options to edit, delete, or report the post.
  * 
  * @param post - The current post to display
- * @param destination - Where this post is being displayed: 'Home', 'Profile', 'Group', 
- * or 'ViewPost'
+ * @param destination - Display location: 'Home', 'Profile', 'Group', or 'ViewPost'
+ * @param refresh - function to refresh list/screen that post is deleted from
  */
-const FormatPost = ( {post, destination} : {post: Post, destination: string} ) => {
+const FormatPost = ( {post, destination, refresh} : 
+  {post: Post, destination: string, refresh?: any} ) => {
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
   const { width } = Dimensions.get('window');
   const [ customPadding, setCustomPadding ] = useState(310);
@@ -87,6 +88,8 @@ const FormatPost = ( {post, destination} : {post: Post, destination: string} ) =
         });
         if(destination === 'ViewPost'){
           navigation.goBack();
+        }else{
+          if(refresh) refresh();
         }
         Alert.alert('Success', 'Post deleted successfully');
       } catch {

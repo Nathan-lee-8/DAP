@@ -116,7 +116,6 @@ const ViewChat = ( { route, navigation } : any) => {
           });
           scrollToBottom();
         },
-        error: (err: any) => console.error("Subscription error:", err),
       });
       return () => {
         setMessages([]);
@@ -136,18 +135,16 @@ const ViewChat = ( { route, navigation } : any) => {
         variables: { 
           id: chatID, 
           messagesLimit: 20, 
-          messagesNextToken: nextToken,
         },
         authMode: 'userPool'
       });
       const chatData = chat.data.getChat;
       if(chatData) setChat(chatData);
 
-      //filter and set messages with logic for nextToken refresh
+      //filter and set messages & nextToken
       if(chatData?.messages){
-        const newChat = chatData.messages.items
-          .filter((item): item is Message => item !== null && !messages.includes(item))
-        setMessages((prev) => [...prev, ...newChat])
+        setMessages(chatData.messages.items.filter(item => item !== null));
+        setNextToken(chatData.messages.nextToken);
       }
       
       //loop through participant and set my userChat, options and url
@@ -158,7 +155,6 @@ const ViewChat = ( { route, navigation } : any) => {
         if(!participant.user) return;
         if(participant.user.id === currUser.id){ //if my Userchat, set roles and options
           setMyUserChat(participant);
-
           let currUsersChat = participant;
           if(currUsersChat.role === 'Admin'){
             setOptions(['View Members', 'Invite', 'Edit', 'Leave'])
@@ -170,13 +166,35 @@ const ViewChat = ( { route, navigation } : any) => {
         }
       })
       setURLs(URLs);
-
-      setNextToken(chatData?.messages?.nextToken);
     } catch {
       Alert.alert('Error', 'Could not find Chat');
     } finally {
       setLoading(false);
     }
+  };
+
+  //retrieve next 20 messages as user scrolls 
+  const fetchMoreChat = () => {
+    if(loading) return;
+    client.graphql({
+      query: getChat,
+      variables: {
+        id: chatID,
+        messagesLimit: 20,
+        messagesNextToken: nextToken,
+      },
+      authMode: 'userPool'
+    }).then((chat) => {
+      const chatData = chat.data.getChat;
+      if(chatData?.messages){
+        const newChat = chatData.messages.items.filter((item): item is Message => 
+          item !== null && !messages.includes(item));
+        setMessages((prev) => [...prev, ...newChat]);
+        setNextToken(chatData.messages.nextToken);
+      }
+    }).catch(() => {
+      Alert.alert("Error fetching older chat logs");
+    })
   };
 
   //Send current message unless message is empty
@@ -454,6 +472,7 @@ const ViewChat = ( { route, navigation } : any) => {
         </View>
       </View>
       {/* Flatlist for Messages */}
+      {loading && <ActivityIndicator size="small" color="#0000ff" />}
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -514,12 +533,11 @@ const ViewChat = ( { route, navigation } : any) => {
           )
         }}
         onEndReached={ () => {
-          if(nextToken) fetchChat();
+          if(nextToken) fetchMoreChat();
         }}
         onEndReachedThreshold={0.4}
         inverted
       />
-      {loading && <ActivityIndicator size="small" color="#0000ff" />}
 
       {/* Keyboard/TextInput section */}
       <KeyboardAvoidingView 
@@ -527,7 +545,7 @@ const ViewChat = ( { route, navigation } : any) => {
         style={[styles.addCommentSection, {paddingBottom: 0}]}
         keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
       > 
-        {/* Flatlist for images/videos */}
+        {/* Flatlist for image/video icons */}
         {media.length > 0 && 
           <FlatList
             data={media}
@@ -537,8 +555,8 @@ const ViewChat = ( { route, navigation } : any) => {
             renderItem={({ item }) => (
               <View style={{alignSelf: 'center'}}>
                 {item.type === 'image' ? (
-                  <ImgComponent uri={item.uri || 'defaultUser'} style={{width: 90, height: 90}}
-                    resizeMode={'contain'}
+                  <ImgComponent uri={item.uri || 'defaultUser'} 
+                    style={{width: 90, height: 90}} resizeMode={'contain'}
                   />
                 ) : (
                   <Video source={{ uri: item.uri }} style={{width: 90, height: 90}}
@@ -566,8 +584,8 @@ const ViewChat = ( { route, navigation } : any) => {
               />
             </View>
           ) : (
-            <Icon name="add-circle" style={{marginRight: 5, marginBottom: 10, alignSelf: 'center'}} 
-              size={25} onPress={() => setIconsVisible(true)}
+            <Icon name="add-circle" size={25} onPress={() => setIconsVisible(true)}
+              style={{marginRight: 5, marginBottom: 10, alignSelf: 'center'}} 
             />
           )}
           <TextInput
@@ -578,7 +596,7 @@ const ViewChat = ( { route, navigation } : any) => {
             onChangeText={(text) => setMessage(text)}
             onFocus={() => setIconsVisible(false)}
           />
-          <Icon style={styles.commentButton} onPress={sendMessage} name="send" size={30} />
+          <Icon style={styles.commentButton} onPress={sendMessage} name="send" size={30}/>
         </View>
       </KeyboardAvoidingView>
 
@@ -642,8 +660,8 @@ const ViewChat = ( { route, navigation } : any) => {
                 renderItem={({item}) => {
                   return (
                     <View>
-                      <Icon name="remove-circle-outline" style={styles.removeIcon} size={25} 
-                        onPress={() => removeMember(item)}
+                      <Icon name="remove-circle-outline" style={styles.removeIcon} 
+                        onPress={() => removeMember(item)} size={25} 
                       />
                       <ImgComponent style={styles.addedUserImg} 
                         uri={item.profileURL || 'defaultUser'}
