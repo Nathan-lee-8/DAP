@@ -24,6 +24,7 @@ const Search = ( {navigation} : any ) => {
   const [ selected, setSelected ] = useState(true);
   const [ loading, setLoading ] = useState(false);
   const [ exploreGroups, setExplore ] = useState<Group[]>([]);
+  const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
 
@@ -39,12 +40,13 @@ const Search = ( {navigation} : any ) => {
         query: groupsByMemberCount,
         variables: {
           type: "Public",
-          limit: 10,
+          limit: 20,
           sortDirection: ModelSortDirection.DESC
         },
         authMode:'userPool'
       })
       const allGroups = data.data.groupsByMemberCount.items;
+      setNextToken(data.data.groupsByMemberCount.nextToken);
       
       const groups = await client.graphql({
         query: groupsByUser,
@@ -65,6 +67,24 @@ const Search = ( {navigation} : any ) => {
     } finally {
       setLoading(false);
     }
+  }
+
+  const fetchNextPage = () => {
+    client.graphql({
+      query: groupsByMemberCount,
+      variables: {
+        type: "Public",
+        limit: 20,
+        sortDirection: ModelSortDirection.DESC,
+        nextToken: nextToken
+      },
+      authMode:'userPool'
+    }).then((data) => {
+      const newGroups = data.data.groupsByMemberCount.items
+        .filter((group) => !exploreGroups.some((item) => item.id === group.id));
+      setExplore((prev: Group[]) => [...prev, ...newGroups]);
+      setNextToken(data.data.groupsByMemberCount.nextToken);
+    })
   }
 
   //handles the dropdown to swap between user and group search
@@ -128,6 +148,8 @@ const Search = ( {navigation} : any ) => {
               progressBackgroundColor="#ffffff" 
             />
           }
+          onEndReached={fetchNextPage}
+          onEndReachedThreshold={0.3}
         />
       </TouchableWithoutFeedback>
     </View>

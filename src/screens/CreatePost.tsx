@@ -73,12 +73,8 @@ const CreatePost = ( {route, navigation}: any ) => {
         },
         authMode: 'userPool'
       })
-      Alert.alert('Success','Post Created', [{
-        text: 'OK',
-        onPress: () => {
-          navigation.goBack();
-        }
-      }])
+      navigation.goBack();
+      Alert.alert('Success','Post Created');
     } catch {
       Alert.alert('Error', 'There was an issue creating the post')
     } finally {

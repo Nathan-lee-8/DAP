@@ -62,7 +62,6 @@ const CreateGroup = ({ navigation }: any) => {
         },
         authMode:'userPool'
       })
-      console.log("Group created Successfully");
       var groupID = groupData.data.createGroup.id;
 
       //Add Self
@@ -91,7 +90,7 @@ const CreateGroup = ({ navigation }: any) => {
           },
           authMode:'userPool'
         })
-        console.log(member.firstname, "added successfully");
+
         client.graphql({
           query: createNotification,
           variables: {
@@ -107,7 +106,7 @@ const CreateGroup = ({ navigation }: any) => {
           authMode: 'userPool'
         }).catch(() => {});
       };
-      console.log("Self added successfully");
+
       if(groupURI !== 'defaultGroup') handleUploadImage(groupID);
 
       navigation.reset({
@@ -151,7 +150,6 @@ const CreateGroup = ({ navigation }: any) => {
         },
         authMode:'userPool'
       })
-      console.log("updated Group Image")
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }

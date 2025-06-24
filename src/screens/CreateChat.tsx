@@ -57,7 +57,6 @@ const CreateChat = ({ route, navigation }: any) => {
         },
         authMode: 'userPool'
       });
-      console.log("chat created");
 
       const chatID = chat.data.createChat.id;
       tempChatID = chatID;
@@ -96,7 +95,6 @@ const CreateChat = ({ route, navigation }: any) => {
         },
         authMode: 'userPool'
       })
-      console.log("senderChat created");
 
       //create User Chat and notifications for each target user
       targetUsers.map(async (user: User) => {
@@ -114,7 +112,7 @@ const CreateChat = ({ route, navigation }: any) => {
           },
           authMode: 'userPool'
         })
-        console.log(user.firstname + " chat created");
+        
         client.graphql({
           query: createNotification,
           variables: {

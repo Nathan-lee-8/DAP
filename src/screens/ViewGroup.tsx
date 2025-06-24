@@ -88,7 +88,6 @@ const ViewGroup = ( {route, navigation} : any) => {
           groupID: groupID,
           sortDirection: ModelSortDirection.DESC,
           limit: 10,
-          nextToken: postNextToken
         }
       })
       setPostNextToken(currPosts.data.postsByDate.nextToken);
@@ -140,6 +139,24 @@ const ViewGroup = ( {route, navigation} : any) => {
     } finally {
       setLoading(false);
     }
+  }
+
+  const fetchPosts = () => {
+    client.graphql({
+      query: postsByDate,
+      variables: {
+        groupID: groupID,
+        sortDirection: ModelSortDirection.DESC,
+        limit: 10,
+        nextToken: postNextToken
+      }
+    }).then((posts) => {
+      const newPosts = posts.data.postsByDate.items.filter((item) => 
+        item !== null && !post.some(existingItem => existingItem.id === item.id)
+      );
+      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+      setPostNextToken(posts.data.postsByDate.nextToken);
+    });
   }
 
   //Navigate to create Post page
@@ -534,7 +551,9 @@ const ViewGroup = ( {route, navigation} : any) => {
         renderItem={({item}) => {
           if(!item) return <View></View>
           return(
-            <FormatPost post={item} destination={"Group"}/>
+            <FormatPost post={item} destination={"Group"} 
+              refresh={() => fetchCurrentData()}
+            />
           )
         }}
         ListEmptyComponent={() => (
@@ -542,7 +561,7 @@ const ViewGroup = ( {route, navigation} : any) => {
             <Text style={styles.noResultsMsg}>No Posts Available</Text>
           </View>
         )}
-         refreshControl={
+        refreshControl={
           <RefreshControl
             refreshing={loading}
             onRefresh={fetchCurrentData}
@@ -550,6 +569,12 @@ const ViewGroup = ( {route, navigation} : any) => {
             progressBackgroundColor="#ffffff" 
           />
         }
+        onEndReached={() => {
+          if(postNextToken) {
+            fetchPosts()
+          }
+        }}
+        onEndReachedThreshold={0.3}
       />
 
       {/* Options Modal */}

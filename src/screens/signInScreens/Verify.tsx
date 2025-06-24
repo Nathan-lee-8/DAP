@@ -7,6 +7,10 @@ import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/SignInScreenStyles';
 import ImgComponent from '../../components/ImgComponent';
 
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SignInParamList } from '../../types/rootStackParamTypes';
+
 /**
  * Retrieves the email, firstname, and lastname entered from the sign up page and 
  * allows the user to enter the verification code sent to their email. Once the
@@ -16,22 +20,31 @@ import ImgComponent from '../../components/ImgComponent';
 const VerifyScreen = ( {route} : any ) => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
-    console.log("Auth context not defined");
     return null;
   }
   const { setUserEmail } = authContext;
   const [ password, setPassword ] = useState(route.params.password);
-  const email = route.params.email;
   const [ code, setCode ] = useState('');
+  const email = route.params.email;
+  const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
 
   const handleVerification = async () => {
+    const emailFormat = email.trim().toLowerCase();
     try {
-      const emailFormat = email.trim().toLowerCase();
       await confirmSignUp({username: emailFormat, confirmationCode: code });
+    } catch (error) {
+      Alert.alert('Error', 'Incorrect verification code.');
+    }
+    try{
       await signIn({username: emailFormat, password: password});
       setUserEmail(emailFormat);
     } catch (error) {
-      console.log(error);
+      Alert.alert('Error', 'Incorrect password. Verification is complete, ' + 
+        'please sign in with your password in the Sign-in Screen');
+      navigation.reset({
+        index: 1,
+        routes: [{name: 'Welcome'}, {name: 'SignIn'}]
+      });
     }
   }
 

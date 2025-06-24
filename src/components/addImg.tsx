@@ -1,5 +1,6 @@
 import { launchImageLibrary } from "react-native-image-picker";
 import { uploadData } from "@aws-amplify/storage";
+import { Alert } from "react-native";
 
 /**
  * Open users image library and allows user to select an image
@@ -44,8 +45,8 @@ const getImgURI = async (fileURI: string, filename: string) => {
       },
     }).result;
     return uploadResult.path;
-  } catch (error) {
-    console.log(error);
+  } catch {
+    Alert.alert('Error', 'Failed to save image');
     return null;
   }
 };

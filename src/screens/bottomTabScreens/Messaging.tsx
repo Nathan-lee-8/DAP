@@ -20,34 +20,40 @@ import moment from "moment";
 const MessageUsers = ( {navigation}: any ) => {
   const [ chatRooms, setChatRooms ] = useState<UserChat[]>([])
   const [ loading, setLoading ] = useState<boolean>(true);
+  const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
   useFocusEffect(
     useCallback(() => {
-      fetchChatRooms();
+      fetchChatRooms(true);
     }, [])
   );
 
-  const onRefresh = useCallback(() => {
-    fetchChatRooms();
-  }, []);
-
   //retreives list of chatrooms that user is a part of
-  const fetchChatRooms = async () => {
+  const fetchChatRooms = async (refresh: boolean) => {
     setLoading(true);
     try {
-      const chatRooms = await client.graphql({
+      const getChatRooms = await client.graphql({
         query: chatsByUser,
         variables: {
           userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
+          limit: 15,
+          nextToken: refresh ? null : nextToken
         },
         authMode: 'userPool'
       });
-      const chatRoomData = chatRooms.data.chatsByUser.items;
-      setChatRooms(chatRoomData);
+      const chatRoomData = getChatRooms.data.chatsByUser.items;
+      if(refresh){ 
+        setChatRooms(chatRoomData);
+      } else {
+        const uniqueChatRooms = chatRoomData.filter((item: UserChat) => 
+          !chatRooms.some((userChat: UserChat) => userChat.id === item.id));
+        setChatRooms((prev: any) => [...prev, ...uniqueChatRooms]);
+      }
+      setNextToken(getChatRooms.data.chatsByUser.nextToken);
     } catch {
       Alert.alert('Error', 'Error fetching chat rooms',);
     } finally {
@@ -124,22 +130,24 @@ const MessageUsers = ( {navigation}: any ) => {
                           key={index} 
                           uri={uri || 'defaultUser'} 
                           style={{ 
-                            position: 'absolute', height: 30, width: 30, borderRadius: 25,
-                            top: index * 10, left: index * 10, 
+                            position: 'absolute', height: 30, width: 30, 
+                            borderRadius: 25, top: index * 10, left: index * 10, 
                             zIndex: displayURIs.length - index
                           }} 
                         />
                       ))
                     ) : (
-                      <ImgComponent 
-                        uri={displayURIs[0] || 'defaultUser'} style={styles.chatImageDefault} 
+                      <ImgComponent style={styles.chatImageDefault} 
+                        uri={displayURIs[0] || 'defaultUser'}
                       />
                     )}
                   </View>
                   <View style={{
                     paddingHorizontal: 10, width: Dimensions.get('window').width * 0.70
                   }}>
-                    <Text style={[styles.postAuthor, {fontWeight: '500'}]}numberOfLines={1}>
+                    <Text style={[styles.postAuthor, {fontWeight: '500'}]}
+                      numberOfLines={1}
+                    >
                       {chatname}
                     </Text>
                     <Text style={styles.postContent}numberOfLines={1}>
@@ -158,11 +166,15 @@ const MessageUsers = ( {navigation}: any ) => {
         refreshControl={
           <RefreshControl
             refreshing={loading}
-            onRefresh={onRefresh}
+            onRefresh={() => fetchChatRooms(true)}
             colors={['#9Bd35A', '#689F38']}
             progressBackgroundColor="#ffffff" 
           />
         }
+        onEndReachedThreshold={0.3}
+        onEndReached={() => {
+          if(nextToken) fetchChatRooms(false)
+        }}
       />
       <Icon name="add-circle-outline" style={styles.createButton} size={50} 
         onPress={handleCreateMsg}
