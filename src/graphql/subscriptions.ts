@@ -26,6 +26,7 @@ export const onCreateUserFeed = /* GraphQL */ `subscription OnCreateUserFeed($fi
       owner
       __typename
     }
+    postCreatedAt
     createdAt
     updatedAt
     __typename
@@ -53,6 +54,7 @@ export const onUpdateUserFeed = /* GraphQL */ `subscription OnUpdateUserFeed($fi
       owner
       __typename
     }
+    postCreatedAt
     createdAt
     updatedAt
     __typename
@@ -80,6 +82,7 @@ export const onDeleteUserFeed = /* GraphQL */ `subscription OnDeleteUserFeed($fi
       owner
       __typename
     }
+    postCreatedAt
     createdAt
     updatedAt
     __typename

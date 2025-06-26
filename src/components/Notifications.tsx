@@ -57,18 +57,19 @@ const Notifications = ( {closeNotificationModal} : any ) => {
       setNotifications(notificationList);
 
       //reset notification count to 0 
-      await client.graphql({
-        query: updateUser,
-        variables: {
-          input: {
-            id: currUser.id,
-            unreadNotificationCount: 0
-          }
-        },
-        authMode: 'userPool'
-      });
-      triggerFetch();
-
+      if(currUser.unreadChatCount >  0){
+        await client.graphql({
+          query: updateUser,
+          variables: {
+            input: {
+              id: currUser.id,
+              unreadNotificationCount: 0
+            }
+          },
+          authMode: 'userPool'
+        });
+        triggerFetch();
+      }
     } catch {
       Alert.alert('Error', 'Issue fetching notifications')
     } finally {
@@ -88,9 +89,11 @@ const Notifications = ( {closeNotificationModal} : any ) => {
       authMode:'userPool'
     }).then((notifData) => {
       const notifs = notifData.data.notificationsByUser.items.filter((item) =>
-        item !== null && !notifications.includes(item) && item.type !== 'Message'
+        !notifications.some((existingItem: Notification) => existingItem.id === item.id)
+        && item.type !== 'Message'
       );
       setNotifications((prev: any) => [...prev, ...notifs]);
+      setNextToken(notifData.data.notificationsByUser.nextToken);
     })
 }
 

@@ -523,7 +523,7 @@ export const tokensByUser = /* GraphQL */ `query TokensByUser(
 >;
 export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
   $userID: ID!
-  $createdAt: ModelStringKeyConditionInput
+  $postCreatedAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserFeedFilterInput
   $limit: Int
@@ -531,7 +531,7 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
 ) {
   postsByUserFeed(
     userID: $userID
-    createdAt: $createdAt
+    postCreatedAt: $postCreatedAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -558,6 +558,7 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
         createdAt
         updatedAt
       }
+      postCreatedAt
     }
     nextToken
     __typename

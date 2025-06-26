@@ -136,7 +136,7 @@ const Search = ( {navigation} : any ) => {
           data={exploreGroups}
           renderItem={({item}) =>
             <TouchableOpacity onPress={() => handleViewGroup(item.id)} >
-              <FormatExploreGroup item={item}/>
+              <FormatExploreGroup group={item}/>
             </TouchableOpacity> 
           }
           numColumns={2}
@@ -148,7 +148,9 @@ const Search = ( {navigation} : any ) => {
               progressBackgroundColor="#ffffff" 
             />
           }
-          onEndReached={fetchNextPage}
+          onEndReached={() => {
+            if(nextToken) fetchNextPage()
+          }}
           onEndReachedThreshold={0.3}
         />
       </TouchableWithoutFeedback>
