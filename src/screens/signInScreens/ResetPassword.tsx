@@ -6,6 +6,7 @@ import { resetPassword, confirmResetPassword, signIn } from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/SignInScreenStyles';
 import ImgComponent from '../../components/ImgComponent';
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Retrieves the code and password from the user. Resets the password in Cognito
@@ -19,12 +20,14 @@ const ResetPassword = () => {
   const { setUserEmail } = authContext;
   const [ code, setCode ] = useState('');
   const [ password, setPassword ] = useState('');
-  const [ password1, setPassword1 ] = useState('');
+  const [ passwordCheck, setPasswordCheck ] = useState('');
+  const [ passwordVisible, setPasswordVisible ] = useState(false); 
+  const [ passwordCheckVisible, setPasswordCheckVisible ] = useState(false); 
   const [ hasReset, setHasReset ] = useState(false);
   const [ email, setEmail ] = useState('');
 
   const confirmPasswordReset = async () => {
-    if(password != password1) {
+    if(password != passwordCheck) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
@@ -57,14 +60,16 @@ const ResetPassword = () => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.formContainer}>
             <ImgComponent uri="logo" style={styles.logoLarge}/>
-            <Text style={styles.loginText}>Enter your email to reset your password</Text>
+            <Text style={styles.loginText}>
+              Enter your email to reset your password
+            </Text>
             <TextInput
               style={styles.input}
               placeholder='Enter email'
               value={email}
               onChangeText={setEmail}
             />
-            <TouchableOpacity style={styles.loginBtn} onPress={ handleResetPassword}>
+            <TouchableOpacity style={styles.loginBtn} onPress={handleResetPassword}>
               <Text style={styles.loginBtnText}>Reset Password</Text>
             </TouchableOpacity>
           </View>
@@ -93,19 +98,33 @@ const ResetPassword = () => {
             keyboardType="numeric"
             maxLength={6}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Enter new password"
-            value={password}
-            onChangeText={setPassword}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Re-enter new password"
-            value={password1}
-            onChangeText={setPassword1}
-          />
-          <TouchableOpacity style={styles.loginBtn} onPress={ confirmPasswordReset }>
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter new password"
+              secureTextEntry={!passwordVisible}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <Icon name={passwordVisible ? 'eye-off' : 'eye'} 
+              style={styles.seePasswordIcon} size={20} 
+              onPress={() => setPasswordVisible(!passwordVisible)} 
+            />
+          </View>
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Re-enter new password"
+              secureTextEntry={!passwordCheckVisible}
+              value={passwordCheck}
+              onChangeText={setPasswordCheck}
+            />
+            <Icon name={passwordCheckVisible ? 'eye-off' : 'eye'} 
+              style={styles.seePasswordIcon} size={20} 
+              onPress={() => setPasswordCheckVisible(!passwordCheckVisible)} 
+            />
+          </View>
+          <TouchableOpacity style={styles.loginBtn} onPress={confirmPasswordReset}>
             <Text style={styles.loginBtnText}>Reset Password</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>

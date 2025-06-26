@@ -16,6 +16,7 @@ export const createUserFeed = /* GraphQL */ `mutation CreateUserFeed(
     id
     userID
     postID
+    postCreatedAt
     createdAt
     updatedAt
     __typename
@@ -33,6 +34,7 @@ export const updateUserFeed = /* GraphQL */ `mutation UpdateUserFeed(
     id
     userID
     postID
+    postCreatedAt
     createdAt
     updatedAt
     __typename
@@ -50,6 +52,7 @@ export const deleteUserFeed = /* GraphQL */ `mutation DeleteUserFeed(
     id
     userID
     postID
+    postCreatedAt
     createdAt
     updatedAt
     __typename

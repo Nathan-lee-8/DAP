@@ -32,9 +32,10 @@ type UserFeed @model @auth(
   ]
 ) {
   id: ID!
-  userID: ID! @index(name:"postsByUserFeed", queryField: "postsByUserFeed", sortKeyFields: ["createdAt"])
+  userID: ID! @index(name:"postsByUserFeed", queryField: "postsByUserFeed", sortKeyFields: ["postCreatedAt"])
   postID: ID! @index(name: "userFeedByPostID", queryField: "userFeedByPostID")
   post: Post @hasOne(fields: ["postID"])
+  postCreatedAt: AWSDateTime!
   createdAt: AWSDateTime!
 }
 

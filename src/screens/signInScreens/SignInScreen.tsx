@@ -22,6 +22,7 @@ const SignIn = () => {
   const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  const [ passwordVisible, setPasswordVisible ] = useState(false);
   
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
@@ -32,10 +33,11 @@ const SignIn = () => {
   //authcontext if verified
   const handleSignIn = async () => {
     try{
-      const res = await signIn({ username: email.trim().toLowerCase(), password: password });
+      const res = await
+        signIn({username: email.trim().toLowerCase(), password: password});
       if(!res.isSignedIn){
-        Alert.alert('Error', 'Please verify your email before signing in.',[
-          { text: 'OK', onPress: () => navigation.navigate('Verify', {email: email}) }
+        Alert.alert('Error', 'Please verify your email before signing in.', [
+          {text: 'OK', onPress: () => navigation.navigate('Verify', {email: email})}
         ]);
         return;
       };
@@ -62,7 +64,7 @@ const SignIn = () => {
     return unsubscribe;
   }, []);
 
-  //handles social provider signin: sets User email triggering signin through authcontext
+  //handles social provider signin: setsUser email triggers signin through authcontext
   const handleSocialProviderSignIn = async () => {
     try{
       const user = await fetchUserAttributes();
@@ -94,13 +96,19 @@ const SignIn = () => {
             value={email}
             onChangeText={ setEmail }
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your password"
-            secureTextEntry
-            value={password}
-            onChangeText={ setPassword }
-          />
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your password"
+              secureTextEntry={!passwordVisible}
+              value={password}
+              onChangeText={ setPassword }
+            />
+            <Icon name={passwordVisible ? 'eye-off' : 'eye'}
+              style={styles.seePasswordIcon} size={20} 
+              onPress={() => setPasswordVisible(!passwordVisible)}
+            />
+          </View>
           <TouchableOpacity style={styles.signInBtn} onPress={ handleSignIn }>
             <Text style={styles.loginBtnText}>Sign In</Text>
           </TouchableOpacity>

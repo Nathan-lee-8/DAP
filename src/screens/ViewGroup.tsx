@@ -330,13 +330,14 @@ const ViewGroup = ( {route, navigation} : any) => {
     Alert.alert('Success', 'Group updated successfully');
   }
 
-  //Deletes teh current group. Lambda cascade deletes posts and userGroups
+  //Deletes the current group and current user's UserGroup. Lambda cascade deletes 
+  //posts and the rest of the userGroups
   const handleDeleteGroup = () => {
     Alert.alert("Delete Group", "Are you sure you want to delete this group?", [
       { text: "Cancel" },
       { text: "Delete", onPress: async () => {
         try {
-          if(!group){
+          if(!group || !myUserGroup){
             Alert.alert('Error', 'Error deleting group');
             return;
           }
@@ -345,6 +346,15 @@ const ViewGroup = ( {route, navigation} : any) => {
             variables: {
               input: {
                 id: group.id
+              }
+            },
+            authMode: 'userPool'
+          });
+          await client.graphql({
+            query: deleteUserGroup,
+            variables: {
+              input: {
+                id: myUserGroup.id
               }
             },
             authMode: 'userPool'

@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback } from 'react';
+import { useState, useContext, useCallback, useRef } from 'react';
 import { View, FlatList, TouchableOpacity, Text, ActivityIndicator, Dimensions,
   RefreshControl, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -21,6 +21,7 @@ const MessageUsers = ( {navigation}: any ) => {
   const [ chatRooms, setChatRooms ] = useState<UserChat[]>([])
   const [ loading, setLoading ] = useState<boolean>(true);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
+  const firstRender = useRef(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
@@ -28,12 +29,17 @@ const MessageUsers = ( {navigation}: any ) => {
   useFocusEffect(
     useCallback(() => {
       fetchChatRooms(true);
+      if(firstRender.current){
+        firstRender.current = false;
+      }
     }, [])
   );
 
   //retreives list of chatrooms that user is a part of
   const fetchChatRooms = async (refresh: boolean) => {
-    setLoading(true);
+    if(firstRender.current){
+      setLoading(true);
+    }
     try {
       const getChatRooms = await client.graphql({
         query: chatsByUser,

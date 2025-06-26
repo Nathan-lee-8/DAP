@@ -1,6 +1,8 @@
-import { useEffect, useState, useContext, useCallback, useLayoutEffect } from 'react';
+import { useState, useContext, useCallback, useLayoutEffect, useEffect, useRef
+} from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
-  Modal, Alert} from 'react-native';
+  Modal, Alert } from 'react-native';
 
 import client from '../../client';
 import { postsByUserFeed } from '../../customGraphql/customQueries';
@@ -18,19 +20,35 @@ import Notifications from '../../components/Notifications';
  */
 const HomeScreen = ( {navigation} : any) => {
   const [ newsFeed, setNewsFeed ] = useState<UserFeed[]>([]);
-  const [ loading, setLoading ] = useState(false);
   const [ modalVisible, setModalVisible ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  useEffect(() => {
-    fetchNewsFeed(true);
-  }, [currUser?.id]);
+  const firstRender = useRef(true);
+  //Retreives Newsfeed every time screen is refocused and sets loading on
+  //first render.
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+      const loadInitialData = async () => {
+        if(firstRender.current){
+          setLoading(true);
+          await fetchNewsFeed(true);
+          if(isActive) setLoading(false);
+          firstRender.current = false;
+        } else{
+          await fetchNewsFeed(true);
+        }
+      }
+      loadInitialData();
+    }, [currUser?.id])
+  );
 
   //updates the unread notification count on the notification icon in header
-  useLayoutEffect(()=> {
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity style={{margin: 15}} onPress={() => setModalVisible(true)}>
@@ -49,8 +67,6 @@ const HomeScreen = ( {navigation} : any) => {
 
   //retreives userfeed with logic for retreiving next items on scroll
   const fetchNewsFeed = async (refresh: boolean) => {
-    if(loading) return;
-    setLoading(true);
     try{
       const res = await client.graphql({
         query: postsByUserFeed,
@@ -73,8 +89,6 @@ const HomeScreen = ( {navigation} : any) => {
       setNextToken(res.data.postsByUserFeed.nextToken);
     } catch {
       Alert.alert('Error', 'Error fetching news feed');
-    } finally {
-      setLoading(false);
     }
   };
 

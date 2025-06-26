@@ -40,6 +40,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'blue'
   },
+  buttonTextRed: { 
+    fontSize: 14,
+    textAlign: 'center',
+    color: 'red'
+  },
   noResultsMsg : {
     fontSize: 16,
     color: textColor,

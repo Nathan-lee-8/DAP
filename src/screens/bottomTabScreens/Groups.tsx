@@ -1,5 +1,6 @@
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useCallback, useState, useRef } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl,
    Alert } from 'react-native';
  
@@ -24,13 +25,21 @@ const Groups = ( {navigation} : any ) => {
   const currUser = authContext?.currUser;
   if(!currUser) return;
 
-  useEffect(() => {
-    fetchGroups(true);
-  }, []);
+  const firstRender = useRef(true);
+  useFocusEffect(
+    useCallback(() => {
+      fetchGroups(true);
+      if(firstRender.current){
+        firstRender.current = false;
+      }
+    }, [])
+  );
 
   //Retreives current groups user is a part of 
   const fetchGroups = async ( refresh: boolean) => {
-    setLoading(true);
+    if(firstRender.current){
+      setLoading(true);
+    }
     try{
       const groups = await client.graphql({
         query: groupsByUser,

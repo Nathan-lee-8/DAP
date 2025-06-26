@@ -26,6 +26,7 @@ export const getUserFeed = /* GraphQL */ `query GetUserFeed($id: ID!) {
       owner
       __typename
     }
+    postCreatedAt
     createdAt
     updatedAt
     __typename
@@ -45,6 +46,7 @@ export const listUserFeeds = /* GraphQL */ `query ListUserFeeds(
       id
       userID
       postID
+      postCreatedAt
       createdAt
       updatedAt
       __typename
@@ -59,7 +61,7 @@ export const listUserFeeds = /* GraphQL */ `query ListUserFeeds(
 >;
 export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
   $userID: ID!
-  $createdAt: ModelStringKeyConditionInput
+  $postCreatedAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelUserFeedFilterInput
   $limit: Int
@@ -67,7 +69,7 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
 ) {
   postsByUserFeed(
     userID: $userID
-    createdAt: $createdAt
+    postCreatedAt: $postCreatedAt
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -119,6 +121,7 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
         owner
         __typename
       }
+      postCreatedAt
       createdAt
       updatedAt
       __typename

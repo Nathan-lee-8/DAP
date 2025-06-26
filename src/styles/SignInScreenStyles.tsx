@@ -79,6 +79,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'rgba(148, 148, 148, 0.19)'
   },
+  seePasswordIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+    opacity: 0.6
+  },
   signInBtn:{
     alignSelf: 'center',
     width: width - 40,

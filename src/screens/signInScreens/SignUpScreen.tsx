@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, KeyboardAvoidingView,
-  TouchableWithoutFeedback, Platform } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, Platform,
+  TouchableWithoutFeedback, KeyboardAvoidingView,  } from 'react-native';
 
 import { signUp } from '@aws-amplify/auth';
 import styles from '../../styles/SignInScreenStyles';
 import ImgComponent from '../../components/ImgComponent';
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Creates a user profile in Cognito. Navigates to the Verify page to confirm 
@@ -13,7 +14,9 @@ import ImgComponent from '../../components/ImgComponent';
 const SignUp = ( {navigation} : any ) => {
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
-  const [ password2, setPassword2 ] = useState('');
+  const [ passwordCheck, setPasswordCheck ] = useState('');
+  const [ passwordVisible, setPasswordVisible ] = useState(false);
+  const [ passwordCheckVisible, setPasswordCheckVisible ] = useState(false);
 
   const handleSignUp = async () => {
     if(email === '') {
@@ -22,7 +25,7 @@ const SignUp = ( {navigation} : any ) => {
     }else if(password === '') {
       Alert.alert('Error', 'Please enter a password.');
       return;
-    }else if( password !== password2){
+    }else if( password !== passwordCheck){
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
@@ -55,20 +58,33 @@ const SignUp = ( {navigation} : any ) => {
             value={email}
             onChangeText={setEmail}
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Re-Enter Password"
-            secureTextEntry
-            value={password2}
-            onChangeText={setPassword2}
-          />
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              secureTextEntry={passwordVisible}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <Icon name={passwordVisible ? 'eye-off' : 'eye'} 
+              style={styles.seePasswordIcon} size={20}
+              onPress={() => setPasswordVisible(!passwordVisible)}
+            />
+          </View>
+          <View>
+            <TextInput
+              style={styles.input}
+              placeholder="Re-Enter Password"
+              secureTextEntry={passwordCheckVisible}
+              value={passwordCheck}
+              onChangeText={setPasswordCheck}
+            />
+            <Icon name={passwordCheckVisible ? 'eye-off' : 'eye'} 
+              style={styles.seePasswordIcon} size={20}
+              onPress={() => setPasswordCheckVisible(!passwordCheckVisible)}
+            />
+          </View>
+
           <Text style={styles.note}>
             *Note: Password can not be changed until after account verification
           </Text>

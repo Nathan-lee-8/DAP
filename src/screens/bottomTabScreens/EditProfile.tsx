@@ -1,4 +1,4 @@
-import { useContext, useState, useCallback, useLayoutEffect } from 'react';
+import { useContext, useState, useCallback } from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, 
   KeyboardAvoidingView, ScrollView, Modal, FlatList } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,7 +19,7 @@ import Icon from '@react-native-vector-icons/ionicons';
  * First and Last name, and Description. The user can also save or cancel the changes 
  * they made.
  */
-const EditProfile = ( {navigation} : any ) => {
+const EditProfile = () => {
   const [ loading, setLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
   const [ modalVisible, setModalVisible ] = useState(false);
@@ -32,21 +32,11 @@ const EditProfile = ( {navigation} : any ) => {
   const [ tempFirst, setTempFirst ] = useState(currUser.firstname);
   const [ tempLast, setTempLast ] = useState(currUser.lastname);
   const [ tempURL , setTempURL ] = useState(currUser.profileURL);
-  const [ description, setDescription ] = useState<string | undefined>(currUser.description || undefined);
+  const [ description, setDescription ] = 
+    useState<string | undefined>(currUser.description || undefined);
 
-  //Logout button to run logout logic in AuthContext
-  useLayoutEffect(()=> {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity style={styles.logoutButton} onPress={() => logout()}>
-          <Text style={styles.buttonTextBlue}>Log Out</Text>
-        </TouchableOpacity>
-      )
-    })
-  }, [currUser.email])
-
-  //reset the page to standard view instead of edit view and reverts any unsaved changes 
-  //to profilei mage
+  //reset the page to standard view instead of edit view and reverts any unsaved 
+  //changes  to profile image
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -56,8 +46,8 @@ const EditProfile = ( {navigation} : any ) => {
     }, [])
   );
   
-  //Checks if name, lastname, image or description has changed and updates image to s3
-  //and updates changed user metadata
+  //Checks if name, lastname, image or description has changed and updates image 
+  //to s3 and updates changed user metadata
   const saveEdits = async() => {
     if(currUser.firstname === tempFirst && currUser.lastname === tempLast && 
       tempURL === currUser.profileURL && description === currUser.description
@@ -69,8 +59,10 @@ const EditProfile = ( {navigation} : any ) => {
       setLoading(true);
       var tempProfileURL = tempURL;
       if(tempURL !== currUser.profileURL){
-        const filepath = await getImgURI(tempURL, `public/profilePictures/${currUser.id}/${Date.now()}.jpg`);        
-        tempProfileURL = "https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/" + filepath;
+        const filepath = await getImgURI(tempURL, 
+          `public/profilePictures/${currUser.id}/${Date.now()}.jpg`);        
+        tempProfileURL = 
+          `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${filepath}`;
       }
       if(tempProfileURL === null) throw new Error('Upload failed');
       setTempURL(tempProfileURL);
@@ -115,8 +107,12 @@ const EditProfile = ( {navigation} : any ) => {
   //handles option modal: switches to edit view when user selects edit option
   const handleOptionButton = ( option: string) => {
     setModalVisible(false);
-    if(option === 'Edit'){
+    if(option === 'Edit Profile'){
       setEditsOn(true);
+    }else if(option === 'Logout'){
+      logout();
+    }else{
+      Alert.alert(option, 'Not implemented yet');
     }
   }
 
@@ -134,8 +130,8 @@ const EditProfile = ( {navigation} : any ) => {
               <Text style={styles.postContent}>{currUser.email} </Text>
               <Text style={styles.postContent}>{currUser.description}</Text>
             </View>
-            <Icon style={styles.editProfileButton} name="ellipsis-horizontal" size={25} 
-              onPress={() => setModalVisible(true)}
+            <Icon style={styles.editProfileButton} name="ellipsis-horizontal" 
+              onPress={() => setModalVisible(true)} size={25}
             />
           </View>
           <UserPosts userID={currUser.id} />
@@ -149,7 +145,9 @@ const EditProfile = ( {navigation} : any ) => {
               <ImgComponent uri={tempURL} style={styles.editProfileURL}/>
               <Text style={styles.uploadImageText}>Edit Image</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setEditsOn(false)} style={styles.editProfileButton}>
+            <TouchableOpacity onPress={() => setEditsOn(false)} 
+              style={styles.editProfileButton}
+            >
               <Text style={styles.noResultsMsg}>Cancel</Text>
             </TouchableOpacity>
             <Text style={styles.label}>First Name</Text>
@@ -197,7 +195,7 @@ const EditProfile = ( {navigation} : any ) => {
         <View style={styles.postModelOverlay}>
           <View style={styles.postModalContainer}>
             <FlatList
-              data={["Edit", ]}
+              data={["Edit Profile", "Logout"]}
               keyExtractor={(option) => option}
               style={{height: 'auto', width: '100%'}}
               renderItem={({ item: option }) => (
@@ -209,8 +207,10 @@ const EditProfile = ( {navigation} : any ) => {
               )}
             />
           </View>
-          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
-            <Text style={styles.buttonTextBlack}>Close</Text>
+          <TouchableOpacity style={styles.closeOverlayButton} 
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.buttonTextRed}>Close</Text>
           </TouchableOpacity>
         </View>
       </Modal>
