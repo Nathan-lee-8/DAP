@@ -32,6 +32,7 @@ import ViewGroupMembers from '../screens/ViewGroupMembers';
 import ViewChatMembers from '../screens/ViewChatMembers';
 import EditPost from '../screens/EditPost';
 import EditChat from '../screens/EditChat';
+import Settings from '../screens/ProfileSettings';
 import ImageComponent from '../components/ImgComponent';
 
 const SignInStack = createNativeStackNavigator();
@@ -76,6 +77,7 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="EditPost" component={EditPost} options={{title: 'Edit Post'}}/>
           <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers} options={{title: 'Members'}}/>
           <GlobalStack.Screen name="EditChat" component={EditChat} options={{title: 'Edit Chat'}}/>
+          <GlobalStack.Screen name="Settings" component={Settings} options={{title: 'Profile Settings'}}/>
         </GlobalStack.Navigator>
       ) : isSignedIn && !currUser ? ( //Screens User has not created an account
         <SignInStack.Navigator initialRouteName='CreateUser' >

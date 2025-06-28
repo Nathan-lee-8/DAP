@@ -8,60 +8,6 @@ type GeneratedMutation<InputType, OutputType> = string & {
   __generatedMutationOutput: OutputType;
 };
 
-export const createUserFeed = /* GraphQL */ `mutation CreateUserFeed(
-  $input: CreateUserFeedInput!
-  $condition: ModelUserFeedConditionInput
-) {
-  createUserFeed(input: $input, condition: $condition) {
-    id
-    userID
-    postID
-    postCreatedAt
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.CreateUserFeedMutationVariables,
-  APITypes.CreateUserFeedMutation
->;
-export const updateUserFeed = /* GraphQL */ `mutation UpdateUserFeed(
-  $input: UpdateUserFeedInput!
-  $condition: ModelUserFeedConditionInput
-) {
-  updateUserFeed(input: $input, condition: $condition) {
-    id
-    userID
-    postID
-    postCreatedAt
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.UpdateUserFeedMutationVariables,
-  APITypes.UpdateUserFeedMutation
->;
-export const deleteUserFeed = /* GraphQL */ `mutation DeleteUserFeed(
-  $input: DeleteUserFeedInput!
-  $condition: ModelUserFeedConditionInput
-) {
-  deleteUserFeed(input: $input, condition: $condition) {
-    id
-    userID
-    postID
-    postCreatedAt
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.DeleteUserFeedMutationVariables,
-  APITypes.DeleteUserFeedMutation
->;
 export const createUser = /* GraphQL */ `mutation CreateUser(
   $input: CreateUserInput!
   $condition: ModelUserConditionInput
@@ -73,9 +19,9 @@ export const createUser = /* GraphQL */ `mutation CreateUser(
     lastname
     fullname
     profileURL
+    description
     unreadChatCount
     unreadNotificationCount
-    description
     createdAt
     updatedAt
     owner
@@ -122,6 +68,8 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
     fullname
     profileURL
     description
+    unreadChatCount
+    unreadNotificationCount
     createdAt
     updatedAt
     owner
@@ -131,6 +79,63 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
 ` as GeneratedMutation<
   APITypes.DeleteUserMutationVariables,
   APITypes.DeleteUserMutation
+>;
+export const createUserFeed = /* GraphQL */ `mutation CreateUserFeed(
+  $input: CreateUserFeedInput!
+  $condition: ModelUserFeedConditionInput
+) {
+  createUserFeed(input: $input, condition: $condition) {
+    id
+    userID
+    postID
+        postCreatedAt
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateUserFeedMutationVariables,
+  APITypes.CreateUserFeedMutation
+>;
+export const updateUserFeed = /* GraphQL */ `mutation UpdateUserFeed(
+  $input: UpdateUserFeedInput!
+  $condition: ModelUserFeedConditionInput
+) {
+  updateUserFeed(input: $input, condition: $condition) {
+    id
+    userID
+    postID
+    postCreatedAt
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateUserFeedMutationVariables,
+  APITypes.UpdateUserFeedMutation
+>;
+export const deleteUserFeed = /* GraphQL */ `mutation DeleteUserFeed(
+  $input: DeleteUserFeedInput!
+  $condition: ModelUserFeedConditionInput
+) {
+  deleteUserFeed(input: $input, condition: $condition) {
+    id
+    userID
+    postID
+    postCreatedAt
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteUserFeedMutationVariables,
+  APITypes.DeleteUserFeedMutation
 >;
 export const createPost = /* GraphQL */ `mutation CreatePost(
   $input: CreatePostInput!
@@ -839,4 +844,79 @@ export const deleteToken = /* GraphQL */ `mutation DeleteToken(
 ` as GeneratedMutation<
   APITypes.DeleteTokenMutationVariables,
   APITypes.DeleteTokenMutation
+>;
+export const createNotificationSettings = /* GraphQL */ `mutation CreateNotificationSettings(
+  $input: CreateNotificationSettingsInput!
+  $condition: ModelNotificationSettingsConditionInput
+) {
+  createNotificationSettings(input: $input, condition: $condition) {
+    id
+    newPost
+    joinGroup
+    groupRequest
+    newComment
+    newReply
+    newReplyComment
+    newMessage
+    joinChat
+    userID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateNotificationSettingsMutationVariables,
+  APITypes.CreateNotificationSettingsMutation
+>;
+export const updateNotificationSettings = /* GraphQL */ `mutation UpdateNotificationSettings(
+  $input: UpdateNotificationSettingsInput!
+  $condition: ModelNotificationSettingsConditionInput
+) {
+  updateNotificationSettings(input: $input, condition: $condition) {
+    id
+    newPost
+    joinGroup
+    groupRequest
+    newComment
+    newReply
+    newReplyComment
+    newMessage
+    joinChat
+    userID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateNotificationSettingsMutationVariables,
+  APITypes.UpdateNotificationSettingsMutation
+>;
+export const deleteNotificationSettings = /* GraphQL */ `mutation DeleteNotificationSettings(
+  $input: DeleteNotificationSettingsInput!
+  $condition: ModelNotificationSettingsConditionInput
+) {
+  deleteNotificationSettings(input: $input, condition: $condition) {
+    id
+    newPost
+    joinGroup
+    groupRequest
+    newComment
+    newReply
+    newReplyComment
+    newMessage
+    joinChat
+    userID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteNotificationSettingsMutationVariables,
+  APITypes.DeleteNotificationSettingsMutation
 >;

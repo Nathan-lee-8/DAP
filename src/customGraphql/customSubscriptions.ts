@@ -19,6 +19,8 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     type
     senderID
     chatID
+    createdAt
+    updatedAt
     owner
     __typename
   }
@@ -39,6 +41,8 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
     fullname
     profileURL
     description
+    unreadChatCount
+    unreadNotificationCount
     owner
     __typename
   }

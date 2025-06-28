@@ -19,7 +19,7 @@ import Icon from '@react-native-vector-icons/ionicons';
  * First and Last name, and Description. The user can also save or cancel the changes 
  * they made.
  */
-const EditProfile = () => {
+const EditProfile = ({navigation}: any) => {
   const [ loading, setLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
   const [ modalVisible, setModalVisible ] = useState(false);
@@ -111,6 +111,8 @@ const EditProfile = () => {
       setEditsOn(true);
     }else if(option === 'Logout'){
       logout();
+    }else if(option === 'Settings'){
+      navigation.navigate('Settings')
     }else{
       Alert.alert(option, 'Not implemented yet');
     }
@@ -119,7 +121,7 @@ const EditProfile = () => {
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (
     <View style={styles.container}>
-      {!editsOn ? ( //Edit View
+      {!editsOn ? ( //Standard Profile View
         <View style={{flex: 1}}>
           <View style={styles.viewUserProfileSection}>
             <ImgComponent uri={currUser.profileURL} style={styles.viewProfileURL}/>
@@ -136,7 +138,7 @@ const EditProfile = () => {
           </View>
           <UserPosts userID={currUser.id} />
         </View>
-      ) : ( //Standard Profile View
+      ) : ( //Edit View
         <View style={{flex: 1}}>
           <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}} 
             keyboardShouldPersistTaps='handled'
@@ -195,7 +197,7 @@ const EditProfile = () => {
         <View style={styles.postModelOverlay}>
           <View style={styles.postModalContainer}>
             <FlatList
-              data={["Edit Profile", "Logout"]}
+              data={["Settings", "Edit Profile", "Logout"]}
               keyExtractor={(option) => option}
               style={{height: 'auto', width: '100%'}}
               renderItem={({ item: option }) => (

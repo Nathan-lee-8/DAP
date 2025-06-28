@@ -8,90 +8,6 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionOutput: OutputType;
 };
 
-export const onCreateUserFeed = /* GraphQL */ `subscription OnCreateUserFeed($filter: ModelSubscriptionUserFeedFilterInput) {
-  onCreateUserFeed(filter: $filter) {
-    id
-    userID
-    postID
-    post {
-      id
-      content
-      postURL
-      groupID
-      userID
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
-    postCreatedAt
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnCreateUserFeedSubscriptionVariables,
-  APITypes.OnCreateUserFeedSubscription
->;
-export const onUpdateUserFeed = /* GraphQL */ `subscription OnUpdateUserFeed($filter: ModelSubscriptionUserFeedFilterInput) {
-  onUpdateUserFeed(filter: $filter) {
-    id
-    userID
-    postID
-    post {
-      id
-      content
-      postURL
-      groupID
-      userID
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
-    postCreatedAt
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnUpdateUserFeedSubscriptionVariables,
-  APITypes.OnUpdateUserFeedSubscription
->;
-export const onDeleteUserFeed = /* GraphQL */ `subscription OnDeleteUserFeed($filter: ModelSubscriptionUserFeedFilterInput) {
-  onDeleteUserFeed(filter: $filter) {
-    id
-    userID
-    postID
-    post {
-      id
-      content
-      postURL
-      groupID
-      userID
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
-    postCreatedAt
-    createdAt
-    updatedAt
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnDeleteUserFeedSubscriptionVariables,
-  APITypes.OnDeleteUserFeedSubscription
->;
 export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
   $filter: ModelSubscriptionUserFilterInput
   $owner: String
@@ -104,6 +20,8 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
     fullname
     profileURL
     description
+    unreadChatCount
+    unreadNotificationCount
     posts {
       nextToken
       __typename
@@ -134,6 +52,22 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser(
     }
     fcmTokens {
       nextToken
+      __typename
+    }
+    notificationSettings {
+      id
+      newPost
+      joinGroup
+      groupRequest
+      newComment
+      newReply
+      newReplyComment
+      newMessage
+      joinChat
+      userID
+      createdAt
+      updatedAt
+      owner
       __typename
     }
     createdAt
@@ -158,38 +92,8 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
     fullname
     profileURL
     description
-    posts {
-      nextToken
-      __typename
-    }
-    chats {
-      nextToken
-      __typename
-    }
-    messages {
-      nextToken
-      __typename
-    }
-    groups {
-      nextToken
-      __typename
-    }
-    comments {
-      nextToken
-      __typename
-    }
-    replies {
-      nextToken
-      __typename
-    }
-    notifications {
-      nextToken
-      __typename
-    }
-    fcmTokens {
-      nextToken
-      __typename
-    }
+    unreadChatCount
+    unreadNotificationCount
     createdAt
     updatedAt
     owner
@@ -212,6 +116,8 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
     fullname
     profileURL
     description
+    unreadChatCount
+    unreadNotificationCount
     posts {
       nextToken
       __typename
@@ -244,6 +150,22 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
       nextToken
       __typename
     }
+    notificationSettings {
+      id
+      newPost
+      joinGroup
+      groupRequest
+      newComment
+      newReply
+      newReplyComment
+      newMessage
+      joinChat
+      userID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     owner
@@ -253,6 +175,102 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser(
 ` as GeneratedSubscription<
   APITypes.OnDeleteUserSubscriptionVariables,
   APITypes.OnDeleteUserSubscription
+>;
+export const onCreateUserFeed = /* GraphQL */ `subscription OnCreateUserFeed(
+  $filter: ModelSubscriptionUserFeedFilterInput
+  $owner: String
+) {
+  onCreateUserFeed(filter: $filter, owner: $owner) {
+    id
+    userID
+    postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    postCreatedAt
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateUserFeedSubscriptionVariables,
+  APITypes.OnCreateUserFeedSubscription
+>;
+export const onUpdateUserFeed = /* GraphQL */ `subscription OnUpdateUserFeed(
+  $filter: ModelSubscriptionUserFeedFilterInput
+  $owner: String
+) {
+  onUpdateUserFeed(filter: $filter, owner: $owner) {
+    id
+    userID
+    postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    postCreatedAt
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateUserFeedSubscriptionVariables,
+  APITypes.OnUpdateUserFeedSubscription
+>;
+export const onDeleteUserFeed = /* GraphQL */ `subscription OnDeleteUserFeed(
+  $filter: ModelSubscriptionUserFeedFilterInput
+  $owner: String
+) {
+  onDeleteUserFeed(filter: $filter, owner: $owner) {
+    id
+    userID
+    postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
+    postCreatedAt
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteUserFeedSubscriptionVariables,
+  APITypes.OnDeleteUserFeedSubscription
 >;
 export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
   $filter: ModelSubscriptionPostFilterInput
@@ -272,6 +290,8 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -325,6 +345,8 @@ export const onUpdatePost = /* GraphQL */ `subscription OnUpdatePost(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -378,6 +400,8 @@ export const onDeletePost = /* GraphQL */ `subscription OnDeletePost(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -435,6 +459,8 @@ export const onCreateComment = /* GraphQL */ `subscription OnCreateComment(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -486,6 +512,8 @@ export const onUpdateComment = /* GraphQL */ `subscription OnUpdateComment(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -537,6 +565,8 @@ export const onDeleteComment = /* GraphQL */ `subscription OnDeleteComment(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -584,6 +614,8 @@ export const onCreateReply = /* GraphQL */ `subscription OnCreateReply(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -630,6 +662,8 @@ export const onUpdateReply = /* GraphQL */ `subscription OnUpdateReply(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -676,6 +710,8 @@ export const onDeleteReply = /* GraphQL */ `subscription OnDeleteReply(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -724,6 +760,8 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -771,6 +809,8 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -818,6 +858,8 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -967,6 +1009,8 @@ export const onUpdateMessage = /* GraphQL */ `subscription OnUpdateMessage(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1012,6 +1056,8 @@ export const onDeleteMessage = /* GraphQL */ `subscription OnDeleteMessage(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1055,6 +1101,8 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1102,6 +1150,8 @@ export const onUpdateUserGroup = /* GraphQL */ `subscription OnUpdateUserGroup(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1149,6 +1199,8 @@ export const onDeleteUserGroup = /* GraphQL */ `subscription OnDeleteUserGroup(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1297,6 +1349,50 @@ export const onCreateNotification = /* GraphQL */ `subscription OnCreateNotifica
     targetUserID
     onClickID
     read
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    group {
+      id
+      groupName
+      nameLowercase
+      groupURL
+      description
+      isPublic
+      memberCount
+      type
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    targetUser {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userNotificationsId
@@ -1329,6 +1425,8 @@ export const onUpdateNotification = /* GraphQL */ `subscription OnUpdateNotifica
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1356,6 +1454,8 @@ export const onUpdateNotification = /* GraphQL */ `subscription OnUpdateNotifica
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1393,6 +1493,8 @@ export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotifica
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1420,6 +1522,8 @@ export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotifica
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1515,6 +1619,8 @@ export const onCreateToken = /* GraphQL */ `subscription OnCreateToken(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1547,6 +1653,8 @@ export const onUpdateToken = /* GraphQL */ `subscription OnUpdateToken(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1579,6 +1687,8 @@ export const onDeleteToken = /* GraphQL */ `subscription OnDeleteToken(
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1594,4 +1704,124 @@ export const onDeleteToken = /* GraphQL */ `subscription OnDeleteToken(
 ` as GeneratedSubscription<
   APITypes.OnDeleteTokenSubscriptionVariables,
   APITypes.OnDeleteTokenSubscription
+>;
+export const onCreateNotificationSettings = /* GraphQL */ `subscription OnCreateNotificationSettings(
+  $filter: ModelSubscriptionNotificationSettingsFilterInput
+  $owner: String
+) {
+  onCreateNotificationSettings(filter: $filter, owner: $owner) {
+    id
+    newPost
+    joinGroup
+    groupRequest
+    newComment
+    newReply
+    newReplyComment
+    newMessage
+    joinChat
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateNotificationSettingsSubscriptionVariables,
+  APITypes.OnCreateNotificationSettingsSubscription
+>;
+export const onUpdateNotificationSettings = /* GraphQL */ `subscription OnUpdateNotificationSettings(
+  $filter: ModelSubscriptionNotificationSettingsFilterInput
+  $owner: String
+) {
+  onUpdateNotificationSettings(filter: $filter, owner: $owner) {
+    id
+    newPost
+    joinGroup
+    groupRequest
+    newComment
+    newReply
+    newReplyComment
+    newMessage
+    joinChat
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateNotificationSettingsSubscriptionVariables,
+  APITypes.OnUpdateNotificationSettingsSubscription
+>;
+export const onDeleteNotificationSettings = /* GraphQL */ `subscription OnDeleteNotificationSettings(
+  $filter: ModelSubscriptionNotificationSettingsFilterInput
+  $owner: String
+) {
+  onDeleteNotificationSettings(filter: $filter, owner: $owner) {
+    id
+    newPost
+    joinGroup
+    groupRequest
+    newComment
+    newReply
+    newReplyComment
+    newMessage
+    joinChat
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteNotificationSettingsSubscriptionVariables,
+  APITypes.OnDeleteNotificationSettingsSubscription
 >;

@@ -395,16 +395,26 @@ const styles = StyleSheet.create({
   notificationItem:{
     padding: 5,
     paddingHorizontal: 10,
-    marginBottom: 10,
     marginHorizontal: 10,
     backgroundColor: colorPrimary,
   },
   unreadItem:{
     padding: 5,
     paddingHorizontal: 10,
-    marginBottom: 10,
     marginHorizontal: 10,
     backgroundColor: 'lightgrey',
+    borderBottomColor: colorPrimary,
+    borderBottomWidth: 1,
+  },
+  removeNotificationIcon: {
+    position: 'absolute',
+    right: 10,
+    top: 10
+  },
+  expandNotifIcon:{
+    position: 'absolute',
+    right: 10,
+    bottom: 0
   },
   rejectJoinButton:{
     paddingHorizontal: 10,
@@ -1059,6 +1069,30 @@ const styles = StyleSheet.create({
     zIndex: 1
   },
 
+  /** Notification Settings Styles */
+  notifSettingContainer: {
+    margin: 10,
+    backgroundColor: colorPrimary
+  },
+  notificationCategoryText: {
+    padding: 10,
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    padding: 10,
+  },
+  notificationSettingText:{
+    marginRight: 'auto',
+    fontSize: 16,
+  },
 });
 
 

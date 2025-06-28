@@ -8,6 +8,103 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryOutput: OutputType;
 };
 
+export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
+  getUser(id: $id) {
+    id
+    email
+    firstname
+    lastname
+    fullname
+    profileURL
+    description
+    unreadChatCount
+    unreadNotificationCount
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetUserQueryVariables, APITypes.GetUserQuery>;
+export const listUsers = /* GraphQL */ `query ListUsers(
+  $filter: ModelUserFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListUsersQueryVariables, APITypes.ListUsersQuery>;
+export const userByEmail = /* GraphQL */ `query UserByEmail(
+  $email: AWSEmail!
+  $sortDirection: ModelSortDirection
+  $filter: ModelUserFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  userByEmail(
+    email: $email
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      notificationSettings {
+        id
+        newPost
+        joinGroup
+        groupRequest
+        newComment
+        newReply
+        newReplyComment
+        newMessage
+        joinChat
+        userID
+        createdAt
+        updatedAt
+        owner
+        __typename
+      }
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.UserByEmailQueryVariables,
+  APITypes.UserByEmailQuery
+>;
 export const getUserFeed = /* GraphQL */ `query GetUserFeed($id: ID!) {
   getUserFeed(id: $id) {
     id
@@ -29,6 +126,7 @@ export const getUserFeed = /* GraphQL */ `query GetUserFeed($id: ID!) {
     postCreatedAt
     createdAt
     updatedAt
+    owner
     __typename
   }
 }
@@ -49,6 +147,7 @@ export const listUserFeeds = /* GraphQL */ `query ListUserFeeds(
       postCreatedAt
       createdAt
       updatedAt
+      owner
       __typename
     }
     nextToken
@@ -124,6 +223,7 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
       postCreatedAt
       createdAt
       updatedAt
+      owner
       __typename
     }
     nextToken
@@ -134,59 +234,15 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
   APITypes.PostsByUserFeedQueryVariables,
   APITypes.PostsByUserFeedQuery
 >;
-export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
-  getUser(id: $id) {
-    id
-    email
-    firstname
-    lastname
-    fullname
-    profileURL
-    description
-    unreadChatCount
-    unreadNotificationCount
-    createdAt
-    updatedAt
-    owner
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.GetUserQueryVariables, APITypes.GetUserQuery>;
-export const listUsers = /* GraphQL */ `query ListUsers(
-  $filter: ModelUserFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      unreadChatCount
-      unreadNotificationCount
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.ListUsersQueryVariables, APITypes.ListUsersQuery>;
-export const userByEmail = /* GraphQL */ `query UserByEmail(
-  $email: AWSEmail!
+export const userFeedByPostID = /* GraphQL */ `query UserFeedByPostID(
+  $postID: ID!
   $sortDirection: ModelSortDirection
-  $filter: ModelUserFilterInput
+  $filter: ModelUserFeedFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  userByEmail(
-    email: $email
+  userFeedByPostID(
+    postID: $postID
     sortDirection: $sortDirection
     filter: $filter
     limit: $limit
@@ -194,14 +250,9 @@ export const userByEmail = /* GraphQL */ `query UserByEmail(
   ) {
     items {
       id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      unreadChatCount
-      unreadNotificationCount
+      userID
+      postID
+      postCreatedAt
       createdAt
       updatedAt
       owner
@@ -212,8 +263,8 @@ export const userByEmail = /* GraphQL */ `query UserByEmail(
   }
 }
 ` as GeneratedQuery<
-  APITypes.UserByEmailQueryVariables,
-  APITypes.UserByEmailQuery
+  APITypes.UserFeedByPostIDQueryVariables,
+  APITypes.UserFeedByPostIDQuery
 >;
 export const getPost = /* GraphQL */ `query GetPost($id: ID!) {
   getPost(id: $id) {
@@ -421,6 +472,8 @@ export const getComment = /* GraphQL */ `query GetComment($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -563,6 +616,8 @@ export const getReply = /* GraphQL */ `query GetReply($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -703,6 +758,8 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -996,6 +1053,8 @@ export const getMessage = /* GraphQL */ `query GetMessage($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1545,6 +1604,8 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1572,6 +1633,8 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1749,6 +1812,8 @@ export const getToken = /* GraphQL */ `query GetToken($id: ID!) {
       fullname
       profileURL
       description
+      unreadChatCount
+      unreadNotificationCount
       createdAt
       updatedAt
       owner
@@ -1819,4 +1884,113 @@ export const tokensByUser = /* GraphQL */ `query TokensByUser(
 ` as GeneratedQuery<
   APITypes.TokensByUserQueryVariables,
   APITypes.TokensByUserQuery
+>;
+export const getNotificationSettings = /* GraphQL */ `query GetNotificationSettings($id: ID!) {
+  getNotificationSettings(id: $id) {
+    id
+    newPost
+    joinGroup
+    groupRequest
+    newComment
+    newReply
+    newReplyComment
+    newMessage
+    joinChat
+    userID
+    user {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetNotificationSettingsQueryVariables,
+  APITypes.GetNotificationSettingsQuery
+>;
+export const listNotificationSettings = /* GraphQL */ `query ListNotificationSettings(
+  $filter: ModelNotificationSettingsFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listNotificationSettings(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      newPost
+      joinGroup
+      groupRequest
+      newComment
+      newReply
+      newReplyComment
+      newMessage
+      joinChat
+      userID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListNotificationSettingsQueryVariables,
+  APITypes.ListNotificationSettingsQuery
+>;
+export const notificationSettingsByUser = /* GraphQL */ `query NotificationSettingsByUser(
+  $userID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelNotificationSettingsFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  notificationSettingsByUser(
+    userID: $userID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      newPost
+      joinGroup
+      groupRequest
+      newComment
+      newReply
+      newReplyComment
+      newMessage
+      joinChat
+      userID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.NotificationSettingsByUserQueryVariables,
+  APITypes.NotificationSettingsByUserQuery
 >;

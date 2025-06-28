@@ -23,7 +23,8 @@ import moment from "moment";
  * @param closeNotificationModal - Function to close the overlay  
  */
 const Notifications = ( {closeNotificationModal} : any ) => {
-  const [ notifications, setNotifications ] = useState<any>([]);
+  const [ notifications, setNotifications ] = useState<Notification[]>([]);
+  const [ grouped, setGrouped ] = useState<any>([]);
   const [ loading, setLoading ] = useState(true);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const authContext = useContext(AuthContext);
@@ -38,6 +39,12 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     fetchNotifications();
   }, []);
 
+  //Organize notifications anytime notifications changes
+  useEffect(() => {
+    const grouped = groupNotifications(notifications);
+    setGrouped(grouped);
+  }, [notifications]);
+
   //retreives all notifications and nexttoken and resets notification count to 0
   const fetchNotifications = async () => {
     setLoading(true);
@@ -47,7 +54,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         variables: {
           userID: currUser.id,
           sortDirection: ModelSortDirection.DESC,
-          limit: 15
+          limit: 30
         },
         authMode:'userPool'
       })
@@ -83,7 +90,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
       variables: {
         userID: currUser.id,
         sortDirection: ModelSortDirection.DESC,
-        limit: 15,
+        limit: 30,
         nextToken: nextToken
       },
       authMode:'userPool'
@@ -137,6 +144,41 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     }
   }
 
+  //Sort Notifications by onClickID
+  const groupNotifications = (notifications : Notification[]) => {
+    const grouped: any = {};
+
+    notifications.forEach((notif) => {
+      const key = notif.onClickID;
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(notif);
+    });
+
+    return Object.entries(grouped)
+      .map(([onClickID, group]: any) => ({
+        onClickID,
+        isExpanded: false,
+        notifications: group.sort((a: any, b: any) => 
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+        numUnread: group.filter((notif: any) => !notif.read).length,
+        name: group[0].content.split(/\r?\n/)[0].split(' ').slice(-1)[0]
+      }))
+      .sort((a, b) => new Date(b.notifications[0].createdAt).getTime() - 
+        new Date(a.notifications[0].createdAt).getTime()
+      );
+  };
+
+  //Changes group view to isExpanded to show all notifications from one group
+  const toggleGroup = (onClickID: string) => {
+    setGrouped((prev: any) =>
+      prev.map((group: any) =>
+        group.onClickID === onClickID
+          ? { ...group, isExpanded: !group.isExpanded }
+          : group
+      )
+    );
+  };
+
   return (
     <View style={styles.notificationOverlay}>
       <TouchableOpacity style={styles.notificationHeader} 
@@ -150,18 +192,39 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         
         {loading ? ( <ActivityIndicator size="large" color="#0000ff" /> ) : (
           <FlatList
-            data={notifications}
+            data={grouped}
+            keyExtractor={(item) => item.onClickID}
             renderItem={({item}) => 
-              <TouchableOpacity onPress={() => handleNav(item)}
-                style={ item.read ? styles.notificationItem : styles.unreadItem } 
-              >
-                <Text>{item.content}</Text>
-                <Text style={styles.postDate}>{moment(item.createdAt).fromNow()}</Text>
-                <Icon name="close-outline" size={20} 
-                  onPress={() => handleRemoveNotification(item.id)}
-                  style={{ position: 'absolute', right: 5, top: 5, zIndex: 1}
-                }/>
-              </TouchableOpacity>
+              <View style={{marginBottom: 10}}>
+                <TouchableOpacity onPress={() => toggleGroup(item.onClickID)}
+                  style={item.numUnread > 0 ? styles.unreadItem : styles.notificationItem} 
+                >
+                  <Text>{item.numUnread} new updates from{" "}
+                    {item.notifications[0].type} {item.name}
+                  </Text>
+                  <Text style={styles.postDate}>
+                    {moment(item.notifications[0].createdAt).fromNow()}
+                  </Text>
+                  
+                  <Icon name={item.isExpanded ? 'chevron-up' : 'chevron-down'} size={25}
+                    style={styles.expandNotifIcon}
+                  />
+                </TouchableOpacity>
+                {item.isExpanded && (
+                  item.notifications.map((notif: Notification) => (
+                    <TouchableOpacity key={notif.id} onPress={() => handleNav(notif)}
+                      style={notif.read ? styles.notificationItem : styles.unreadItem} 
+                    >
+                      <Text>{notif.content}</Text>
+                      <Text style={styles.postDate}>{moment(notif.createdAt).fromNow()}</Text>
+                      <Icon name="close-outline" size={20} style={styles.removeNotificationIcon}
+                        onPress={() => handleRemoveNotification(notif.id)}
+                      />
+                    </TouchableOpacity>
+                  ))
+                )}
+                
+              </View>
             }
             ListEmptyComponent={() => (
               <View>

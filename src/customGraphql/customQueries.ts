@@ -49,6 +49,21 @@ export const userByEmail =
       description
       unreadChatCount
       unreadNotificationCount
+      notificationSettings {
+        id
+        newPost
+        joinGroup
+        groupRequest
+        newComment
+        newReply
+        newReplyComment
+        newMessage
+        joinChat
+        userID
+        createdAt
+        updatedAt
+        owner
+      }
       fcmTokens{
         items{
           id

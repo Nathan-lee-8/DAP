@@ -2,27 +2,36 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateUserFeedInput = {
+export type CreateUserInput = {
   id?: string | null,
-  userID: string,
-  postID: string,
-  postCreatedAt: string,
-  createdAt?: string | null,
+  email: string,
+  firstname: string,
+  lastname: string,
+  fullname: string,
+  profileURL: string,
+  description?: string | null,
+  unreadChatCount: number,
+  unreadNotificationCount: number,
 };
 
-export type ModelUserFeedConditionInput = {
-  userID?: ModelIDInput | null,
-  postID?: ModelIDInput | null,
-  postCreatedAt?: ModelStringInput | null,
+export type ModelUserConditionInput = {
+  email?: ModelStringInput | null,
+  firstname?: ModelStringInput | null,
+  lastname?: ModelStringInput | null,
+  fullname?: ModelStringInput | null,
+  profileURL?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  unreadChatCount?: ModelIntInput | null,
+  unreadNotificationCount?: ModelIntInput | null,
+  and?: Array< ModelUserConditionInput | null > | null,
+  or?: Array< ModelUserConditionInput | null > | null,
+  not?: ModelUserConditionInput | null,
   createdAt?: ModelStringInput | null,
-  and?: Array< ModelUserFeedConditionInput | null > | null,
-  or?: Array< ModelUserFeedConditionInput | null > | null,
-  not?: ModelUserFeedConditionInput | null,
   updatedAt?: ModelStringInput | null,
   owner?: ModelStringInput | null,
 };
 
-export type ModelIDInput = {
+export type ModelStringInput = {
   ne?: string | null,
   eq?: string | null,
   le?: string | null,
@@ -62,49 +71,16 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
-export type ModelStringInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
+export type ModelIntInput = {
+  ne?: number | null,
+  eq?: number | null,
+  le?: number | null,
+  lt?: number | null,
+  ge?: number | null,
+  gt?: number | null,
+  between?: Array< number | null > | null,
   attributeExists?: boolean | null,
   attributeType?: ModelAttributeTypes | null,
-  size?: ModelSizeInput | null,
-};
-
-export type UserFeed = {
-  __typename: "UserFeed",
-  id: string,
-  userID: string,
-  postID: string,
-  post?: Post | null,
-  postCreatedAt: string,
-  createdAt: string,
-  updatedAt: string,
-  owner?: string | null,
-};
-
-export type Post = {
-  __typename: "Post",
-  id: string,
-  content: string,
-  postURL?: Array< string | null > | null,
-  groupID: string,
-  userID: string,
-  user?: User | null,
-  group?: Group | null,
-  comments?: ModelCommentConnection | null,
-  commentCount: number,
-  createdAt: string,
-  updatedAt: string,
-  userPostsId?: string | null,
-  owner?: string | null,
 };
 
 export type User = {
@@ -126,6 +102,7 @@ export type User = {
   replies?: ModelReplyConnection | null,
   notifications?: ModelNotificationConnection | null,
   fcmTokens?: ModelTokenConnection | null,
+  notificationSettings?: NotificationSettings | null,
   createdAt: string,
   updatedAt: string,
   owner?: string | null,
@@ -137,62 +114,38 @@ export type ModelPostConnection = {
   nextToken?: string | null,
 };
 
-export type ModelUserChatConnection = {
-  __typename: "ModelUserChatConnection",
-  items:  Array<UserChat | null >,
-  nextToken?: string | null,
-};
-
-export type UserChat = {
-  __typename: "UserChat",
-  id: string,
-  unreadMessageCount: number,
-  lastMessage: string,
-  role: string,
-  isMuted?: boolean | null,
-  userID: string,
-  chatID: string,
-  user?: User | null,
-  chat?: Chat | null,
-  lastMessageAt: string,
-  createdAt: string,
-  updatedAt: string,
-  userChatsId?: string | null,
-  owner?: string | null,
-};
-
-export type Chat = {
-  __typename: "Chat",
-  id: string,
-  name: string,
-  url?: string | null,
-  isGroup: boolean,
-  messages?: ModelMessageConnection | null,
-  participants?: ModelUserChatConnection | null,
-  createdAt: string,
-  updatedAt: string,
-  owner?: string | null,
-};
-
-export type ModelMessageConnection = {
-  __typename: "ModelMessageConnection",
-  items:  Array<Message | null >,
-  nextToken?: string | null,
-};
-
-export type Message = {
-  __typename: "Message",
+export type Post = {
+  __typename: "Post",
   id: string,
   content: string,
-  msgURL?: Array< string | null > | null,
-  type?: string | null,
-  senderID: string,
-  chatID: string,
-  sender?: User | null,
-  chat?: Chat | null,
+  postURL?: Array< string | null > | null,
+  groupID: string,
+  userID: string,
+  user?: User | null,
+  group?: Group | null,
+  comments?: ModelCommentConnection | null,
+  commentCount: number,
   createdAt: string,
   updatedAt: string,
-  userMessagesId?: string | null,
+  userPostsId?: string | null,
+  owner?: string | null,
+};
+
+export type Group = {
+  __typename: "Group",
+  id: string,
+  groupName: string,
+  nameLowercase: string,
+  groupURL?: string | null,
+  description?: string | null,
+  isPublic: boolean,
+  memberCount: number,
+  type: string,
+  members?: ModelUserGroupConnection | null,
+  notifications?: ModelNotificationConnection | null,
+  posts?: ModelPostConnection | null,
+  createdAt: string,
+  updatedAt: string,
   owner?: string | null,
 };
 
@@ -213,24 +166,6 @@ export type UserGroup = {
   createdAt: string,
   updatedAt: string,
   userGroupsId?: string | null,
-  owner?: string | null,
-};
-
-export type Group = {
-  __typename: "Group",
-  id: string,
-  groupName: string,
-  nameLowercase: string,
-  groupURL?: string | null,
-  description?: string | null,
-  isPublic: boolean,
-  memberCount: number,
-  type: string,
-  members?: ModelUserGroupConnection | null,
-  notifications?: ModelNotificationConnection | null,
-  posts?: ModelPostConnection | null,
-  createdAt: string,
-  updatedAt: string,
   owner?: string | null,
 };
 
@@ -302,6 +237,65 @@ export type Reply = {
   owner?: string | null,
 };
 
+export type ModelUserChatConnection = {
+  __typename: "ModelUserChatConnection",
+  items:  Array<UserChat | null >,
+  nextToken?: string | null,
+};
+
+export type UserChat = {
+  __typename: "UserChat",
+  id: string,
+  unreadMessageCount: number,
+  lastMessage: string,
+  role: string,
+  isMuted?: boolean | null,
+  userID: string,
+  chatID: string,
+  user?: User | null,
+  chat?: Chat | null,
+  lastMessageAt: string,
+  createdAt: string,
+  updatedAt: string,
+  userChatsId?: string | null,
+  owner?: string | null,
+};
+
+export type Chat = {
+  __typename: "Chat",
+  id: string,
+  name: string,
+  url?: string | null,
+  isGroup: boolean,
+  messages?: ModelMessageConnection | null,
+  participants?: ModelUserChatConnection | null,
+  createdAt: string,
+  updatedAt: string,
+  owner?: string | null,
+};
+
+export type ModelMessageConnection = {
+  __typename: "ModelMessageConnection",
+  items:  Array<Message | null >,
+  nextToken?: string | null,
+};
+
+export type Message = {
+  __typename: "Message",
+  id: string,
+  content: string,
+  msgURL?: Array< string | null > | null,
+  type?: string | null,
+  senderID: string,
+  chatID: string,
+  sender?: User | null,
+  chat?: Chat | null,
+  createdAt: string,
+  updatedAt: string,
+  userMessagesId?: string | null,
+  owner?: string | null,
+};
+
 export type ModelTokenConnection = {
   __typename: "ModelTokenConnection",
   items:  Array<Token | null >,
@@ -320,57 +314,22 @@ export type Token = {
   owner?: string | null,
 };
 
-export type UpdateUserFeedInput = {
+export type NotificationSettings = {
+  __typename: "NotificationSettings",
   id: string,
-  userID?: string | null,
-  postID?: string | null,
-  postCreatedAt?: string | null,
-  createdAt?: string | null,
-};
-
-export type DeleteUserFeedInput = {
-  id: string,
-};
-
-export type CreateUserInput = {
-  id?: string | null,
-  email: string,
-  firstname: string,
-  lastname: string,
-  fullname: string,
-  profileURL: string,
-  description?: string | null,
-  unreadChatCount: number,
-  unreadNotificationCount: number,
-};
-
-export type ModelUserConditionInput = {
-  email?: ModelStringInput | null,
-  firstname?: ModelStringInput | null,
-  lastname?: ModelStringInput | null,
-  fullname?: ModelStringInput | null,
-  profileURL?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  unreadChatCount?: ModelIntInput | null,
-  unreadNotificationCount?: ModelIntInput | null,
-  and?: Array< ModelUserConditionInput | null > | null,
-  or?: Array< ModelUserConditionInput | null > | null,
-  not?: ModelUserConditionInput | null,
-  createdAt?: ModelStringInput | null,
-  updatedAt?: ModelStringInput | null,
-  owner?: ModelStringInput | null,
-};
-
-export type ModelIntInput = {
-  ne?: number | null,
-  eq?: number | null,
-  le?: number | null,
-  lt?: number | null,
-  ge?: number | null,
-  gt?: number | null,
-  between?: Array< number | null > | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
+  newPost: boolean,
+  joinGroup: boolean,
+  groupRequest: boolean,
+  newComment: boolean,
+  newReply: boolean,
+  newReplyComment: boolean,
+  newMessage: boolean,
+  joinChat: boolean,
+  userID: string,
+  user?: User | null,
+  createdAt: string,
+  updatedAt: string,
+  owner?: string | null,
 };
 
 export type UpdateUserInput = {
@@ -386,6 +345,66 @@ export type UpdateUserInput = {
 };
 
 export type DeleteUserInput = {
+  id: string,
+};
+
+export type CreateUserFeedInput = {
+  id?: string | null,
+  userID: string,
+  postID: string,
+  postCreatedAt: string,
+  createdAt?: string | null,
+};
+
+export type ModelUserFeedConditionInput = {
+  userID?: ModelIDInput | null,
+  postID?: ModelIDInput | null,
+  postCreatedAt?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelUserFeedConditionInput | null > | null,
+  or?: Array< ModelUserFeedConditionInput | null > | null,
+  not?: ModelUserFeedConditionInput | null,
+  updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelIDInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  size?: ModelSizeInput | null,
+};
+
+export type UserFeed = {
+  __typename: "UserFeed",
+  id: string,
+  userID: string,
+  postID: string,
+  post?: Post | null,
+  postCreatedAt: string,
+  createdAt: string,
+  updatedAt: string,
+  owner?: string | null,
+};
+
+export type UpdateUserFeedInput = {
+  id: string,
+  userID?: string | null,
+  postID?: string | null,
+  postCreatedAt?: string | null,
+  createdAt?: string | null,
+};
+
+export type DeleteUserFeedInput = {
   id: string,
 };
 
@@ -844,6 +863,86 @@ export type DeleteTokenInput = {
   id: string,
 };
 
+export type CreateNotificationSettingsInput = {
+  id?: string | null,
+  newPost: boolean,
+  joinGroup: boolean,
+  groupRequest: boolean,
+  newComment: boolean,
+  newReply: boolean,
+  newReplyComment: boolean,
+  newMessage: boolean,
+  joinChat: boolean,
+  userID: string,
+  createdAt?: string | null,
+};
+
+export type ModelNotificationSettingsConditionInput = {
+  newPost?: ModelBooleanInput | null,
+  joinGroup?: ModelBooleanInput | null,
+  groupRequest?: ModelBooleanInput | null,
+  newComment?: ModelBooleanInput | null,
+  newReply?: ModelBooleanInput | null,
+  newReplyComment?: ModelBooleanInput | null,
+  newMessage?: ModelBooleanInput | null,
+  joinChat?: ModelBooleanInput | null,
+  userID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelNotificationSettingsConditionInput | null > | null,
+  or?: Array< ModelNotificationSettingsConditionInput | null > | null,
+  not?: ModelNotificationSettingsConditionInput | null,
+  updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type UpdateNotificationSettingsInput = {
+  id: string,
+  newPost?: boolean | null,
+  joinGroup?: boolean | null,
+  groupRequest?: boolean | null,
+  newComment?: boolean | null,
+  newReply?: boolean | null,
+  newReplyComment?: boolean | null,
+  newMessage?: boolean | null,
+  joinChat?: boolean | null,
+  userID?: string | null,
+  createdAt?: string | null,
+};
+
+export type DeleteNotificationSettingsInput = {
+  id: string,
+};
+
+export type ModelUserFilterInput = {
+  id?: ModelIDInput | null,
+  email?: ModelStringInput | null,
+  firstname?: ModelStringInput | null,
+  lastname?: ModelStringInput | null,
+  fullname?: ModelStringInput | null,
+  profileURL?: ModelStringInput | null,
+  description?: ModelStringInput | null,
+  unreadChatCount?: ModelIntInput | null,
+  unreadNotificationCount?: ModelIntInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelUserFilterInput | null > | null,
+  or?: Array< ModelUserFilterInput | null > | null,
+  not?: ModelUserFilterInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelUserConnection = {
+  __typename: "ModelUserConnection",
+  items:  Array<User | null >,
+  nextToken?: string | null,
+};
+
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
+
 export type ModelUserFeedFilterInput = {
   id?: ModelIDInput | null,
   userID?: ModelIDInput | null,
@@ -871,36 +970,6 @@ export type ModelStringKeyConditionInput = {
   gt?: string | null,
   between?: Array< string | null > | null,
   beginsWith?: string | null,
-};
-
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
-export type ModelUserFilterInput = {
-  id?: ModelIDInput | null,
-  email?: ModelStringInput | null,
-  firstname?: ModelStringInput | null,
-  lastname?: ModelStringInput | null,
-  fullname?: ModelStringInput | null,
-  profileURL?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  unreadChatCount?: ModelIntInput | null,
-  unreadNotificationCount?: ModelIntInput | null,
-  createdAt?: ModelStringInput | null,
-  updatedAt?: ModelStringInput | null,
-  and?: Array< ModelUserFilterInput | null > | null,
-  or?: Array< ModelUserFilterInput | null > | null,
-  not?: ModelUserFilterInput | null,
-  owner?: ModelStringInput | null,
-};
-
-export type ModelUserConnection = {
-  __typename: "ModelUserConnection",
-  items:  Array<User | null >,
-  nextToken?: string | null,
 };
 
 export type ModelPostFilterInput = {
@@ -1100,15 +1169,53 @@ export type ModelTokenFilterInput = {
   owner?: ModelStringInput | null,
 };
 
-export type ModelSubscriptionUserFeedFilterInput = {
+export type ModelNotificationSettingsFilterInput = {
+  id?: ModelIDInput | null,
+  newPost?: ModelBooleanInput | null,
+  joinGroup?: ModelBooleanInput | null,
+  groupRequest?: ModelBooleanInput | null,
+  newComment?: ModelBooleanInput | null,
+  newReply?: ModelBooleanInput | null,
+  newReplyComment?: ModelBooleanInput | null,
+  newMessage?: ModelBooleanInput | null,
+  joinChat?: ModelBooleanInput | null,
+  userID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelNotificationSettingsFilterInput | null > | null,
+  or?: Array< ModelNotificationSettingsFilterInput | null > | null,
+  not?: ModelNotificationSettingsFilterInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelNotificationSettingsConnection = {
+  __typename: "ModelNotificationSettingsConnection",
+  items:  Array<NotificationSettings | null >,
+  nextToken?: string | null,
+};
+
+export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
-  userID?: ModelSubscriptionIDInput | null,
-  postID?: ModelSubscriptionIDInput | null,
-  postCreatedAt?: ModelSubscriptionStringInput | null,
+  email?: ModelSubscriptionStringInput | null,
+  firstname?: ModelSubscriptionStringInput | null,
+  lastname?: ModelSubscriptionStringInput | null,
+  fullname?: ModelSubscriptionStringInput | null,
+  profileURL?: ModelSubscriptionStringInput | null,
+  description?: ModelSubscriptionStringInput | null,
+  unreadChatCount?: ModelSubscriptionIntInput | null,
+  unreadNotificationCount?: ModelSubscriptionIntInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionUserFeedFilterInput | null > | null,
-  or?: Array< ModelSubscriptionUserFeedFilterInput | null > | null,
+  and?: Array< ModelSubscriptionUserFilterInput | null > | null,
+  or?: Array< ModelSubscriptionUserFilterInput | null > | null,
+  userPostsId?: ModelSubscriptionIDInput | null,
+  userChatsId?: ModelSubscriptionIDInput | null,
+  userMessagesId?: ModelSubscriptionIDInput | null,
+  userGroupsId?: ModelSubscriptionIDInput | null,
+  userCommentsId?: ModelSubscriptionIDInput | null,
+  userRepliesId?: ModelSubscriptionIDInput | null,
+  userNotificationsId?: ModelSubscriptionIDInput | null,
+  userFcmTokensId?: ModelSubscriptionIDInput | null,
   owner?: ModelStringInput | null,
 };
 
@@ -1142,31 +1249,6 @@ export type ModelSubscriptionStringInput = {
   notIn?: Array< string | null > | null,
 };
 
-export type ModelSubscriptionUserFilterInput = {
-  id?: ModelSubscriptionIDInput | null,
-  email?: ModelSubscriptionStringInput | null,
-  firstname?: ModelSubscriptionStringInput | null,
-  lastname?: ModelSubscriptionStringInput | null,
-  fullname?: ModelSubscriptionStringInput | null,
-  profileURL?: ModelSubscriptionStringInput | null,
-  description?: ModelSubscriptionStringInput | null,
-  unreadChatCount?: ModelSubscriptionIntInput | null,
-  unreadNotificationCount?: ModelSubscriptionIntInput | null,
-  createdAt?: ModelSubscriptionStringInput | null,
-  updatedAt?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionUserFilterInput | null > | null,
-  or?: Array< ModelSubscriptionUserFilterInput | null > | null,
-  userPostsId?: ModelSubscriptionIDInput | null,
-  userChatsId?: ModelSubscriptionIDInput | null,
-  userMessagesId?: ModelSubscriptionIDInput | null,
-  userGroupsId?: ModelSubscriptionIDInput | null,
-  userCommentsId?: ModelSubscriptionIDInput | null,
-  userRepliesId?: ModelSubscriptionIDInput | null,
-  userNotificationsId?: ModelSubscriptionIDInput | null,
-  userFcmTokensId?: ModelSubscriptionIDInput | null,
-  owner?: ModelStringInput | null,
-};
-
 export type ModelSubscriptionIntInput = {
   ne?: number | null,
   eq?: number | null,
@@ -1177,6 +1259,18 @@ export type ModelSubscriptionIntInput = {
   between?: Array< number | null > | null,
   in?: Array< number | null > | null,
   notIn?: Array< number | null > | null,
+};
+
+export type ModelSubscriptionUserFeedFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  userID?: ModelSubscriptionIDInput | null,
+  postID?: ModelSubscriptionIDInput | null,
+  postCreatedAt?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionUserFeedFilterInput | null > | null,
+  or?: Array< ModelSubscriptionUserFeedFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type ModelSubscriptionPostFilterInput = {
@@ -1335,55 +1429,22 @@ export type ModelSubscriptionTokenFilterInput = {
   owner?: ModelStringInput | null,
 };
 
-export type CreateUserFeedMutationVariables = {
-  input: CreateUserFeedInput,
-  condition?: ModelUserFeedConditionInput | null,
-};
-
-export type CreateUserFeedMutation = {
-  createUserFeed?:  {
-    __typename: "UserFeed",
-    id: string,
-    userID: string,
-    postID: string,
-    postCreatedAt: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type UpdateUserFeedMutationVariables = {
-  input: UpdateUserFeedInput,
-  condition?: ModelUserFeedConditionInput | null,
-};
-
-export type UpdateUserFeedMutation = {
-  updateUserFeed?:  {
-    __typename: "UserFeed",
-    id: string,
-    userID: string,
-    postID: string,
-    postCreatedAt: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type DeleteUserFeedMutationVariables = {
-  input: DeleteUserFeedInput,
-  condition?: ModelUserFeedConditionInput | null,
-};
-
-export type DeleteUserFeedMutation = {
-  deleteUserFeed?:  {
-    __typename: "UserFeed",
-    id: string,
-    userID: string,
-    postID: string,
-    postCreatedAt: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
+export type ModelSubscriptionNotificationSettingsFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  newPost?: ModelSubscriptionBooleanInput | null,
+  joinGroup?: ModelSubscriptionBooleanInput | null,
+  groupRequest?: ModelSubscriptionBooleanInput | null,
+  newComment?: ModelSubscriptionBooleanInput | null,
+  newReply?: ModelSubscriptionBooleanInput | null,
+  newReplyComment?: ModelSubscriptionBooleanInput | null,
+  newMessage?: ModelSubscriptionBooleanInput | null,
+  joinChat?: ModelSubscriptionBooleanInput | null,
+  userID?: ModelSubscriptionIDInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionNotificationSettingsFilterInput | null > | null,
+  or?: Array< ModelSubscriptionNotificationSettingsFilterInput | null > | null,
+  owner?: ModelStringInput | null,
 };
 
 export type CreateUserMutationVariables = {
@@ -1400,9 +1461,9 @@ export type CreateUserMutation = {
     lastname: string,
     fullname: string,
     profileURL: string,
+    description?: string | null,
     unreadChatCount: number,
     unreadNotificationCount: number,
-    description?: string | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -1447,6 +1508,62 @@ export type DeleteUserMutation = {
     fullname: string,
     profileURL: string,
     description?: string | null,
+    unreadChatCount: number,
+    unreadNotificationCount: number,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type CreateUserFeedMutationVariables = {
+  input: CreateUserFeedInput,
+  condition?: ModelUserFeedConditionInput | null,
+};
+
+export type CreateUserFeedMutation = {
+  createUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    postCreatedAt: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type UpdateUserFeedMutationVariables = {
+  input: UpdateUserFeedInput,
+  condition?: ModelUserFeedConditionInput | null,
+};
+
+export type UpdateUserFeedMutation = {
+  updateUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    postCreatedAt: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type DeleteUserFeedMutationVariables = {
+  input: DeleteUserFeedInput,
+  condition?: ModelUserFeedConditionInput | null,
+};
+
+export type DeleteUserFeedMutation = {
+  deleteUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    postCreatedAt: string,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -2128,121 +2245,75 @@ export type DeleteTokenMutation = {
   } | null,
 };
 
-export type GetUserFeedQueryVariables = {
-  id: string,
+export type CreateNotificationSettingsMutationVariables = {
+  input: CreateNotificationSettingsInput,
+  condition?: ModelNotificationSettingsConditionInput | null,
 };
 
-export type GetUserFeedQuery = {
-  getUserFeed?:  {
-    __typename: "UserFeed",
+export type CreateNotificationSettingsMutation = {
+  createNotificationSettings?:  {
+    __typename: "NotificationSettings",
     id: string,
+    newPost: boolean,
+    joinGroup: boolean,
+    groupRequest: boolean,
+    newComment: boolean,
+    newReply: boolean,
+    newReplyComment: boolean,
+    newMessage: boolean,
+    joinChat: boolean,
     userID: string,
-    postID: string,
-    post?:  {
-      __typename: "Post",
-      id: string,
-      content: string,
-      postURL?: Array< string | null > | null,
-      groupID: string,
-      userID: string,
-      commentCount: number,
-      createdAt: string,
-      updatedAt: string,
-      userPostsId?: string | null,
-      owner?: string | null,
-    } | null,
-    postCreatedAt: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
-export type ListUserFeedsQueryVariables = {
-  filter?: ModelUserFeedFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
+export type UpdateNotificationSettingsMutationVariables = {
+  input: UpdateNotificationSettingsInput,
+  condition?: ModelNotificationSettingsConditionInput | null,
 };
 
-export type ListUserFeedsQuery = {
-  listUserFeeds?:  {
-    __typename: "ModelUserFeedConnection",
-    items:  Array< {
-      __typename: "UserFeed",
-      id: string,
-      userID: string,
-      postID: string,
-      postCreatedAt: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
+export type UpdateNotificationSettingsMutation = {
+  updateNotificationSettings?:  {
+    __typename: "NotificationSettings",
+    id: string,
+    newPost: boolean,
+    joinGroup: boolean,
+    groupRequest: boolean,
+    newComment: boolean,
+    newReply: boolean,
+    newReplyComment: boolean,
+    newMessage: boolean,
+    joinChat: boolean,
+    userID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
-export type PostsByUserFeedQueryVariables = {
-  userID: string,
-  postCreatedAt?: ModelStringKeyConditionInput | null,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelUserFeedFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
+export type DeleteNotificationSettingsMutationVariables = {
+  input: DeleteNotificationSettingsInput,
+  condition?: ModelNotificationSettingsConditionInput | null,
 };
 
-export type PostsByUserFeedQuery = {
-  postsByUserFeed?:  {
-    __typename: "ModelUserFeedConnection",
-    items:  Array< {
-      __typename: "UserFeed",
-      id: string,
-      userID: string,
-      postID: string,
-      post?:  {
-        __typename: "Post",
-        id: string,
-        content: string,
-        postURL?: Array< string | null > | null,
-        groupID: string,
-        userID: string,
-        user?:  {
-          __typename: "User",
-          id: string,
-          email: string,
-          firstname: string,
-          lastname: string,
-          fullname: string,
-          profileURL: string,
-          description?: string | null,
-          unreadChatCount: number,
-          unreadNotificationCount: number,
-          createdAt: string,
-          updatedAt: string,
-          owner?: string | null,
-        } | null,
-        group?:  {
-          __typename: "Group",
-          id: string,
-          groupName: string,
-          nameLowercase: string,
-          groupURL?: string | null,
-          description?: string | null,
-          isPublic: boolean,
-          memberCount: number,
-          type: string,
-          createdAt: string,
-          updatedAt: string,
-          owner?: string | null,
-        } | null,
-        commentCount: number,
-        createdAt: string,
-        updatedAt: string,
-        userPostsId?: string | null,
-        owner?: string | null,
-      } | null,
-      postCreatedAt: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
+export type DeleteNotificationSettingsMutation = {
+  deleteNotificationSettings?:  {
+    __typename: "NotificationSettings",
+    id: string,
+    newPost: boolean,
+    joinGroup: boolean,
+    groupRequest: boolean,
+    newComment: boolean,
+    newReply: boolean,
+    newReplyComment: boolean,
+    newMessage: boolean,
+    joinChat: boolean,
+    userID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
@@ -2318,6 +2389,167 @@ export type UserByEmailQuery = {
       description?: string | null,
       unreadChatCount: number,
       unreadNotificationCount: number,
+      notificationSettings?:  {
+        __typename: "NotificationSettings",
+        id: string,
+        newPost: boolean,
+        joinGroup: boolean,
+        groupRequest: boolean,
+        newComment: boolean,
+        newReply: boolean,
+        newReplyComment: boolean,
+        newMessage: boolean,
+        joinChat: boolean,
+        userID: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetUserFeedQueryVariables = {
+  id: string,
+};
+
+export type GetUserFeedQuery = {
+  getUserFeed?:  {
+    __typename: "UserFeed",
+    id: string,
+    userID: string,
+    postID: string,
+    post?:  {
+      __typename: "Post",
+      id: string,
+      content: string,
+      postURL?: Array< string | null > | null,
+      groupID: string,
+      userID: string,
+      commentCount: number,
+      createdAt: string,
+      updatedAt: string,
+      userPostsId?: string | null,
+      owner?: string | null,
+    } | null,
+    postCreatedAt: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type ListUserFeedsQueryVariables = {
+  filter?: ModelUserFeedFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListUserFeedsQuery = {
+  listUserFeeds?:  {
+    __typename: "ModelUserFeedConnection",
+    items:  Array< {
+      __typename: "UserFeed",
+      id: string,
+      userID: string,
+      postID: string,
+      postCreatedAt: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type PostsByUserFeedQueryVariables = {
+  userID: string,
+  postCreatedAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelUserFeedFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type PostsByUserFeedQuery = {
+  postsByUserFeed?:  {
+    __typename: "ModelUserFeedConnection",
+    items:  Array< {
+      __typename: "UserFeed",
+      id: string,
+      userID: string,
+      postID: string,
+      post?:  {
+        __typename: "Post",
+        id: string,
+        content: string,
+        postURL?: Array< string | null > | null,
+        groupID: string,
+        userID: string,
+        user?:  {
+          __typename: "User",
+          id: string,
+          email: string,
+          firstname: string,
+          lastname: string,
+          fullname: string,
+          profileURL: string,
+          description?: string | null,
+          unreadChatCount: number,
+          unreadNotificationCount: number,
+          createdAt: string,
+          updatedAt: string,
+          owner?: string | null,
+        } | null,
+        group?:  {
+          __typename: "Group",
+          id: string,
+          groupName: string,
+          nameLowercase: string,
+          groupURL?: string | null,
+          description?: string | null,
+          isPublic: boolean,
+          memberCount: number,
+          type: string,
+          createdAt: string,
+          updatedAt: string,
+          owner?: string | null,
+        } | null,
+        commentCount: number,
+        createdAt: string,
+        updatedAt: string,
+        userPostsId?: string | null,
+        owner?: string | null,
+      } | null,
+      postCreatedAt: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type UserFeedByPostIDQueryVariables = {
+  postID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelUserFeedFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type UserFeedByPostIDQuery = {
+  userFeedByPostID?:  {
+    __typename: "ModelUserFeedConnection",
+    items:  Array< {
+      __typename: "UserFeed",
+      id: string,
+      userID: string,
+      postID: string,
+      postCreatedAt: string,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -2528,6 +2760,8 @@ export type GetCommentQuery = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -2654,6 +2888,8 @@ export type GetReplyQuery = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -2781,6 +3017,8 @@ export type GetUserChatQuery = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -3063,6 +3301,8 @@ export type GetMessageQuery = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -3576,6 +3816,8 @@ export type GetNotificationQuery = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -3603,6 +3845,8 @@ export type GetNotificationQuery = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -3767,6 +4011,8 @@ export type GetTokenQuery = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -3827,8 +4073,272 @@ export type TokensByUserQuery = {
   } | null,
 };
 
+export type GetNotificationSettingsQueryVariables = {
+  id: string,
+};
+
+export type GetNotificationSettingsQuery = {
+  getNotificationSettings?:  {
+    __typename: "NotificationSettings",
+    id: string,
+    newPost: boolean,
+    joinGroup: boolean,
+    groupRequest: boolean,
+    newComment: boolean,
+    newReply: boolean,
+    newReplyComment: boolean,
+    newMessage: boolean,
+    joinChat: boolean,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type ListNotificationSettingsQueryVariables = {
+  filter?: ModelNotificationSettingsFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListNotificationSettingsQuery = {
+  listNotificationSettings?:  {
+    __typename: "ModelNotificationSettingsConnection",
+    items:  Array< {
+      __typename: "NotificationSettings",
+      id: string,
+      newPost: boolean,
+      joinGroup: boolean,
+      groupRequest: boolean,
+      newComment: boolean,
+      newReply: boolean,
+      newReplyComment: boolean,
+      newMessage: boolean,
+      joinChat: boolean,
+      userID: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type NotificationSettingsByUserQueryVariables = {
+  userID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelNotificationSettingsFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type NotificationSettingsByUserQuery = {
+  notificationSettingsByUser?:  {
+    __typename: "ModelNotificationSettingsConnection",
+    items:  Array< {
+      __typename: "NotificationSettings",
+      id: string,
+      newPost: boolean,
+      joinGroup: boolean,
+      groupRequest: boolean,
+      newComment: boolean,
+      newReply: boolean,
+      newReplyComment: boolean,
+      newMessage: boolean,
+      joinChat: boolean,
+      userID: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type OnCreateUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnCreateUserSubscription = {
+  onCreateUser?:  {
+    __typename: "User",
+    id: string,
+    email: string,
+    firstname: string,
+    lastname: string,
+    fullname: string,
+    profileURL: string,
+    description?: string | null,
+    unreadChatCount: number,
+    unreadNotificationCount: number,
+    posts?:  {
+      __typename: "ModelPostConnection",
+      nextToken?: string | null,
+    } | null,
+    chats?:  {
+      __typename: "ModelUserChatConnection",
+      nextToken?: string | null,
+    } | null,
+    messages?:  {
+      __typename: "ModelMessageConnection",
+      nextToken?: string | null,
+    } | null,
+    groups?:  {
+      __typename: "ModelUserGroupConnection",
+      nextToken?: string | null,
+    } | null,
+    comments?:  {
+      __typename: "ModelCommentConnection",
+      nextToken?: string | null,
+    } | null,
+    replies?:  {
+      __typename: "ModelReplyConnection",
+      nextToken?: string | null,
+    } | null,
+    notifications?:  {
+      __typename: "ModelNotificationConnection",
+      nextToken?: string | null,
+    } | null,
+    fcmTokens?:  {
+      __typename: "ModelTokenConnection",
+      nextToken?: string | null,
+    } | null,
+    notificationSettings?:  {
+      __typename: "NotificationSettings",
+      id: string,
+      newPost: boolean,
+      joinGroup: boolean,
+      groupRequest: boolean,
+      newComment: boolean,
+      newReply: boolean,
+      newReplyComment: boolean,
+      newMessage: boolean,
+      joinChat: boolean,
+      userID: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnUpdateUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnUpdateUserSubscription = {
+  onUpdateUser?:  {
+    __typename: "User",
+    id: string,
+    email: string,
+    firstname: string,
+    lastname: string,
+    fullname: string,
+    profileURL: string,
+    description?: string | null,
+    unreadChatCount: number,
+    unreadNotificationCount: number,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnDeleteUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnDeleteUserSubscription = {
+  onDeleteUser?:  {
+    __typename: "User",
+    id: string,
+    email: string,
+    firstname: string,
+    lastname: string,
+    fullname: string,
+    profileURL: string,
+    description?: string | null,
+    unreadChatCount: number,
+    unreadNotificationCount: number,
+    posts?:  {
+      __typename: "ModelPostConnection",
+      nextToken?: string | null,
+    } | null,
+    chats?:  {
+      __typename: "ModelUserChatConnection",
+      nextToken?: string | null,
+    } | null,
+    messages?:  {
+      __typename: "ModelMessageConnection",
+      nextToken?: string | null,
+    } | null,
+    groups?:  {
+      __typename: "ModelUserGroupConnection",
+      nextToken?: string | null,
+    } | null,
+    comments?:  {
+      __typename: "ModelCommentConnection",
+      nextToken?: string | null,
+    } | null,
+    replies?:  {
+      __typename: "ModelReplyConnection",
+      nextToken?: string | null,
+    } | null,
+    notifications?:  {
+      __typename: "ModelNotificationConnection",
+      nextToken?: string | null,
+    } | null,
+    fcmTokens?:  {
+      __typename: "ModelTokenConnection",
+      nextToken?: string | null,
+    } | null,
+    notificationSettings?:  {
+      __typename: "NotificationSettings",
+      id: string,
+      newPost: boolean,
+      joinGroup: boolean,
+      groupRequest: boolean,
+      newComment: boolean,
+      newReply: boolean,
+      newReplyComment: boolean,
+      newMessage: boolean,
+      joinChat: boolean,
+      userID: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
 export type OnCreateUserFeedSubscriptionVariables = {
   filter?: ModelSubscriptionUserFeedFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnCreateUserFeedSubscription = {
@@ -3853,11 +4363,13 @@ export type OnCreateUserFeedSubscription = {
     postCreatedAt: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateUserFeedSubscriptionVariables = {
   filter?: ModelSubscriptionUserFeedFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnUpdateUserFeedSubscription = {
@@ -3882,11 +4394,13 @@ export type OnUpdateUserFeedSubscription = {
     postCreatedAt: string,
     createdAt: string,
     updatedAt: string,
+    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteUserFeedSubscriptionVariables = {
   filter?: ModelSubscriptionUserFeedFilterInput | null,
+  owner?: string | null,
 };
 
 export type OnDeleteUserFeedSubscription = {
@@ -3909,164 +4423,6 @@ export type OnDeleteUserFeedSubscription = {
       owner?: string | null,
     } | null,
     postCreatedAt: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnCreateUserSubscriptionVariables = {
-  filter?: ModelSubscriptionUserFilterInput | null,
-  owner?: string | null,
-};
-
-export type OnCreateUserSubscription = {
-  onCreateUser?:  {
-    __typename: "User",
-    id: string,
-    email: string,
-    firstname: string,
-    lastname: string,
-    fullname: string,
-    profileURL: string,
-    description?: string | null,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
-    chats?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    groups?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    comments?:  {
-      __typename: "ModelCommentConnection",
-      nextToken?: string | null,
-    } | null,
-    replies?:  {
-      __typename: "ModelReplyConnection",
-      nextToken?: string | null,
-    } | null,
-    notifications?:  {
-      __typename: "ModelNotificationConnection",
-      nextToken?: string | null,
-    } | null,
-    fcmTokens?:  {
-      __typename: "ModelTokenConnection",
-      nextToken?: string | null,
-    } | null,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
-export type OnUpdateUserSubscriptionVariables = {
-  filter?: ModelSubscriptionUserFilterInput | null,
-  owner?: string | null,
-};
-
-export type OnUpdateUserSubscription = {
-  onUpdateUser?:  {
-    __typename: "User",
-    id: string,
-    email: string,
-    firstname: string,
-    lastname: string,
-    fullname: string,
-    profileURL: string,
-    description?: string | null,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
-    chats?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    groups?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    comments?:  {
-      __typename: "ModelCommentConnection",
-      nextToken?: string | null,
-    } | null,
-    replies?:  {
-      __typename: "ModelReplyConnection",
-      nextToken?: string | null,
-    } | null,
-    notifications?:  {
-      __typename: "ModelNotificationConnection",
-      nextToken?: string | null,
-    } | null,
-    fcmTokens?:  {
-      __typename: "ModelTokenConnection",
-      nextToken?: string | null,
-    } | null,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
-export type OnDeleteUserSubscriptionVariables = {
-  filter?: ModelSubscriptionUserFilterInput | null,
-  owner?: string | null,
-};
-
-export type OnDeleteUserSubscription = {
-  onDeleteUser?:  {
-    __typename: "User",
-    id: string,
-    email: string,
-    firstname: string,
-    lastname: string,
-    fullname: string,
-    profileURL: string,
-    description?: string | null,
-    posts?:  {
-      __typename: "ModelPostConnection",
-      nextToken?: string | null,
-    } | null,
-    chats?:  {
-      __typename: "ModelUserChatConnection",
-      nextToken?: string | null,
-    } | null,
-    messages?:  {
-      __typename: "ModelMessageConnection",
-      nextToken?: string | null,
-    } | null,
-    groups?:  {
-      __typename: "ModelUserGroupConnection",
-      nextToken?: string | null,
-    } | null,
-    comments?:  {
-      __typename: "ModelCommentConnection",
-      nextToken?: string | null,
-    } | null,
-    replies?:  {
-      __typename: "ModelReplyConnection",
-      nextToken?: string | null,
-    } | null,
-    notifications?:  {
-      __typename: "ModelNotificationConnection",
-      nextToken?: string | null,
-    } | null,
-    fcmTokens?:  {
-      __typename: "ModelTokenConnection",
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
@@ -4095,6 +4451,8 @@ export type OnCreatePostSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4147,6 +4505,8 @@ export type OnUpdatePostSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4199,6 +4559,8 @@ export type OnDeletePostSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4255,6 +4617,8 @@ export type OnCreateCommentSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4305,6 +4669,8 @@ export type OnUpdateCommentSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4355,6 +4721,8 @@ export type OnDeleteCommentSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4401,6 +4769,8 @@ export type OnCreateReplySubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4446,6 +4816,8 @@ export type OnUpdateReplySubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4491,6 +4863,8 @@ export type OnDeleteReplySubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4538,6 +4912,8 @@ export type OnCreateUserChatSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4584,6 +4960,8 @@ export type OnUpdateUserChatSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4630,6 +5008,8 @@ export type OnDeleteUserChatSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4774,6 +5154,8 @@ export type OnUpdateMessageSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4818,6 +5200,8 @@ export type OnDeleteMessageSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4860,6 +5244,8 @@ export type OnCreateUserGroupSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4906,6 +5292,8 @@ export type OnUpdateUserGroupSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -4952,6 +5340,8 @@ export type OnDeleteUserGroupSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5095,6 +5485,50 @@ export type OnCreateNotificationSubscription = {
     targetUserID?: string | null,
     onClickID: string,
     read?: boolean | null,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    group?:  {
+      __typename: "Group",
+      id: string,
+      groupName: string,
+      nameLowercase: string,
+      groupURL?: string | null,
+      description?: string | null,
+      isPublic: boolean,
+      memberCount: number,
+      type: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    targetUser?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
     createdAt: string,
     updatedAt: string,
     userNotificationsId?: string | null,
@@ -5127,6 +5561,8 @@ export type OnUpdateNotificationSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5154,6 +5590,8 @@ export type OnUpdateNotificationSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5190,6 +5628,8 @@ export type OnDeleteNotificationSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5217,6 +5657,8 @@ export type OnDeleteNotificationSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5308,6 +5750,8 @@ export type OnCreateTokenSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5339,6 +5783,8 @@ export type OnUpdateTokenSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5370,6 +5816,8 @@ export type OnDeleteTokenSubscription = {
       fullname: string,
       profileURL: string,
       description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -5377,6 +5825,123 @@ export type OnDeleteTokenSubscription = {
     createdAt: string,
     updatedAt: string,
     userFcmTokensId?: string | null,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnCreateNotificationSettingsSubscriptionVariables = {
+  filter?: ModelSubscriptionNotificationSettingsFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnCreateNotificationSettingsSubscription = {
+  onCreateNotificationSettings?:  {
+    __typename: "NotificationSettings",
+    id: string,
+    newPost: boolean,
+    joinGroup: boolean,
+    groupRequest: boolean,
+    newComment: boolean,
+    newReply: boolean,
+    newReplyComment: boolean,
+    newMessage: boolean,
+    joinChat: boolean,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnUpdateNotificationSettingsSubscriptionVariables = {
+  filter?: ModelSubscriptionNotificationSettingsFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnUpdateNotificationSettingsSubscription = {
+  onUpdateNotificationSettings?:  {
+    __typename: "NotificationSettings",
+    id: string,
+    newPost: boolean,
+    joinGroup: boolean,
+    groupRequest: boolean,
+    newComment: boolean,
+    newReply: boolean,
+    newReplyComment: boolean,
+    newMessage: boolean,
+    joinChat: boolean,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnDeleteNotificationSettingsSubscriptionVariables = {
+  filter?: ModelSubscriptionNotificationSettingsFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnDeleteNotificationSettingsSubscription = {
+  onDeleteNotificationSettings?:  {
+    __typename: "NotificationSettings",
+    id: string,
+    newPost: boolean,
+    joinGroup: boolean,
+    groupRequest: boolean,
+    newComment: boolean,
+    newReply: boolean,
+    newReplyComment: boolean,
+    newMessage: boolean,
+    joinChat: boolean,
+    userID: string,
+    user?:  {
+      __typename: "User",
+      id: string,
+      email: string,
+      firstname: string,
+      lastname: string,
+      fullname: string,
+      profileURL: string,
+      description?: string | null,
+      unreadChatCount: number,
+      unreadNotificationCount: number,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
     owner?: string | null,
   } | null,
 };
