@@ -24,6 +24,7 @@ export type GlobalParamList = {
     ViewChatMembers: {chatData: Chat | undefined, userChats: UserChat[]};
     EditPost: {currPost: Post};
     EditChat: {currChat: Chat};
+    ProfileSetting: undefined;
 }
 
 export type LoggedInParamList = {

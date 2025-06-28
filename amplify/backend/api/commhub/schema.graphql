@@ -22,6 +22,7 @@ type User @model @auth(
   replies: [Reply] @hasMany
   notifications: [Notification] @hasMany
   fcmTokens: [Token] @hasMany
+  notificationSettings: NotificationSettings @hasOne(fields:["id"])
 }
 
 type UserFeed @model @auth(
@@ -224,6 +225,26 @@ type Token @model @auth(
   id: ID!
   tokenID: String!
   userID: ID! @index(name: "tokensByUser", queryField: "tokensByUser", sortKeyFields: ["createdAt"])
+  user: User @belongsTo(fields:["userID"])
+  createdAt: AWSDateTime!
+}
+
+type NotificationSettings @model @auth(
+  rules:[
+    { allow: owner },
+    { allow: private }
+  ]
+){
+  id: ID!
+  newPost: Boolean!
+  joinGroup: Boolean!
+  groupRequest: Boolean!
+  newComment: Boolean!
+  newReply: Boolean!
+  newReplyComment: Boolean!
+  newMessage: Boolean!
+  joinChat: Boolean!
+  userID: ID! @index(name: "notificationSettingsByUser", queryField: "notificationSettingsByUser")
   user: User @belongsTo(fields:["userID"])
   createdAt: AWSDateTime!
 }

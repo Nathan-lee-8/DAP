@@ -4,7 +4,8 @@ import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, Platform,
   ActivityIndicator} from 'react-native';
 
 import client from '../../client';
-import { createUser } from '../../customGraphql/customMutations';
+import { createUser, createNotificationSettings
+ } from '../../customGraphql/customMutations';
 
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/SignInScreenStyles';
@@ -33,7 +34,7 @@ const CreateUser = () => {
     }
     setLoading(true);
     try{
-      await client.graphql({
+      const user = await client.graphql({
         query: createUser,
         variables: {
           input: { 
@@ -49,6 +50,24 @@ const CreateUser = () => {
         },
         authMode: 'userPool'
       });
+      await client.graphql({
+        query: createNotificationSettings,
+        variables: {
+          input: {
+            id: user.data.createUser.id,
+            userID: user.data.createUser.id,
+            newPost: false,
+            joinGroup: false,
+            groupRequest: false,
+            newComment: false,
+            newReply: false,
+            newReplyComment: false,
+            newMessage: false,
+            joinChat: false,
+          }
+        },
+        authMode: 'userPool'
+      })
       triggerFetch();
     } catch (error: any) {
       Alert.alert('Error', error.message);

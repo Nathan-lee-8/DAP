@@ -386,3 +386,27 @@ export const updateNotification = /* GraphQL */ `mutation UpdateNotification(
   APITypes.UpdateNotificationMutationVariables,
   APITypes.UpdateNotificationMutation
 >;
+export const createNotificationSettings = /* GraphQL */ `mutation CreateNotificationSettings(
+  $input: CreateNotificationSettingsInput!
+  $condition: ModelNotificationSettingsConditionInput
+) {
+  createNotificationSettings(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateNotificationSettingsMutationVariables,
+  APITypes.CreateNotificationSettingsMutation
+>;
+export const updateNotificationSettings = /* GraphQL */ `mutation UpdateNotificationSettings(
+  $input: UpdateNotificationSettingsInput!
+  $condition: ModelNotificationSettingsConditionInput
+) {
+  updateNotificationSettings(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateNotificationSettingsMutationVariables,
+  APITypes.UpdateNotificationSettingsMutation
+>;

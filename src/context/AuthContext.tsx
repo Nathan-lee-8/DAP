@@ -9,6 +9,7 @@ import { tokensByUser, userByEmail } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
 import { User } from '../API';
 import { onUpdateUser } from '../customGraphql/customSubscriptions';
+import { createNotificationSettings } from '../customGraphql/customMutations';
 
 interface AuthContextType {
   isSignedIn: boolean;
