@@ -191,6 +191,7 @@ type Notification @model @auth(
 ) { 
   id: ID!
   type: String!
+  name: String!
   content: String!
   userID: ID! @index(name: "notificationsByUser", queryField: "notificationsByUser", sortKeyFields: ["createdAt"])
   groupID: ID @index(name: "notificationsByGroup", queryField: "notificationsByGroup", sortKeyFields: ["createdAt"])

@@ -1343,6 +1343,7 @@ export const onCreateNotification = /* GraphQL */ `subscription OnCreateNotifica
   onCreateNotification(filter: $filter, owner: $owner) {
     id
     type
+    name
     content
     userID
     groupID
@@ -1411,6 +1412,7 @@ export const onUpdateNotification = /* GraphQL */ `subscription OnUpdateNotifica
   onUpdateNotification(filter: $filter, owner: $owner) {
     id
     type
+    name
     content
     userID
     groupID
@@ -1479,6 +1481,7 @@ export const onDeleteNotification = /* GraphQL */ `subscription OnDeleteNotifica
   onDeleteNotification(filter: $filter, owner: $owner) {
     id
     type
+    name
     content
     userID
     groupID

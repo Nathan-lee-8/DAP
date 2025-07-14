@@ -64,7 +64,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
       setNotifications(notificationList);
 
       //reset notification count to 0 
-      if(currUser.unreadChatCount >  0){
+      if(currUser.unreadNotificationCount >  0){
         await client.graphql({
           query: updateUser,
           variables: {
@@ -77,7 +77,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         });
         triggerFetch();
       }
-    } catch {
+    } catch (error) {
       Alert.alert('Error', 'Issue fetching notifications')
     } finally {
       setLoading(false);
@@ -135,11 +135,13 @@ const Notifications = ( {closeNotificationModal} : any ) => {
     }
 
     closeNotificationModal();
-    if(item.type === 'Group'){
+    if(item.type === 'Post' || item.type === 'AddGroup' || item.type === 'JoinGroup' ||
+      item.type === 'RequestJoin'
+    ){
       navigation.navigate('ViewGroup', { groupID: item.onClickID });
-    }else if(item.type === 'Post'){
+    }else if(item.type === 'Comment' || item.type === 'CommentReply' || item.type === 'Reply'){
       navigation.navigate('ViewPost', { postID: item.onClickID });
-    }else if(item.type === 'Chat'){
+    }else if(item.type === 'AddChat'){
       navigation.navigate('ViewChat', { chatID: item.onClickID });
     }
   }
@@ -161,7 +163,6 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         notifications: group.sort((a: any, b: any) => 
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         numUnread: group.filter((notif: any) => !notif.read).length,
-        name: group[0].content.split(/\r?\n/)[0].split(' ').slice(-1)[0]
       }))
       .sort((a, b) => new Date(b.notifications[0].createdAt).getTime() - 
         new Date(a.notifications[0].createdAt).getTime()
@@ -199,8 +200,7 @@ const Notifications = ( {closeNotificationModal} : any ) => {
                 <TouchableOpacity onPress={() => toggleGroup(item.onClickID)}
                   style={item.numUnread > 0 ? styles.unreadItem : styles.notificationItem} 
                 >
-                  <Text>{item.numUnread} new updates from{" "}
-                    {item.notifications[0].type} {item.name}
+                  <Text>{item.numUnread} new updates from {item.notifications[0].name}
                   </Text>
                   <Text style={styles.postDate}>
                     {moment(item.notifications[0].createdAt).fromNow()}

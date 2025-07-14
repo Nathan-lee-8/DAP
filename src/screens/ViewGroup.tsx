@@ -194,7 +194,8 @@ const ViewGroup = ( {route, navigation} : any) => {
             query: createNotification,
             variables: {
               input: {
-                type: 'Group',
+                type: 'JoinGroup',
+                name: group.groupName,
                 content: `${currUser.firstname} ${currUser.lastname} has joined ` + 
                   `${group.groupName}`,
                 userID: member.userID,
@@ -214,7 +215,8 @@ const ViewGroup = ( {route, navigation} : any) => {
             query: createNotification,
             variables: {
               input: {
-                type: 'Group',
+                type: 'RequestGroup',
+                name: group.groupName,
                 content: `${currUser.firstname} ${currUser.lastname}` + 
                   ` has requested to join ${group.groupName}`,
                 userID: member.userID,
@@ -311,7 +313,8 @@ const ViewGroup = ( {route, navigation} : any) => {
           query: createNotification,
           variables: {
             input: {
-              type: 'Group',
+              type: 'AddGroup',
+              name: group?.groupName || 'new group',
               content: `${currUser.firstname}  ${currUser.lastname} added you to ` + 
                 `${group?.groupName}`,
               userID: memberID,
@@ -443,7 +446,8 @@ const ViewGroup = ( {route, navigation} : any) => {
       query: createNotification,
       variables: {
         input: {
-          type: 'Group',
+          type: 'AddGroup',
+          name: group?.groupName || 'new group',
           content: 'Your request to join ' + group?.groupName + ' has been accepted',
           userID: item?.targetUser?.id,
           onClickID: groupID

@@ -95,7 +95,8 @@ const CreateGroup = ({ navigation }: any) => {
           query: createNotification,
           variables: {
             input: {
-              type: 'Group',
+              type: 'AddGroup',
+              name: groupName,
               content: currUser.firstname + " " + currUser.lastname
                 + ' added you to ' + groupName,
               userID: member.id,
