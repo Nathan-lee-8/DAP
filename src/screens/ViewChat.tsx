@@ -308,8 +308,9 @@ const ViewChat = ( { route, navigation } : any) => {
           variables: {
             input: {
               userID: userID,
+              name: title.slice(0, 20),
               content: `${currUser.fullname} added you to a chat`,
-              type: 'Chat',
+              type: 'AddChat',
               onClickID: chatID,
             }
           },

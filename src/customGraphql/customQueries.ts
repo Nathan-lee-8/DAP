@@ -305,6 +305,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
       items{
         id
         type
+        name
         content
         onClickID
         targetUser{
@@ -443,6 +444,7 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
     items {
       id
       type
+      name
       content
       userID
       createdAt

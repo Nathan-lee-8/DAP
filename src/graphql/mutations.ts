@@ -660,6 +660,7 @@ export const createNotification = /* GraphQL */ `mutation CreateNotification(
   createNotification(input: $input, condition: $condition) {
     id
     type
+    name
     content
     userID
     groupID
@@ -684,6 +685,7 @@ export const updateNotification = /* GraphQL */ `mutation UpdateNotification(
   updateNotification(input: $input, condition: $condition) {
     id
     type
+    name
     content
     userID
     groupID
@@ -708,6 +710,7 @@ export const deleteNotification = /* GraphQL */ `mutation DeleteNotification(
   deleteNotification(input: $input, condition: $condition) {
     id
     type
+    name
     content
     userID
     groupID

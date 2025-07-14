@@ -1484,6 +1484,7 @@ export const getGroup = /* GraphQL */ `query GetGroup($id: ID!) {
       items{
         id
         type
+        name
         content
         userID
         groupID
@@ -1590,6 +1591,7 @@ export const getNotification = /* GraphQL */ `query GetNotification($id: ID!) {
   getNotification(id: $id) {
     id
     type
+    name
     content
     userID
     groupID
@@ -1660,6 +1662,7 @@ export const listNotifications = /* GraphQL */ `query ListNotifications(
     items {
       id
       type
+      name
       content
       userID
       groupID
@@ -1699,6 +1702,7 @@ export const notificationsByUser = /* GraphQL */ `query NotificationsByUser(
     items {
       id
       type
+      name
       content
       userID
       groupID
@@ -1738,6 +1742,7 @@ export const notificationsByGroup = /* GraphQL */ `query NotificationsByGroup(
     items {
       id
       type
+      name
       content
       userID
       groupID
