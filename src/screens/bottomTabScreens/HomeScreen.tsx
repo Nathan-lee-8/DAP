@@ -51,8 +51,8 @@ const HomeScreen = ( {navigation} : any) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity style={{margin: 15}} onPress={() => setModalVisible(true)}>
-          <Icon name="notifications-outline" size={24} />
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Icon name="notifications-outline" size={24} style={{marginRight: 15}}/>
           {currUser && currUser?.unreadNotificationCount > 0 && 
             <View style={{position: 'absolute', right: 0, top: -10}}>
               <Text style={{fontWeight: 700, color: 'red'}}>

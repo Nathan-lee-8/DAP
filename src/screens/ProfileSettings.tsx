@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import client from '../client';
 import { updateNotificationSettings } from '../customGraphql/customMutations';
 
-import Icon from '@react-native-vector-icons/fontawesome';
+import FontIcon from '@react-native-vector-icons/fontawesome';
 import styles from '../styles/Styles';
 import { AuthContext } from '../context/AuthContext';
 
@@ -83,7 +83,7 @@ const ProfileSettings = ({navigation} : any) => {
       <View style={styles.notifSettingContainer}>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>Mute all</Text>
-          <Icon name={muteAll ? 'toggle-on' : 'toggle-off'} size={25} color='black'
+          <FontIcon name={muteAll ? 'toggle-on' : 'toggle-off'} size={25} color='black'
             onPress={handleMuteAll}
           />
         </View>
@@ -93,19 +93,19 @@ const ProfileSettings = ({navigation} : any) => {
         <Text style={styles.notificationCategoryText}>Groups</Text>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>New Posts</Text>
-          <Icon name={mutePosts ? 'toggle-on' : 'toggle-off'} size={25} color='black'
+          <FontIcon name={mutePosts ? 'toggle-on' : 'toggle-off'} size={25} color='black'
             onPress={() => setMutePosts(!mutePosts)}
           />
         </View>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>Joined Group</Text>
-          <Icon name={muteJoinGroup ? 'toggle-on' : 'toggle-off'} size={25} 
+          <FontIcon name={muteJoinGroup ? 'toggle-on' : 'toggle-off'} size={25} 
             color='black' onPress={() => setMuteJoinGroup(!muteJoinGroup)}
           />
         </View>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>Join Requests</Text>
-          <Icon name={muteGroupRequest ? 'toggle-on' : 'toggle-off'} size={25} 
+          <FontIcon name={muteGroupRequest ? 'toggle-on' : 'toggle-off'} size={25} 
             color='black' onPress={() => setMuteGroupRequest(!muteGroupRequest)}
           />
         </View>
@@ -115,19 +115,19 @@ const ProfileSettings = ({navigation} : any) => {
         <Text style={styles.notificationCategoryText}>Posts</Text>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>Comments</Text>
-          <Icon name={muteComments ? 'toggle-on' : 'toggle-off'} size={25} 
+          <FontIcon name={muteComments ? 'toggle-on' : 'toggle-off'} size={25} 
             color='black' onPress={() => setMutecomments(!muteComments)}
           />
         </View>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>Replies</Text>
-          <Icon name={muteReplies ? 'toggle-on' : 'toggle-off'} size={25} 
+          <FontIcon name={muteReplies ? 'toggle-on' : 'toggle-off'} size={25} 
             color='black' onPress={() => setMuteReplies(!muteReplies)}
           />
         </View>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>Replies to Comments</Text>
-          <Icon name={muteCommentReplies ? 'toggle-on' : 'toggle-off'} size={25} 
+          <FontIcon name={muteCommentReplies ? 'toggle-on' : 'toggle-off'} size={25} 
             color='black' onPress={() => setMuteCommentReplies(!muteCommentReplies)}
           />
         </View>
@@ -137,13 +137,13 @@ const ProfileSettings = ({navigation} : any) => {
         <Text style={styles.notificationCategoryText}>Messages</Text>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>New Message</Text>
-          <Icon name={muteMessages ? 'toggle-on' : 'toggle-off'} size={25} 
+          <FontIcon name={muteMessages ? 'toggle-on' : 'toggle-off'} size={25} 
             color='black' onPress={() => setMuteMessages(!muteMessages)}
           />
         </View>
         <View style={styles.toggleContainer}>
           <Text style={styles.notificationSettingText}>Joined Chat</Text>
-          <Icon name={muteJoinChat ? 'toggle-on' : 'toggle-off'} size={25}
+          <FontIcon name={muteJoinChat ? 'toggle-on' : 'toggle-off'} size={25}
             color='black' onPress={() => setMuteJoinChat(!muteJoinChat)}
           />
         </View>
