@@ -23,7 +23,7 @@ const CreateChat = ({ route, navigation }: any) => {
   const initalUser = route.params.user ? [route.params.user] : [];
   const [ targetUsers, setTargetUsers ] = useState<User[]>(initalUser);
   const [ chatname, setChatname ] = useState('Chat name');
-  const [ chatImage, setChatImage ] = useState<string>('defaultUser');
+  const [ chatImage, setChatImage ] = useState<string | null>();
   const [ message, setMessage ] = useState('');
   const [ loading, setLoading ] = useState(false);
 
@@ -62,7 +62,7 @@ const CreateChat = ({ route, navigation }: any) => {
       tempChatID = chatID;
 
       //upload image to s3 and update new filepath for chat
-      if(chatImage !== 'defaultUser'){
+      if(chatImage){
         const imgURI = await getImgURI(chatImage, 
           `public/chatPictures/${chatID}/profile/${Date.now()}`);
         const filepath = `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${imgURI}`;

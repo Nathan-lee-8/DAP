@@ -606,45 +606,57 @@ const styles = StyleSheet.create({
 
   /** chatRoom Styles   */
   messageHeaderContainer: {
-    height: Platform.OS === 'ios' ? 120 : 80,
-    justifyContent: 'flex-end',
-    padding: 10,
+    flexDirection: 'row',
+    padding: 15,
     backgroundColor: colorPrimary,
-    borderTopWidth: 1,
+    borderWidth: 1,
     borderColor: 'lightgrey'
+  },
+  chatHeaderIcon:{
+    height: 35,
+    width: 35,
+    borderRadius: 20,
   },
   chatRoomName: { 
     fontSize: 20,
     color: 'black',
-    padding: 10,
+    padding: 5,
     width: width * 0.66
+  },
+  msgIcon:{
+    height: 30,
+    width: 30,
+    borderRadius: 20,
+    marginBottom: 5
   },
   myMessageContainer: {
     flexDirection: 'row',
     alignSelf: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     marginRight: 5,
+    marginBottom: 2,
   },
   myMessage: {
     alignSelf: 'flex-end',
     backgroundColor: '#0084ff',
     borderRadius: 10,
     padding: 10,
-    margin: 5,
+    marginRight: 5,
     maxWidth: '80%',
   },
   otherMessageContainer: {
     flexDirection: 'row',
     alignSelf: 'flex-start',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     marginLeft: 5,
+    marginBottom: 2,
   },
   otherMessage: {
     alignSelf: 'flex-start',
     backgroundColor: '#f0f0f0',
     borderRadius: 10,
     padding: 10,
-    margin: 5,
+    marginLeft: 5,
     maxWidth: '80%',
   },
   systemMessage:{

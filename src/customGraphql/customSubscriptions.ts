@@ -7,28 +7,6 @@ type GeneratedSubscription<InputType, OutputType> = string & {
   __generatedSubscriptionInput: InputType;
   __generatedSubscriptionOutput: OutputType;
 };
-
-export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
-  $filter: ModelSubscriptionMessageFilterInput
-  $owner: String
-) {
-  onCreateMessage(filter: $filter, owner: $owner) {
-    id
-    content
-    msgURL
-    type
-    senderID
-    chatID
-    createdAt
-    updatedAt
-    owner
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnCreateMessageSubscriptionVariables,
-  APITypes.OnCreateMessageSubscription
->;
 export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
   $filter: ModelSubscriptionUserFilterInput
   $owner: String

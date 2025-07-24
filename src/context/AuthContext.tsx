@@ -1,4 +1,5 @@
 import { createContext, useState, ReactNode, useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getMessaging, requestPermission, getToken, deleteToken 
@@ -9,7 +10,7 @@ import { tokensByUser, userByEmail } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
 import { User } from '../API';
 import { onUpdateUser } from '../customGraphql/customSubscriptions';
-import { createNotificationSettings } from '../customGraphql/customMutations';
+import wsClient from '../components/webSocket';
 
 interface AuthContextType {
   isSignedIn: boolean;
@@ -58,6 +59,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const users = data.data.userByEmail.items;
         if(users.length > 0) setCurrUser(users[0]);
         setSignedIn(true);
+        wsClient.setUserID(users[0].id);
+        wsClient.connect();
       } catch (error) {
         console.log('Error fetching user attributes:', error);
       }
@@ -116,12 +119,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, [currUser?.id]);
 
+  //Listens to app state and manages Chat API connection 
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background') {
+        wsClient.disconnect();
+      } else if (nextAppState === 'active') {
+        wsClient.connect();
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      subscription.remove();
+    };
+  }, [])
+
   //Signs out of the app and clears cached data
   const logout = async () => {
     setSignedIn(false);
     setUserEmail('');
     setCurrUser(undefined);
     removeToken();
+    wsClient.disconnect();
+    wsClient.setUserID(null);
     await signOut();
     AsyncStorage.clear();
   }

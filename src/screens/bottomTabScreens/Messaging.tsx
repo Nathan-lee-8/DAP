@@ -161,7 +161,7 @@ const MessageUsers = ( {navigation}: any ) => {
                     </Text>
                   </View>  
                 </View> 
-                <Text style={styles.memberText}>{formatDate(item.updatedAt)}</Text>
+                <Text style={styles.memberText}>{formatDate(item.lastMessageAt)}</Text>
               </View>
             </TouchableOpacity>  
           )

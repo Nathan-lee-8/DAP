@@ -88,7 +88,8 @@ const ViewGroup = ( {route, navigation} : any) => {
           groupID: groupID,
           sortDirection: ModelSortDirection.DESC,
           limit: 10,
-        }
+        },
+        authMode: 'userPool'
       })
       setPostNextToken(currPosts.data.postsByDate.nextToken);
       setPosts(currPosts.data.postsByDate.items);
