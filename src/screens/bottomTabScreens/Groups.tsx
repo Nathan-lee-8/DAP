@@ -89,7 +89,7 @@ const Groups = ( {navigation} : any ) => {
               <View style={styles.postContainer}>
                 <View style={styles.itemContentSection}>
                   <ImgComponent uri={item.group?.groupURL || "defaultGroup"} 
-                    style={{height: 40, width: 40, borderRadius: 20}} />
+                    style={styles.chatImageDefault} />
                   <View style={styles.userInfoContainer}>
                     <Text style={[styles.postAuthor, {fontWeight: '500'}]}>
                       {item.group?.groupName}

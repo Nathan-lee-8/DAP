@@ -247,6 +247,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       id
       unreadMessageCount
       lastMessage
+      lastMessageAt
       isMuted
       userID
       chatID
