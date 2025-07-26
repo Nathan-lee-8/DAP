@@ -747,6 +747,7 @@ export const getUserChat = /* GraphQL */ `query GetUserChat($id: ID!) {
     unreadMessageCount
     lastMessage
     role
+    active
     isMuted
     userID
     chatID
@@ -798,6 +799,7 @@ export const listUserChats = /* GraphQL */ `query ListUserChats(
       unreadMessageCount
       lastMessage
       role
+      active
       isMuted
       userID
       chatID
@@ -837,6 +839,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
       unreadMessageCount
       lastMessage
       role
+      active
       isMuted
       userID
       chatID
@@ -852,6 +855,7 @@ export const chatsByUser = /* GraphQL */ `query ChatsByUser(
             unreadMessageCount
             lastMessage
             role
+            active
             isMuted
             userID
             user {
@@ -917,6 +921,7 @@ export const userChatsByChatIDAndCreatedAt = /* GraphQL */ `query UserChatsByCha
       unreadMessageCount
       lastMessage
       role
+      active
       isMuted
       userID
       chatID
@@ -983,6 +988,7 @@ export const getChat = /* GraphQL */ `query GetChat(
         unreadMessageCount
         lastMessage
         role
+        active
         isMuted
         userID
         chatID
@@ -1855,6 +1861,40 @@ export const listTokens = /* GraphQL */ `query ListTokens(
 ` as GeneratedQuery<
   APITypes.ListTokensQueryVariables,
   APITypes.ListTokensQuery
+>;
+export const tokensByID = /* GraphQL */ `query TokensByID(
+  $tokenID: String!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelTokenFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  tokensByID(
+    tokenID: $tokenID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      tokenID
+      userID
+      createdAt
+      updatedAt
+      userFcmTokensId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.TokensByIDQueryVariables,
+  APITypes.TokensByIDQuery
 >;
 export const tokensByUser = /* GraphQL */ `query TokensByUser(
   $userID: ID!

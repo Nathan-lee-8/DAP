@@ -76,6 +76,7 @@ const ViewChat = ( { route, navigation } : any) => {
       const newMessage: Message = {
         id: currTime,
         content: data.message,
+        msgURL: data.urls,
         type: "Message",
         chatID: data.chatID,
         senderID: data.userID,
@@ -205,7 +206,8 @@ const ViewChat = ( { route, navigation } : any) => {
       action: 'sendMessage',
       chatID: chatID,
       userID: currUser.id,
-      message: currMessage
+      message: currMessage,
+      urls: newPaths
     })
     try {
       await client.graphql({
@@ -297,7 +299,8 @@ const ViewChat = ( { route, navigation } : any) => {
               unreadMessageCount: 0,
               lastMessage: myUserChat?.lastMessage || "",
               lastMessageAt: myUserChat?.lastMessageAt || new Date().toISOString(),
-              role: 'Member'
+              role: 'Member',
+              active: false
             }
           },
           authMode: 'userPool'

@@ -749,6 +749,7 @@ export const onCreateUserChat = /* GraphQL */ `subscription OnCreateUserChat(
     unreadMessageCount
     lastMessage
     role
+    active
     isMuted
     userID
     chatID
@@ -798,6 +799,7 @@ export const onUpdateUserChat = /* GraphQL */ `subscription OnUpdateUserChat(
     unreadMessageCount
     lastMessage
     role
+    active
     isMuted
     userID
     chatID
@@ -847,6 +849,7 @@ export const onDeleteUserChat = /* GraphQL */ `subscription OnDeleteUserChat(
     unreadMessageCount
     lastMessage
     role
+    active
     isMuted
     userID
     chatID
@@ -979,6 +982,31 @@ export const onCreateMessage = /* GraphQL */ `subscription OnCreateMessage(
     type
     senderID
     chatID
+    sender {
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    chat {
+      id
+      name
+      url
+      isGroup
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
     createdAt
     updatedAt
     userMessagesId
