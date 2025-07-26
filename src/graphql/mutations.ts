@@ -88,7 +88,7 @@ export const createUserFeed = /* GraphQL */ `mutation CreateUserFeed(
     id
     userID
     postID
-        postCreatedAt
+    postCreatedAt
     createdAt
     updatedAt
     owner
@@ -338,6 +338,7 @@ export const createUserChat = /* GraphQL */ `mutation CreateUserChat(
     unreadMessageCount
     lastMessage
     role
+    active
     isMuted
     userID
     chatID
@@ -362,6 +363,7 @@ export const updateUserChat = /* GraphQL */ `mutation UpdateUserChat(
     unreadMessageCount
     lastMessage
     role
+    active
     isMuted
     userID
     chatID
@@ -386,6 +388,7 @@ export const deleteUserChat = /* GraphQL */ `mutation DeleteUserChat(
     unreadMessageCount
     lastMessage
     role
+    active
     isMuted
     userID
     chatID

@@ -90,7 +90,8 @@ const CreateChat = ({ route, navigation }: any) => {
             unreadMessageCount: 0,
             lastMessage: message,
             lastMessageAt: new Date().toISOString(),
-            role: 'Owner'
+            role: 'Owner',
+            active: false
           }
         },
         authMode: 'userPool'
@@ -107,7 +108,8 @@ const CreateChat = ({ route, navigation }: any) => {
               unreadMessageCount: 1,
               lastMessage: message,
               lastMessageAt: new Date().toISOString(),
-              role: 'Member'
+              role: 'Member',
+              active: false
             }
           },
           authMode: 'userPool'

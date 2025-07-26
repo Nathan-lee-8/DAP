@@ -104,6 +104,7 @@ type UserChat @model @auth(
   unreadMessageCount: Int!
   lastMessage: String!
   role: String!
+  active: Boolean!
   isMuted: Boolean
   userID: ID! @index(name: "chatsByUser", queryField: "chatsByUser", sortKeyFields: ["lastMessageAt"])
   chatID: ID! @index(name: "UserChatByChat", sortKeyFields: ["createdAt"])
@@ -224,7 +225,7 @@ type Token @model @auth(
   ]
 ) { 
   id: ID!
-  tokenID: String!
+  tokenID: String! @index(name: "tokensByID", queryField: "tokensByID", sortKeyFields: ["createdAt"])
   userID: ID! @index(name: "tokensByUser", queryField: "tokensByUser", sortKeyFields: ["createdAt"])
   user: User @belongsTo(fields:["userID"])
   createdAt: AWSDateTime!

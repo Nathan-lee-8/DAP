@@ -6,7 +6,7 @@ import { getMessaging, requestPermission, getToken, deleteToken
 } from '@react-native-firebase/messaging';
 
 import client from '../client';
-import { tokensByUser, userByEmail } from '../customGraphql/customQueries';
+import { tokensByID, userByEmail } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
 import { User } from '../API';
 import { onUpdateUser } from '../customGraphql/customSubscriptions';
@@ -162,36 +162,48 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }).catch(() => {})
   }
 
-  //Creates a new token in backend for current user if token doesn't already exists
+  //Checks if any other tokens with the same ID exist: 
+  //  exists for current user: do nothing
+  //  exists for other user: delete and create token
+  //  no matching tokens: create token
   const registerTokenToBackend = async (tokenID: string) => {
     if(!currUser) return;
     try {
       const tokenData = await client.graphql({
-        query: tokensByUser,
-        variables: {userID: currUser.id},
+        query: tokensByID,
+        variables: {tokenID: tokenID},
         authMode: 'userPool'
       });
-      const exists = 
-        tokenData.data.tokensByUser.items.some((item) => item.tokenID === tokenID);
-      if(!exists){
-        const res = await client.graphql({
-          query: createToken,
+      const tokenList = tokenData.data.tokensByID.items;
+      const isCurrent = tokenList.some((item) => item.userID === currUser.id);
+      if(!isCurrent) return; //token matches current user's token
+
+      //remove all matching tokens from db
+      tokenList.map((token: any) => {
+        if(!token.tokenID) return;
+        client.graphql({
+          query: deleteTokenItem,
           variables: {
             input: {
-              tokenID: tokenID,
-              userID: currUser.id,
+              id: token.id
             }
           },
           authMode: 'userPool'
-        })
-        setTokenDynamoID(res.data.createToken.id);
-      }else{
-        const matchedToken = tokenData.data.tokensByUser.items.find(
-          (item) => item.tokenID === tokenID
-        );
-        const dbID = matchedToken?.id;
-        setTokenDynamoID(dbID);
-      }
+        }).catch(() => {})
+      })
+
+      //create token with current tokenID
+      const res = await client.graphql({
+        query: createToken,
+        variables: {
+          input: {
+            tokenID: tokenID,
+            userID: currUser.id,
+          }
+        },
+        authMode: 'userPool'
+      })
+      setTokenDynamoID(res.data.createToken.id);
     } catch { }
   }
 

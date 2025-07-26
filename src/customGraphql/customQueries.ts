@@ -539,6 +539,34 @@ export const tokensByUser = /* GraphQL */ `query TokensByUser(
   APITypes.TokensByUserQueryVariables,
   APITypes.TokensByUserQuery
 >;
+export const tokensByID = /* GraphQL */ `query TokensByID(
+  $tokenID: String!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelTokenFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  tokensByID(
+    tokenID: $tokenID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      tokenID
+      userID
+      createdAt
+    }
+  }
+}
+` as GeneratedQuery<
+  APITypes.TokensByIDQueryVariables,
+  APITypes.TokensByIDQuery
+>;
 export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
   $userID: ID!
   $postCreatedAt: ModelStringKeyConditionInput

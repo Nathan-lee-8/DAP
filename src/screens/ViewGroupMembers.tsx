@@ -159,7 +159,8 @@ const ViewGroupMembers = ( {route, navigation} : any ) => {
               unreadMessageCount: 0,
               lastMessage: "",
               lastMessageAt: Date.now().toString(),
-              role: role
+              role: role,
+              active: false
             }
           },
           authMode: 'userPool'
