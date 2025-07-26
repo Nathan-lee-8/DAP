@@ -28,8 +28,8 @@ import wsClient from '../components/webSocket';
 const ViewChat = ( { route, navigation } : any) => {
   const chatID = route.params.chatID;
   const [ chat, setChat ] = useState<Chat>();
-  const [ participants, setParticipants ] = useState<UserChat[]>([]);
-  const [ myUserChat, setMyUserChat ] = useState<UserChat>();
+  const [ participants, setParticipants ] = useState<UserChat[]>([]); //all users including curr
+  const [ myUserChat, setMyUserChat ] = useState<UserChat>(); //curr User's chat
 
   const [ title, setTitle ] = useState<string>('default');
   const [ displayURLs, setURLs ] = useState<(string | undefined)[]>([]);
@@ -37,17 +37,20 @@ const ViewChat = ( { route, navigation } : any) => {
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const flatListRef = useRef<FlatList<Message>>(null);
 
-  const [ currMessage, setMessage ] = useState<string>('');
-  const [ media, setMedia ] = useState<Asset[]>([]);
+  const [ currMessage, setMessage ] = useState<string>(''); //curr message to send
+  const [ media, setMedia ] = useState<Asset[]>([]); //curr selected media to send
   const [ loading, setLoading ] = useState<boolean>(false);
-  const [ iconsVisible, setIconsVisible ] = useState(false);
+  const [ iconsVisible, setIconsVisible ] = useState(false); //add media icons
 
-  const [ options, setOptions ] = useState(['View Members', 'Leave']);
   const [ modalVisible, setModalVisible ] = useState(false);
+  const [ options, setOptions ] = useState(['View Members', 'Leave']);
 
   const [ inviteModalVisible, setInviteModalVisible ] = useState(false);
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
   const inviteFlatListRef = useRef<FlatList>(null);
+
+  const [ mediaModalVisible, setMediaModalVisible ] = useState(false);
+  const [ mediaModalUrl, setMediaModalUrl ] = useState<string | null>();
  
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
@@ -420,6 +423,11 @@ const ViewChat = ( { route, navigation } : any) => {
     Alert.alert('not implemented yet');
   }
 
+  const openMedia = (url: string | null) => {
+    setMediaModalUrl(url);
+    setMediaModalVisible(true);
+  }
+
   //Msg and container styles based on Sent or Recieved
   const getMsgStyle = (id: string) => {
     if(id === currUser.id) return styles.myMessage;
@@ -503,13 +511,17 @@ const ViewChat = ( { route, navigation } : any) => {
                     }}
                     renderItem={({ item }) => (
                       item?.endsWith('.mp4') ? (
-                        <Video source={{ uri: item }} resizeMode="cover"
-                          style={{ width: 90, height: 90, margin: 2}}
-                        />
+                        <TouchableOpacity onPress={() => openMedia(item)}>
+                          <Video source={{ uri: item }} resizeMode="cover"
+                            style={{ width: 90, height: 90, margin: 2}}
+                          />
+                        </TouchableOpacity>
                       ) : (
-                        <ImgComponent uri={item || 'defaultUser'} resizeMode='cover'
-                          style={{height: 90, width: 90, margin: 2}}
-                        />
+                        <TouchableOpacity onPress={() => openMedia(item)}>
+                          <ImgComponent uri={item || 'defaultUser'} resizeMode='cover'
+                            style={{height: 90, width: 90, margin: 2}}
+                          />
+                        </TouchableOpacity>
                       )
 
                     )}
@@ -677,6 +689,28 @@ const ViewChat = ( { route, navigation } : any) => {
                 <Text style={styles.buttonTextWhite}>Invite</Text>
               </TouchableOpacity>
             </KeyboardAvoidingView>  
+          </View>
+        </View>
+      </Modal>
+
+      {/* View Media Modal */}
+      <Modal 
+        transparent={true} 
+        visible={mediaModalVisible} 
+        onRequestClose={() => setMediaModalVisible(false)}  
+      >
+        <View style={styles.imageOverlay}>
+          <View style={styles.imageModalContainer}>
+            <Icon name="close-outline" size={25} style={styles.closeImageModal}
+              onPress={() => setMediaModalVisible(false)}
+            />
+            {mediaModalUrl?.endsWith('.mp4') ? (
+              <Video source={{ uri: mediaModalUrl }} resizeMode="contain"/>
+            ) : (
+              <ImgComponent uri={mediaModalUrl || 'defaultGroup'} resizeMode='contain'
+                style={{height: '100%', width: '100%'}}
+              />
+            )}
           </View>
         </View>
       </Modal>
