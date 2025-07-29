@@ -31,6 +31,7 @@ const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) =
   const [ darkened, setDarkened ] = useState(false);
 
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
+  const [ showReplies, setShowReplies ] = useState(false);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
   /**
@@ -168,8 +169,8 @@ const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) =
   return(
     <View style={darkened ? styles.commentContainerPressed : styles.commentContainer}>
       {/* Display comment content */}
-      <Pressable onLongPress={() => handleLongPress()}
-        style={({ pressed }) => [styles.profileSection, { opacity: pressed ? 0.5 : 1 }]}
+      <Pressable onLongPress={() => handleLongPress()} 
+        style={({ pressed }) => [styles.parentCommentContainer, { opacity: pressed ? 0.5 : 1 }]}
       >
         <ImgComponent style={styles.commentUserImg} 
           uri={comment?.user?.profileURL || 'defaultUser'}
@@ -191,36 +192,50 @@ const CommentComp = ( {comment, keyboardTarget, refreshComments, index} : any) =
       </Pressable>
       
       {/* Display replies to comment */}
-      <FlatList
-        data={comment.replies.items}
-        renderItem={({item}) => {
-          return(
-            <Pressable onLongPress={() => handleLongPress(item)}
-              style={({ pressed }) => [{marginLeft: 40}, { opacity: pressed ? 0.5 : 1 }]}
-            >
-              <View style={styles.profileSection}>
-                <ImgComponent uri={item.user?.profileURL || 'defaultUser'}/>
-                <View style={styles.profileText}>
-                  <View style={{flexDirection: 'row'}}>
-                    <Text style={[styles.bold, {fontWeight: 500}]}>
-                      {`${item.user?.firstname} ${item.user?.lastname}`}
-                    </Text>
-                    <Text style={styles.commentDate}>
-                      {getCompactTimeAgo(item.createdAt)}
-                    </Text>
+      {comment.replies.items.length > 0 && !showReplies ? (
+        <TouchableOpacity onPress={() => setShowReplies(true)}>
+          <Text style={styles.numReplyText}>Show {comment.replies.items.length} replies</Text>
+        </TouchableOpacity>
+      ) : (
+        <FlatList
+          data={comment.replies.items}
+          style={{paddingTop: 5}}
+          renderItem={({item}) => {
+            return(
+              <Pressable onLongPress={() => handleLongPress(item)}
+                style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+              >
+                <View style={styles.replyContainer}>
+                  <ImgComponent uri={item.user?.profileURL || 'defaultUser'}/>
+                  <View style={styles.profileText}>
+                    <View style={{flexDirection: 'row'}}>
+                      <Text style={[styles.bold, {fontWeight: 500}]}>
+                        {`${item.user?.firstname} ${item.user?.lastname}`}
+                      </Text>
+                      <Text style={styles.commentDate}>
+                        {getCompactTimeAgo(item.createdAt)}
+                      </Text>
+                    </View>
+                    <Text style={styles.postContent}>{item.content}</Text>
+                    <TouchableOpacity style={{marginBottom:5}} 
+                      onPress={() => handleReply(index)}
+                    >
+                      <Text style={styles.replyText}>Reply</Text>
+                    </TouchableOpacity>
                   </View>
-                  <Text style={styles.postContent}>{item.content}</Text>
-                  <TouchableOpacity style={{marginBottom:5}} 
-                    onPress={() => handleReply(index)}
-                  >
-                    <Text style={styles.replyText}>Reply</Text>
-                  </TouchableOpacity>
                 </View>
-              </View>
-            </Pressable>
-          )
-        }}
-      />
+              </Pressable>
+            )
+          }}
+          ListFooterComponent={
+            comment.replies.items.length ? (
+              <TouchableOpacity onPress={() => setShowReplies(false)}>
+                <Text style={styles.numReplyText}>Hide replies</Text>
+              </TouchableOpacity>
+            ) : null
+          }
+        />
+      )}
 
       {/* Options Modal */}
       <Modal 

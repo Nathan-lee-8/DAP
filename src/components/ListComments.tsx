@@ -47,7 +47,8 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         query: commentsByPost,
         variables: {
           postID: postID,
-          nextToken: refresh ? null : nextToken
+          nextToken: refresh ? null : nextToken,
+          limit: 15
         },
         authMode:'userPool'
       })
@@ -60,6 +61,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         );
         setComments((prev: any) => [...prev, ...uniqueComments]);
       }
+      setNextToken(commentData.data.commentsByPost.nextToken);
     } catch {
       Alert.alert('Error', 'There was an issue fetching comments');
     } finally {
