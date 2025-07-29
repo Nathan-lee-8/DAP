@@ -443,12 +443,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginHorizontal: 5,
     backgroundColor: colorPrimary,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1
   },
   commentContainerPressed:{
     paddingTop: 5,
     paddingHorizontal: 10,
     marginHorizontal: 5,
     backgroundColor: '#ccc'
+  },
+  parentCommentContainer:{
+    flexDirection: 'row',
+    alignContent:'flex-start',
+  },
+  replyContainer:{
+    flexDirection: 'row',
+    alignContent:'flex-start',
+    paddingLeft: 40,
+  },
+  numReplyText:{
+    marginLeft: 35,
+    padding: 5,
+    paddingTop: 0,
   },
   commentDate:{
     marginLeft: 5,

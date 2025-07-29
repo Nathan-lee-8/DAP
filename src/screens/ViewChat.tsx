@@ -566,13 +566,13 @@ const ViewChat = ( { route, navigation } : any) => {
             horizontal
             renderItem={({ item }) => (
               <View style={{alignSelf: 'center'}}>
-                {item.type === 'image' ? (
-                  <ImgComponent uri={item.uri || 'defaultUser'} 
-                    style={{width: 90, height: 90}} resizeMode={'contain'}
-                  />
-                ) : (
+                {item.fileName?.endsWith('.mp4') ? (
                   <Video source={{ uri: item.uri }} style={{width: 90, height: 90}}
                     resizeMode="contain"
+                  />
+                ) : (
+                  <ImgComponent uri={item.uri || 'defaultUser'} 
+                    style={{width: 90, height: 90}} resizeMode={'cover'}
                   />
                 )}
                 <Icon name="remove-circle-outline" size={20} style={styles.removeIcon}

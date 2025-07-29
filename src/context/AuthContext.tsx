@@ -176,7 +176,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       const tokenList = tokenData.data.tokensByID.items;
       const isCurrent = tokenList.some((item) => item.userID === currUser.id);
-      if(!isCurrent) return; //token matches current user's token
+      if(!isCurrent) return; //token connection exists for current user
 
       //remove all matching tokens from db
       tokenList.map((token: any) => {
