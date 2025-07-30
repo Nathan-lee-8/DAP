@@ -622,8 +622,9 @@ const styles = StyleSheet.create({
 
   /** chatRoom Styles   */
   messageHeaderContainer: {
+    paddingTop: Platform.OS === 'ios' ? 60 : 5,
     flexDirection: 'row',
-    padding: 15,
+    padding: Platform.OS === 'ios' ? 5 : 15,
     backgroundColor: colorPrimary,
     borderWidth: 1,
     borderColor: 'lightgrey'

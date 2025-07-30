@@ -73,6 +73,7 @@ const ViewChat = ( { route, navigation } : any) => {
     const handleNewMessage = (data: any) => {
       if(data.chatID !== chatID) return;
       const currTime = new Date().toISOString();
+      console.log(participants.find((item) => item.user?.id === data.userID)?.user)
       const newMessage: Message = {
         id: currTime,
         content: data.message,
@@ -143,17 +144,17 @@ const ViewChat = ( { route, navigation } : any) => {
       if(chatData) setChat(chatData);
 
       //filter and set messages & nextToken
-      if(chatData?.messages){
-        setMessages(chatData.messages.items.filter(item => item !== null));
+      if(chatData && chatData.messages){
+        setMessages(chatData.messages.items.filter((item): item is Message => item !== null));
         setNextToken(chatData.messages.nextToken);
       }
       
       //loop through participant and set my userChat, options and url
-      let parts = chatData?.participants?.items.filter(item => item !== null);
+      let parts = chatData?.participants?.items.filter((item): item is UserChat => item !== null);
       if(parts) setParticipants(parts);
       let URLs: (string)[] = [];
       parts?.map((participant) => {
-        if(!participant.user) return;
+        if(!participant?.user) return;
         if(participant.user.id === currUser.id){ //if my Userchat, set roles and options
           setMyUserChat(participant);
           let currUsersChat = participant;
