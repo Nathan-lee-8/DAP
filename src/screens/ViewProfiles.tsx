@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Alert 
-} from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Alert, 
+FlatList } from 'react-native';
 
 import client from '../client';
 import { getUser } from '../customGraphql/customQueries';
@@ -10,6 +10,7 @@ import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ImgComponent';
 import Report from '../components/Report';
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Screen to display the name, email, profile image, description, 
@@ -21,6 +22,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
   const targetUserID = route.params.userID;
   const [ targetUser, setTargetUser ] = useState<User>();
   const [ loading, setLoading ] = useState(true);
+  const [ optionModalVisible, setOptionModalVisible ] = useState(false)
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   
   useEffect(() => {
@@ -46,6 +48,17 @@ const ViewProfiles = ( { route, navigation } : any) => {
     }
   };
 
+  const handleOptionButton = (option: string) => {
+    if(option === "Report"){
+      setOptionModalVisible(false);
+      setReportModalVisible(true);
+    }else if(option === "Block"){
+      Alert.alert('Block not implemented yet ')
+    }else{
+      Alert.alert('Error', option + ' not implemented yet')
+    }
+  }
+
   if(loading) return (<ActivityIndicator size="large" color="#0000ff" />);
   if(!targetUser) {
     return <Text style={styles.noResultsMsg}>Error: User not found</Text>
@@ -55,6 +68,9 @@ const ViewProfiles = ( { route, navigation } : any) => {
     <View style={styles.container}>
       {/* User Profile Section */}
       <View style={styles.viewUserProfileSection}>
+        <Icon style={styles.editProfileButton} name="ellipsis-horizontal" 
+          onPress={() => setOptionModalVisible(true)} size={25}
+        />
         <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} 
           style={styles.viewProfileURL}
         />
@@ -73,16 +89,40 @@ const ViewProfiles = ( { route, navigation } : any) => {
           >
             <Text style={{textAlign:'center', fontSize: 12}}>Message</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.reportUserButton} 
-            onPress={() => setReportModalVisible(true)}
-          >
-            <Text style={{textAlign:'center', fontSize: 12}}>Report</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
       {/* List of User Posts */}
       <UserPosts userID={targetUser.id}/>
+
+      {/* Options modal */}
+      <Modal
+        transparent={true} 
+        visible={optionModalVisible}
+        onRequestClose={() => setOptionModalVisible(false)} 
+      >
+        <View style={styles.postModelOverlay}>
+          <View style={styles.postModalContainer}>
+            <FlatList
+              data={["Report", "Block"]}
+              keyExtractor={(option) => option}
+              style={{height: 'auto', width: '100%'}}
+              renderItem={({ item: option }) => (
+                <TouchableOpacity style={styles.optionButton} 
+                  onPress={() => handleOptionButton(option)}
+                >
+                  <Text style={styles.buttonTextBlack}>{option}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          <TouchableOpacity style={styles.closeOverlayButton} 
+            onPress={() => setOptionModalVisible(false)}
+          >
+            <Text style={styles.buttonTextRed}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
 
       {/* Report Modal */}
       <Modal 

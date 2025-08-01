@@ -11,6 +11,7 @@ import { imagePicker, getImgURI } from '../../components/addImg';
 import ImgComponent from '../../components/ImgComponent';
 import UserPosts from '../../components/UserPosts';
 import styles from '../../styles/Styles';
+import welcomeStyles from '../../styles/SignInScreenStyles';
 import Icon from '@react-native-vector-icons/ionicons';
 
 /**
@@ -227,11 +228,18 @@ const EditProfile = ({navigation}: any) => {
         onRequestClose={() => setAboutModalVisible(false)}  
       >
         <View style={styles.imageOverlay}>
-          <View style={styles.imageModalContainer}>
+          <View style={styles.aboutModalContainer}>
             <Icon name="close-outline" size={25} style={styles.closeImageModal}
               onPress={() => setAboutModalVisible(false)}
             />
-            <Text style={styles.modalTitle}>DAP</Text>
+            <View style={welcomeStyles.logoContainer}>
+              <ImgComponent uri="logo" style={welcomeStyles.logo}/>
+              <Text style={welcomeStyles.logoText}> DAP </Text>
+            </View>
+            <Text style={welcomeStyles.welcomeMessage}>Interact with your community.</Text>
+            <Text>Report a problem</Text>
+            <Text>Contact us</Text>
+            <Text>Terms and conditions</Text>
           </View>
         </View>
       </Modal>
