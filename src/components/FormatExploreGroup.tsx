@@ -1,8 +1,10 @@
 import { View, Text } from "react-native";
+import { useState } from "react";
 import LinearGradient from 'react-native-linear-gradient';
 import { Group } from "../API";
 import styles from "../styles/Styles";
 import ImgComponent from "./ImgComponent";
+import Icon from "@react-native-vector-icons/ionicons";
 
 
 /**
@@ -11,17 +13,21 @@ import ImgComponent from "./ImgComponent";
  * @param group - The Group to display
  */
 const FormatExploreGroup = ( {group} : {group: Group} ) => {
+  const [ showDescription, setShowDescription ] = useState(false); 
+
   if(!group) return;
   return (  
     <View style={styles.exploreGroupContainer}>
-      <Text numberOfLines={6} style={styles.exploreDescription}>{group.description}</Text>
-      <ImgComponent uri={group.groupURL || 'defaultGroup'} style={styles.exploreImg}/>
-      <LinearGradient
-        colors={['rgba(231, 229, 229, 0.94)', 'rgba(51, 47, 47, 0.1)', 'rgba(0,0,0,0)']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={styles.gradient}
+      <Icon name={showDescription ? "return-down-back" : "information-circle-outline"}
+        style={styles.showDescriptionIcon} 
+        size={20}
+        onPress={() => setShowDescription(!showDescription)}
       />
+      { showDescription ? (
+        <Text numberOfLines={6} style={styles.exploreDescription}>{group.description}</Text>
+      ) : (
+        <ImgComponent uri={group.groupURL || 'defaultGroup'} style={styles.exploreImg}/>
+      )}
       <Text numberOfLines={1} style={styles.exploreTitle}>{group.groupName}</Text>
       <Text style={styles.exploreMembers}>{group.memberCount} Members</Text>
     </View>

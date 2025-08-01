@@ -368,6 +368,15 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     marginBottom: 10
   },
+  aboutModalOverlay: {
+    flex: 1,
+  },
+  aboutModalContainer: {
+    height: '100%',
+    paddingTop: '15%',
+    padding: 20,
+    backgroundColor: colorBackground
+  },
 
   /* Notification Section */
   notificationModalOverlay:{
@@ -462,9 +471,11 @@ const styles = StyleSheet.create({
     paddingLeft: 40,
   },
   numReplyText:{
-    marginLeft: 35,
+    marginLeft: 40,
     padding: 5,
     paddingTop: 0,
+    fontSize: 12,
+    color: '#48494B'
   },
   commentDate:{
     marginLeft: 5,
@@ -1013,11 +1024,9 @@ const styles = StyleSheet.create({
   },
   exploreDescription:{
     flexDirection: 'row',
-    position: 'absolute',
+    width: '100%',
+    height: '78%',
     fontSize: 15,
-    top: 5,
-    left: 5,
-    zIndex: 1,
     paddingRight: 5
   },
   exploreMembers:{
@@ -1026,6 +1035,12 @@ const styles = StyleSheet.create({
     left: 5,
     fontSize: 12,
     fontWeight: '400'
+  },
+  showDescriptionIcon: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    zIndex: 1,
   },
 
   /** Profile Section */
@@ -1044,13 +1059,6 @@ const styles = StyleSheet.create({
     backgroundColor: colorPrimary,
   },
   messageUserButton: {
-    width: width * 0.16,
-    borderWidth: 1,
-    borderColor: '#888',
-    padding: 5,
-    backgroundColor: colorBackground,
-  },
-  reportUserButton:{
     marginTop: 'auto',
     width: width * 0.16,
     borderWidth: 1,
