@@ -23,6 +23,7 @@ const EditProfile = ({navigation}: any) => {
   const [ loading, setLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
   const [ modalVisible, setModalVisible ] = useState(false);
+  const [ aboutModalVisible, setAboutModalVisible ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) return;
   const { currUser, setCurrUser, logout } = authContext;
@@ -113,7 +114,9 @@ const EditProfile = ({navigation}: any) => {
       logout();
     }else if(option === 'Settings'){
       navigation.navigate('Settings')
-    }else{
+    }else if(option === 'About'){
+      setAboutModalVisible(true);
+    } else{
       Alert.alert(option, 'Not implemented yet');
     }
   }
@@ -197,7 +200,7 @@ const EditProfile = ({navigation}: any) => {
         <View style={styles.postModelOverlay}>
           <View style={styles.postModalContainer}>
             <FlatList
-              data={["Settings", "Edit Profile", "Logout"]}
+              data={["Settings", "Edit Profile", "About", "Logout"]}
               keyExtractor={(option) => option}
               style={{height: 'auto', width: '100%'}}
               renderItem={({ item: option }) => (
@@ -214,6 +217,22 @@ const EditProfile = ({navigation}: any) => {
           >
             <Text style={styles.buttonTextRed}>Close</Text>
           </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Company(DAP) info Modal */}
+      <Modal 
+        transparent={true} 
+        visible={aboutModalVisible} 
+        onRequestClose={() => setAboutModalVisible(false)}  
+      >
+        <View style={styles.imageOverlay}>
+          <View style={styles.imageModalContainer}>
+            <Icon name="close-outline" size={25} style={styles.closeImageModal}
+              onPress={() => setAboutModalVisible(false)}
+            />
+            <Text style={styles.modalTitle}>DAP</Text>
+          </View>
         </View>
       </Modal>
     </View>

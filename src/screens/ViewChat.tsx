@@ -87,8 +87,7 @@ const ViewChat = ( { route, navigation } : any) => {
         __typename: "Message",
       };
       setMessages((prev) =>
-        prev.some((m) => m.id === newMessage.id)
-          ? prev : [newMessage, ...prev]
+        prev.some((m) => m.id === newMessage.id) ? prev : [newMessage, ...prev]
       );
       scrollToBottom();
     }
