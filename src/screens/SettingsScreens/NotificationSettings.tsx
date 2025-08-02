@@ -1,18 +1,18 @@
 import { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 
-import client from '../client';
-import { updateNotificationSettings } from '../customGraphql/customMutations';
+import client from '../../client';
+import { updateNotificationSettings } from '../../customGraphql/customMutations';
 
 import FontIcon from '@react-native-vector-icons/fontawesome';
-import styles from '../styles/Styles';
-import { AuthContext } from '../context/AuthContext';
+import styles from '../../styles/Styles';
+import { AuthContext } from '../../context/AuthContext';
 
 /**
  * Diplays all user Notification Settings and allows user to customize their
  * notification settings. 
  */
-const ProfileSettings = ({navigation} : any) => {
+const NotificationSettings = ({navigation} : any) => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
     Alert.alert('Error', 'Unable to retreive notification settings.')
@@ -156,4 +156,4 @@ const ProfileSettings = ({navigation} : any) => {
   )
 }
 
-export default ProfileSettings;
+export default NotificationSettings;

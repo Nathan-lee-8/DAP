@@ -1,6 +1,6 @@
 import { useContext, useState, useCallback } from 'react';
 import { View, Text, Alert, TouchableOpacity, ActivityIndicator, TextInput, Platform, 
-  KeyboardAvoidingView, ScrollView, Modal, FlatList } from 'react-native';
+  KeyboardAvoidingView, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../../client'
@@ -11,7 +11,6 @@ import { imagePicker, getImgURI } from '../../components/addImg';
 import ImgComponent from '../../components/ImgComponent';
 import UserPosts from '../../components/UserPosts';
 import styles from '../../styles/Styles';
-import welcomeStyles from '../../styles/SignInScreenStyles';
 import Icon from '@react-native-vector-icons/ionicons';
 
 /**
@@ -23,11 +22,9 @@ import Icon from '@react-native-vector-icons/ionicons';
 const EditProfile = ({navigation}: any) => {
   const [ loading, setLoading ] = useState(false);
   const [ editsOn, setEditsOn ] = useState(false);
-  const [ modalVisible, setModalVisible ] = useState(false);
-  const [ aboutModalVisible, setAboutModalVisible ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) return;
-  const { currUser, setCurrUser, logout } = authContext;
+  const { currUser, setCurrUser } = authContext;
   if(!currUser) return;
      
   //use temp values to hold data until user saves
@@ -106,22 +103,6 @@ const EditProfile = ({navigation}: any) => {
     }
   };
 
-  //handles option modal: switches to edit view when user selects edit option
-  const handleOptionButton = ( option: string) => {
-    setModalVisible(false);
-    if(option === 'Edit Profile'){
-      setEditsOn(true);
-    }else if(option === 'Logout'){
-      logout();
-    }else if(option === 'Settings'){
-      navigation.navigate('Settings')
-    }else if(option === 'About'){
-      setAboutModalVisible(true);
-    } else{
-      Alert.alert(option, 'Not implemented yet');
-    }
-  }
-
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (
     <View style={styles.container}>
@@ -129,16 +110,21 @@ const EditProfile = ({navigation}: any) => {
         <View style={{flex: 1}}>
           <View style={styles.viewUserProfileSection}>
             <ImgComponent uri={currUser.profileURL} style={styles.viewProfileURL}/>
-            <View style={styles.userInfoContainer}>
+            <View style={styles.profileInfoContainer}>
               <Text style={[styles.postAuthor, {fontWeight: '600'}]}>
                 {currUser.firstname} {currUser.lastname} 
               </Text>
               <Text style={styles.postContent}>{currUser.email} </Text>
               <Text style={styles.postContent}>{currUser.description}</Text>
             </View>
-            <Icon style={styles.editProfileButton} name="ellipsis-horizontal" 
-              onPress={() => setModalVisible(true)} size={25}
+            <Icon style={styles.editProfileButton} name="list-sharp" size={25}
+              onPress={() => navigation.navigate('Settings')}
             />
+            <TouchableOpacity style={styles.messageUserButton} 
+              onPress={() => setEditsOn(true)}
+            >
+              <Text style={styles.messageUserText}>Edit Profile</Text>
+            </TouchableOpacity>
           </View>
           <UserPosts userID={currUser.id} />
         </View>
@@ -191,58 +177,7 @@ const EditProfile = ({navigation}: any) => {
           </KeyboardAvoidingView>
         </View>
       )}
-
-      {/* Options Modal */}
-      <Modal
-        transparent={true} 
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)} 
-      >
-        <View style={styles.postModelOverlay}>
-          <View style={styles.postModalContainer}>
-            <FlatList
-              data={["Settings", "Edit Profile", "About", "Logout"]}
-              keyExtractor={(option) => option}
-              style={{height: 'auto', width: '100%'}}
-              renderItem={({ item: option }) => (
-                <TouchableOpacity style={styles.optionButton} 
-                  onPress={() => handleOptionButton(option)}
-                >
-                  <Text style={styles.buttonTextBlack}>{option}</Text>
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-          <TouchableOpacity style={styles.closeOverlayButton} 
-            onPress={() => setModalVisible(false)}
-          >
-            <Text style={styles.buttonTextRed}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
-
-      {/* Company(DAP) info Modal */}
-      <Modal 
-        transparent={true} 
-        visible={aboutModalVisible} 
-        onRequestClose={() => setAboutModalVisible(false)}  
-      >
-        <View style={styles.imageOverlay}>
-          <View style={styles.aboutModalContainer}>
-            <Icon name="close-outline" size={25} style={styles.closeImageModal}
-              onPress={() => setAboutModalVisible(false)}
-            />
-            <View style={welcomeStyles.logoContainer}>
-              <ImgComponent uri="logo" style={welcomeStyles.logo}/>
-              <Text style={welcomeStyles.logoText}> DAP </Text>
-            </View>
-            <Text style={welcomeStyles.welcomeMessage}>Interact with your community.</Text>
-            <Text>Report a problem</Text>
-            <Text>Contact us</Text>
-            <Text>Terms and conditions</Text>
-          </View>
-        </View>
-      </Modal>
+      
     </View>
   );
 };

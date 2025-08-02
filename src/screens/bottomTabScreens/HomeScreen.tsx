@@ -1,4 +1,4 @@
-import { useState, useContext, useCallback, useLayoutEffect, useEffect, useRef
+import { useState, useContext, useCallback, useLayoutEffect, useRef
 } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
@@ -54,7 +54,7 @@ const HomeScreen = ( {navigation} : any) => {
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Icon name="notifications-outline" size={24} style={{marginRight: 15}}/>
           {currUser && currUser?.unreadNotificationCount > 0 && 
-            <View style={{position: 'absolute', right: 0, top: -10}}>
+            <View style={{position: 'absolute', right: 10, top: -10}}>
               <Text style={{fontWeight: 700, color: 'red'}}>
                 {currUser.unreadNotificationCount}
               </Text>

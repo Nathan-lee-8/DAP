@@ -32,8 +32,13 @@ import ViewGroupMembers from '../screens/ViewGroupMembers';
 import ViewChatMembers from '../screens/ViewChatMembers';
 import EditPost from '../screens/EditPost';
 import EditChat from '../screens/EditChat';
-import Settings from '../screens/ProfileSettings';
 import ImageComponent from '../components/ImgComponent';
+
+import ProfileSettings from '../screens/SettingsScreens/ProfileSettings';
+import NotificationSettings from '../screens/SettingsScreens/NotificationSettings';
+import ReportScreen from '../screens/SettingsScreens/ReportScreen';
+import TermsConditions from '../screens/SettingsScreens/TermsConditions';
+import PrivacyPolicy from '../screens/SettingsScreens/PrivacyPolicy';
 
 const SignInStack = createNativeStackNavigator();
 const GlobalStack = createNativeStackNavigator();
@@ -63,13 +68,10 @@ const AppNavigator = () => {
         <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
           <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
           <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
-          <GlobalStack.Screen name="ViewChat" component={ViewChat} 
-            options={{title: 'Messages', headerShown: false}}/>
+          <GlobalStack.Screen name="ViewChat" component={ViewChat} options={{title: 'Messages', headerShown: false}}/>
           <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
           <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
-          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} 
-            options={{title: 'Group', headerShown: false}}
-          />
+          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} options={{title: 'Group', headerShown: false}}/>
           <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
           <GlobalStack.Screen name="ViewPost" component={ViewPost} options={{title: 'Post'}}/>
           <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
@@ -77,7 +79,12 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="EditPost" component={EditPost} options={{title: 'Edit Post'}}/>
           <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers} options={{title: 'Members'}}/>
           <GlobalStack.Screen name="EditChat" component={EditChat} options={{title: 'Edit Chat'}}/>
-          <GlobalStack.Screen name="Settings" component={Settings} options={{title: 'Profile Settings'}}/>
+          {/* Settings tabs */}
+          <GlobalStack.Screen name="Settings" component={ProfileSettings} options={{title: 'Profile Settings'}}/>
+          <GlobalStack.Screen name="NotificationSettings" component={NotificationSettings} options={{title: 'Notification Settings'}}/>
+          <GlobalStack.Screen name="Report" component={ReportScreen} options={{title: 'Report a problem'}}/>
+          <GlobalStack.Screen name="Terms" component={TermsConditions} options={{title: 'Terms and Conditions'}}/>
+          <GlobalStack.Screen name="Privacy" component={PrivacyPolicy} options={{title: 'Privacy Policy'}}/>
         </GlobalStack.Navigator>
       ) : isSignedIn && !currUser ? ( //Screens User has not created an account
         <SignInStack.Navigator initialRouteName='CreateUser' >
