@@ -25,6 +25,10 @@ export type GlobalParamList = {
     EditPost: {currPost: Post};
     EditChat: {currChat: Chat};
     ProfileSetting: undefined;
+    NotificationSettings: undefined;
+    ReportScreen: undefined;
+    TermsConditions: undefined;
+    PrivacyPolicy: undefined;
 }
 
 export type LoggedInParamList = {

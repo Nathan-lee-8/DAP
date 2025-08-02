@@ -1051,6 +1051,10 @@ const styles = StyleSheet.create({
     backgroundColor: colorPrimary,
     marginBottom: 10,
   },
+  profileInfoContainer: {
+    paddingHorizontal: 10,
+    width: width * 0.58
+  },
   toolbar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -1060,11 +1064,15 @@ const styles = StyleSheet.create({
   },
   messageUserButton: {
     marginTop: 'auto',
-    width: width * 0.16,
+    width: width * 0.18,
     borderWidth: 1,
     borderColor: '#888',
     padding: 5,
     backgroundColor: colorBackground,
+  },
+  messageUserText: { 
+    textAlign:'center', 
+    fontSize: 12
   },
   viewProfileURL: {
     height: 80, 
@@ -1099,7 +1107,7 @@ const styles = StyleSheet.create({
   },
   editProfileButton: {
     position: 'absolute',
-    right: 5,
+    right: 0,
     top: 0,
     width: 'auto',
     padding: 10,

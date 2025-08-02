@@ -74,7 +74,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
         <ProfilePicture uri={targetUser.profileURL || 'defaultUser'} 
           style={styles.viewProfileURL}
         />
-        <View style={styles.userInfoContainer}>
+        <View style={styles.profileInfoContainer}>
           <Text style={[styles.postAuthor, {fontWeight: '600'}]}>
             {targetUser.firstname} {targetUser.lastname}
           </Text>
@@ -83,13 +83,11 @@ const ViewProfiles = ( { route, navigation } : any) => {
             {targetUser.description || "No bio available"}
           </Text>
         </View>
-        <View style={{height: 80, flexDirection:'column'}}>
-          <TouchableOpacity style={styles.messageUserButton} 
-            onPress={() => navigation.navigate('CreateChat', {user: targetUser})}
-          >
-            <Text style={{textAlign:'center', fontSize: 12}}>Message</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.messageUserButton} 
+          onPress={() => navigation.navigate('CreateChat', {user: targetUser})}
+        >
+          <Text style={styles.messageUserText}>Message</Text>
+        </TouchableOpacity>
       </View>
 
       {/* List of User Posts */}

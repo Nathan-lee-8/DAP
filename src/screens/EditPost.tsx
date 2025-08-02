@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Platform, FlatList, Keyboard,
-  ActivityIndicator, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Keyboard,
+  ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
 
 import Video from 'react-native-video';
 import { mediaPicker, getMediaURI } from '../components/addMedia';
