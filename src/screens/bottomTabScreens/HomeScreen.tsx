@@ -23,9 +23,8 @@ const HomeScreen = ( {navigation} : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ loading, setLoading ] = useState(false);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
-  const authContext = useContext(AuthContext);
-  const currUser = authContext?.currUser;
-  if(!currUser) return;
+  const currUser = useContext(AuthContext)?.currUser;
+  const blockList = useContext(AuthContext)?.blockList;
 
   const firstRender = useRef(true);
   //Retreives Newsfeed every time screen is refocused and sets loading on
@@ -44,7 +43,7 @@ const HomeScreen = ( {navigation} : any) => {
         }
       }
       loadInitialData();
-    }, [currUser?.id])
+    }, [currUser?.id, blockList])
   );
 
   //updates the unread notification count on the notification icon in header
@@ -67,6 +66,10 @@ const HomeScreen = ( {navigation} : any) => {
 
   //retreives userfeed with logic for retreiving next items on scroll
   const fetchNewsFeed = async (refresh: boolean) => {
+    if(!currUser){
+      Alert.alert('Error', 'There was an issue fetching newsfeed.');
+      return;
+    }
     try{
       const res = await client.graphql({
         query: postsByUserFeed,
@@ -77,12 +80,20 @@ const HomeScreen = ( {navigation} : any) => {
         },
         authMode: 'userPool'
       }); 
-      const newsFeedData = res.data.postsByUserFeed.items;
+
+      //get items and filter for null items
+      const newsFeedData = (res.data.postsByUserFeed.items || []).filter(Boolean);
+
+      //filter out blocked users
+      const filteredByBlockList = !blockList ? newsFeedData
+        : newsFeedData.filter((item: any) => !blockList?.includes(item.post.user.id));
+
+      //handle refresh vs pagination
       if(refresh){ 
-        setNewsFeed(newsFeedData);
+        setNewsFeed(filteredByBlockList);
       } else {
-        const filteredFeed = newsFeedData.filter((item) => 
-          item !== null && !newsFeed.some(userfeed => userfeed.id === item.id)
+        const filteredFeed = filteredByBlockList.filter((item: any) => 
+          !newsFeed.some((userfeed) => userfeed.id === item.id)
         );
         setNewsFeed((prev) => [...prev, ...filteredFeed])
       };

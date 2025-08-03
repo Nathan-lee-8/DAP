@@ -54,6 +54,7 @@ const ViewChat = ( { route, navigation } : any) => {
  
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
+  const blockList = authContext?.blockList;
   const triggerFetch = authContext?.triggerFetch;
   if(!currUser) return;
 
@@ -486,6 +487,12 @@ const ViewChat = ( { route, navigation } : any) => {
           const shouldShowDate = !prevTime || !currTime.isSame(prevTime, 'day');
           if(item.type === 'System') return(
             <View><Text style={styles.systemMessage}>{item?.content}</Text></View>
+          )
+          if(blockList && blockList.includes(item.senderID)) return (
+            <View style={styles.otherMessageContainer}>
+              <ImgComponent uri={'defaultUser'} style={styles.msgIcon}/>
+              <Text style={styles.redacted}>Hidden</Text>
+            </View>
           )
           return (
             <View>

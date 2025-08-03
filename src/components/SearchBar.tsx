@@ -28,10 +28,11 @@ const SearchBar = ( {userPressed, width, remove} :
   const [ data, setData ] = useState<User[]>([]);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
   const currUser = useContext(AuthContext)?.currUser;
+  const blockList = useContext(AuthContext)?.blockList;
   if(!currUser) return;
 
-  //Fetch users that have a matching email or matching name to the search sequence
-  //and merge and display the matching users while filtering out 'remove' users
+  //Fetch users that have a matching email or matching name to the search sequence and
+  //merge and while filtering out 'remove' and 'blocklist' users
   const fetchUsers = async (search: string) => {
     try{
       const usersByEmail = await client.graphql({
@@ -54,15 +55,20 @@ const SearchBar = ( {userPressed, width, remove} :
          },
         authMode: 'userPool'
       });
+      //merge all users that have search term included (filter duplicates)
       const userData = 
         [...usersByEmail.data.listUsers.items, ...usersByName.data.listUsers.items];
       const uniqueUserData = 
         Array.from(new Map(userData.map(user => [user.id, user])).values());
-      var filteredData = uniqueUserData.filter((user) => {
+
+      //Filter out currUser, 'remove' users and 'blocklist' users
+      //create a set for faster removal
+      var filteredData: User[] = uniqueUserData.filter((user) => {
         if(user.id === currUser.id) return false;
         if(remove && remove.some((removedUser: User) => removedUser.id === user.id)){
            return false;
         }
+        if(blockList && blockList.includes(user.id)) return false;
         return true;
       });
       setData(filteredData);

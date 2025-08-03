@@ -6,21 +6,24 @@ import { getMessaging, requestPermission, getToken, deleteToken
 } from '@react-native-firebase/messaging';
 
 import client from '../client';
-import { tokensByID, userByEmail } from '../customGraphql/customQueries';
+import { blockListByBlocked, blockListByBlocker, tokensByID, userByEmail 
+} from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
-import { User } from '../API';
 import { onUpdateUser } from '../customGraphql/customSubscriptions';
+import { User } from '../API';
 import wsClient from '../components/webSocket';
 
 interface AuthContextType {
   isSignedIn: boolean;
   userEmail: string;
   currUser: User | undefined;
+  blockList: string[];
   setSignedIn: (value: boolean) => void;
   setUserEmail: (email: string) => void;
   setCurrUser: (currUser: User) => void;
   logout: () => void;
   triggerFetch: () => void;
+  setBlockList: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [ userEmail, setUserEmail ] = useState<string>('');
   const [ fetchCounter, setFetchCounter ] = useState(0);
   const [ tokenDynamoID, setTokenDynamoID ] = useState<string>();
+  const [ blockList, setBlockList ] = useState<string[]>([]);
 
   //runs on app start up to check if user is already signed in
   useEffect(() => {
@@ -47,6 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   //Sets current user data whenever userEmail is set or custom triggered by fetchcounter
+  //Also fetches blocklist for all blocked users and users who blocked currUser
   useEffect(() => {
     if(!userEmail || userEmail === '') return;
     const getUserAttributes = async () => {
@@ -67,6 +72,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
     getUserAttributes();
   }, [userEmail, fetchCounter]);
+
+  //fetch blocked users whenever userID updates
+  useEffect(() => {
+    if(!currUser) return;
+    const getBlockList = async () => {
+      const blockedData = await client.graphql({
+        query: blockListByBlocker,
+        variables: {
+          blockerID: currUser.id
+        },
+        authMode: 'userPool'
+      })
+      const blockedMeData = await client.graphql({
+        query: blockListByBlocked,
+        variables: {
+          blockedID: currUser.id
+        },
+        authMode: 'userPool'
+      })
+      const blocked = blockedData.data.blockListByBlocker.items || [];
+      const blockedMe = blockedMeData.data.blockListByBlocked.items || [];
+
+      const combinedBlockList = Array.from(
+        new Set([
+          ...blocked.map((item: any) => item.blockedID),
+          ...blockedMe.map((item: any) => item.blockerID)
+        ])
+      );
+      setBlockList(combinedBlockList);
+    }
+
+    getBlockList();
+  }, [currUser?.id])
 
   //trigger to get user attributes
   const triggerFetch = () => {
@@ -208,8 +246,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, setSignedIn,
-      setUserEmail, setCurrUser, logout, triggerFetch}}>
+    <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, blockList, setSignedIn,
+      setUserEmail, setCurrUser, logout, triggerFetch, setBlockList}}>
       {children}
     </AuthContext.Provider>
   );

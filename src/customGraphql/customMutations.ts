@@ -410,3 +410,21 @@ export const updateNotificationSettings = /* GraphQL */ `mutation UpdateNotifica
   APITypes.UpdateNotificationSettingsMutationVariables,
   APITypes.UpdateNotificationSettingsMutation
 >;
+export const createBlockList = /* GraphQL */ `mutation CreateBlockList(
+  $input: CreateBlockListInput!
+  $condition: ModelBlockListConditionInput
+) {
+  createBlockList(input: $input, condition: $condition) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateBlockListMutationVariables,
+  APITypes.CreateBlockListMutation
+>;

@@ -614,3 +614,65 @@ export const postsByUserFeed = /* GraphQL */ `query PostsByUserFeed(
   APITypes.PostsByUserFeedQueryVariables,
   APITypes.PostsByUserFeedQuery
 >;
+export const blockListByBlocker = /* GraphQL */ `query BlockListByBlocker(
+  $blockerID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelBlockListFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  blockListByBlocker(
+    blockerID: $blockerID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      blockerID
+      blockedID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.BlockListByBlockerQueryVariables,
+  APITypes.BlockListByBlockerQuery
+>;
+export const blockListByBlocked = /* GraphQL */ `query BlockListByBlocked(
+  $blockedID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelBlockListFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  blockListByBlocked(
+    blockedID: $blockedID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      blockerID
+      blockedID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.BlockListByBlockedQueryVariables,
+  APITypes.BlockListByBlockedQuery
+>;

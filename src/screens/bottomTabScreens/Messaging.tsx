@@ -24,6 +24,7 @@ const MessageUsers = ( {navigation}: any ) => {
   const firstRender = useRef(false);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
+  const blockList = authContext?.blockList;
   if(!currUser) return;
 
   useFocusEffect(
@@ -115,6 +116,16 @@ const MessageUsers = ( {navigation}: any ) => {
           if(!item.chat) return null;
           const displayURIs = getDisplayURIs(item) || [];
           const chatname = getChatName(item);
+
+          //filters out dm's(1 to 1 chats) with blocked users
+          if(item.chat.participants?.items.length === 2){ //guarantees direct chat (not group)
+            const otherUser = item.chat.participants.items.find(
+              (part) => part && part.userID !== currUser.id
+            )
+            if(blockList && blockList.includes(otherUser?.user?.id ?? "")){
+              return null;
+            }
+          }
 
           return (
             <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>

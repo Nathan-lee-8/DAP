@@ -1856,3 +1856,57 @@ export const onDeleteNotificationSettings = /* GraphQL */ `subscription OnDelete
   APITypes.OnDeleteNotificationSettingsSubscriptionVariables,
   APITypes.OnDeleteNotificationSettingsSubscription
 >;
+export const onCreateBlockList = /* GraphQL */ `subscription OnCreateBlockList(
+  $filter: ModelSubscriptionBlockListFilterInput
+  $owner: String
+) {
+  onCreateBlockList(filter: $filter, owner: $owner) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateBlockListSubscriptionVariables,
+  APITypes.OnCreateBlockListSubscription
+>;
+export const onUpdateBlockList = /* GraphQL */ `subscription OnUpdateBlockList(
+  $filter: ModelSubscriptionBlockListFilterInput
+  $owner: String
+) {
+  onUpdateBlockList(filter: $filter, owner: $owner) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateBlockListSubscriptionVariables,
+  APITypes.OnUpdateBlockListSubscription
+>;
+export const onDeleteBlockList = /* GraphQL */ `subscription OnDeleteBlockList(
+  $filter: ModelSubscriptionBlockListFilterInput
+  $owner: String
+) {
+  onDeleteBlockList(filter: $filter, owner: $owner) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteBlockListSubscriptionVariables,
+  APITypes.OnDeleteBlockListSubscription
+>;

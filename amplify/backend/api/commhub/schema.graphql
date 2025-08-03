@@ -250,3 +250,15 @@ type NotificationSettings @model @auth(
   user: User @belongsTo(fields:["userID"])
   createdAt: AWSDateTime!
 }
+
+type BlockList @model @auth(
+  rules: [
+    { allow: owner},
+    { allow: private}
+  ]
+){
+  id: ID!
+  blockerID: ID! @index(name: "blockListByBlocker", queryField: "blockListByBlocker")
+  blockedID: ID! @index(name: "blockListByBlocked", queryField: "blockListByBlocked")
+  createdAt: AWSDateTime!
+}
