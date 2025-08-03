@@ -385,6 +385,21 @@ export const postsByDate = /* GraphQL */ `query PostsByDate(
       id
       content
       postURL
+      user{
+        id
+        email
+        firstname
+        lastname
+        fullname
+        profileURL
+        description
+        unreadChatCount
+        unreadNotificationCount
+        createdAt
+        updatedAt
+        owner
+        __typename
+      }
       groupID
       userID
       commentCount
@@ -950,7 +965,6 @@ export const getChat = /* GraphQL */ `query GetChat(
     name
     url
     isGroup
-    createdAt
     messages (limit: $messagesLimit, nextToken: $messagesNextToken, sortDirection: DESC) {
       items {
         id
@@ -1016,6 +1030,7 @@ export const getChat = /* GraphQL */ `query GetChat(
       nextToken
       __typename
     }
+    createdAt
     updatedAt
     owner
     __typename
@@ -2038,4 +2053,104 @@ export const notificationSettingsByUser = /* GraphQL */ `query NotificationSetti
 ` as GeneratedQuery<
   APITypes.NotificationSettingsByUserQueryVariables,
   APITypes.NotificationSettingsByUserQuery
+>;
+export const getBlockList = /* GraphQL */ `query GetBlockList($id: ID!) {
+  getBlockList(id: $id) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetBlockListQueryVariables,
+  APITypes.GetBlockListQuery
+>;
+export const listBlockLists = /* GraphQL */ `query ListBlockLists(
+  $filter: ModelBlockListFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listBlockLists(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      id
+      blockerID
+      blockedID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListBlockListsQueryVariables,
+  APITypes.ListBlockListsQuery
+>;
+export const blockListByBlocker = /* GraphQL */ `query BlockListByBlocker(
+  $blockerID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelBlockListFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  blockListByBlocker(
+    blockerID: $blockerID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      blockerID
+      blockedID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.BlockListByBlockerQueryVariables,
+  APITypes.BlockListByBlockerQuery
+>;
+export const blockListByBlocked = /* GraphQL */ `query BlockListByBlocked(
+  $blockedID: ID!
+  $sortDirection: ModelSortDirection
+  $filter: ModelBlockListFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  blockListByBlocked(
+    blockedID: $blockedID
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      blockerID
+      blockedID
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.BlockListByBlockedQueryVariables,
+  APITypes.BlockListByBlockedQuery
 >;

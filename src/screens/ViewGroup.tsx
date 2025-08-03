@@ -48,6 +48,7 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
+  const blockList = authContext?.blockList;
   if(!currUser) {
     Alert.alert('Error', 'Unable to view group');
     navigation.goBack();
@@ -91,8 +92,12 @@ const ViewGroup = ( {route, navigation} : any) => {
         },
         authMode: 'userPool'
       })
+      let postData = currPosts.data.postsByDate.items || [];
+      postData = postData.filter((item) => item !== null && 
+        (!blockList || !blockList.includes(item.user?.id ?? ""))
+      );
+      setPosts(postData);
       setPostNextToken(currPosts.data.postsByDate.nextToken);
-      setPosts(currPosts.data.postsByDate.items);
 
       //get User Data to as array for members in group
       const userData = groupData.members?.items?.map((item: any) => item.user);
@@ -153,7 +158,8 @@ const ViewGroup = ( {route, navigation} : any) => {
       }
     }).then((posts) => {
       const newPosts = posts.data.postsByDate.items.filter((item) => 
-        item !== null && !post.some(existingItem => existingItem.id === item.id)
+        item !== null && !post.some(existingItem => existingItem.id === item.id) 
+        && !blockList?.includes(item.user?.id ?? "")
       );
       setPosts((prevPosts) => [...prevPosts, ...newPosts]);
       setPostNextToken(posts.data.postsByDate.nextToken);

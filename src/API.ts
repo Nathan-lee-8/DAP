@@ -921,6 +921,45 @@ export type DeleteNotificationSettingsInput = {
   id: string,
 };
 
+export type CreateBlockListInput = {
+  id?: string | null,
+  blockerID: string,
+  blockedID: string,
+  createdAt?: string | null,
+};
+
+export type ModelBlockListConditionInput = {
+  blockerID?: ModelIDInput | null,
+  blockedID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  and?: Array< ModelBlockListConditionInput | null > | null,
+  or?: Array< ModelBlockListConditionInput | null > | null,
+  not?: ModelBlockListConditionInput | null,
+  updatedAt?: ModelStringInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type BlockList = {
+  __typename: "BlockList",
+  id: string,
+  blockerID: string,
+  blockedID: string,
+  createdAt: string,
+  updatedAt: string,
+  owner?: string | null,
+};
+
+export type UpdateBlockListInput = {
+  id: string,
+  blockerID?: string | null,
+  blockedID?: string | null,
+  createdAt?: string | null,
+};
+
+export type DeleteBlockListInput = {
+  id: string,
+};
+
 export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
   email?: ModelStringInput | null,
@@ -1204,6 +1243,24 @@ export type ModelNotificationSettingsConnection = {
   nextToken?: string | null,
 };
 
+export type ModelBlockListFilterInput = {
+  id?: ModelIDInput | null,
+  blockerID?: ModelIDInput | null,
+  blockedID?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelBlockListFilterInput | null > | null,
+  or?: Array< ModelBlockListFilterInput | null > | null,
+  not?: ModelBlockListFilterInput | null,
+  owner?: ModelStringInput | null,
+};
+
+export type ModelBlockListConnection = {
+  __typename: "ModelBlockListConnection",
+  items:  Array<BlockList | null >,
+  nextToken?: string | null,
+};
+
 export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   email?: ModelSubscriptionStringInput | null,
@@ -1459,6 +1516,17 @@ export type ModelSubscriptionNotificationSettingsFilterInput = {
   owner?: ModelStringInput | null,
 };
 
+export type ModelSubscriptionBlockListFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  blockerID?: ModelSubscriptionIDInput | null,
+  blockedID?: ModelSubscriptionIDInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionBlockListFilterInput | null > | null,
+  or?: Array< ModelSubscriptionBlockListFilterInput | null > | null,
+  owner?: ModelStringInput | null,
+};
+
 export type CreateUserMutationVariables = {
   input: CreateUserInput,
   condition?: ModelUserConditionInput | null,
@@ -1539,6 +1607,19 @@ export type CreateUserFeedMutation = {
     id: string,
     userID: string,
     postID: string,
+    post?:  {
+      __typename: "Post",
+      id: string,
+      content: string,
+      postURL?: Array< string | null > | null,
+      groupID: string,
+      userID: string,
+      commentCount: number,
+      createdAt: string,
+      updatedAt: string,
+      userPostsId?: string | null,
+      owner?: string | null,
+    } | null,
     postCreatedAt: string,
     createdAt: string,
     updatedAt: string,
@@ -2335,6 +2416,57 @@ export type DeleteNotificationSettingsMutation = {
   } | null,
 };
 
+export type CreateBlockListMutationVariables = {
+  input: CreateBlockListInput,
+  condition?: ModelBlockListConditionInput | null,
+};
+
+export type CreateBlockListMutation = {
+  createBlockList?:  {
+    __typename: "BlockList",
+    id: string,
+    blockerID: string,
+    blockedID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type UpdateBlockListMutationVariables = {
+  input: UpdateBlockListInput,
+  condition?: ModelBlockListConditionInput | null,
+};
+
+export type UpdateBlockListMutation = {
+  updateBlockList?:  {
+    __typename: "BlockList",
+    id: string,
+    blockerID: string,
+    blockedID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type DeleteBlockListMutationVariables = {
+  input: DeleteBlockListInput,
+  condition?: ModelBlockListConditionInput | null,
+};
+
+export type DeleteBlockListMutation = {
+  deleteBlockList?:  {
+    __typename: "BlockList",
+    id: string,
+    blockerID: string,
+    blockedID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
 export type GetUserQueryVariables = {
   id: string,
 };
@@ -2699,6 +2831,21 @@ export type PostsByDateQuery = {
       id: string,
       content: string,
       postURL?: Array< string | null > | null,
+      user?:  {
+        __typename: "User",
+        id: string,
+        email: string,
+        firstname: string,
+        lastname: string,
+        fullname: string,
+        profileURL: string,
+        description?: string | null,
+        unreadChatCount: number,
+        unreadNotificationCount: number,
+        createdAt: string,
+        updatedAt: string,
+        owner?: string | null,
+      } | null,
       groupID: string,
       userID: string,
       commentCount: number,
@@ -3210,7 +3357,6 @@ export type GetChatQuery = {
     name: string,
     url?: string | null,
     isGroup: boolean,
-    createdAt: string,
     messages?:  {
       __typename: "ModelMessageConnection",
       items:  Array< {
@@ -3276,6 +3422,7 @@ export type GetChatQuery = {
       } | null >,
       nextToken?: string | null,
     } | null,
+    createdAt: string,
     updatedAt: string,
     owner?: string | null,
   } | null,
@@ -4219,6 +4366,92 @@ export type NotificationSettingsByUserQuery = {
       newMessage: boolean,
       joinChat: boolean,
       userID: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetBlockListQueryVariables = {
+  id: string,
+};
+
+export type GetBlockListQuery = {
+  getBlockList?:  {
+    __typename: "BlockList",
+    id: string,
+    blockerID: string,
+    blockedID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type ListBlockListsQueryVariables = {
+  filter?: ModelBlockListFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListBlockListsQuery = {
+  listBlockLists?:  {
+    __typename: "ModelBlockListConnection",
+    items:  Array< {
+      __typename: "BlockList",
+      id: string,
+      blockerID: string,
+      blockedID: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type BlockListByBlockerQueryVariables = {
+  blockerID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelBlockListFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type BlockListByBlockerQuery = {
+  blockListByBlocker?:  {
+    __typename: "ModelBlockListConnection",
+    items:  Array< {
+      __typename: "BlockList",
+      id: string,
+      blockerID: string,
+      blockedID: string,
+      createdAt: string,
+      updatedAt: string,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type BlockListByBlockedQueryVariables = {
+  blockedID: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelBlockListFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type BlockListByBlockedQuery = {
+  blockListByBlocked?:  {
+    __typename: "ModelBlockListConnection",
+    items:  Array< {
+      __typename: "BlockList",
+      id: string,
+      blockerID: string,
+      blockedID: string,
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
@@ -6027,6 +6260,57 @@ export type OnDeleteNotificationSettingsSubscription = {
       updatedAt: string,
       owner?: string | null,
     } | null,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnCreateBlockListSubscriptionVariables = {
+  filter?: ModelSubscriptionBlockListFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnCreateBlockListSubscription = {
+  onCreateBlockList?:  {
+    __typename: "BlockList",
+    id: string,
+    blockerID: string,
+    blockedID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnUpdateBlockListSubscriptionVariables = {
+  filter?: ModelSubscriptionBlockListFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnUpdateBlockListSubscription = {
+  onUpdateBlockList?:  {
+    __typename: "BlockList",
+    id: string,
+    blockerID: string,
+    blockedID: string,
+    createdAt: string,
+    updatedAt: string,
+    owner?: string | null,
+  } | null,
+};
+
+export type OnDeleteBlockListSubscriptionVariables = {
+  filter?: ModelSubscriptionBlockListFilterInput | null,
+  owner?: string | null,
+};
+
+export type OnDeleteBlockListSubscription = {
+  onDeleteBlockList?:  {
+    __typename: "BlockList",
+    id: string,
+    blockerID: string,
+    blockedID: string,
     createdAt: string,
     updatedAt: string,
     owner?: string | null,

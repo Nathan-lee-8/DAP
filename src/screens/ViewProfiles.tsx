@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Alert, 
 FlatList } from 'react-native';
 
 import client from '../client';
 import { getUser } from '../customGraphql/customQueries';
+import { createBlockList } from '../customGraphql/customMutations';
 import { User } from '../API';
 
+import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import UserPosts from '../components/UserPosts';
 import ProfilePicture from '../components/ImgComponent';
@@ -20,6 +22,7 @@ import Icon from '@react-native-vector-icons/ionicons';
  */
 const ViewProfiles = ( { route, navigation } : any) => {
   const targetUserID = route.params.userID;
+  const { currUser, setBlockList} = useContext(AuthContext)!;
   const [ targetUser, setTargetUser ] = useState<User>();
   const [ loading, setLoading ] = useState(true);
   const [ optionModalVisible, setOptionModalVisible ] = useState(false)
@@ -49,13 +52,49 @@ const ViewProfiles = ( { route, navigation } : any) => {
   };
 
   const handleOptionButton = (option: string) => {
+    setOptionModalVisible(false);
     if(option === "Report"){
-      setOptionModalVisible(false);
       setReportModalVisible(true);
     }else if(option === "Block"){
-      Alert.alert('Block not implemented yet ')
+      Alert.alert('Block', 'Are you sure you want to block this user?', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Block',
+          onPress: () => handleBlockMember(),
+        },
+      ]);
     }else{
       Alert.alert('Error', option + ' not implemented yet')
+    }
+  }
+
+  const handleBlockMember = async () => {
+    if(!targetUserID || !currUser){
+      Alert.alert('Error', 'Could not find user');
+      return;
+    }
+    try{
+      await client.graphql({
+        query: createBlockList,
+        variables:{
+          input: {
+            blockerID: currUser.id,
+            blockedID: targetUserID
+          },
+        },
+        authMode: 'userPool'
+      })
+      setBlockList(prev => 
+        prev.includes(targetUserID) ? prev : [...prev, targetUserID]
+      );
+
+      navigation.goBack();
+    } catch (err) {
+      console.log(err);
+      Alert.alert('Error', 'Could not block user');
     }
   }
 

@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
 
   /** chatRoom Styles   */
   messageHeaderContainer: {
-    paddingTop: Platform.OS === 'ios' ? 60 : 5,
+    paddingTop: Platform.OS === 'ios' ? 60 : 15,
     flexDirection: 'row',
     padding: Platform.OS === 'ios' ? 5 : 15,
     backgroundColor: colorPrimary,
@@ -692,6 +692,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     alignSelf: 'center',
     margin: 5,
+  },
+  redacted: {
+    alignSelf: 'flex-start',
+    padding: 10,
+    marginLeft: 5,
+    fontStyle: 'italic',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
   },
   timestamp: {
     fontSize: 9,

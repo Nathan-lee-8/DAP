@@ -88,6 +88,19 @@ export const createUserFeed = /* GraphQL */ `mutation CreateUserFeed(
     id
     userID
     postID
+    post {
+      id
+      content
+      postURL
+      groupID
+      userID
+      commentCount
+      createdAt
+      updatedAt
+      userPostsId
+      owner
+      __typename
+    }
     postCreatedAt
     createdAt
     updatedAt
@@ -925,4 +938,58 @@ export const deleteNotificationSettings = /* GraphQL */ `mutation DeleteNotifica
 ` as GeneratedMutation<
   APITypes.DeleteNotificationSettingsMutationVariables,
   APITypes.DeleteNotificationSettingsMutation
+>;
+export const createBlockList = /* GraphQL */ `mutation CreateBlockList(
+  $input: CreateBlockListInput!
+  $condition: ModelBlockListConditionInput
+) {
+  createBlockList(input: $input, condition: $condition) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateBlockListMutationVariables,
+  APITypes.CreateBlockListMutation
+>;
+export const updateBlockList = /* GraphQL */ `mutation UpdateBlockList(
+  $input: UpdateBlockListInput!
+  $condition: ModelBlockListConditionInput
+) {
+  updateBlockList(input: $input, condition: $condition) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateBlockListMutationVariables,
+  APITypes.UpdateBlockListMutation
+>;
+export const deleteBlockList = /* GraphQL */ `mutation DeleteBlockList(
+  $input: DeleteBlockListInput!
+  $condition: ModelBlockListConditionInput
+) {
+  deleteBlockList(input: $input, condition: $condition) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteBlockListMutationVariables,
+  APITypes.DeleteBlockListMutation
 >;
