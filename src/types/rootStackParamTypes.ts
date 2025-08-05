@@ -27,8 +27,7 @@ export type GlobalParamList = {
     ProfileSetting: undefined;
     NotificationSettings: undefined;
     ReportScreen: undefined;
-    TermsConditions: undefined;
-    PrivacyPolicy: undefined;
+    TermsConditions: {section: string};
 }
 
 export type LoggedInParamList = {

@@ -38,7 +38,6 @@ import ProfileSettings from '../screens/SettingsScreens/ProfileSettings';
 import NotificationSettings from '../screens/SettingsScreens/NotificationSettings';
 import ReportScreen from '../screens/SettingsScreens/ReportScreen';
 import TermsConditions from '../screens/SettingsScreens/TermsConditions';
-import PrivacyPolicy from '../screens/SettingsScreens/PrivacyPolicy';
 
 const SignInStack = createNativeStackNavigator();
 const GlobalStack = createNativeStackNavigator();
@@ -84,7 +83,6 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="NotificationSettings" component={NotificationSettings} options={{title: 'Notification Settings'}}/>
           <GlobalStack.Screen name="Report" component={ReportScreen} options={{title: 'Report a problem'}}/>
           <GlobalStack.Screen name="Terms" component={TermsConditions} options={{title: 'Terms and Conditions'}}/>
-          <GlobalStack.Screen name="Privacy" component={PrivacyPolicy} options={{title: 'Privacy Policy'}}/>
         </GlobalStack.Navigator>
       ) : isSignedIn && !currUser ? ( //Screens User has not created an account
         <SignInStack.Navigator initialRouteName='CreateUser' >

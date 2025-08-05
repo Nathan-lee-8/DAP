@@ -1,15 +1,14 @@
-import { View, Text } from 'react-native';
+import { WebView } from "react-native-webview";
 
-import styles from '../../styles/Styles';
-
-const TermsConditions = () => {
-
-  return(
-    <View style={styles.container}>
-      <Text style={styles.title}>In progress</Text>
-      
-    </View>
-  )
+const PrivacyPolicy = (route: any) => {
+  const section = route.route.params.section;
+  const uri = `https://daplegal.s3.us-west-2.amazonaws.com/legal.html#${section}`;
+  return (
+    <WebView 
+      source={{ uri: uri}} 
+      style={{ flex: 1 }}
+    />
+  );
 }
 
-export default TermsConditions;
+export default PrivacyPolicy;

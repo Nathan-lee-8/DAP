@@ -28,12 +28,21 @@ const ProfileSettings = ({navigation} : any) => {
           <Text style={styles.notificationSettingText}>Report a Problem</Text>
           <Icon name="arrow-forward" size={20} color="black"/>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.toggleContainer} onPress={() => navigation.navigate('Privacy')}>
+        <TouchableOpacity style={styles.toggleContainer} 
+          onPress={() => navigation.navigate('Terms', {section: 'terms-of-service'})}
+        >
+          <Text style={styles.notificationSettingText}>Terms and Conditions</Text>
+          <Icon name="arrow-forward" size={20} color="black"/>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.toggleContainer} 
+          onPress={() => navigation.navigate('Terms', {section: 'privacy-policy'})}>
           <Text style={styles.notificationSettingText}>Privacy Policy</Text>
           <Icon name="arrow-forward" size={20} color="black"/>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.toggleContainer} onPress={() => navigation.navigate('Terms')}>
-          <Text style={styles.notificationSettingText}>Terms and Conditions</Text>
+        <TouchableOpacity style={styles.toggleContainer} 
+          onPress={() => navigation.navigate('Terms', {section: 'community-guidelines'})}
+        >
+          <Text style={styles.notificationSettingText}>Community Guidelines</Text>
           <Icon name="arrow-forward" size={20} color="black"/>
         </TouchableOpacity>
         <TouchableOpacity style={styles.toggleContainer} onPress={() => logout()}>
