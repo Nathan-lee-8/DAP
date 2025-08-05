@@ -28,8 +28,7 @@ const ViewGroupMembers = ( {route, navigation} : any ) => {
   const [ reportModalVisible, setReportModalVisible ] = useState(false);
   const [ roleModalVisible, setRoleModalVisible ] = useState(false);
   const [ roleOptions, setRoleOptions ] = useState(['Owner', 'Admin', 'Member'])
-  const authContext = useContext(AuthContext);
-  const currUser = authContext?.currUser;
+  const { currUser, blockList } = useContext(AuthContext)!;
   if(!currUser) return;
   const myUserGroup = userGroups.find((item: any) => item?.userID === currUser.id);
 
@@ -188,18 +187,29 @@ const ViewGroupMembers = ( {route, navigation} : any ) => {
             disable = false;
           }
           return(
-            <TouchableOpacity style={styles.listMemberContainer} 
-              onPress={() => handleUserPressed(item)}
-              disabled={disable}
-            >
-              <ImgComponent uri={item?.user?.profileURL || 'defaultUser'}/>
-              <View style={styles.userInfoContainer}>
-                <Text style={styles.postAuthor}>
-                  {item?.user?.firstname} {item?.user?.lastname}
-                </Text>
+            !blockList.includes(item.userID) ? (
+              <TouchableOpacity style={styles.listMemberContainer} 
+                onPress={() => handleUserPressed(item)}
+                disabled={disable}
+              >
+                <ImgComponent uri={item?.user?.profileURL || 'defaultUser'}/>
+                <View style={styles.userInfoContainer}>
+                  <Text style={styles.postAuthor}>
+                    {item?.user?.firstname} {item?.user?.lastname}
+                  </Text>
+                </View>
+                <Text style={styles.roleText}>{item.role}</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.listMemberContainer}>
+                <ImgComponent uri={'defaultUser'}/>
+                <View style={styles.userInfoContainer}>
+                  <Text style={styles.postAuthor}>
+                    Blocked User
+                  </Text>
+                </View>
               </View>
-              <Text style={styles.roleText}>{item.role}</Text>
-            </TouchableOpacity>
+            )
           )
         }}
       />

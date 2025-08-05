@@ -9,7 +9,8 @@ import client from '../client';
 import { blockListByBlocked, blockListByBlocker, tokensByID, userByEmail 
 } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
-import { onUpdateUser } from '../customGraphql/customSubscriptions';
+import { onUpdateUser, onCreateBlockList, onDeleteBlockList
+ } from '../customGraphql/customSubscriptions';
 import { User } from '../API';
 import wsClient from '../components/webSocket';
 
@@ -76,6 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   //fetch blocked users whenever userID updates
   useEffect(() => {
     if(!currUser) return;
+
     const getBlockList = async () => {
       const blockedData = await client.graphql({
         query: blockListByBlocker,
@@ -104,6 +106,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     getBlockList();
+    
+    let timeout: NodeJS.Timeout;
+    const handleUpdate = () => {
+      clearTimeout(timeout);
+      timeout = setTimeout(getBlockList, 300);
+    }
+
+    //subsription to fetch blocklist when curr user is blocked or unblocked
+    const onBlocked = client.graphql({
+      query: onCreateBlockList,
+      variables: {
+        filter: { blockedID: { eq: currUser.id } }
+      },
+      authMode: 'userPool'
+    }).subscribe({
+      next: handleUpdate
+    });
+
+    const onUnblocked = client.graphql({
+      query: onDeleteBlockList,
+      variables: {
+        filter: { blockedID: { eq: currUser.id } }
+      },
+      authMode: 'userPool'
+    }).subscribe({
+      next: handleUpdate
+    })
+
+    return () => {
+      onBlocked.unsubscribe();
+      onUnblocked.unsubscribe();
+    }
   }, [currUser?.id])
 
   //trigger to get user attributes
