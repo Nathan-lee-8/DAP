@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useMemo, useEffect } from "react";
 import { View, Text, FlatList, Modal, TouchableOpacity, Alert } from "react-native";
 import styles from '../styles/Styles';
 
@@ -28,9 +28,13 @@ const ChatMembers = ( {route, navigation} : any ) => {
   const [ roleModalVisible, setRoleModalVisible ] = useState(false);
   const [ roleOptions, setRoleOptions ] = useState(['Owner', 'Admin', 'Member'])
   const currUser = useContext(AuthContext)?.currUser;
+  const blockList = useContext(AuthContext)?.blockList;
   if(!currUser) return;
-  const myUserChat = 
-    userChats.find((userChat: UserChat) => userChat.userID === currUser.id);
+
+  const myUserChat = useMemo(
+    () => userChats.find((userChat: UserChat) => userChat.userID === currUser.id),
+    [userChats, currUser.id]
+  );
 
   //When user long presses on a participant: sets options for user and then displays 
   //options. Either View Profile, Edit Roles, Remove User or report based on 
@@ -147,18 +151,29 @@ const ChatMembers = ( {route, navigation} : any ) => {
             disable = false;
           }
           return (
-            <TouchableOpacity style={styles.listMemberContainer} 
-              onPress={() => handleUserPress(item)}
-              disabled= {disable}
-            >
-              <ImgComponent uri={ item.user?.profileURL || 'defaultUser'}/>
-              <View style={styles.userInfoContainer}>
-                <Text style={styles.postAuthor}>
-                  {item.user?.firstname + " " + item.user?.lastname}
+            !blockList?.includes(item.userID) ? (
+              <TouchableOpacity style={styles.listMemberContainer} 
+                onPress={() => handleUserPress(item)}
+                disabled= {disable}
+              >
+                <ImgComponent uri={ item.user?.profileURL || 'defaultUser'}/>
+                <View style={styles.userInfoContainer}>
+                  <Text style={styles.postAuthor}>
+                    {item.user?.firstname + " " + item.user?.lastname}
+                    </Text>
+                </View>
+                  <Text style={styles.roleText}>{item.role}</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.listMemberContainer}>
+                <ImgComponent uri={'defaultUser'}/>
+                <View style={styles.userInfoContainer}>
+                  <Text style={styles.postAuthor}>
+                    Blocked User
                   </Text>
+                </View>
               </View>
-                <Text style={styles.roleText}>{item.role}</Text>
-            </TouchableOpacity>
+            )
           )
         }}
       />

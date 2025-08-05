@@ -29,3 +29,39 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
   APITypes.OnUpdateUserSubscriptionVariables,
   APITypes.OnUpdateUserSubscription
 >;
+export const onCreateBlockList = /* GraphQL */ `subscription OnCreateBlockList(
+  $filter: ModelSubscriptionBlockListFilterInput
+  $owner: String
+) {
+  onCreateBlockList(filter: $filter, owner: $owner) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateBlockListSubscriptionVariables,
+  APITypes.OnCreateBlockListSubscription
+>;
+export const onDeleteBlockList = /* GraphQL */ `subscription OnDeleteBlockList(
+  $filter: ModelSubscriptionBlockListFilterInput
+  $owner: String
+) {
+  onDeleteBlockList(filter: $filter, owner: $owner) {
+    id
+    blockerID
+    blockedID
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteBlockListSubscriptionVariables,
+  APITypes.OnDeleteBlockListSubscription
+>;
