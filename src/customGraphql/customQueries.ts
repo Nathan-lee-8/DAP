@@ -632,6 +632,12 @@ export const blockListByBlocker = /* GraphQL */ `query BlockListByBlocker(
       id
       blockerID
       blockedID
+      blockedUser{
+        id
+        firstname
+        lastname
+        profileURL
+      }
       createdAt
       updatedAt
       owner

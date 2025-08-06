@@ -260,5 +260,6 @@ type BlockList @model @auth(
   id: ID!
   blockerID: ID! @index(name: "blockListByBlocker", queryField: "blockListByBlocker")
   blockedID: ID! @index(name: "blockListByBlocked", queryField: "blockListByBlocked")
+  blockedUser: User @hasOne(fields: ["blockedID"])
   createdAt: AWSDateTime!
 }
