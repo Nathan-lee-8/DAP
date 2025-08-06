@@ -3,7 +3,8 @@ import { View, Text, FlatList, Alert, TouchableOpacity } from 'react-native';
 
 import client from '../../client'; 
 import { blockListByBlocker } from '../../customGraphql/customQueries';
-import { User } from '../../API';
+import { deleteBlockList } from '../../customGraphql/customMutations';
+import { BlockList } from '../../API';
 
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/Styles';
@@ -11,7 +12,7 @@ import ImgComponent from '../../components/ImgComponent';
 
 const PrivacyPolicy = () => {
   const currUser = useContext(AuthContext)?.currUser
-  const [ blockedUsers, setBlockedUsers ] = useState<User[]>([]);
+  const [ blockedUsers, setBlockedUsers ] = useState<BlockList[]>([]);
   if(!currUser) return (
     <Text style={styles.noResultsMsg}>Error: There was an issue loading blocked users</Text>
   )
@@ -26,16 +27,32 @@ const PrivacyPolicy = () => {
         authMode: 'userPool'
       })
       const blockItems = blockedData.data.blockListByBlocker.items || [];
-      const blockedUsers = blockItems.map((item => item.blockedUser))
-        .filter(user => user !== null && user !== undefined)
-      if(blockedUsers) setBlockedUsers(blockedUsers);
+      if(blockedUsers) setBlockedUsers(blockItems);
     }
     getblockedUsers();
   }, [currUser.id]);
 
   //Update to 'unblock' user 
-  const handleUserPressed = (user: User) => {
-    Alert.alert('Error', 'unblock not implemented yet')
+  const handleUserPressed = (unblock: BlockList) => {
+    Alert.alert("Unblock", "Would you like to unblock this User?", [
+      { text: "Cancel" },
+      { text: "Confirm", onPress: async () => {
+        try{ 
+          client.graphql({
+            query: deleteBlockList,
+            variables: {
+              input: {
+                id: unblock.id
+              }
+            },
+            authMode: 'userPool'
+          })
+          Alert.alert('Success', 'Unblocked user')
+        } catch {
+          Alert.alert('Error', 'There was and issue unblocking this user.')
+        }
+      }}
+    ]);
   }
 
   return (
@@ -44,12 +61,12 @@ const PrivacyPolicy = () => {
         data={blockedUsers}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.listMemberContainer} 
-            onPress={() => handleUserPressed(item)}
+            onPress={() => handleUserPressed(item || undefined)}
           >
-            <ImgComponent uri={item?.profileURL || 'defaultUser'}/>
+            <ImgComponent uri={item?.blockedUser?.profileURL || 'defaultUser'}/>
             <View style={styles.userInfoContainer}>
               <Text style={styles.postAuthor}>
-                {item?.firstname} {item?.lastname}
+                {item?.blockedUser?.firstname} {item?.blockedUser?.lastname}
               </Text>
             </View>
           </TouchableOpacity>

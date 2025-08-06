@@ -416,15 +416,21 @@ export const createBlockList = /* GraphQL */ `mutation CreateBlockList(
 ) {
   createBlockList(input: $input, condition: $condition) {
     id
-    blockerID
-    blockedID
-    createdAt
-    updatedAt
-    owner
-    __typename
   }
 }
 ` as GeneratedMutation<
   APITypes.CreateBlockListMutationVariables,
   APITypes.CreateBlockListMutation
+>;
+export const deleteBlockList = /* GraphQL */ `mutation DeleteBlockList(
+  $input: DeleteBlockListInput!
+  $condition: ModelBlockListConditionInput
+) {
+  deleteBlockList(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteBlockListMutationVariables,
+  APITypes.DeleteBlockListMutation
 >;
