@@ -45,6 +45,12 @@ const ProfileSettings = ({navigation} : any) => {
           <Text style={styles.notificationSettingText}>Community Guidelines</Text>
           <Icon name="arrow-forward" size={20} color="black"/>
         </TouchableOpacity>
+        <TouchableOpacity style={styles.toggleContainer} 
+          onPress={() => navigation.navigate('BlockedUsers')}
+        >
+          <Text style={styles.notificationSettingText}>Blocked Users</Text>
+          <Icon name="arrow-forward" size={20} color="black"/>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.toggleContainer} onPress={() => logout()}>
           <Text style={styles.notificationSettingText}>Logout</Text>
         </TouchableOpacity>

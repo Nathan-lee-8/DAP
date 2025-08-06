@@ -28,6 +28,7 @@ export type GlobalParamList = {
     NotificationSettings: undefined;
     ReportScreen: undefined;
     TermsConditions: {section: string};
+    BlockedUsers: undefined;
 }
 
 export type LoggedInParamList = {

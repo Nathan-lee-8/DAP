@@ -2110,6 +2110,21 @@ export const blockListByBlocker = /* GraphQL */ `query BlockListByBlocker(
       id
       blockerID
       blockedID
+      blockedUser{
+        id
+        email
+        firstname
+        lastname
+        fullname
+        profileURL
+        description
+        unreadChatCount
+        unreadNotificationCount
+        createdAt
+        updatedAt
+        owner
+        __typename
+      }
       createdAt
       updatedAt
       owner
