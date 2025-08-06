@@ -1072,7 +1072,6 @@ const styles = StyleSheet.create({
   },
   messageUserButton: {
     marginTop: 'auto',
-    width: width * 0.18,
     borderWidth: 1,
     borderColor: '#888',
     padding: 5,
