@@ -112,7 +112,9 @@ const Search = ( {navigation} : any ) => {
           <GroupSearch />
         ) : null}
         <View style={styles.searchTermList}>
-          <TouchableOpacity style={styles.searchTermContainer} onPress={() => setSelected(!selected)}>
+          <TouchableOpacity style={styles.searchTermContainer} 
+            onPress={() => setSelected(!selected)}
+          >
             <Text style={{marginHorizontal: 5}}>{searchTerm}</Text>
             <Icon name={selected ? 'chevron-down' : 'chevron-up'} size={15} />
           </TouchableOpacity>

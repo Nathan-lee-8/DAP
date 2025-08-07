@@ -23,8 +23,7 @@ const HomeScreen = ( {navigation} : any) => {
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ loading, setLoading ] = useState(false);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
-  const currUser = useContext(AuthContext)?.currUser;
-  const blockList = useContext(AuthContext)?.blockList;
+  const { blockList, currUser } = useContext(AuthContext)!;
 
   const firstRender = useRef(true);
   //Retreives Newsfeed every time screen is refocused and sets loading on
@@ -32,6 +31,7 @@ const HomeScreen = ( {navigation} : any) => {
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
+    console.log(blockList);
       const loadInitialData = async () => {
         if(firstRender.current){
           setLoading(true);

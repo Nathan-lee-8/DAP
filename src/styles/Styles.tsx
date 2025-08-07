@@ -352,7 +352,8 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     backgroundColor: colorPrimary,
     margin: 20,
-    borderWidth: 1
+    borderWidth: 1,
+    borderColor: '#ccc'
   },
   closeReportModalButton: {
     position: 'absolute',
@@ -1144,6 +1145,53 @@ const styles = StyleSheet.create({
   notificationSettingText:{
     marginRight: 'auto',
     fontSize: 16,
+  },
+
+  /** Report Section */
+  dropdownContainer: {
+    flexDirection: 'row',
+    margin: 5,
+    marginHorizontal: 20,
+    marginBottom: 10,
+    padding: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: colorPrimary
+  },
+  dropdownItem: {
+    marginLeft: 20,
+    padding: 5,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: colorPrimary,
+  },
+  dropDownSelected: {
+    marginLeft: 20,
+    padding: 5,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: 'grey',
+  },
+  dropdownList: {
+    position: 'absolute',
+    top: 185,
+    left: 0,
+    zIndex: 999,
+    elevation: 10,  
+  },
+  reportItemNameInput: {
+    justifyContent: 'center',
+    fontSize: 14,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    padding: 5,
+    marginTop: 10,
+    marginHorizontal: 20,
+    backgroundColor: colorPrimary
   },
 });
 

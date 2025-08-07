@@ -90,10 +90,9 @@ const ViewProfiles = ( { route, navigation } : any) => {
       setBlockList(prev => 
         prev.includes(targetUserID) ? prev : [...prev, targetUserID]
       );
-
       navigation.goBack();
-    } catch (err) {
-      console.log(err);
+      Alert.alert('Success', 'User blocked successfully');
+    } catch {
       Alert.alert('Error', 'Could not block user');
     }
   }
