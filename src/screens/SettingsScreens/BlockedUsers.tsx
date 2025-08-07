@@ -11,7 +11,8 @@ import styles from '../../styles/Styles';
 import ImgComponent from '../../components/ImgComponent';
 
 const PrivacyPolicy = () => {
-  const currUser = useContext(AuthContext)?.currUser
+  const currUser = useContext(AuthContext)?.currUser;
+  const setBlockList = useContext(AuthContext)?.setBlockList;
   const [ blockedUsers, setBlockedUsers ] = useState<BlockList[]>([]);
   if(!currUser) return (
     <Text style={styles.noResultsMsg}>Error: There was an issue loading blocked users</Text>
@@ -47,7 +48,13 @@ const PrivacyPolicy = () => {
             },
             authMode: 'userPool'
           })
-          Alert.alert('Success', 'Unblocked user')
+          Alert.alert('Success', 'Unblocked user');
+          if(setBlockList){
+            setBlockList((prev) => 
+              prev.filter((blockedID) => blockedID !== unblock.blockedUser?.id)
+            );
+          }
+          setBlockedUsers((prev) => prev.filter((item) => item.id !== unblock.id));
         } catch {
           Alert.alert('Error', 'There was and issue unblocking this user.')
         }

@@ -52,7 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   //Sets current user data whenever userEmail is set or custom triggered by fetchcounter
-  //Also fetches blocklist for all blocked users and users who blocked currUser
   useEffect(() => {
     if(!userEmail || userEmail === '') return;
     const getUserAttributes = async () => {
@@ -74,7 +73,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     getUserAttributes();
   }, [userEmail, fetchCounter]);
 
-  //fetch blocked users whenever userID updates
+  //fetch blocked users whenever userID updates and add subscription to listen for 
+  //when users block or unblock currUser
   useEffect(() => {
     if(!currUser) return;
 
