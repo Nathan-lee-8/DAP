@@ -7,7 +7,18 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
 };
-
+export const moderateText = /* GraphQL */ `query ModerateText($text: String!) {
+  moderateText(text: $text) {
+    flagged
+    categories
+    category_scores
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ModerateTextQueryVariables,
+  APITypes.ModerateTextQuery
+>;
 export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
   getUser(id: $id) {
     id

@@ -263,3 +263,14 @@ type BlockList @model @auth(
   blockedUser: User @hasOne(fields: ["blockedID"])
   createdAt: AWSDateTime!
 }
+
+type Query {
+  moderateText(text: String!): ModerationResult
+    @function(name: "textModeration-dev")
+}
+
+type ModerationResult {
+  flagged: Boolean
+  categories: AWSJSON
+  category_scores: AWSJSON
+}

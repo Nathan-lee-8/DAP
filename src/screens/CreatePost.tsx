@@ -5,6 +5,7 @@ import { Video } from 'react-native-video';
 
 import client from '../client';
 import { createPost } from '../customGraphql/customMutations';
+import { moderateText } from '../customGraphql/customQueries';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
@@ -82,6 +83,21 @@ const CreatePost = ( {route, navigation}: any ) => {
     }
   }
 
+  const textModeration = async (name: string) => {
+    try{
+      const data = await client.graphql({
+        query: moderateText,
+        variables:{
+          text: name,
+        }
+      })
+      console.log('1.', data.data.moderateText)
+    
+    } catch (err) {
+      console.log('Error', err);
+    }
+  }
+
   //uploads all uri's in media to s3 and returns new s3 filepaths 
   const handleUploadFilepaths = async () => {
     try{
@@ -142,6 +158,11 @@ const CreatePost = ( {route, navigation}: any ) => {
             </View>
           )}
         />
+        <TouchableOpacity style={[styles.buttonBlack]} 
+          onPress={() => textModeration('text')}
+        >
+          <Text style={styles.buttonTextWhite}>test moderation</Text>
+        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   )

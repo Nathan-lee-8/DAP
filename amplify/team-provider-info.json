@@ -20,6 +20,13 @@
       },
       "storage": {
         "commHubStorage": {}
+      },
+      "function": {
+        "textModeration": {
+          "deploymentBucketName": "amplify-commhub-dev-db443-deployment",
+          "s3Key": "amplify-builds/textModeration-4b57466e50565772682b-build.zip",
+          "openAiKey": "OPAN_AI_KEY"
+        }
       }
     }
   },
