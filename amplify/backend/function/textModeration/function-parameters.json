@@ -1,0 +1,9 @@
+{
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "openAiKey",
+      "environmentVariableName": "OPEN_AI_KEY"
+    }
+  ]
+}

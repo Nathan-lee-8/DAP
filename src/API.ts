@@ -944,8 +944,8 @@ export type BlockList = {
   id: string,
   blockerID: string,
   blockedID: string,
-  createdAt: string,
   blockedUser?: User | null,
+  createdAt: string,
   updatedAt: string,
   owner?: string | null,
 };
@@ -959,6 +959,13 @@ export type UpdateBlockListInput = {
 
 export type DeleteBlockListInput = {
   id: string,
+};
+
+export type ModerationResult = {
+  __typename: "ModerationResult",
+  flagged?: boolean | null,
+  categories?: string | null,
+  category_scores?: string | null,
 };
 
 export type ModelUserFilterInput = {
@@ -2465,6 +2472,19 @@ export type DeleteBlockListMutation = {
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
+  } | null,
+};
+
+export type ModerateTextQueryVariables = {
+  text: string,
+};
+
+export type ModerateTextQuery = {
+  moderateText?:  {
+    __typename: "ModerationResult",
+    flagged?: boolean | null,
+    categories?: string | null,
+    category_scores?: string | null,
   } | null,
 };
 

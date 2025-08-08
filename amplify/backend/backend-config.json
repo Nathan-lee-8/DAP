@@ -65,6 +65,39 @@
       "service": "Cognito"
     }
   },
+  "function": {
+    "textModeration": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_textModeration_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "textModeration"
+        }
+      ]
+    },
+    "AMPLIFY_function_textModeration_openAiKey": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "textModeration"
+        }
+      ]
+    },
+    "AMPLIFY_function_textModeration_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "textModeration"
+        }
+      ]
+    }
+  },
   "storage": {
     "commHubStorage": {
       "dependsOn": [],
