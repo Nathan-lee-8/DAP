@@ -1,0 +1,39 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-commhub-dev-db443-authRole",
+      "UnauthRoleArn": "arn:aws:iam::423623855943:role/amplify-commhub-dev-db443-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::423623855943:role/amplify-commhub-dev-db443-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-commhub-dev-db443-deployment",
+      "UnauthRoleName": "amplify-commhub-dev-db443-unauthRole",
+      "StackName": "amplify-commhub-dev-db443",
+      "StackId": "arn:aws:cloudformation:us-west-2:423623855943:stack/amplify-commhub-dev-db443/19d56b10-a08b-11ef-849f-0ab54cc0ee07",
+      "AmplifyAppId": "d2o1d4k92u2uqi"
+    },
+    "categories": {
+      "auth": {
+        "commHub": {}
+      },
+      "api": {
+        "commhub": {}
+      },
+      "storage": {
+        "commHubStorage": {}
+      },
+      "function": {
+        "textModeration": {
+          "deploymentBucketName": "amplify-commhub-dev-db443-deployment",
+          "s3Key": "amplify-builds/textModeration-5157725857696a774b77-build.zip"
+        }
+      }
+    }
+  },
+  "dapdev": {
+    "categories": {
+      "auth": {
+        "commHub": {}
+      }
+    }
+  }
+}
