@@ -5,6 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../../client'
 import { updateUser } from '../../customGraphql/customMutations';
+import { moderateText } from '../../customGraphql/customQueries';
 
 import { AuthContext } from '../../context/AuthContext';
 import { imagePicker, getImgURI } from '../../components/addImg';
@@ -54,6 +55,29 @@ const EditProfile = ({navigation}: any) => {
       setEditsOn(false);
       return;
     };
+
+    //moderate text for user bio if bio is updated 
+    if(description !== currUser.description){ //prevent overloading calls
+      const flagged = await textModeration(description || "");
+      if(flagged){
+        Alert.alert('Warning', 'Bio is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        return;
+      }
+    }
+
+    //moderate text for username if updated
+    if(currUser.firstname !== tempFirst || currUser.lastname !== tempLast){
+      const flagged = await textModeration(tempFirst + tempLast);
+      if(flagged){
+        Alert.alert('Warning', 'Username is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        return;
+      }
+    }
+
     try{
       setLoading(true);
       var tempProfileURL = tempURL;
@@ -102,6 +126,24 @@ const EditProfile = ({navigation}: any) => {
       setLoading(false);
     }
   };
+
+  //uses openAI textmoderation to moderate text and return whether that text should be 
+  //flagged or not
+  const textModeration = async (name: string) => {
+    try{
+      const data = await client.graphql({
+        query: moderateText,
+        variables:{
+          text: name,
+        }
+      })
+      const modResults = data.data.moderateText;
+      return modResults ? modResults.flagged : true;
+    } catch (err) {
+      console.log('Error', err);
+    }
+    return true;
+  }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (

@@ -51,11 +51,19 @@ const CreatePost = ( {route, navigation}: any ) => {
     setMedia(media.filter((file) => file.uri !== item.uri));
   }
 
-  //takes media and uploads to S3 before creating the post with associated filepaths
-  //and content. Returns to Group page.
+  //ensures user enters either media or text before allowing post. Moderates text using openai
+  //moderation then takes media and uploads to S3 before creating the post with associated 
+  //filepaths and content. Returns to Group page.
   const sendPost = async () => {
     if(content === '' && media.length === 0){
       Alert.alert('Error', 'Post must have content');
+      return;
+    }
+    const flagged = await textModeration(content);
+    if(flagged){
+      Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
+        'sensitive content and review our community guidelines before posting.'
+      )
       return;
     }
     setLoading(true);
@@ -83,6 +91,8 @@ const CreatePost = ( {route, navigation}: any ) => {
     }
   }
 
+  //uses openAI textmoderation to moderate text and return whether that text should be 
+  //flagged or not
   const textModeration = async (name: string) => {
     try{
       const data = await client.graphql({
@@ -91,11 +101,12 @@ const CreatePost = ( {route, navigation}: any ) => {
           text: name,
         }
       })
-      console.log('1.', data.data.moderateText)
-    
+      const modResults = data.data.moderateText;
+      return modResults ? modResults.flagged : true;
     } catch (err) {
       console.log('Error', err);
     }
+    return true;
   }
 
   //uploads all uri's in media to s3 and returns new s3 filepaths 
@@ -158,11 +169,6 @@ const CreatePost = ( {route, navigation}: any ) => {
             </View>
           )}
         />
-        <TouchableOpacity style={[styles.buttonBlack]} 
-          onPress={() => textModeration('text')}
-        >
-          <Text style={styles.buttonTextWhite}>test moderation</Text>
-        </TouchableOpacity>
       </View>
     </TouchableWithoutFeedback>
   )

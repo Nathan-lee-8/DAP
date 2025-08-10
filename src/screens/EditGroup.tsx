@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, Alert, TextInput,
 
 import client from '../client';
 import  { updateGroup } from '../customGraphql/customMutations';
+import { moderateText } from '../customGraphql/customQueries';
 
 import { AuthContext } from '../context/AuthContext';
 import ImgComponent from '../components/ImgComponent';
@@ -30,6 +31,35 @@ const EditGroup = ( {route, navigation} : any ) => {
   //If filepath is not matching, uploads to s3 and returns new filepath. Then checks if name, 
   //description, image, or privacy is changed and updates the group. Navigates back to group.
   const handleEditGroup = async () => {
+    //show success message if user saves with no updates 
+    if(name === group.groupName && description === group.description 
+      && filepath === group.groupURL && group.type === type
+    ){
+      Alert.alert('Success', 'Group updated successfully')
+      return;
+    }
+
+    //moderate groupName if updated
+    if(name !== group.groupName){
+      const flagged = await textModeration(name);
+      if(flagged){
+        Alert.alert('Warning', 'Group name is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        return;
+      }
+    }
+    //moderate description if updated
+    if(description !== group.description){
+      const descriptionFlagged = await textModeration(description);
+      if(descriptionFlagged){
+        Alert.alert('Warning', 'Description is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        return;
+      }
+    }
+
     try{
       setLoading(true);
       var currURI = filepath;
@@ -74,6 +104,24 @@ const EditGroup = ( {route, navigation} : any ) => {
       return;
     };
     setFilepath(uri);      
+  }
+
+  //uses openAI textmoderation to moderate text and return whether that text should be 
+  //flagged or not
+  const textModeration = async (name: string) => {
+    try{
+      const data = await client.graphql({
+        query: moderateText,
+        variables:{
+          text: name,
+        }
+      })
+      const modResults = data.data.moderateText;
+      return modResults ? modResults.flagged : true;
+    } catch (err) {
+      console.log('Error', err);
+    }
+    return true;
   }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />

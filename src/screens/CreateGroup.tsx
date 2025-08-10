@@ -3,8 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Platform, Alert,
   ActivityIndicator, KeyboardAvoidingView, ScrollView } from 'react-native';
 
 import client from '../client';
-import { createUserGroup, createGroup, deleteGroup, updateGroup, 
-  createNotification } from '../customGraphql/customMutations';
+import { createUserGroup, createGroup, deleteGroup, updateGroup, createNotification
+ } from '../customGraphql/customMutations';
+import { moderateText } from '../customGraphql/customQueries';
 import { User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
@@ -36,6 +37,24 @@ const CreateGroup = ({ navigation }: any) => {
   //Triggered when CreateGroup Button Pressed. Takes user inputs and creates a group,
   // sending notifications to each member then navigates to newly created group 
   const addGroup = async () => {
+    //check if groupname is flagged
+    const flagged = await textModeration(groupName);
+    if(flagged){
+      Alert.alert('Warning', 'Group name is flagged for sensitive content. Please remove ' + 
+        'sensitive content and review our community guidelines before posting.'
+      )
+      return;
+    }
+    //check if description is flagged 
+    if(description !== ''){
+      const descriptionFlagged = await textModeration(description);
+      if(descriptionFlagged){
+        Alert.alert('Warning', 'Description is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        return;
+      }
+    }
     if(groupName.trim() === ''){
       Alert.alert('Error', 'Please enter a group name before creating a group');
       return;
@@ -178,11 +197,25 @@ const CreateGroup = ({ navigation }: any) => {
     setGroupURL(uri);
   }
 
-  if(loading) {
-    return(
-      <ActivityIndicator size="large" color="#0000ff" />
-    )
+  //uses openAI textmoderation to moderate text and return whether that text should be 
+  //flagged or not
+  const textModeration = async (name: string) => {
+    try{
+      const data = await client.graphql({
+        query: moderateText,
+        variables:{
+          text: name,
+        }
+      })
+      const modResults = data.data.moderateText;
+      return modResults ? modResults.flagged : true;
+    } catch (err) {
+      console.log('Error', err);
+    }
+    return true;
   }
+
+  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   //Second page to add Users to group
   if(goNext) {

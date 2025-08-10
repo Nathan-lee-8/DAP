@@ -1,11 +1,10 @@
 import { useContext, useState } from 'react';
 import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, Platform,
-  TouchableWithoutFeedback, KeyboardAvoidingView, 
-  ActivityIndicator} from 'react-native';
+  TouchableWithoutFeedback, KeyboardAvoidingView, ActivityIndicator} from 'react-native';
 
 import client from '../../client';
-import { createUser, createNotificationSettings
- } from '../../customGraphql/customMutations';
+import { createUser, createNotificationSettings } from '../../customGraphql/customMutations';
+import { moderateText } from '../../customGraphql/customQueries';
 
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/SignInScreenStyles';
@@ -32,6 +31,15 @@ const CreateUser = () => {
       Alert.alert('Error', 'Please enter your last name.');
       return;
     }
+
+    const flagged = await textModeration(firstname + lastname);
+    if(flagged){
+      Alert.alert('Warning', 'Username is flagged for sensitive content. Please remove ' + 
+        'sensitive content and review our community guidelines before posting.'
+      )
+      return;
+    }
+
     setLoading(true);
     try{
       const user = await client.graphql({
@@ -74,6 +82,24 @@ const CreateUser = () => {
       setLoading(false);
     }
   };
+
+  //uses openAI textmoderation to moderate text and return whether that text should be 
+  //flagged or not
+  const textModeration = async (name: string) => {
+    try{
+      const data = await client.graphql({
+        query: moderateText,
+        variables:{
+          text: name,
+        }
+      })
+      const modResults = data.data.moderateText;
+      return modResults ? modResults.flagged : true;
+    } catch (err) {
+      console.log('Error', err);
+    }
+    return true;
+  }
 
   if(loading) return <ActivityIndicator size="small" color="#0000ff" />
 

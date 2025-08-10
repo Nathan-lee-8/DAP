@@ -5,7 +5,7 @@ import styles from "../styles/Styles";
 import { useEffect } from "react";
 
 import client from "../client";
-import { commentsByPost } from "../customGraphql/customQueries";
+import { commentsByPost, moderateText } from "../customGraphql/customQueries";
 import { createComment, createReply, updateComment, updateReply 
 } from "../customGraphql/customMutations";
 import { Comment } from "../API";
@@ -116,6 +116,12 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
 
   //posts the comment to the given post
   const postComment = async () => {
+    const flagged = await textModeration(comment);
+    if(flagged){
+      Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
+        'sensitive content and review our community guidelines before posting.'
+      )
+    }
     try {
       await client.graphql({
         query: createComment,
@@ -135,6 +141,12 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
 
   //posts a reply to the target comment
   const postReply = async () => {
+    const flagged = await textModeration(comment);
+    if(flagged){
+      Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
+        'sensitive content and review our community guidelines before posting.'
+      )
+    }
     try {
       await client.graphql({
         query: createReply,
@@ -154,6 +166,12 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
 
   //edit the target Comment
   const handleEditComment = async () => {
+    const flagged = await textModeration(comment);
+    if(flagged){
+      Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
+        'sensitive content and review our community guidelines before posting.'
+      )
+    }
     try{
       await client.graphql({
         query: updateComment,
@@ -173,6 +191,12 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
 
   //edit the target reply
   const handleEditReply = async () => { 
+    const flagged = await textModeration(comment);
+    if(flagged){
+      Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
+        'sensitive content and review our community guidelines before posting.'
+      )
+    }
     try{
       await client.graphql({
         query: updateReply,
@@ -188,6 +212,24 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
     } catch (error) {
       Alert.alert('Error', 'There was an issue updating this comment');
     }
+  }
+
+    //uses openAI textmoderation to moderate text and return whether that text should be 
+  //flagged or not
+  const textModeration = async (name: string) => {
+    try{
+      const data = await client.graphql({
+        query: moderateText,
+        variables:{
+          text: name,
+        }
+      })
+      const modResults = data.data.moderateText;
+      return modResults ? modResults.flagged : true;
+    } catch (err) {
+      console.log('Error', err);
+    }
+    return true;
   }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />

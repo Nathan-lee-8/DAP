@@ -8,6 +8,7 @@ import { Asset } from 'react-native-image-picker';
 
 import client from '../client';
 import { updatePost } from '../customGraphql/customMutations';
+import { moderateText } from '../customGraphql/customQueries';
 
 import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
@@ -51,6 +52,17 @@ const EditPost = ( {route, navigation} : any ) => {
       Alert.alert('Success','Post updated successfully!');
       return;
     };
+
+    //moderate post content if updated
+    if(content !== currPost.content){
+      const flagged = await textModeration(content);
+      if(flagged){
+        Alert.alert('Warning', 'Content is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        return;
+      }
+    }
     setLoading(true);
     const newPaths = await handleUploadFilepaths();
     try{
@@ -114,6 +126,24 @@ const EditPost = ( {route, navigation} : any ) => {
       Alert.alert('Error', 'Error Uploading images');
       return [];
     }
+  }
+
+  //uses openAI textmoderation to moderate text and return whether that text should be 
+  //flagged or not
+  const textModeration = async (name: string) => {
+    try{
+      const data = await client.graphql({
+        query: moderateText,
+        variables:{
+          text: name,
+        }
+      })
+      const modResults = data.data.moderateText;
+      return modResults ? modResults.flagged : true;
+    } catch (err) {
+      console.log('Error', err);
+    }
+    return true;
   }
 
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
