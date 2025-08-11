@@ -81,14 +81,6 @@
         }
       ]
     },
-    "AMPLIFY_function_textModeration_openAiKey": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "textModeration"
-        }
-      ]
-    },
     "AMPLIFY_function_textModeration_s3Key": {
       "usedBy": [
         {

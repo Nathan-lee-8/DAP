@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Keyboard,
 import { Video } from 'react-native-video';
 
 import client from '../client';
-import { createPost } from '../customGraphql/customMutations';
+import { createPost, updatePost } from '../customGraphql/customMutations';
 import { moderateText } from '../customGraphql/customQueries';
 
 import { AuthContext } from '../context/AuthContext';
@@ -67,21 +67,22 @@ const CreatePost = ( {route, navigation}: any ) => {
       return;
     }
     setLoading(true);
-    const newPaths = await handleUploadFilepaths();
     try{
-      await client.graphql({
+      const postData = await client.graphql({
         query: createPost,
         variables: {
           input: {
             content: content,
             groupID: groupID,
-            postURL: newPaths,
+            postURL: [],
             userID: currUser.id,
             commentCount: 0
           }
         },
         authMode: 'userPool'
       })
+      const postID = postData.data.createPost.id
+      await handleUploadFilepaths(postID);
       navigation.goBack();
       Alert.alert('Success','Post Created');
     } catch {
@@ -110,16 +111,24 @@ const CreatePost = ( {route, navigation}: any ) => {
   }
 
   //uploads all uri's in media to s3 and returns new s3 filepaths 
-  const handleUploadFilepaths = async () => {
+  const handleUploadFilepaths = async (postID: string) => {
     try{
       const newPaths = await Promise.all(
         media.map(async (item, index) => {
           const uri = await getMediaURI(item, 
-            `public/groupPictures/${groupID}/${Date.now()}_${index}`);
+            `processing/groupPictures/${groupID}/${postID}/${Date.now()}_${index}`);
           return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`;
         })
       )
-      return newPaths.filter((path) => path !== null);
+      await client.graphql({
+        query: updatePost,
+        variables: {
+          input:{
+            id: postID,
+            postURL: newPaths
+          }
+        }
+      })
     } catch {
       Alert.alert('Error', 'There was an issue uploading the media');
     }
