@@ -158,7 +158,7 @@ const CreateGroup = ({ navigation }: any) => {
   const handleUploadImage = async (groupID: string) => {
     try{
       const uri = await getImgURI(groupURI, 
-        `processing/groupPictures/${groupID}.jpg`);
+        `public/processing/groupPictures/${groupID}.jpg`);
       if(!uri) throw new Error('Image not selected');
       await client.graphql({
         query: updateGroup,

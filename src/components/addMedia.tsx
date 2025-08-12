@@ -64,7 +64,6 @@ const getMediaURI = async (file: any, filename: string) => {
 
     return uploadResult.path;
   } catch {
-    Alert.alert('Error', 'Failed to upload media');
     return null;
   }
 };

@@ -117,7 +117,7 @@ const EditPost = ( {route, navigation} : any ) => {
       const newPaths = await Promise.all(
         newMedia.map(async (item, index) => {
           const uri = await getMediaURI(item, 
-            `processing/groupPictures/${currPost.groupID}/${currPost.id}/${Date.now()}_${index}.jpg`);
+            `public/processing/groupPictures/${currPost.groupID}/${currPost.id}/${Date.now()}_${index}.jpg`);
           return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`
         })
       )

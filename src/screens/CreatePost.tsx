@@ -59,12 +59,14 @@ const CreatePost = ( {route, navigation}: any ) => {
       Alert.alert('Error', 'Post must have content');
       return;
     }
-    const flagged = await textModeration(content);
-    if(flagged){
-      Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
-        'sensitive content and review our community guidelines before posting.'
-      )
-      return;
+    if(content !== ''){    
+      const flagged = await textModeration(content);
+      if(flagged){
+        Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        return;
+      }
     }
     setLoading(true);
     try{
@@ -81,11 +83,12 @@ const CreatePost = ( {route, navigation}: any ) => {
         },
         authMode: 'userPool'
       })
-      const postID = postData.data.createPost.id
+      const postID = postData.data.createPost.id;
       await handleUploadFilepaths(postID);
       navigation.goBack();
       Alert.alert('Success','Post Created');
-    } catch {
+    } catch (err) {
+      console.log('post error: ', err);
       Alert.alert('Error', 'There was an issue creating the post')
     } finally {
       setLoading(false);
@@ -116,7 +119,7 @@ const CreatePost = ( {route, navigation}: any ) => {
       const newPaths = await Promise.all(
         media.map(async (item, index) => {
           const uri = await getMediaURI(item, 
-            `processing/groupPictures/${groupID}/${postID}/${Date.now()}_${index}`);
+            `public/processing/groupPictures/${groupID}/${postID}/${Date.now()}_${index}`);
           return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`;
         })
       )
@@ -127,9 +130,11 @@ const CreatePost = ( {route, navigation}: any ) => {
             id: postID,
             postURL: newPaths
           }
-        }
+        },
+        authMode: 'userPool'
       })
-    } catch {
+    } catch (err){
+      console.log(err);
       Alert.alert('Error', 'There was an issue uploading the media');
     }
   }

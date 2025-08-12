@@ -83,7 +83,7 @@ const EditProfile = ({navigation}: any) => {
       var tempProfileURL = tempURL;
       if(tempURL !== currUser.profileURL){
         const filepath = await getImgURI(tempURL, 
-          `processing/profilePictures/${currUser.id}.jpg`);        
+          `public/processing/profilePictures/${currUser.id}.jpg`);        
         tempProfileURL = 
           `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${filepath}`;
       }

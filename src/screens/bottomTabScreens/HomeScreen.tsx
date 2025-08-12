@@ -31,7 +31,6 @@ const HomeScreen = ( {navigation} : any) => {
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
-    console.log(blockList);
       const loadInitialData = async () => {
         if(firstRender.current){
           setLoading(true);
@@ -82,7 +81,7 @@ const HomeScreen = ( {navigation} : any) => {
       }); 
 
       //get items and filter for null items
-      const newsFeedData = (res.data.postsByUserFeed.items || []).filter(Boolean);
+      const newsFeedData = res.data.postsByUserFeed.items || [];
 
       //filter out blocked users
       const filteredByBlockList = !blockList ? newsFeedData
@@ -98,7 +97,8 @@ const HomeScreen = ( {navigation} : any) => {
         setNewsFeed((prev) => [...prev, ...filteredFeed])
       };
       setNextToken(res.data.postsByUserFeed.nextToken);
-    } catch {
+    } catch (err) {
+      console.log(err);
       Alert.alert('Error', 'Error fetching news feed');
     }
   };
