@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { View, Text } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import styles from '../styles/Styles';
 
 /**
  * Recieves a uri and returns an image component with default images if uri fails. Applies 
@@ -16,7 +18,8 @@ const ImgComponent = ( {uri, style, resizeMode} : {uri: string; style?: any; res
     if(style) return style;
     return { width: 30, height: 30, borderRadius: 15 };
   };
-
+  const prefix = uri.startsWith('https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/') 
+    ? uri.split('public/')[1].split('/')[0] : '';
   var filepath = require('../../images/DefaultAvatar.jpg');
 
   if(uri === "defaultUser"){
@@ -25,7 +28,9 @@ const ImgComponent = ( {uri, style, resizeMode} : {uri: string; style?: any; res
     filepath = require('../../images/groupAvatar.jpg');
   }else if(uri === "logo"){
     filepath = require('../../images/dapLogo.jpg');
-  }else{
+  } else if(prefix === 'processing' || prefix === 'quarantine'){
+    filepath = require('../../images/groupAvatar.jpg')
+  } else {
     return (
       <FastImage
         style={getStyle()}
@@ -37,11 +42,22 @@ const ImgComponent = ( {uri, style, resizeMode} : {uri: string; style?: any; res
   }
 
   return (
-    <FastImage
-      style={getStyle()}
-      source={filepath}
-      resizeMode={FastImage.resizeMode.cover}
-    />
+    <View>
+      <FastImage
+        style={getStyle()}
+        source={filepath}
+        resizeMode={FastImage.resizeMode.cover}
+      />
+      {prefix === 'quarantine' ? (
+        <View style={styles.overlay}>
+          <Text style={styles.processingText}>Flagged</Text> 
+        </View>
+      ) : prefix === 'processing' ? (
+        <View style={styles.overlay}>
+          <Text style={styles.processingText}>Processing</Text>
+        </View>
+      ) : (null)}
+    </View>
   );
 };
 

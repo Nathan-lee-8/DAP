@@ -85,7 +85,7 @@ const HomeScreen = ( {navigation} : any) => {
 
       //filter out blocked users
       const filteredByBlockList = !blockList ? newsFeedData
-        : newsFeedData.filter((item: any) => !blockList?.includes(item.post.user.id));
+        : newsFeedData.filter((item: any) => !blockList?.includes(item.post.user?.id));
 
       //handle refresh vs pagination
       if(refresh){ 

@@ -56,7 +56,7 @@ const FormatPost = ( {post, destination, refresh} :
     if(post.user?.id === currUser.id || post.userID === currUser.id){
       setOptions(["Edit", "Delete"]);
     }
-  }, [currUser])
+  }, [currUser.id])
 
   //handles the option that the user pressed in the option modal: Edit, Delete, Report
   const handleOptionButton = (option: string) => {
@@ -115,9 +115,9 @@ const FormatPost = ( {post, destination, refresh} :
   const handleShare = async () => {
     try {
       const downloadedFiles = post.postURL ? 
-        await Promise.all(post.postURL
-          .filter((url): url is string => typeof url === 'string')
-          .map(downloadMediaToLocal)) : [];
+        await Promise.all(
+          post.postURL.filter((url): url is string => typeof url === 'string').map(downloadMediaToLocal)
+        ) : [];
   
       const shareOptions = {
         title: 'Check out this post!',
@@ -232,15 +232,29 @@ const FormatPost = ( {post, destination, refresh} :
             data={post.postURL}
             renderItem={({ item }) => (
               <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-                {item?.endsWith('.mp4') ? (
-                  <Video source={{uri: item}} style={{width: width - 30, height: 200}}
-                    resizeMode="cover" repeat={true}
-                  />
-                ):(
+                {item?.endsWith('.jpg') ? (
                   <ImgComponent uri={item || 'defautUser'} 
                     style={{ width: width - 30, height: 200 }} 
                   />
-                )}
+                ) : item?.startsWith('https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/quarantine')  ? (
+                  <View style={{ width: width - 30, height: 200 }}>
+                    <ImgComponent uri={'defaultGroup'} style={{ width: 'auto', height: 200 }}/>
+                    <View style={styles.overlay}>
+                      <Text style={styles.processingText}>Flagged</Text>
+                    </View>
+                  </View>
+                ) : item?.startsWith('https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/processing')  ? (
+                  <View style={{ width: width - 30, height: 200 }}>
+                    <ImgComponent uri={'defaultGroup'} style={{ width: 'auto', height: 200 }}/>
+                    <View style={styles.overlay}>
+                      <Text style={styles.processingText}>Processing</Text>
+                    </View>
+                  </View>
+                )  : item?.endsWith('.mp4') ? (
+                  <Video source={{uri: item}} style={{width: width - 30, height: 200}}
+                    resizeMode="cover" repeat={true}
+                  />
+                ):( null )}
               </TouchableOpacity>
             )}
             horizontal={true}
@@ -315,11 +329,7 @@ const FormatPost = ( {post, destination, refresh} :
               data={post.postURL}
               renderItem={({ item }) => (
                 <View>
-                  {item?.endsWith('.mp4') ? (
-                    <Video source={{ uri: item }} style={{ width: width, height: '100%' }}
-                      resizeMode="contain" controls
-                    />
-                  ):(
+                  {item?.endsWith('.jpg') ? ( 
                     <ImgComponent uri={item || 'defautUser'} 
                       style={{
                         width: width,
@@ -327,7 +337,25 @@ const FormatPost = ( {post, destination, refresh} :
                       }} 
                       resizeMode={"contain"}
                     />
-                  )}
+                  ) : item?.startsWith('https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/quarantine')  ? (
+                    <View style={{ width: width, height: '100%' }}>
+                      <ImgComponent uri={'groupAvatar'} style={{ width: '100%', height: '100%' }}/>
+                      <View style={styles.overlay}>
+                        <Text style={styles.processingText}>Flagged</Text>
+                      </View>
+                    </View>
+                  ) : item?.startsWith('https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/processing')  ? (
+                    <View style={{ width: width, height: '100%' }}>
+                      <ImgComponent uri={'groupAvatar'} style={{ width: '100%', height: '100%' }}/>
+                      <View style={styles.overlay}>
+                        <Text style={styles.processingText}>Processing</Text>
+                      </View>
+                    </View>
+                  )  : item?.endsWith('.mp4') ? (
+                    <Video source={{ uri: item }} style={{ width: width, height: '100%' }}
+                      resizeMode="contain" controls
+                    />
+                  ) : ( null )}
                 </View>
               )}
               horizontal={true}

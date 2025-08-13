@@ -116,6 +116,17 @@ const styles = StyleSheet.create({
     marginRight: 10,
     padding: 10,
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)', 
+  },
+  processingText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 
   /** User Posts styles */
   postContainer: {
