@@ -62,7 +62,7 @@ const getMediaURI = async (file: any, filename: string) => {
       },
     }).result;
 
-    return uploadResult.path;
+    return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uploadResult.path}`;
   } catch {
     return null;
   }

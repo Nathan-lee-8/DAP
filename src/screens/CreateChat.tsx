@@ -63,10 +63,9 @@ const CreateChat = ({ route, navigation }: any) => {
 
       //upload image to s3 and update new filepath for chat
       if(chatImage){
-        const imgURI = await getImgURI(chatImage, 
+        const filepath = await getImgURI(chatImage, 
           `public/chatPictures/${chatID}/profile/${Date.now()}`);
-        const filepath = `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${imgURI}`;
-        if(imgURI){
+        if(filepath){
           await client.graphql({
             query: updateChat,
             variables: {

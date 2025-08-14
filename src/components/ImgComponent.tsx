@@ -18,7 +18,7 @@ const ImgComponent = ( {uri, style, resizeMode} : {uri: string; style?: any; res
     if(style) return style;
     return { width: 30, height: 30, borderRadius: 15 };
   };
-  const prefix = uri.startsWith('https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/public/') 
+  const prefix = uri.startsWith('https://commhubimagesdb443-prod.s3.us-west-2.amazonaws.com/public/') 
     ? uri.split('public/')[1].split('/')[0] : '';
   var filepath = require('../../images/DefaultAvatar.jpg');
 

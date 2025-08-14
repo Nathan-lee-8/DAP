@@ -412,7 +412,7 @@ const ViewChat = ( { route, navigation } : any) => {
         media.map(async (item, index) => {
           const uri = await getMediaURI(item, 
             `public/chatPictures/${chatID}/${Date.now()}_${index}`);
-          return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`;
+          return uri;
         })
       )
       return newPaths.filter((path) => path !== null);

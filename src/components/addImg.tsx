@@ -44,7 +44,7 @@ const getImgURI = async (fileURI: string, filename: string) => {
         contentType: fileType,
       },
     }).result;
-    return uploadResult.path;
+    return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uploadResult.path}`;
   } catch {
     Alert.alert('Error', 'Failed to save image');
     return null;

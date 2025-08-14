@@ -159,13 +159,12 @@ const CreateGroup = ({ navigation }: any) => {
     try{
       const uri = await getImgURI(groupURI, 
         `public/processing/groupPictures/${groupID}.jpg`);
-      if(!uri) throw new Error('Image not selected');
       await client.graphql({
         query: updateGroup,
         variables: {
           input: {
             id: groupID,
-            groupURL: 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri
+            groupURL: uri
           }
         },
         authMode:'userPool'

@@ -66,7 +66,7 @@ const EditGroup = ( {route, navigation} : any ) => {
       if(filepath !== group.groupURL){
         var tempFilepath = await getImgURI(filepath, 
           `public/processing/groupPictures/${group.id}.jpg`)
-        currURI = 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + tempFilepath;
+        if(tempFilepath) currURI = tempFilepath;
       }
       if(name !== group.groupName || description !== group.description || 
         filepath !== group.groupURL || group.type !== type 

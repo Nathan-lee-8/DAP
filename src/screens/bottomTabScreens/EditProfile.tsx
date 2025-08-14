@@ -84,8 +84,7 @@ const EditProfile = ({navigation}: any) => {
       if(tempURL !== currUser.profileURL){
         const filepath = await getImgURI(tempURL, 
           `public/processing/profilePictures/${currUser.id}.jpg`);        
-        tempProfileURL = 
-          `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${filepath}`;
+        if(filepath) tempProfileURL = filepath;
       }
       if(tempProfileURL === null) throw new Error('Upload failed');
       setTempURL(tempProfileURL);

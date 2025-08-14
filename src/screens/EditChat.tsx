@@ -30,7 +30,7 @@ const EditChat = ( {route, navigation} : any) => {
       if(filepath !== chat.url){
         var uri = await getImgURI(filepath, 
           `public/chatPictures/${chat.id}/profile/${Date.now()}.jpg`);
-        imgURI = 'https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/' + uri;
+        if(uri) imgURI = uri;
       }
       if(name !== chat.name || imgURI !== chat.url){
         await client.graphql({

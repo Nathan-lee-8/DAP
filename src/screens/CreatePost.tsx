@@ -120,7 +120,7 @@ const CreatePost = ( {route, navigation}: any ) => {
         media.map(async (item, index) => {
           const uri = await getMediaURI(item, 
             `public/processing/groupPictures/${groupID}/${postID}/${Date.now()}_${index}`);
-          return `https://commhubimagesdb443-dev.s3.us-west-2.amazonaws.com/${uri}`;
+          return uri;
         })
       )
       await client.graphql({
