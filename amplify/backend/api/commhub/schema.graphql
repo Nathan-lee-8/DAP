@@ -266,7 +266,7 @@ type BlockList @model @auth(
 
 type Query {
   moderateText(text: String!): ModerationResult
-    @function(name: "textModeration-dev")
+    @function(name: "textModeration-${env}")
 }
 
 type ModerationResult {

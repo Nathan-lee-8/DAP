@@ -1,15 +1,15 @@
 {
   "aws_project_region": "us-west-2",
-  "aws_appsync_graphqlEndpoint": "https://ds2moepd2rc5thx4kmgzsxqzq4.appsync-api.us-west-2.amazonaws.com/graphql",
+  "aws_appsync_graphqlEndpoint": "https://nuj7hxgsxzdejlcau2ty6akkjy.appsync-api.us-west-2.amazonaws.com/graphql",
   "aws_appsync_region": "us-west-2",
   "aws_appsync_authenticationType": "API_KEY",
-  "aws_appsync_apiKey": "da2-uivzub23yjhu5msicqvrinahke",
-  "aws_cognito_identity_pool_id": "us-west-2:8e0d1950-04ae-49ab-93a4-b0274bbcd6d8",
+  "aws_appsync_apiKey": "da2-kzjbax2wnrdppa4yx72dip7x6y",
+  "aws_cognito_identity_pool_id": "us-west-2:fd345bcf-99c2-4dcc-9b96-c28fb474ae4a",
   "aws_cognito_region": "us-west-2",
-  "aws_user_pools_id": "us-west-2_6EqwXqq0K",
-  "aws_user_pools_web_client_id": "2k6gq17hqpbq9ftgiaep846tdn",
+  "aws_user_pools_id": "us-west-2_3NGuHWkLd",
+  "aws_user_pools_web_client_id": "20kbe6anlu3js5sk1u4kaoh8bq",
   "oauth": {
-    "domain": "commhub8d74ff2e-8d74ff2e-dev.auth.us-west-2.amazoncognito.com",
+    "domain": "commhub8d74ff2e-8d74ff2e-prod.auth.us-west-2.amazoncognito.com",
     "scope": [
       "phone",
       "email",
@@ -43,6 +43,6 @@
   "aws_cognito_verification_mechanisms": [
     "EMAIL"
   ],
-  "aws_user_files_s3_bucket": "commhubimagesdb443-dev",
+  "aws_user_files_s3_bucket": "commhubimages24e37-prod",
   "aws_user_files_s3_bucket_region": "us-west-2"
 }
