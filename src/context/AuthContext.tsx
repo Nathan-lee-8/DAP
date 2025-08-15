@@ -173,24 +173,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  //Subscription to listen for new Notifications
-  useEffect(() => {
-    const subscription = client.graphql({
-      query: onUpdateUser,
-      variables:{
-        filter: {
-          id: { eq: currUser?.id }
-        }
-      },
-      authMode: 'userPool'
-    }).subscribe({
-      next: () => {
-        triggerFetch();
-      },
-    })
-    return () => subscription.unsubscribe();
-  }, [currUser?.id]);
-
   //Listens to app state and manages Chat API connection 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
