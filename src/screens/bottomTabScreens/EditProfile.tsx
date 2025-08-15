@@ -27,14 +27,12 @@ const EditProfile = ({navigation}: any) => {
   if(!authContext) return;
   const { currUser, setCurrUser } = authContext;
   if(!currUser) return;
-     
+  
   //use temp values to hold data until user saves
   const [ tempFirst, setTempFirst ] = useState(currUser.firstname);
   const [ tempLast, setTempLast ] = useState(currUser.lastname);
   const [ tempURL , setTempURL ] = useState(currUser.profileURL);
-  const [ description, setDescription ] = 
-    useState<string | undefined>(currUser.description || undefined);
-
+  const [ description, setDescription ] = useState<string>(currUser.description || '');
   //reset the page to standard view instead of edit view and reverts any unsaved 
   //changes  to profile image
   useFocusEffect(
@@ -57,7 +55,7 @@ const EditProfile = ({navigation}: any) => {
     };
 
     //moderate text for user bio if bio is updated 
-    if(description !== currUser.description){ //prevent overloading calls
+    if(description !== currUser.description && description !== ''){ //prevent overloading calls
       const flagged = await textModeration(description || "");
       if(flagged){
         Alert.alert('Warning', 'Bio is flagged for sensitive content. Please remove ' + 
@@ -150,7 +148,9 @@ const EditProfile = ({navigation}: any) => {
       {!editsOn ? ( //Standard Profile View
         <View style={{flex: 1}}>
           <View style={styles.viewUserProfileSection}>
-            <ImgComponent uri={currUser.profileURL} style={styles.viewProfileURL}/>
+            <ImgComponent uri={currUser.profileURL || 'defaultUser'} 
+              style={styles.viewProfileURL}
+            />
             <View style={styles.profileInfoContainer}>
               <Text style={[styles.postAuthor, {fontWeight: '600'}]}>
                 {currUser.firstname} {currUser.lastname} 
@@ -175,7 +175,7 @@ const EditProfile = ({navigation}: any) => {
             keyboardShouldPersistTaps='handled'
           >
             <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
-              <ImgComponent uri={tempURL} style={styles.editProfileURL}/>
+              <ImgComponent uri={tempURL || 'defaultUser'} style={styles.editProfileURL}/>
               <Text style={styles.uploadImageText}>Edit Image</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setEditsOn(false)} 

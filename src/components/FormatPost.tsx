@@ -236,14 +236,14 @@ const FormatPost = ( {post, destination, refresh} :
                   <ImgComponent uri={item || 'defautUser'} 
                     style={{ width: width - 30, height: 200 }} 
                   />
-                ) : item?.startsWith('https://commhubimagesdb443-prod.s3.us-west-2.amazonaws.com/public/quarantine')  ? (
+                ) : item?.startsWith('https://commhubimages24e37-prod.s3.us-west-2.amazonaws.com/public/quarantine')  ? (
                   <View style={{ width: width - 30, height: 200 }}>
                     <ImgComponent uri={'defaultGroup'} style={{ width: 'auto', height: 200 }}/>
                     <View style={styles.overlay}>
                       <Text style={styles.processingText}>Flagged</Text>
                     </View>
                   </View>
-                ) : item?.startsWith('https://commhubimagesdb443-prod.s3.us-west-2.amazonaws.com/public/processing')  ? (
+                ) : item?.startsWith('https://commhubimages24e37-prod.s3.us-west-2.amazonaws.com/public/processing')  ? (
                   <View style={{ width: width - 30, height: 200 }}>
                     <ImgComponent uri={'defaultGroup'} style={{ width: 'auto', height: 200 }}/>
                     <View style={styles.overlay}>
@@ -337,14 +337,14 @@ const FormatPost = ( {post, destination, refresh} :
                       }} 
                       resizeMode={"contain"}
                     />
-                  ) : item?.startsWith('https://commhubimagesdb443-prod.s3.us-west-2.amazonaws.com/public/quarantine')  ? (
+                  ) : item?.startsWith('https://commhubimages24e37-prod.s3.us-west-2.amazonaws.com/public/quarantine')  ? (
                     <View style={{ width: width, height: '100%' }}>
                       <ImgComponent uri={'groupAvatar'} style={{ width: '100%', height: '100%' }}/>
                       <View style={styles.overlay}>
                         <Text style={styles.processingText}>Flagged</Text>
                       </View>
                     </View>
-                  ) : item?.startsWith('https://commhubimagesdb443-prod.s3.us-west-2.amazonaws.com/public/processing')  ? (
+                  ) : item?.startsWith('https://commhubimages24e37-prod.s3.us-west-2.amazonaws.com/public/processing')  ? (
                     <View style={{ width: width, height: '100%' }}>
                       <ImgComponent uri={'groupAvatar'} style={{ width: '100%', height: '100%' }}/>
                       <View style={styles.overlay}>

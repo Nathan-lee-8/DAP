@@ -33,8 +33,7 @@ const SignIn = () => {
   //authcontext if verified
   const handleSignIn = async () => {
     try{
-      const res = await
-        signIn({username: email.trim().toLowerCase(), password: password});
+      const res = await signIn({username: email.trim().toLowerCase(), password: password});
       if(!res.isSignedIn){
         Alert.alert('Error', 'Please verify your email before signing in.', [
           {text: 'OK', onPress: () => navigation.navigate('Verify', {email: email})}
@@ -69,8 +68,9 @@ const SignIn = () => {
     try{
       const user = await fetchUserAttributes();
       if(user.email) setUserEmail(user.email);
-    } catch {
+    } catch (err) {
       Alert.alert('Error', 'Sign In Failed');
+      console.log(err);
     } finally {
       setLoading(false);
     }

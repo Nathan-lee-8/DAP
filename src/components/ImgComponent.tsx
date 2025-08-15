@@ -18,7 +18,7 @@ const ImgComponent = ( {uri, style, resizeMode} : {uri: string; style?: any; res
     if(style) return style;
     return { width: 30, height: 30, borderRadius: 15 };
   };
-  const prefix = uri.startsWith('https://commhubimagesdb443-prod.s3.us-west-2.amazonaws.com/public/') 
+  const prefix = uri.startsWith('https://commhubimages24e37-prod.s3.us-west-2.amazonaws.com/public/') 
     ? uri.split('public/')[1].split('/')[0] : '';
   var filepath = require('../../images/DefaultAvatar.jpg');
 
@@ -36,7 +36,11 @@ const ImgComponent = ( {uri, style, resizeMode} : {uri: string; style?: any; res
         style={getStyle()}
         source={{ uri: uri, priority: FastImage.priority.normal }}
         resizeMode={resizeMode === 'contain' ? FastImage.resizeMode.contain : FastImage.resizeMode.cover}
-        onError={() => setError(true)}
+        //@ts-ignore
+        onError={(e) => {
+          console.log('failed to load:', e.nativeEvent.error);
+          setError(true);
+        }}
       />
     );
   }
