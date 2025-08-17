@@ -134,6 +134,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       });
+      setComment('');
     } catch (error) {
       Alert.alert('Error', 'There was an issue posting this comment');
     }
@@ -159,6 +160,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       });
+      setComment('');
     } catch {
       Alert.alert('Error', 'Unable to post comment');
     }
@@ -172,6 +174,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         'sensitive content and review our community guidelines before posting.'
       )
     }
+    setLoading(true);
     try{
       await client.graphql({
         query: updateComment,
@@ -183,9 +186,11 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       })
-      Alert.alert('Success', 'Comment edited successfully');
+      setComment('');
+      setLoading(false);
     } catch (error) {
       Alert.alert('Error', 'There was an issue updating this comment');
+      setLoading(false);
     }
   }
 
@@ -197,6 +202,7 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         'sensitive content and review our community guidelines before posting.'
       )
     }
+    setLoading(true);
     try{
       await client.graphql({
         query: updateReply,
@@ -208,9 +214,11 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       })
-      Alert.alert('Success', 'Comment edited successfully');
+      setComment('');
+      setLoading(false);
     } catch (error) {
       Alert.alert('Error', 'There was an issue updating this comment');
+      setLoading(false);
     }
   }
 

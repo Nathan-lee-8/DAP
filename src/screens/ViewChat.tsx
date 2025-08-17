@@ -216,7 +216,7 @@ const ViewChat = ( { route, navigation } : any) => {
           input: {
             senderID: currUser.id,
             content: currMessage,
-            type: currMessage === '' ? 'Message' : 'Media',
+            type: currMessage === '' ? 'Media' : 'Message',
             msgURL: newPaths,
             chatID: chat.id,
           },
@@ -614,7 +614,9 @@ const ViewChat = ( { route, navigation } : any) => {
             onChangeText={(text) => setMessage(text)}
             onFocus={() => setIconsVisible(false)}
           />
-          <Icon style={styles.commentButton} onPress={sendMessage} name="send" size={30}/>
+          <Icon style={styles.commentButton} onPress={loading ? undefined : sendMessage} 
+            name="send" size={30}
+          />
         </View>
       </KeyboardAvoidingView>
 

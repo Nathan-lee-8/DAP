@@ -226,16 +226,19 @@ const CreateChat = ({ route, navigation }: any) => {
       <Text style={[styles.contentText, { marginBottom: 'auto' }]}></Text>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[styles.addCommentSection, {flexDirection: 'row'}]}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+        style={[styles.addCommentSection, {paddingBottom: 0}]}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
       >
-        <TextInput
-          style={styles.commentInput}
-          placeholder="Type a message..."
-          value={message}
-          onChangeText={setMessage}
-        />
-        <Icon name="send" style={styles.commentButton} onPress={createChatRoom} size={30}/>
+        <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30: 0}}>
+
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Type a message..."
+            value={message}
+            onChangeText={setMessage}
+          />
+          <Icon name="send" style={styles.commentButton} onPress={createChatRoom} size={30}/>
+        </View>
       </KeyboardAvoidingView>
     </View>
   )
