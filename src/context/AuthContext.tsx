@@ -62,10 +62,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           authMode: 'userPool'
         });
         const users = data.data.userByEmail.items;
-        if(users.length > 0) setCurrUser(users[0]);
         setSignedIn(true);
-        wsClient.setUserID(users[0].id);
-        wsClient.connect();
+        if(users.length > 0){ 
+          setCurrUser(users[0])
+          wsClient.setUserID(users[0].id);
+          wsClient.connect();
+        }
       } catch (error) {
         console.log('Error fetching user attributes:', error);
       }

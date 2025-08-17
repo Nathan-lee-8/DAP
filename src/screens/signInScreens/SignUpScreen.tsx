@@ -62,7 +62,7 @@ const SignUp = ( {navigation} : any ) => {
             <TextInput
               style={styles.input}
               placeholder="Password"
-              secureTextEntry={passwordVisible}
+              secureTextEntry={!passwordVisible}
               value={password}
               onChangeText={setPassword}
             />
@@ -75,7 +75,7 @@ const SignUp = ( {navigation} : any ) => {
             <TextInput
               style={styles.input}
               placeholder="Re-Enter Password"
-              secureTextEntry={passwordCheckVisible}
+              secureTextEntry={!passwordCheckVisible}
               value={passwordCheck}
               onChangeText={setPasswordCheck}
             />

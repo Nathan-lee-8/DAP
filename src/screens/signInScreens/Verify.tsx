@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Alert, Text, Keyboard,
-  TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from 'react-native';
+  TouchableWithoutFeedback, KeyboardAvoidingView, Platform, ActivityIndicator
+} from 'react-native';
 
 import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
@@ -19,6 +20,7 @@ import { SignInParamList } from '../../types/rootStackParamTypes';
  */
 const VerifyScreen = ( {route} : any ) => {
   const authContext = useContext(AuthContext);
+  const [ loading, setLoading ] = useState(false);
   if(!authContext) {
     return null;
   }
@@ -29,22 +31,27 @@ const VerifyScreen = ( {route} : any ) => {
   const navigation = useNavigation<NativeStackNavigationProp<SignInParamList>>();
 
   const handleVerification = async () => {
+    setLoading(true);
     const emailFormat = email.trim().toLowerCase();
     try {
       await confirmSignUp({username: emailFormat, confirmationCode: code });
     } catch (error) {
+      console.log(error);
       Alert.alert('Error', 'Incorrect verification code.');
     }
     try{
       await signIn({username: emailFormat, password: password});
       setUserEmail(emailFormat);
+      setLoading(false);
     } catch (error) {
-      Alert.alert('Error', 'Incorrect password. Verification is complete, ' + 
-        'please sign in with your password in the Sign-in Screen');
+      console.log(error);
+      Alert.alert('Error', 'Internal error: ' + 
+        'sign in with your password in the Sign-in Screen');
       navigation.reset({
         index: 1,
         routes: [{name: 'Welcome'}, {name: 'SignIn'}]
       });
+      setLoading(false);
     }
   }
 
@@ -84,17 +91,21 @@ const VerifyScreen = ( {route} : any ) => {
               onChangeText={setPassword}
             />
           }
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
-            <TouchableOpacity style={styles.signInBtn} onPress={ handleVerification }>
-              <Text style={styles.loginBtnText}>Verify</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity onPress={ resendSignUp} style={{marginTop: 20}}>
-              <Text style={styles.hyperlink}>Resend code</Text>
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
+          {loading ? ( 
+           <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
+              <TouchableOpacity style={styles.signInBtn} onPress={ handleVerification }>
+                <Text style={styles.loginBtnText}>Verify</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity onPress={ resendSignUp} style={{marginTop: 20}}>
+                <Text style={styles.hyperlink}>Resend code</Text>
+              </TouchableOpacity>
+            </KeyboardAvoidingView>
+          )}
         </View>
       </TouchableWithoutFeedback>
     </View>

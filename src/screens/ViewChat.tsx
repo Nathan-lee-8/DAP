@@ -74,7 +74,7 @@ const ViewChat = ( { route, navigation } : any) => {
     const handleNewMessage = (data: any) => {
       if(data.chatID !== chatID) return;
       const currTime = new Date().toISOString();
-      console.log(participants.find((item) => item.user?.id === data.userID)?.user)
+      console.log('users', participants.find((item) => item.user?.id === data.userID)?.user)
       const newMessage: Message = {
         id: currTime,
         content: data.message,

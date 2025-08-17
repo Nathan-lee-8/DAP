@@ -347,7 +347,7 @@ const ViewGroup = ( {route, navigation} : any) => {
       { text: "Cancel" },
       { text: "Delete", onPress: async () => {
         try {
-          if(!group || !myUserGroup){
+          if(!group){
             Alert.alert('Error', 'Error deleting group');
             return;
           }
@@ -360,15 +360,6 @@ const ViewGroup = ( {route, navigation} : any) => {
             },
             authMode: 'userPool'
           });
-          await client.graphql({
-            query: deleteUserGroup,
-            variables: {
-              input: {
-                id: myUserGroup.id
-              }
-            },
-            authMode: 'userPool'
-          })
           navigation.goBack();
         } catch {
           Alert.alert('Error', 'Error deleting group');
