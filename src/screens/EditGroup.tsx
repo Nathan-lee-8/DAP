@@ -127,11 +127,16 @@ const EditGroup = ( {route, navigation} : any ) => {
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Edit Group</Text>
+      </TouchableOpacity>
       <ScrollView keyboardShouldPersistTaps='handled'>
         <TouchableOpacity style={styles.groupImgContainer} onPress={getFilePath}>
           <ImgComponent uri={filepath} style={styles.groupImg}/>
-          <View style={styles.addImageTextContainer}>
-            <Text style={styles.addImageText}>Update Img</Text>
+          <View style={styles.overlay}>
+            <Text style={styles.overLayText}>Add Img</Text>
           </View>
         </TouchableOpacity>
         <TextInput
@@ -182,15 +187,9 @@ const EditGroup = ( {route, navigation} : any ) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-        style={{marginTop: 'auto'}}
-      >
-        <TouchableOpacity style={styles.buttonBlack} onPress={handleEditGroup}>
-          <Text style={styles.buttonTextWhite}>Save Changes</Text>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
+      <TouchableOpacity style={[styles.buttonBlack, {marginBottom: 50}]} onPress={handleEditGroup}>
+        <Text style={styles.buttonTextWhite}>Save Changes</Text>
+      </TouchableOpacity>
     </View>
   )
 }

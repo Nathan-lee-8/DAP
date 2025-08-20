@@ -59,16 +59,17 @@ const CreatePost = ( {route, navigation}: any ) => {
       Alert.alert('Error', 'Post must have content');
       return;
     }
+    setLoading(true);
     if(content !== ''){    
       const flagged = await textModeration(content);
       if(flagged){
         Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
           'sensitive content and review our community guidelines before posting.'
         )
+        setLoading(false);
         return;
       }
     }
-    setLoading(true);
     try{
       const postData = await client.graphql({
         query: createPost,
@@ -139,29 +140,38 @@ const CreatePost = ( {route, navigation}: any ) => {
     }
   }
 
-  if(loading) return <ActivityIndicator size="large" color="#0000ff"/>
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
+        <View style={styles.header}/>
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <Icon name={'arrow-back'} size={25} color={'black'}/>
+          <Text style={styles.backText}>Create Post</Text>
+        </TouchableOpacity>
         <Text style={styles.noResultsMsg}>What's on your mind?</Text>
-        <TextInput 
-          style={[styles.contentInput]} 
-          placeholder="Post content..."
-          multiline={true}
-          autoCapitalize='sentences'
-          value={content}
-          onChangeText={setContent}
-        />
-        <View style={styles.postFooter}>
-          <TouchableOpacity style={styles.addPostImgButton} onPress={getFilePath}>
-            <Text style={styles.buttonTextBlack}>Photos</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.createPostButton} onPress={sendPost}>
-            <Text style={styles.buttonTextWhite}>Post</Text>
-          </TouchableOpacity>
-        </View>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <View>
+            <TextInput 
+              style={[styles.contentInput]} 
+              placeholder="Post content..."
+              multiline={true}
+              autoCapitalize='sentences'
+              value={content}
+              onChangeText={setContent}
+            />
+            <View style={styles.postFooter}>
+              <TouchableOpacity style={styles.addPostImgButton} onPress={getFilePath}>
+                <Text style={styles.buttonTextBlack}>Photos</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.createPostButton} onPress={sendPost}>
+                <Text style={styles.buttonTextWhite}>Post</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
         <FlatList
           data={media}
           numColumns={4}

@@ -9,7 +9,7 @@ import { AuthContext } from '../../context/AuthContext';
 import Icon from '@react-native-vector-icons/ionicons';
 import styles from '../../styles/Styles';
 
-const ReportScreen = () => {
+const ReportScreen = ({navigation} : any) => {
   const [ reportMessage, setReportMessage ] = useState('');
   const [ type, setType ] = useState('Select type');
   const [ typePressed, setTypePressed ] = useState(false);
@@ -61,6 +61,11 @@ const ReportScreen = () => {
 
   return(
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Report</Text>
+      </TouchableOpacity>
       <View style={{height: 40}}/>
       <Text style={styles.reportModalText}>
         What are we reporting? 

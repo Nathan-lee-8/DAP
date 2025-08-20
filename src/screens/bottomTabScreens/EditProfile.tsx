@@ -145,6 +145,7 @@ const EditProfile = ({navigation}: any) => {
   if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (
     <View style={styles.container}>
+      <View style={styles.shortHeader}/>
       {!editsOn ? ( //Standard Profile View
         <View style={{flex: 1}}>
           <View style={styles.viewUserProfileSection}>
@@ -208,7 +209,7 @@ const EditProfile = ({navigation}: any) => {
           </ScrollView>
           <KeyboardAvoidingView 
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 70 : 0}
           >   
             <TouchableOpacity style={[styles.buttonBlack]} 
               onPress={saveEdits}

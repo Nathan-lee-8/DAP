@@ -65,38 +65,38 @@ const AppNavigator = () => {
   return (
     <NavigationContainer linking={linking}>
       {isSignedIn && currUser ? ( //Signed in Screens
-        <GlobalStack.Navigator screenOptions={{headerTitleAlign: 'center'}}>
-          <GlobalStack.Screen name="MainTabs" component={BottomTabs} options={{headerShown: false, title: "Home"}}/>
-          <GlobalStack.Screen name="ViewProfile" component={ViewProfiles} options={{title: "Profile"}}/>
-          <GlobalStack.Screen name="ViewChat" component={ViewChat} options={{title: 'Messages', headerShown: false}}/>
-          <GlobalStack.Screen name="CreateChat" component={CreateChat} options={{title: 'Create Chat'}}/>
-          <GlobalStack.Screen name="CreateGroup" component={CreateGroup} options={{title: 'Create Group'}}/>
-          <GlobalStack.Screen name="ViewGroup" component={ViewGroup} options={{title: 'Group', headerShown: false}}/>
-          <GlobalStack.Screen name="CreatePost" component={CreatePost} options={{title: 'Create Post'}}/>
-          <GlobalStack.Screen name="ViewPost" component={ViewPost} options={{title: 'Post'}}/>
-          <GlobalStack.Screen name="EditGroup" component={EditGroup} options={{title: 'Edit Group'}}/>
-          <GlobalStack.Screen name="ViewGroupMembers" component={ViewGroupMembers} options={{title: 'View Members'}}/>
-          <GlobalStack.Screen name="EditPost" component={EditPost} options={{title: 'Edit Post'}}/>
-          <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers} options={{title: 'Members'}}/>
-          <GlobalStack.Screen name="EditChat" component={EditChat} options={{title: 'Edit Chat'}}/>
+        <GlobalStack.Navigator screenOptions={{headerShown: false}}>
+          <GlobalStack.Screen name="MainTabs" component={BottomTabs}/>
+          <GlobalStack.Screen name="ViewProfile" component={ViewProfiles}/>
+          <GlobalStack.Screen name="ViewChat" component={ViewChat}/>
+          <GlobalStack.Screen name="CreateChat" component={CreateChat}/>
+          <GlobalStack.Screen name="CreateGroup" component={CreateGroup}/>
+          <GlobalStack.Screen name="ViewGroup" component={ViewGroup}/>
+          <GlobalStack.Screen name="CreatePost" component={CreatePost}/>
+          <GlobalStack.Screen name="ViewPost" component={ViewPost} />
+          <GlobalStack.Screen name="EditGroup" component={EditGroup} />
+          <GlobalStack.Screen name="ViewGroupMembers" component={ViewGroupMembers}/>
+          <GlobalStack.Screen name="EditPost" component={EditPost}/>
+          <GlobalStack.Screen name="ViewChatMembers" component={ViewChatMembers}/>
+          <GlobalStack.Screen name="EditChat" component={EditChat}/>
           {/* Settings tabs */}
-          <GlobalStack.Screen name="Settings" component={ProfileSettings} options={{title: 'Profile Settings'}}/>
-          <GlobalStack.Screen name="NotificationSettings" component={NotificationSettings} options={{title: 'Notification Settings'}}/>
-          <GlobalStack.Screen name="Report" component={ReportScreen} options={{title: 'Report a problem'}}/>
-          <GlobalStack.Screen name="Terms" component={TermsConditions} options={{title: 'Terms and Conditions'}}/>
-          <GlobalStack.Screen name="BlockedUsers" component={BlockedUsers} options={{title: 'Blocked Users'}}/>
+          <GlobalStack.Screen name="Settings" component={ProfileSettings}/>
+          <GlobalStack.Screen name="NotificationSettings" component={NotificationSettings}/>
+          <GlobalStack.Screen name="Report" component={ReportScreen}/>
+          <GlobalStack.Screen name="Terms" component={TermsConditions}/>
+          <GlobalStack.Screen name="BlockedUsers" component={BlockedUsers}/>
         </GlobalStack.Navigator>
       ) : isSignedIn && !currUser ? ( //Screens User has not created an account
         <SignInStack.Navigator initialRouteName='CreateUser' >
-          <SignInStack.Screen name="CreateUser" component={CreateUser} options={{headerShown: false}} />
+          <SignInStack.Screen name="CreateUser" component={CreateUser} options={{headerShown: false}}/>
         </SignInStack.Navigator>
       ) : ( //Sign-in Sign-up Screens
-        <SignInStack.Navigator initialRouteName='Welcome' >
-          <SignInStack.Screen name="Welcome" component={Welcome} options={{headerShown: false}} />
-          <SignInStack.Screen name="SignIn" component={SignIn} options={{title: 'Sign In', headerTitleAlign: 'center'}} />
-          <SignInStack.Screen name="SignUp" component={SignUp} options={{title: 'Sign Up', headerTitleAlign: 'center'}} />
-          <SignInStack.Screen name="Verify" component={Verify} options={{headerTitleAlign: 'center'}}/>
-          <SignInStack.Screen name="ResetPassword" component={ResetPassword} options={{title: 'Reset Password', headerTitleAlign: 'center'}} />
+        <SignInStack.Navigator initialRouteName='Welcome' screenOptions={{headerShown: false}}>
+          <SignInStack.Screen name="Welcome" component={Welcome} />
+          <SignInStack.Screen name="SignIn" component={SignIn}/>
+          <SignInStack.Screen name="SignUp" component={SignUp} />
+          <SignInStack.Screen name="Verify" component={Verify}/>
+          <SignInStack.Screen name="ResetPassword" component={ResetPassword}/>
         </SignInStack.Navigator>
       )}
     </NavigationContainer>
@@ -110,36 +110,31 @@ const BottomTabs = () => {
   if(!currUser) return;
 
   return(
-    <BottomTab.Navigator screenOptions={{headerTitleAlign: 'center'}} >
-      <BottomTab.Screen name="Home" component={Home}
-        options={{ lazy: true, headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="home-outline" size={30} />
-        }}/>
-      <BottomTab.Screen name="Messages" component={Messaging} 
-        options={{ lazy: true, headerTitleAlign:'center',
-          tabBarIcon: () => {
-            return(
-              <View>
-                <Icon name="chatbubbles-outline" size={30} />
-                {currUser.unreadChatCount > 0 && 
-                  <View style={styles.unreadChatIcon}/>
-                }
-              </View>
-            )
-          }
-        }} />
-      <BottomTab.Screen name="Groups" component={Groups} 
-        options={{ lazy: true, headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="people-outline" size={30} />
-        }} />
-      <BottomTab.Screen name="Search" component={Search} 
-        options={{ lazy: true, headerTitleAlign:'center',
-          tabBarIcon: () => <Icon name="search-outline" size={30} />
-        }} />
-      <BottomTab.Screen name="Profile" component={EditProfile}
-        options={{ lazy: true, headerTitleAlign:'center',
-          tabBarIcon: () => <ImageComponent uri={currUser.profileURL || 'defaultUser'}/>
-        }} />
+    <BottomTab.Navigator screenOptions={{headerShown: false}}>
+      <BottomTab.Screen name="Home" component={Home} options={{ lazy: true, 
+        tabBarIcon: () => <Icon name="home-outline" size={30} /> }}
+      />
+      <BottomTab.Screen name="Messages" component={Messaging} options={{ lazy: true,
+        tabBarIcon: () => {
+          return(
+            <View>
+              <Icon name="chatbubbles-outline" size={30} />
+              {currUser.unreadChatCount > 0 && 
+                <View style={styles.unreadChatIcon}/>
+              }
+            </View>
+          )
+        }}} 
+      />
+      <BottomTab.Screen name="Groups" component={Groups} options={{ lazy: true, 
+        tabBarIcon: () => <Icon name="people-outline" size={30} /> }}
+      />
+      <BottomTab.Screen name="Search" component={Search} options={{ lazy: true,
+        tabBarIcon: () => <Icon name="search-outline" size={30} /> }} 
+      />
+      <BottomTab.Screen name="Profile" component={EditProfile} options={{ lazy: true, 
+        tabBarIcon: () => <ImageComponent uri={currUser.profileURL || 'defaultUser'}/> }} 
+      />
     </BottomTab.Navigator>
   )
 }

@@ -104,6 +104,7 @@ const ViewProfiles = ( { route, navigation } : any) => {
 
   return(
     <View style={styles.container}>
+      <View style={styles.header}/>
       {/* User Profile Section */}
       <View style={styles.viewUserProfileSection}>
         <Icon style={styles.editProfileButton} name="ellipsis-horizontal" 

@@ -151,6 +151,7 @@ const EditPost = ( {route, navigation} : any ) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
+        <View style={styles.header}/>
         <Text style={styles.noResultsMsg}>What's on your mind?</Text>
         <TextInput 
           style={[styles.contentInput]} 

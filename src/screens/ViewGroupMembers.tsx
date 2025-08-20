@@ -11,6 +11,7 @@ import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles';
 import ImgComponent from "../components/ImgComponent";
 import Report from "../components/Report";
+import Icon from "@react-native-vector-icons/ionicons";
 
 /**
  * Displays all users in the group and allows owners and admin to set roles and
@@ -178,6 +179,11 @@ const ViewGroupMembers = ( {route, navigation} : any ) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Group Members</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>{group.groupName}</Text>
       <FlatList
         data={userGroups}
@@ -214,7 +220,7 @@ const ViewGroupMembers = ( {route, navigation} : any ) => {
         }}
       />
       {(myUserGroup?.role === 'Admin' || myUserGroup?.role === 'Owner') && 
-        <View>
+        <View style={{marginBottom: 30}}>
           <TouchableOpacity style={styles.buttonBlack} onPress={handleCreateChat}>
             <Text style={styles.buttonTextWhite}>Create Chat</Text>
           </TouchableOpacity>

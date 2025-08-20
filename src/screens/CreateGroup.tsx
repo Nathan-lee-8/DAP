@@ -38,11 +38,13 @@ const CreateGroup = ({ navigation }: any) => {
   // sending notifications to each member then navigates to newly created group 
   const addGroup = async () => {
     //check if groupname is flagged
+    setLoading(true);
     const flagged = await textModeration(groupName);
     if(flagged){
       Alert.alert('Warning', 'Group name is flagged for sensitive content. Please remove ' + 
         'sensitive content and review our community guidelines before posting.'
       )
+      setLoading(false);
       return;
     }
     //check if description is flagged 
@@ -52,17 +54,18 @@ const CreateGroup = ({ navigation }: any) => {
         Alert.alert('Warning', 'Description is flagged for sensitive content. Please remove ' + 
           'sensitive content and review our community guidelines before posting.'
         )
+        setLoading(false);
         return;
       }
     }
     if(groupName.trim() === ''){
       Alert.alert('Error', 'Please enter a group name before creating a group');
+      setLoading(false);
       return;
     }
 
     let tempGroupID: string | undefined;
     try{ 
-      setLoading(true);
       setGoNext(false);
 
       //Create Group
@@ -214,12 +217,22 @@ const CreateGroup = ({ navigation }: any) => {
     return true;
   }
 
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
+  if(loading) return (
+    <View style={styles.container}>
+      <View style={styles.header}/>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
+  )
 
   //Second page to add Users to group
   if(goNext) {
     return(
       <View style={styles.container}>
+        <View style={styles.header}/>
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <Icon name={'arrow-back'} size={25} color={'black'}/>
+          <Text style={styles.backText}>Create Group</Text>
+        </TouchableOpacity>
         <FlatList
           data={members}
           renderItem={({ item }) => {
@@ -268,6 +281,11 @@ const CreateGroup = ({ navigation }: any) => {
   //Page to set Metadata: group image, groupName, description & privacy
   return(
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Create Group</Text>
+      </TouchableOpacity>
       <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}} 
         keyboardShouldPersistTaps='handled'
       >

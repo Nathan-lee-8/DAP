@@ -32,6 +32,7 @@ const SignIn = () => {
   //Signs in to cognito, navigates to verify if unverified & triggers signin through 
   //authcontext if verified
   const handleSignIn = async () => {
+    setLoading(true);
     try{
       const res = await signIn({username: email.trim().toLowerCase(), password: password});
       if(!res.isSignedIn){
@@ -43,7 +44,8 @@ const SignIn = () => {
       setUserEmail(email.trim().toLowerCase());
     } catch {
       Alert.alert('Error', 'Invalid email & password or account does not exist.');
-    };
+      setLoading(false);
+    }
   };
 
   //Subscription to listen for social provider login response
@@ -80,12 +82,11 @@ const SignIn = () => {
     navigation.navigate('ResetPassword');
   }
 
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />;
-
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={[styles.formContainer]}>
+        <View style={styles.formContainer}>
           <ImgComponent uri="logo" style={styles.logoLarge}/>
           <Text style={styles.loginText}>Log in</Text>
           <TextInput
@@ -109,30 +110,36 @@ const SignIn = () => {
               onPress={() => setPasswordVisible(!passwordVisible)}
             />
           </View>
-          <TouchableOpacity style={styles.signInBtn} onPress={ handleSignIn }>
-            <Text style={styles.loginBtnText}>Sign In</Text>
-          </TouchableOpacity>
-
-          <Text style={{textAlign:'center', marginVertical: 15}}>or</Text>
-
-          <TouchableOpacity style={styles.googleLoginContainer}
-            onPress={() => signInWithRedirect({ provider: 'Google' })}
-          >
-            <Icon name="logo-google" size={25} />
-            <Text style={styles.label}>Continue with Google</Text>
-          </TouchableOpacity>
-
+          
+          {loading ? ( 
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <View>
+              <TouchableOpacity style={styles.signInBtn} onPress={ handleSignIn }
+                disabled={loading}
+              >
+                <Text style={styles.loginBtnText}>Sign In</Text>
+              </TouchableOpacity>
+              <Text style={{textAlign:'center', marginVertical: 15}}>or</Text>
+              <TouchableOpacity style={styles.googleLoginContainer} disabled={loading}
+                onPress={() => signInWithRedirect({ provider: 'Google' })}
+              >
+                <Icon name="logo-google" size={25} />
+                <Text style={styles.googleLoginText}>Continue with Google</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           <View style={styles.centeredRow}>
             <Text>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')} disabled={loading}>
               <Text style={styles.hyperlink}>Sign Up</Text> 
             </TouchableOpacity>
           </View>
 
           <View style={styles.centeredRow}>
             <Text>Forgot Password? </Text>
-            <TouchableOpacity onPress={ resetPw }>
+            <TouchableOpacity onPress={ resetPw } disabled={loading}>
               <Text style={styles.hyperlink}>Reset Password</Text>
             </TouchableOpacity>
           </View>

@@ -103,40 +103,56 @@ const HomeScreen = ( {navigation} : any) => {
     }
   };
 
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
   return (
     <View style={styles.container}>
-      <FlatList
-        data={newsFeed}
-        renderItem={({ item }) => {
-          if(!item.post) return null;
-          return (
-            <FormatPost post={item.post} destination={'Home'} 
-              refresh={() => fetchNewsFeed(true)}
-            /> 
-          )
-        }}
-        ListEmptyComponent={() => (
-          <TouchableOpacity onPress={() => navigation.navigate('CreateGroup')}>
-            <Text style={styles.noResultsMsg}>
-              New To DAP? Create or join a Group to get started!
+      <View style={styles.header}/>
+      <View style={styles.backBtn}>
+        <Text style={styles.backText}>Home</Text>
+      </View>
+      <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.notificationIcon}>
+        <Icon name="notifications-outline" size={24} style={{marginRight: 15}}/>
+        {currUser && currUser?.unreadNotificationCount > 0 && 
+          <View style={{position: 'absolute', right: 10, top: -10}}>
+            <Text style={{fontWeight: 700, color: 'red'}}>
+              {currUser.unreadNotificationCount}
             </Text>
-          </TouchableOpacity>
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={() => fetchNewsFeed(true)}
-            colors={['#9Bd35A', '#689F38']}
-            progressBackgroundColor="#ffffff" 
-          />
+          </View>
         }
-        onEndReached={() => {
-          if(nextToken) fetchNewsFeed(false)
-        }}
-        onEndReachedThreshold={0.3}
-      />
-      
+      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={newsFeed}
+          renderItem={({ item }) => {
+            if(!item.post) return null;
+            return (
+              <FormatPost post={item.post} destination={'Home'} 
+                refresh={() => fetchNewsFeed(true)}
+              /> 
+            )
+          }}
+          ListEmptyComponent={() => (
+            <TouchableOpacity onPress={() => navigation.navigate('CreateGroup')}>
+              <Text style={styles.noResultsMsg}>
+                New To DAP? Create or join a Group to get started!
+              </Text>
+            </TouchableOpacity>
+          )}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => fetchNewsFeed(true)}
+              colors={['#9Bd35A', '#689F38']}
+              progressBackgroundColor="#ffffff" 
+            />
+          }
+          onEndReached={() => {
+            if(nextToken) fetchNewsFeed(false)
+          }}
+          onEndReachedThreshold={0.3}
+        />
+      )}
       {/* Notification Modal */}
       <Modal transparent={true} visible={modalVisible} 
         onRequestClose={() => setModalVisible(false)}

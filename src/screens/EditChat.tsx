@@ -68,6 +68,7 @@ const EditChat = ( {route, navigation} : any) => {
   
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
       <View style={styles.editNameContainer}>
         <TextInput
           style={styles.chatNameText}

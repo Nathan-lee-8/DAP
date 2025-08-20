@@ -455,7 +455,12 @@ const ViewGroup = ( {route, navigation} : any) => {
     }).catch(() => {})
   }
 
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
+  if(loading) return (
+    <View style={styles.container}>
+      <View style={styles.shortHeader}/>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
+  )
 
   //Header for the group that displays the Group name, description and member icons
   const headerComp = () => {
@@ -522,19 +527,19 @@ const ViewGroup = ( {route, navigation} : any) => {
   if(myUserGroup === undefined && !group?.isPublic){
     return (
       <View style={styles.container}>
-      <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>
-        <Icon name="arrow-back" size={25} style={{alignSelf: 'center'}}/>
-        <Text style={styles.groupHeader}>Groups</Text>
-      </TouchableOpacity>
-      <View style={styles.groupImgContainer}>
-        <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
-        <LinearGradient
-          colors={['rgba(255, 255, 255, 0.94)', 'rgba(255, 255, 255, 0.1)', 'rgba(0,0,0,0)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={styles.gradient}
-        />
-      </View>
+        <TouchableOpacity style={styles.backContainer} onPress={() => navigation.goBack()}>
+          <Icon name="arrow-back" size={25} style={{alignSelf: 'center'}}/>
+          <Text style={styles.groupHeader}>Groups</Text>
+        </TouchableOpacity>
+        <View style={styles.groupImgContainer}>
+          <ProfilePicture style={styles.groupImg} uri={group?.groupURL || 'defaultGroup'}/>
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0.94)', 'rgba(255, 255, 255, 0.1)', 'rgba(0,0,0,0)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={styles.gradient}
+          />
+        </View>
         {headerComp()}
         <Text style={styles.contentText}>Private Group</Text>
       </View>
@@ -642,9 +647,9 @@ const ViewGroup = ( {route, navigation} : any) => {
                 renderItem={({item}) => {
                   return (
                     <View>
-                      <TouchableOpacity style={styles.removeIcon} onPress={() => removeMember(item)}>
-                        <Icon name="remove-circle-outline" size={25}/>
-                      </TouchableOpacity>
+                      <Icon name="remove-circle-outline" style={styles.removeIcon} 
+                        onPress={() => removeMember(item)} size={25}
+                      />
                       <ImgComponent style={styles.addedUserImg} uri={item.profileURL || 'defaultUser'}/>
                     </View>
                   )

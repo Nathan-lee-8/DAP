@@ -13,8 +13,9 @@ const Welcome = () => {
     navigation.navigate('SignIn');
   }
 
-  return (
+  return ( 
     <View style={styles.container}>
+      <View style={styles.header}/>
       <View style={styles.logoContainer}>
         <ImgComponent uri="logo" style={styles.logo}/>
         <Text style={styles.logoText}> DAP </Text>

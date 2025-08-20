@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Alert, Text, Keyboard,
-  TouchableWithoutFeedback, KeyboardAvoidingView, Platform, ActivityIndicator
-} from 'react-native';
+  TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
 import { confirmSignUp, resendSignUpCode, signIn} from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
@@ -61,12 +60,13 @@ const VerifyScreen = ( {route} : any ) => {
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
-      Alert.alert('Success', 'Verification code resent');
+      Alert.alert('Verify', 'Verification code sent to email');
     }
   }
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
           <ImgComponent uri="logo" style={styles.logoLarge}/>
@@ -94,9 +94,7 @@ const VerifyScreen = ( {route} : any ) => {
           {loading ? ( 
            <ActivityIndicator size="large" color="#0000ff" />
           ) : (
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
+            <View>
               <TouchableOpacity style={styles.signInBtn} onPress={ handleVerification }>
                 <Text style={styles.loginBtnText}>Verify</Text>
               </TouchableOpacity>
@@ -104,7 +102,7 @@ const VerifyScreen = ( {route} : any ) => {
               <TouchableOpacity onPress={ resendSignUp} style={{marginTop: 20}}>
                 <Text style={styles.hyperlink}>Resend code</Text>
               </TouchableOpacity>
-            </KeyboardAvoidingView>
+            </View>
           )}
         </View>
       </TouchableWithoutFeedback>

@@ -9,8 +9,9 @@ import { BlockList } from '../../API';
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/Styles';
 import ImgComponent from '../../components/ImgComponent';
+import Icon from '@react-native-vector-icons/ionicons';
 
-const PrivacyPolicy = () => {
+const BlockedUsers = ({navigation} : any) => {
   const currUser = useContext(AuthContext)?.currUser;
   const setBlockList = useContext(AuthContext)?.setBlockList;
   const [ blockedUsers, setBlockedUsers ] = useState<BlockList[]>([]);
@@ -64,6 +65,11 @@ const PrivacyPolicy = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Blocked Users</Text>
+      </TouchableOpacity>
+      <View style={styles.header}/>
       <FlatList
         data={blockedUsers}
         renderItem={({ item }) => (
@@ -78,9 +84,12 @@ const PrivacyPolicy = () => {
             </View>
           </TouchableOpacity>
         )}
+        ListEmptyComponent={() => (
+          <Text style={styles.noResultsMsg}>No Blocked Users</Text>
+        )}
       />
     </View>
   );
 }
 
-export default PrivacyPolicy;
+export default BlockedUsers;

@@ -16,6 +16,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colorBackground,
   },
+  header: {
+    height: Platform.OS === 'ios' ? 110 : 70,
+    backgroundColor: colorPrimary
+  },
+  shortHeader:{
+    height: Platform.OS === 'ios' ? 70 : 30,
+    backgroundColor: colorPrimary
+  },
+  backBtn: {
+    position: 'absolute',
+    top: 60,
+    left: 10,
+    padding: 10, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  backText: {
+    marginLeft: 10,
+    fontSize: 20,
+    fontWeight: 400
+  },
   buttonBlack: {
     alignSelf: 'center',
     width: width - 20,
@@ -122,10 +144,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.3)', 
   },
+  overLayText:{
+    color: 'white',
+    fontSize: 26,
+    fontWeight: 'bold'
+  },
   processingText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  notificationIcon: {
+    position: 'absolute',
+    right: 20,
+    top: 70
   },
 
   /** User Posts styles */
@@ -265,10 +297,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRightWidth: 1,
     borderLeftWidth: 1,
+    marginBottom: 60,
   },
   searchModalHeader: {
     backgroundColor: 'white',
     alignItems: 'center',
+    marginTop: 70,
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
     borderTopWidth: 1,
@@ -620,10 +654,8 @@ const styles = StyleSheet.create({
     left: 5,
   },
   URLSection: {
-    justifyContent: 'center',
     width: 40,
     height: 40,
-    paddingVertical: 10,
   },
   chatImageDefault: {
     height: 40,
@@ -759,12 +791,12 @@ const styles = StyleSheet.create({
   /** Groups Section */
   groupImg: {
     width: '100%',
-    height: 180,
+    height: 200,
     alignSelf: 'center',
   },
   groupImgContainer: {
     width: '100%',
-    height: 180,
+    height: 200,
     alignSelf: 'center',
   },
   backContainer: {

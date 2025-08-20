@@ -7,6 +7,7 @@ import { updateNotificationSettings } from '../../customGraphql/customMutations'
 import FontIcon from '@react-native-vector-icons/fontawesome';
 import styles from '../../styles/Styles';
 import { AuthContext } from '../../context/AuthContext';
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Diplays all user Notification Settings and allows user to customize their
@@ -78,7 +79,11 @@ const NotificationSettings = ({navigation} : any) => {
 
   return(
     <View style={styles.container}>
-      <Text style={styles.title}>Notification Settings</Text>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Notification Settings</Text>
+      </TouchableOpacity>
 
       <View style={styles.notifSettingContainer}>
         <View style={styles.toggleContainer}>

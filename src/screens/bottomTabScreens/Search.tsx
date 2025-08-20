@@ -105,6 +105,7 @@ const Search = ( {navigation} : any ) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.shortHeader}/>
       <View style={{flexDirection:'row'}}>
         {searchTerm === 'Users' ? (
           <SearchBar width={'80%'} userPressed={handleViewUser}/>

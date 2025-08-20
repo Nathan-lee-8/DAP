@@ -43,8 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         const user = await fetchUserAttributes();
         if(user.email) setUserEmail(user.email);
-      } catch (error) {
-        console.log('Error checking auth state:', error);
+      } catch {
         await signOut();
       }
     };
@@ -62,7 +61,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           authMode: 'userPool'
         });
         const users = data.data.userByEmail.items;
-        setSignedIn(true);
         if(users.length > 0){ 
           setCurrUser(users[0])
           wsClient.setUserID(users[0].id);
@@ -70,12 +68,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       } catch (error) {
         console.log('Error fetching user attributes:', error);
+      } finally { 
+        setSignedIn(true);
       }
     };
     getUserAttributes();
   }, [userEmail, fetchCounter]);
 
-  //fetch blocked users whenever userID updates and add subscription to listen for 
+  //Subscription to listen for updates to User metadata
+  useEffect(() => {
+    const subscription = client.graphql({
+      query: onUpdateUser,
+      variables:{
+        filter: {
+          id: { eq: currUser?.id }
+        }
+      },
+      authMode: 'userPool'
+    }).subscribe({
+      next: () => {
+        triggerFetch();
+      },
+    })
+    return () => subscription.unsubscribe();
+  }, [currUser?.id]);
+
+  //fetch blocked users whenever userID updates and subscription to listen for 
   //when users block or unblock currUser
   useEffect(() => {
     if(!currUser) return;

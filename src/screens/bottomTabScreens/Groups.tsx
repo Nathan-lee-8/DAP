@@ -77,53 +77,56 @@ const Groups = ( {navigation} : any ) => {
     navigation.navigate('ViewGroup', { groupID: item.group.id });
   }
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />
-
   return (
     <View style={styles.container}>
-      <FlatList
-        data={group}
-        renderItem={({ item }) => {
-          return (
-            <TouchableOpacity onPress={() => viewGroup(item)}>
-              <View style={styles.postContainer}>
-                <View style={styles.itemContentSection}>
-                  <ImgComponent uri={item.group?.groupURL || "defaultGroup"} 
-                    style={styles.chatImageDefault} />
-                  <View style={styles.userInfoContainer}>
-                    <Text style={[styles.postAuthor, {fontWeight: '500'}]}>
-                      {item.group?.groupName}
-                    </Text>
-                    <Text style={styles.postDate} numberOfLines={1}>
-                      {item.group?.description || "No description"}
-                    </Text>
+      <View style={styles.shortHeader}/>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={group}
+          renderItem={({ item }) => {
+            return (
+              <TouchableOpacity onPress={() => viewGroup(item)}>
+                <View style={styles.postContainer}>
+                  <View style={styles.itemContentSection}>
+                    <ImgComponent uri={item.group?.groupURL || "defaultGroup"} 
+                      style={styles.chatImageDefault} />
+                    <View style={styles.userInfoContainer}>
+                      <Text style={[styles.postAuthor, {fontWeight: '500'}]}>
+                        {item.group?.groupName}
+                      </Text>
+                      <Text style={styles.postDate} numberOfLines={1}>
+                        {item.group?.description || "No description"}
+                      </Text>
+                    </View>
                   </View>
+                  <Text style={styles.memberText}>
+                    {item.group?.memberCount || 0} members
+                  </Text>
                 </View>
-                <Text style={styles.memberText}>
-                  {item.group?.memberCount || 0} members
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )
-        }}
-        ListEmptyComponent={
-          <View><Text style={styles.noResultsMsg}>No groups found.</Text></View>
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={() => fetchGroups(true)}
-            colors={['#9Bd35A', '#689F38']}
-            progressBackgroundColor="#ffffff" 
-          />
-        }
-        onEndReachedThreshold={0.3}
-        onEndReached={() => {
-          if(nextToken) fetchGroups(false)
-        }}
-      />
+              </TouchableOpacity>
+            )
+          }}
+          ListEmptyComponent={
+            <View><Text style={styles.noResultsMsg}>No groups found.</Text></View>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => fetchGroups(true)}
+              colors={['#9Bd35A', '#689F38']}
+              progressBackgroundColor="#ffffff" 
+            />
+          }
+          onEndReachedThreshold={0.3}
+          onEndReached={() => {
+            if(nextToken) fetchGroups(false)
+          }}
+        />
+      )}
       <Icon name="add-circle-outline" style={styles.createButton} size={50} 
-        onPress={createGroup}
+        onPress={createGroup} disabled={loading}
       />
     </View>
   );

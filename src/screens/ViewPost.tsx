@@ -54,6 +54,7 @@ const ViewPost = ( {route} : any) => {
   //The commments of the post with the header included to ensure header scorlls
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
       <Comments postID={postID} header={header} customPadding={80}/>
     </View>
   )

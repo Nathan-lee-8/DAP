@@ -105,96 +105,99 @@ const MessageUsers = ( {navigation}: any ) => {
       .filter(Boolean)
   }
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />
-
   return (
     <View style={styles.container}>
-      <FlatList
-        data={chatRooms}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => {
-          if(!item.chat) return null;
-          const displayURIs = getDisplayURIs(item) || [];
-          const chatname = getChatName(item);
+      <View style={styles.shortHeader}/>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={chatRooms}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => {
+            if(!item.chat) return null;
+            const displayURIs = getDisplayURIs(item) || [];
+            const chatname = getChatName(item);
 
-          //filters out dm's(1 to 1 chats) with blocked users
-          if(item.chat.participants?.items.length === 2){ //guarantees direct chat (not group)
-            const otherUser = item.chat.participants.items.find(
-              (part) => part && part.userID !== currUser.id
-            )
-            if(blockList && blockList.includes(otherUser?.user?.id ?? "")){
-              return null;
+            //filters out dm's(1 to 1 chats) with blocked users
+            if(item.chat.participants?.items.length === 2){ //guarantees direct chat (not group)
+              const otherUser = item.chat.participants.items.find(
+                (part) => part && part.userID !== currUser.id
+              )
+              if(blockList && blockList.includes(otherUser?.user?.id ?? "")){
+                return null;
+              }
             }
-          }
 
-          return (
-            <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>
-              <View style={(item.unreadMessageCount && item.unreadMessageCount > 0) ? 
-                styles.unreadMsgContainer : styles.postContainer}
-              > 
-                {item.unreadMessageCount && item.unreadMessageCount > 0 ? (
-                  <Icon name="ellipse-sharp" color="blue" size={12} 
-                    style={styles.unreadMsgdot}
-                  />
-                ) : ( null )}
-                <View style={styles.itemContentSection}>
-                  <View style={styles.URLSection}>
-                    {item.chat.url ? (
-                      <ImgComponent uri={item.chat.url} style={styles.chatImageDefault}/>
-                    ) : displayURIs.length > 1 ? (
-                      displayURIs.slice(0, 2).map((uri, index) => (
-                        <ImgComponent 
-                          key={index} 
-                          uri={uri || 'defaultUser'} 
-                          style={{ 
-                            position: 'absolute', height: 30, width: 30, 
-                            borderRadius: 25, top: index * 10, left: index * 10, 
-                            zIndex: displayURIs.length - index
-                          }} 
+            return (
+              <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>
+                <View style={(item.unreadMessageCount && item.unreadMessageCount > 0) ? 
+                  styles.unreadMsgContainer : styles.postContainer}
+                > 
+                  {item.unreadMessageCount && item.unreadMessageCount > 0 ? (
+                    <Icon name="ellipse-sharp" color="blue" size={12} 
+                      style={styles.unreadMsgdot}
+                    />
+                  ) : ( null )}
+                  <View style={styles.itemContentSection}>
+                    <View style={styles.URLSection}>
+                      {item.chat.url ? (
+                        <ImgComponent uri={item.chat.url} style={styles.chatImageDefault}/>
+                      ) : displayURIs.length > 1 ? (
+                        displayURIs.slice(0, 2).map((uri, index) => (
+                          <ImgComponent 
+                            key={index} 
+                            uri={uri || 'defaultUser'} 
+                            style={{ 
+                              position: 'absolute', height: 30, width: 30, 
+                              borderRadius: 25, top: index * 10, left: index * 10, 
+                              zIndex: displayURIs.length - index
+                            }} 
+                          />
+                        ))
+                      ) : (
+                        <ImgComponent style={styles.chatImageDefault} 
+                          uri={displayURIs[0] || 'defaultUser'}
                         />
-                      ))
-                    ) : (
-                      <ImgComponent style={styles.chatImageDefault} 
-                        uri={displayURIs[0] || 'defaultUser'}
-                      />
-                    )}
-                  </View>
-                  <View style={{
-                    paddingHorizontal: 10, width: Dimensions.get('window').width * 0.70
-                  }}>
-                    <Text style={[styles.postAuthor, {fontWeight: '500'}]}
-                      numberOfLines={1}
-                    >
-                      {chatname}
-                    </Text>
-                    <Text style={styles.postContent}numberOfLines={1}>
-                      {item.lastMessage}
-                    </Text>
-                  </View>  
-                </View> 
-                <Text style={styles.memberText}>{formatDate(item.lastMessageAt)}</Text>
-              </View>
-            </TouchableOpacity>  
-          )
-        }}
-        ListEmptyComponent={
-          <View><Text style={styles.noResultsMsg}>No chat rooms found.</Text></View>
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={() => fetchChatRooms(true)}
-            colors={['#9Bd35A', '#689F38']}
-            progressBackgroundColor="#ffffff" 
-          />
-        }
-        onEndReachedThreshold={0.3}
-        onEndReached={() => {
-          if(nextToken) fetchChatRooms(false)
-        }}
-      />
+                      )}
+                    </View>
+                    <View style={{
+                      paddingHorizontal: 10, width: Dimensions.get('window').width * 0.70
+                    }}>
+                      <Text style={[styles.postAuthor, {fontWeight: '500'}]}
+                        numberOfLines={1}
+                      >
+                        {chatname}
+                      </Text>
+                      <Text style={styles.postContent}numberOfLines={1}>
+                        {item.lastMessage}
+                      </Text>
+                    </View>  
+                  </View> 
+                  <Text style={styles.memberText}>{formatDate(item.lastMessageAt)}</Text>
+                </View>
+              </TouchableOpacity>  
+            )
+          }}
+          ListEmptyComponent={
+            <View><Text style={styles.noResultsMsg}>No chat rooms found.</Text></View>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={() => fetchChatRooms(true)}
+              colors={['#9Bd35A', '#689F38']}
+              progressBackgroundColor="#ffffff" 
+            />
+          }
+          onEndReachedThreshold={0.3}
+          onEndReached={() => {
+            if(nextToken) fetchChatRooms(false)
+          }}
+        />
+      )}
       <Icon name="add-circle-outline" style={styles.createButton} size={50} 
-        onPress={handleCreateMsg}
+        onPress={handleCreateMsg} disabled={loading}
       />
     </View>
   );

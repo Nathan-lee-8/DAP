@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, Platform,
-  TouchableWithoutFeedback, KeyboardAvoidingView, ActivityIndicator} from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard,
+  TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
 import client from '../../client';
 import { createUser, createNotificationSettings } from '../../customGraphql/customMutations';
@@ -31,16 +31,16 @@ const CreateUser = () => {
       Alert.alert('Error', 'Please enter your last name.');
       return;
     }
+    setLoading(true);
 
     const flagged = await textModeration(firstname + lastname);
     if(flagged){
       Alert.alert('Warning', 'Username is flagged for sensitive content. Please remove ' + 
         'sensitive content and review our community guidelines before posting.'
       )
+      setLoading(false);
       return;
     }
-
-    setLoading(true);
     try{
       const user = await client.graphql({
         query: createUser,
@@ -80,7 +80,7 @@ const CreateUser = () => {
     } catch (error: any) {
       Alert.alert('Error', error.message);
       setLoading(false);
-    }
+    } 
   };
 
   //uses openAI textmoderation to moderate text and return whether that text should be 
@@ -101,10 +101,9 @@ const CreateUser = () => {
     return true;
   }
 
-  if(loading) return <ActivityIndicator size="small" color="#0000ff" />
-
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
           <ImgComponent uri="logo" style={styles.logoLarge}/>
@@ -123,15 +122,16 @@ const CreateUser = () => {
             autoCapitalize="words"
             placeholder="Last Name"
           />
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
-            <TouchableOpacity style={styles.signInBtn} onPress={ handleSignUp }>
+          {loading ? ( 
+            <ActivityIndicator size="small" color="#0000ff" />
+          ) : (
+            <TouchableOpacity style={styles.signInBtn} onPress={ handleSignUp } 
+              disabled={loading}
+            >
               <Text style={styles.loginBtnText}>Create Account</Text>
             </TouchableOpacity>
-          </KeyboardAvoidingView>
+          )}
         </View>
-        
       </TouchableWithoutFeedback>
     </View>
   );

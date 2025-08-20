@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react';
-import { View, TextInput, TouchableOpacity, Alert, Text, Platform, Keyboard,
-  TouchableWithoutFeedback, KeyboardAvoidingView } from 'react-native';
+import { View, TextInput, TouchableOpacity, Alert, Text, Keyboard,
+  TouchableWithoutFeedback, ActivityIndicator
+} from 'react-native';
 
 import { resetPassword, confirmResetPassword, signIn } from '@aws-amplify/auth';
 import { AuthContext } from '../../context/AuthContext';
@@ -12,7 +13,7 @@ import Icon from '@react-native-vector-icons/ionicons';
  * Retrieves the code and password from the user. Resets the password in Cognito
  * as long as user entered code is correct and password match. 
  */
-const ResetPassword = () => {
+const ResetPassword = ( {navigation} : any) => {
   const authContext = useContext(AuthContext);
   if(!authContext) {
     return null;
@@ -25,12 +26,15 @@ const ResetPassword = () => {
   const [ passwordCheckVisible, setPasswordCheckVisible ] = useState(false); 
   const [ hasReset, setHasReset ] = useState(false);
   const [ email, setEmail ] = useState('');
+  const [ loading, setLoading ] = useState(false); //for password reset
+  const [ codeLoading, setCodeLoading ] = useState(false); //for confirmation code request
 
   const confirmPasswordReset = async () => {
     if(password != passwordCheck) {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
+    setLoading(true);
     try {
       await confirmResetPassword({ 
         username: email.trim().toLowerCase(),
@@ -39,39 +43,56 @@ const ResetPassword = () => {
       });
       await signIn({ username: email.trim().toLowerCase(), password: password })
       setUserEmail(email.trim().toLowerCase());
+      setCode('');
       Alert.alert('Success', 'Password reset successfully');
     } catch (error: any) {
       Alert.alert('Error', error.message);
+    }finally {
+      setLoading(false);
     }
   }
 
   const handleResetPassword = async () => {
+    if(email === ''){
+      Alert.alert('Error', 'Please enter a valid email.');
+    }
+    setCodeLoading(true);
     try {
       await resetPassword({ username: email.trim().toLowerCase() });
       setHasReset(true);
+      Alert.alert('Success', 'Confirmation code sent to ' + email);
     } catch (error: any) {
       Alert.alert('Error', error.message);
+    } finally{
+      setCodeLoading(false);
     }
   }
 
   if(!hasReset){
     return (
       <View style={styles.container}>
+        <View style={styles.header}/>
+        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <Icon name={'arrow-back'} size={25} color={'black'}/>
+          <Text style={styles.backText}>Log in </Text>
+        </TouchableOpacity>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.formContainer}>
             <ImgComponent uri="logo" style={styles.logoLarge}/>
-            <Text style={styles.loginText}>
-              Enter your email to reset your password
-            </Text>
+            <Text style={styles.loginText}>Reset password</Text>
             <TextInput
               style={styles.input}
               placeholder='Enter email'
               value={email}
               onChangeText={setEmail}
             />
-            <TouchableOpacity style={styles.loginBtn} onPress={handleResetPassword}>
-              <Text style={styles.loginBtnText}>Reset Password</Text>
-            </TouchableOpacity>
+            { codeLoading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (  
+              <TouchableOpacity style={styles.loginBtn} onPress={handleResetPassword}>
+                <Text style={styles.loginBtnText}>Reset Password</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </TouchableWithoutFeedback>
       </View>
@@ -80,19 +101,18 @@ const ResetPassword = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Log in </Text>
+      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.formContainer}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-        >
+        <View style={styles.formContainer}>
           <ImgComponent uri="logo" style={styles.logoLarge}/>
-          <Text style={styles.loginText}>Enter the confirmation code sent to: 
-            <Text style={{color: "#007BFF"}}> {email}</Text>
-          </Text>
+          <Text style={styles.loginText}>Enter confirmation code</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter confirmation code"
+            placeholder="Confirmation code"
             value={code}
             onChangeText={setCode}
             keyboardType="numeric"
@@ -101,7 +121,7 @@ const ResetPassword = () => {
           <View>
             <TextInput
               style={styles.input}
-              placeholder="Enter new password"
+              placeholder="New password"
               secureTextEntry={!passwordVisible}
               value={password}
               onChangeText={setPassword}
@@ -124,10 +144,14 @@ const ResetPassword = () => {
               onPress={() => setPasswordCheckVisible(!passwordCheckVisible)} 
             />
           </View>
-          <TouchableOpacity style={styles.loginBtn} onPress={confirmPasswordReset}>
-            <Text style={styles.loginBtnText}>Reset Password</Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <TouchableOpacity style={styles.loginBtn} onPress={confirmPasswordReset}>
+              <Text style={styles.loginBtnText}>Reset Password</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </TouchableWithoutFeedback>
     </View>
   );

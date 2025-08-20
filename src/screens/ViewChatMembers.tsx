@@ -9,6 +9,7 @@ import { UserChat } from "../API";
 import ImgComponent from "../components/ImgComponent";
 import { AuthContext } from "../context/AuthContext";
 import Report from "../components/Report";
+import Icon from "@react-native-vector-icons/ionicons";
 
 /**
  * Displays all users that are in the chatroom and allows owners and admin to 
@@ -142,6 +143,11 @@ const ChatMembers = ( {route, navigation} : any ) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Chat Memebers</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>{chatData.name}</Text>
       <FlatList
         data={userChats}

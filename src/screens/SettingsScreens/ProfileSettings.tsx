@@ -19,6 +19,11 @@ const ProfileSettings = ({navigation} : any) => {
 
   return(
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Profile Settings</Text>
+      </TouchableOpacity>
       <View style={styles.notifSettingContainer}>
         <TouchableOpacity style={styles.toggleContainer} onPress={() => navigation.navigate('NotificationSettings')}>
           <Text style={styles.notificationSettingText}>Notification Settings</Text>

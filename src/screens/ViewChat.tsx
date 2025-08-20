@@ -473,7 +473,7 @@ const ViewChat = ( { route, navigation } : any) => {
       </View>
 
       {/* Flatlist for Messages */}
-      {loading && <ActivityIndicator size="small" color="#0000ff" />}
+
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -556,70 +556,72 @@ const ViewChat = ( { route, navigation } : any) => {
         onEndReachedThreshold={0.4}
         inverted
       />
-
       {/* Keyboard/TextInput section */}
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[styles.addCommentSection, {paddingBottom: 0}]}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
-      > 
-        {/* Flatlist for image/video icons */}
-        {media.length > 0 && 
-          <FlatList
-            data={media}
-            keyExtractor={(_, index) => index.toString()}
-            style={{marginBottom: 10}}
-            horizontal
-            renderItem={({ item }) => (
-              <View style={{alignSelf: 'center'}}>
-                {item.fileName?.endsWith('.mp4') ? (
-                  <Video source={{ uri: item.uri }} style={{width: 90, height: 90}}
-                    resizeMode="contain"
+      {loading ? ( 
+        <ActivityIndicator size="small" color="#0000ff" />
+      ) : (
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={[styles.addCommentSection, {paddingBottom: 0}]}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
+        > 
+          {/* Flatlist for image/video icons */}
+          {media.length > 0 && 
+            <FlatList
+              data={media}
+              keyExtractor={(_, index) => index.toString()}
+              style={{marginBottom: 10}}
+              horizontal
+              renderItem={({ item }) => (
+                <View style={{alignSelf: 'center'}}>
+                  {item.fileName?.endsWith('.mp4') ? (
+                    <Video source={{ uri: item.uri }} style={{width: 90, height: 90}}
+                      resizeMode="contain"
+                    />
+                  ) : (
+                    <ImgComponent uri={item.uri || 'defaultUser'} 
+                      style={{width: 90, height: 90}} resizeMode={'cover'}
+                    />
+                  )}
+                  <Icon name="remove-circle-outline" size={20} style={styles.removeIcon}
+                    onPress={() => removeMedia(item)}
                   />
-                ) : (
-                  <ImgComponent uri={item.uri || 'defaultUser'} 
-                    style={{width: 90, height: 90}} resizeMode={'cover'}
-                  />
-                )}
-                <Icon name="remove-circle-outline" size={20} style={styles.removeIcon}
-                  onPress={() => removeMedia(item)}
+                </View>
+              )}
+            />
+          }
+          <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30 : 0}}>
+            {iconsVisible ? (
+              <View style={{flexDirection: 'row'}}>
+                <Icon name="remove-circle" style={{marginRight: 5, alignSelf: 'center'}} 
+                  size={25} onPress={() => setIconsVisible(false)}
+                />
+                <Icon name="camera-outline" style={{marginRight: 5}} size={30}
+                  onPress={openCamera}
+                />
+                <Icon name="image-outline" style={{marginRight: 5}} size={30}
+                  onPress={openLibrary}
                 />
               </View>
+            ) : (
+              <Icon name="add-circle" size={25} onPress={() => setIconsVisible(true)}
+                style={{marginRight: 5, marginBottom: 10, alignSelf: 'center'}} 
+              />
             )}
-          />
-        }
-        <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30 : 0}}>
-          {iconsVisible ? (
-            <View style={{flexDirection: 'row'}}>
-              <Icon name="remove-circle" style={{marginRight: 5, alignSelf: 'center'}} 
-                size={25} onPress={() => setIconsVisible(false)}
-              />
-              <Icon name="camera-outline" style={{marginRight: 5}} size={30}
-                onPress={openCamera}
-              />
-              <Icon name="image-outline" style={{marginRight: 5}} size={30}
-                onPress={openLibrary}
-              />
-            </View>
-          ) : (
-            <Icon name="add-circle" size={25} onPress={() => setIconsVisible(true)}
-              style={{marginRight: 5, marginBottom: 10, alignSelf: 'center'}} 
+            <TextInput
+              style={styles.commentInput}
+              placeholder={'Type a message'}
+              value={currMessage}
+              autoCapitalize='sentences'
+              onChangeText={(text) => setMessage(text)}
+              onFocus={() => setIconsVisible(false)}
             />
-          )}
-          <TextInput
-            style={styles.commentInput}
-            placeholder={'Type a message'}
-            value={currMessage}
-            autoCapitalize='sentences'
-            onChangeText={(text) => setMessage(text)}
-            onFocus={() => setIconsVisible(false)}
-          />
-          <Icon style={styles.commentButton} onPress={loading ? undefined : sendMessage} 
-            name="send" size={30}
-          />
-        </View>
-      </KeyboardAvoidingView>
-
+            <Icon style={styles.commentButton} onPress={loading ? undefined : sendMessage} 
+              name="send" size={30}
+            />
+          </View>
+        </KeyboardAvoidingView>
+      )}
       {/* ChatRoom Options Modal */}
       <Modal 
         transparent={true} 
@@ -657,9 +659,6 @@ const ViewChat = ( { route, navigation } : any) => {
         animationType="slide"
       >
         <View style={styles.searchModalOverlay}>
-          <TouchableOpacity style={styles.searchModalSpacer} 
-            onPress={() => setInviteModalVisible(false)}
-          />
           <View style={styles.searchModalHeader}>
             <TouchableOpacity style={styles.closeSearchButton}
               onPress={() => setInviteModalVisible(false)} 

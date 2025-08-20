@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, Platform,
-  TouchableWithoutFeedback, KeyboardAvoidingView,  } from 'react-native';
+import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard, 
+  TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
 import { signUp } from '@aws-amplify/auth';
 import styles from '../../styles/SignInScreenStyles';
@@ -17,6 +17,7 @@ const SignUp = ( {navigation} : any ) => {
   const [ passwordCheck, setPasswordCheck ] = useState('');
   const [ passwordVisible, setPasswordVisible ] = useState(false);
   const [ passwordCheckVisible, setPasswordCheckVisible ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
 
   const handleSignUp = async () => {
     if(email === '') {
@@ -29,6 +30,7 @@ const SignUp = ( {navigation} : any ) => {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
+    setLoading(true);
     try{
       await signUp({ username: email.trim().toLowerCase(), password: password });
       navigation.navigate('Verify', {email: email, password: password});
@@ -41,15 +43,22 @@ const SignUp = ( {navigation} : any ) => {
         return;
       }
       Alert.alert('Error', error.message);
-    };
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Log in </Text>
+      </TouchableOpacity>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
           <ImgComponent uri="logo" style={styles.logoLarge}/>
-          <Text style={styles.loginText}>Create a Password</Text>
+          <Text style={styles.loginText}>Sign up</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -88,15 +97,15 @@ const SignUp = ( {navigation} : any ) => {
           <Text style={styles.note}>
             *Note: Password can not be changed until after account verification
           </Text>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#0000ff" />
+          ) : (
             <TouchableOpacity style={[styles.loginBtn, {marginTop: 20}]} 
-              onPress={ handleSignUp }
+              onPress={ handleSignUp } disabled={loading}
             >
               <Text style={styles.loginBtnText}>Continue</Text>
             </TouchableOpacity>
-          </KeyboardAvoidingView>
+          )}
         </View>
       </TouchableWithoutFeedback>
     </View>

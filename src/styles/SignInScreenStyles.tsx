@@ -15,8 +15,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    paddingTop: Platform.OS === 'ios' ? 70 : 30,
     backgroundColor: colorPrimary,
+  },
+  header: {
+    height: Platform.OS === 'ios' ? 50 : 30,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems:'center',
+  },
+  logo: {
+    width: 30,
+    height: 30,
+    alignSelf: 'center'
+  },
+  logoText: {
+    fontWeight: 'bold',
+    fontSize: 35,
+    marginLeft: 10,
+  }, 
+  welcomeMessage: {
+    marginTop: 20,
+    fontSize: 60,
+    fontWeight: 'bold'
   },
   loginBtn:{
     alignSelf: 'center',
@@ -33,31 +54,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: colorPrimary,
   },
-  welcomeMessage: {
-    marginTop: 20,
-    fontSize: 60,
-    fontWeight: 'bold'
-  },
-  logoContainer: {
-    flexDirection: 'row',
-  },
-  logo: {
-    width: 30,
-    height: 30,
-    alignSelf: 'center'
-  },
-  logoText: {
-    fontWeight: 'bold',
-    fontSize: 30,
-    marginLeft: 10,
-  }, 
   
   /** Sign in Screen styles */
+  backBtn: {
+    position: 'absolute',
+    top: 60,
+    left: 10,
+    padding: 10, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 1,
+  },
+  backText: {
+    marginLeft: 10,
+    fontSize: 20,
+    fontWeight: 500
+  },
   logoLarge: {
     width: 80,
     height: 80,
     alignSelf: 'center',
-    marginTop: '30%',
+    marginTop: '40%',
   },
   loginText:{
     fontSize: 30,
@@ -67,7 +84,6 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     justifyContent: 'center',
-    marginTop: 20
   },
   input: {
     height: 40,
@@ -104,12 +120,12 @@ const styles = StyleSheet.create({
     borderColor: '#a3a3a3',
     flexDirection: 'row',
     alignItems: 'center',
+    textAlign: 'center',
     justifyContent:'center',
     borderRadius: 5,
     marginBottom: 10,
   },
-  label: {
-    marginBottom: 5,
+  googleLoginText: {
     marginLeft: 12,
     fontSize: 16,
     fontWeight: '600',

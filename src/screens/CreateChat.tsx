@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Platform,
-  KeyboardAvoidingView } from 'react-native';
+  KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 
 import client from '../client';
 import { createChat, createUserChat, createMessage, createNotification, deleteChat,
@@ -186,10 +186,13 @@ const CreateChat = ({ route, navigation }: any) => {
     setChatImage(uri);
   }
 
-  if (loading) return <Text style={styles.container}>Loading...</Text>;
-
   return (
     <View style={[styles.container, { justifyContent: "flex-end" }]}>
+      <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Create chat</Text>
+      </TouchableOpacity>
       <SearchBar userPressed={handleUserSelected} remove={targetUsers} />
       <TouchableOpacity onPress={openImageLibrary}
         style={{height: 120, width: 120, alignSelf: 'center', marginVertical: 10}}
@@ -224,22 +227,26 @@ const CreateChat = ({ route, navigation }: any) => {
         numColumns={3}
       />
       <Text style={[styles.contentText, { marginBottom: 'auto' }]}></Text>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[styles.addCommentSection, {paddingBottom: 0}]}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
-      >
-        <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30: 0}}>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={[styles.addCommentSection, {paddingBottom: 0}]}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
+        >
+          <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30: 0}}>
 
-          <TextInput
-            style={styles.commentInput}
-            placeholder="Type a message..."
-            value={message}
-            onChangeText={setMessage}
-          />
-          <Icon name="send" style={styles.commentButton} onPress={createChatRoom} size={30}/>
-        </View>
-      </KeyboardAvoidingView>
+            <TextInput
+              style={styles.commentInput}
+              placeholder="Type a message..."
+              value={message}
+              onChangeText={setMessage}
+            />
+            <Icon name="send" style={styles.commentButton} onPress={createChatRoom} size={30}/>
+          </View>
+        </KeyboardAvoidingView>
+      )}
     </View>
   )
 }
