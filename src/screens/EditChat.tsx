@@ -69,6 +69,10 @@ const EditChat = ( {route, navigation} : any) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Edit chat</Text>
+      </TouchableOpacity>
       <View style={styles.editNameContainer}>
         <TextInput
           style={styles.chatNameText}
@@ -86,7 +90,7 @@ const EditChat = ( {route, navigation} : any) => {
         keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
         style={{marginTop: 'auto'}}
       >   
-        <TouchableOpacity style={styles.buttonBlack} onPress={handleSaveChanges}>
+        <TouchableOpacity style={[styles.buttonBlack, {marginBottom: 50}]} onPress={handleSaveChanges}>
           <Text style={styles.buttonTextWhite}>Save Changes</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>

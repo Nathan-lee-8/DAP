@@ -665,6 +665,7 @@ const ViewGroup = ( {route, navigation} : any) => {
                 <Text style={styles.buttonTextWhite}>Invite</Text>
               </TouchableOpacity>
             </KeyboardAvoidingView>  
+            <View style={styles.searchModalFooter}/>
           </View>
         </View>
       </Modal>

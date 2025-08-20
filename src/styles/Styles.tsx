@@ -289,15 +289,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end'
   },
-  searchModalSpacer: {
-    height: Platform.OS === 'ios' ? '10%': 0
-  },
   searchModalContainer: {
     flex: 1,
     backgroundColor: 'white',
     borderRightWidth: 1,
     borderLeftWidth: 1,
-    marginBottom: 60,
+  },
+  searchModalFooter: {
+    height: 40,
+    backgroundColor: 'colorPrimary'
   },
   searchModalHeader: {
     backgroundColor: 'white',
@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgrey',
     marginBottom: 5,
     padding: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20,  
   },
   unreadMsgdot : {
     position: 'absolute',
