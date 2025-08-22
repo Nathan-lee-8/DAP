@@ -87,8 +87,9 @@ const AppNavigator = () => {
           <GlobalStack.Screen name="BlockedUsers" component={BlockedUsers}/>
         </GlobalStack.Navigator>
       ) : isSignedIn && !currUser ? ( //Screens User has not created an account
-        <SignInStack.Navigator initialRouteName='CreateUser' >
-          <SignInStack.Screen name="CreateUser" component={CreateUser} options={{headerShown: false}}/>
+        <SignInStack.Navigator initialRouteName='CreateUser' screenOptions={{headerShown: false}}>
+          <SignInStack.Screen name="CreateUser" component={CreateUser}/>
+          <SignInStack.Screen name="Terms" component={TermsConditions}/>
         </SignInStack.Navigator>
       ) : ( //Sign-in Sign-up Screens
         <SignInStack.Navigator initialRouteName='Welcome' screenOptions={{headerShown: false}}>

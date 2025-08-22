@@ -2,7 +2,6 @@ import { StyleSheet, Platform, Dimensions } from 'react-native';
 
 const colorBackground = '#f2f7f7';
 const colorPrimary = 'white';
-const textColor = 'black';
 
 // const backgroundDark = '#181C14'
 // const primaryDark = '#3C3D37'
@@ -95,6 +94,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'rgba(148, 148, 148, 0.19)'
   },
+  longInput: {
+    height: 100,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    marginBottom: 10,
+    borderRadius: 5,
+    textAlignVertical: 'top',
+    backgroundColor: 'rgba(148, 148, 148, 0.19)'
+  },   
   seePasswordIcon: {
     position: 'absolute',
     right: 10,
@@ -140,6 +149,28 @@ const styles = StyleSheet.create({
     marginTop: -10,
     marginBottom: 8,
     fontSize: 12,
+  },
+  imageContainer: {
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  profImage: {
+    height: 150,
+    width: 150,
+    borderRadius: 75,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 150,
+    width: 150,
+    borderRadius: 75,
+  },
+  overLayText:{
+    color: 'white',
+    fontSize: 20,
+    fontWeight: 'bold'
   },
 });
 

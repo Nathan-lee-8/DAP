@@ -201,15 +201,16 @@ const ViewChat = ( { route, navigation } : any) => {
   //Send current message unless message is empty
   const sendMessage = async () => {
     if((currMessage === '' && media.length === 0) || !chat ) return;
-    const newPaths = await handleUploadFilepaths() || [];
-    wsClient.send({
-      action: 'sendMessage',
-      chatID: chatID,
-      userID: currUser.id,
-      message: currMessage,
-      urls: newPaths
-    })
+    setLoading(true);
     try {
+      const newPaths = await handleUploadFilepaths() || [];
+      wsClient.send({
+        action: 'sendMessage',
+        chatID: chatID,
+        userID: currUser.id,
+        message: currMessage,
+        urls: newPaths
+      })
       await client.graphql({
         query: createMessage,
         variables: {
@@ -224,8 +225,11 @@ const ViewChat = ( { route, navigation } : any) => {
         authMode: 'userPool'
       });
       setMessage('');
+      setMedia([]);
     } catch {
       Alert.alert('Error', "Failed to send message");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -557,71 +561,71 @@ const ViewChat = ( { route, navigation } : any) => {
         inverted
       />
       {/* Keyboard/TextInput section */}
-      {loading ? ( 
-        <ActivityIndicator size="small" color="#0000ff" />
-      ) : (
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={[styles.addCommentSection, {paddingBottom: 0}]}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
-        > 
-          {/* Flatlist for image/video icons */}
-          {media.length > 0 && 
-            <FlatList
-              data={media}
-              keyExtractor={(_, index) => index.toString()}
-              style={{marginBottom: 10}}
-              horizontal
-              renderItem={({ item }) => (
-                <View style={{alignSelf: 'center'}}>
-                  {item.fileName?.endsWith('.mp4') ? (
-                    <Video source={{ uri: item.uri }} style={{width: 90, height: 90}}
-                      resizeMode="contain"
-                    />
-                  ) : (
-                    <ImgComponent uri={item.uri || 'defaultUser'} 
-                      style={{width: 90, height: 90}} resizeMode={'cover'}
-                    />
-                  )}
-                  <Icon name="remove-circle-outline" size={20} style={styles.removeIcon}
-                    onPress={() => removeMedia(item)}
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={[styles.addCommentSection, {paddingBottom: 0}]}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -20 : 0}
+      > 
+        {/* Flatlist for image/video icons */}
+        {media.length > 0 && 
+          <FlatList
+            data={media}
+            keyExtractor={(_, index) => index.toString()}
+            style={{marginBottom: 10}}
+            horizontal
+            renderItem={({ item }) => (
+              <View style={{alignSelf: 'center'}}>
+                {item.fileName?.endsWith('.mp4') ? (
+                  <Video source={{ uri: item.uri }} style={{width: 90, height: 90}}
+                    resizeMode="contain"
                   />
-                </View>
-              )}
-            />
-          }
-          <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30 : 0}}>
-            {iconsVisible ? (
-              <View style={{flexDirection: 'row'}}>
-                <Icon name="remove-circle" style={{marginRight: 5, alignSelf: 'center'}} 
-                  size={25} onPress={() => setIconsVisible(false)}
-                />
-                <Icon name="camera-outline" style={{marginRight: 5}} size={30}
-                  onPress={openCamera}
-                />
-                <Icon name="image-outline" style={{marginRight: 5}} size={30}
-                  onPress={openLibrary}
+                ) : (
+                  <ImgComponent uri={item.uri || 'defaultUser'} 
+                    style={{width: 90, height: 90}} resizeMode={'cover'}
+                  />
+                )}
+                <Icon name="remove-circle-outline" size={20} style={styles.removeIcon}
+                  onPress={() => removeMedia(item)}
                 />
               </View>
-            ) : (
-              <Icon name="add-circle" size={25} onPress={() => setIconsVisible(true)}
-                style={{marginRight: 5, marginBottom: 10, alignSelf: 'center'}} 
-              />
             )}
-            <TextInput
-              style={styles.commentInput}
-              placeholder={'Type a message'}
-              value={currMessage}
-              autoCapitalize='sentences'
-              onChangeText={(text) => setMessage(text)}
-              onFocus={() => setIconsVisible(false)}
+          />
+        }
+        <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30 : 0}}>
+          {iconsVisible ? (
+            <View style={{flexDirection: 'row'}}>
+              <Icon name="remove-circle" style={{marginRight: 5, alignSelf: 'center'}} 
+                size={25} onPress={() => setIconsVisible(false)}
+              />
+              <Icon name="camera-outline" style={{marginRight: 5}} size={30}
+                onPress={openCamera}
+              />
+              <Icon name="image-outline" style={{marginRight: 5}} size={30}
+                onPress={openLibrary}
+              />
+            </View>
+          ) : (
+            <Icon name="add-circle" size={25} onPress={() => setIconsVisible(true)}
+              style={{marginRight: 5, marginBottom: 10, alignSelf: 'center'}} 
             />
+          )}
+          <TextInput
+            style={styles.commentInput}
+            placeholder={'Type a message'}
+            value={currMessage}
+            autoCapitalize='sentences'
+            onChangeText={(text) => setMessage(text)}
+            onFocus={() => setIconsVisible(false)}
+          />
+          {loading ? ( 
+            <ActivityIndicator size="small" color="#0000ff" />
+          ) : (
             <Icon style={styles.commentButton} onPress={loading ? undefined : sendMessage} 
               name="send" size={30}
             />
-          </View>
-        </KeyboardAvoidingView>
-      )}
+          )}
+        </View>
+      </KeyboardAvoidingView>
       {/* ChatRoom Options Modal */}
       <Modal 
         transparent={true} 

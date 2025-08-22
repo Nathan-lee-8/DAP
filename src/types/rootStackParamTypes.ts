@@ -7,6 +7,7 @@ export type SignInParamList = {
     Verify: {email?: string, password?: string};
     ResetPassword: undefined;
     CreateUser: undefined;
+    TermsConditions: {section: string};
 };
 
 export type GlobalParamList = {

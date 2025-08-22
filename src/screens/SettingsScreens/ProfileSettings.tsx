@@ -1,9 +1,11 @@
 
 import { useContext } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
+
+import client from '../../client';
+import { deleteUser } from '../../customGraphql/customMutations';
 
 import { AuthContext } from '../../context/AuthContext';
-
 import styles from '../../styles/Styles';
 import Icon from '@react-native-vector-icons/ionicons';
 
@@ -12,9 +14,27 @@ import Icon from '@react-native-vector-icons/ionicons';
  * notification settings. 
  */
 const ProfileSettings = ({navigation} : any) => {
-  const logout = useContext(AuthContext)?.logout;
-  if(!logout) {
-    return null;
+  const {logout, currUser} = useContext(AuthContext)!;
+  if(!logout || !currUser) {
+    return;
+  }
+
+  const handleDeleteUser = async () => {
+    try{
+      client.graphql({
+        query: deleteUser,
+        variables: {
+          input: {
+            id: currUser.id
+          }
+        },
+        authMode: 'userPool',
+      })
+      logout();
+    }catch(err){
+      console.log(err);
+      Alert.alert('Error', 'Issue removing account. Please contact support');
+    }
   }
 
   return(
@@ -58,6 +78,9 @@ const ProfileSettings = ({navigation} : any) => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.toggleContainer} onPress={() => logout()}>
           <Text style={styles.notificationSettingText}>Logout</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.toggleContainer} onPress={() => handleDeleteUser()}>
+          <Text style={styles.notificationSettingText}>Delete</Text>
         </TouchableOpacity>
       </View>
       

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, Text, TouchableOpacity } from 'react-native';
 
 import client from '../client';
 import { getPost } from '../customGraphql/customQueries';
@@ -9,13 +9,14 @@ import { AuthContext } from '../context/AuthContext';
 import styles from '../styles/Styles';
 import FormatPost from '../components/FormatPost';
 import Comments from '../components/ListComments';
+import Icon from '@react-native-vector-icons/ionicons';
 
 /**
  * Displays the currnet post and it's comments in a full page view
  * 
  * @param postID - The ID of the post to view 
  */
-const ViewPost = ( {route} : any) => {
+const ViewPost = ( {route, navigation} : any) => {
   const postID = route.params.postID;
   const [postData, setPostData] = useState<Post>();
   const authContext = useContext(AuthContext);
@@ -54,7 +55,11 @@ const ViewPost = ( {route} : any) => {
   //The commments of the post with the header included to ensure header scorlls
   return (
     <View style={styles.container}>
-      <View style={styles.header}/>
+    <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Post</Text>
+      </TouchableOpacity>
       <Comments postID={postID} header={header} customPadding={80}/>
     </View>
   )

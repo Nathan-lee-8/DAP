@@ -105,6 +105,10 @@ const ViewProfiles = ( { route, navigation } : any) => {
   return(
     <View style={styles.container}>
       <View style={styles.header}/>
+      <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+        <Icon name={'arrow-back'} size={25} color={'black'}/>
+        <Text style={styles.backText}>Profile</Text>
+      </TouchableOpacity>
       {/* User Profile Section */}
       <View style={styles.viewUserProfileSection}>
         <Icon style={styles.editProfileButton} name="ellipsis-horizontal" 

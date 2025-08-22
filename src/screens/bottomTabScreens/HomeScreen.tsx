@@ -66,7 +66,6 @@ const HomeScreen = ( {navigation} : any) => {
   //retreives userfeed with logic for retreiving next items on scroll
   const fetchNewsFeed = async (refresh: boolean) => {
     if(!currUser){
-      Alert.alert('Error', 'There was an issue fetching newsfeed.');
       return;
     }
     try{
@@ -85,7 +84,7 @@ const HomeScreen = ( {navigation} : any) => {
 
       //filter out blocked users
       const filteredByBlockList = !blockList ? newsFeedData
-        : newsFeedData.filter((item: any) => !blockList?.includes(item.post.user?.id));
+        : newsFeedData.filter((item: any) => !blockList?.includes(item.post?.user?.id));
 
       //handle refresh vs pagination
       if(refresh){ 

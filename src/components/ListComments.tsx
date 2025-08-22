@@ -26,7 +26,7 @@ import CommentComp from './commentComponent';
 const ListComments = ( {postID, header, customPadding} : any ) => {
   const [ comments, setComments ] = useState<Comment[]>([]);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
-  const [ loading, setLoading ] = useState(true);
+  const [ loading, setLoading ] = useState(false);
   const [ comment, setComment ] = useState<string>('');
   const [ operation, setOperation ] = useState("Comment");
   const [ replyTarget, setReplyTarget ] = useState<any>();
@@ -62,10 +62,8 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         setComments((prev: any) => [...prev, ...uniqueComments]);
       }
       setNextToken(commentData.data.commentsByPost.nextToken);
-    } catch {
-      Alert.alert('Error', 'There was an issue fetching comments');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.log('fetch comment error', err);
     }
   }
 
@@ -109,18 +107,20 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
     }else if(operation === "Edit Reply"){
       await handleEditReply();
     }
-    setComment("");
     setOperation("Comment");
     fetchComments(true);
   }
 
   //posts the comment to the given post
   const postComment = async () => {
+    setLoading(true);
     const flagged = await textModeration(comment);
     if(flagged){
       Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
         'sensitive content and review our community guidelines before posting.'
       )
+      setLoading(false);
+      return;
     }
     try {
       await client.graphql({
@@ -134,19 +134,24 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       });
-      setComment('');
     } catch (error) {
       Alert.alert('Error', 'There was an issue posting this comment');
+    }finally {
+      setComment('');
+      setLoading(false);
     }
   }
 
   //posts a reply to the target comment
   const postReply = async () => {
+    setLoading(true);
     const flagged = await textModeration(comment);
     if(flagged){
       Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
         'sensitive content and review our community guidelines before posting.'
       )
+      setLoading(false);
+      return;
     }
     try {
       await client.graphql({
@@ -160,21 +165,25 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       });
-      setComment('');
     } catch {
       Alert.alert('Error', 'Unable to post comment');
+    } finally {
+      setComment('');
+      setLoading(false);
     }
   }
 
   //edit the target Comment
   const handleEditComment = async () => {
+    setLoading(true);
     const flagged = await textModeration(comment);
     if(flagged){
       Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
         'sensitive content and review our community guidelines before posting.'
       )
+      setLoading(false);
+      return;
     }
-    setLoading(true);
     try{
       await client.graphql({
         query: updateComment,
@@ -186,23 +195,25 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       })
-      setComment('');
-      setLoading(false);
     } catch (error) {
       Alert.alert('Error', 'There was an issue updating this comment');
+    }finally {
+      setComment('');
       setLoading(false);
     }
   }
 
   //edit the target reply
   const handleEditReply = async () => { 
+    setLoading(true);
     const flagged = await textModeration(comment);
     if(flagged){
       Alert.alert('Warning', 'Text is flagged for sensitive content. Please remove ' + 
         'sensitive content and review our community guidelines before posting.'
       )
+      setLoading(false);
+      return;
     }
-    setLoading(true);
     try{
       await client.graphql({
         query: updateReply,
@@ -214,10 +225,10 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
         },
         authMode: 'userPool'
       })
-      setComment('');
-      setLoading(false);
     } catch (error) {
       Alert.alert('Error', 'There was an issue updating this comment');
+    } finally {
+      setComment('');
       setLoading(false);
     }
   }
@@ -239,8 +250,6 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
     }
     return true;
   }
-
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (  
     <View style={{flex:1}}> 
@@ -313,8 +322,12 @@ const ListComments = ( {postID, header, customPadding} : any ) => {
                 }
               }}
             />
-            <Icon style={styles.commentButton} name="send" size={30} onPress={handleSend} />
-          </View>
+            {loading ? (
+              <ActivityIndicator size="small" color="#0000ff" />
+            ) : (
+              <Icon style={styles.commentButton} name="send" size={30} onPress={handleSend} />
+            )}
+            </View>
         </View>
       </KeyboardAvoidingView>
     </View>

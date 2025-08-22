@@ -53,6 +53,7 @@ const EditProfile = ({navigation}: any) => {
       setEditsOn(false);
       return;
     };
+    setLoading(true);
 
     //moderate text for user bio if bio is updated 
     if(description !== currUser.description && description !== ''){ //prevent overloading calls
@@ -61,6 +62,7 @@ const EditProfile = ({navigation}: any) => {
         Alert.alert('Warning', 'Bio is flagged for sensitive content. Please remove ' + 
           'sensitive content and review our community guidelines before posting.'
         )
+        setLoading(false);
         return;
       }
     }
@@ -72,12 +74,12 @@ const EditProfile = ({navigation}: any) => {
         Alert.alert('Warning', 'Username is flagged for sensitive content. Please remove ' + 
           'sensitive content and review our community guidelines before posting.'
         )
+        setLoading(false);
         return;
       }
     }
 
     try{
-      setLoading(true);
       var tempProfileURL = tempURL;
       if(tempURL !== currUser.profileURL){
         const filepath = await getImgURI(tempURL, 
@@ -142,7 +144,12 @@ const EditProfile = ({navigation}: any) => {
     return true;
   }
 
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
+  if(loading) return(
+    <View style={styles.container}>
+      <View style={styles.shortHeader}/>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
+  ) 
   return (
     <View style={styles.container}>
       <View style={styles.shortHeader}/>
@@ -203,6 +210,7 @@ const EditProfile = ({navigation}: any) => {
               style={styles.longInput}
               placeholder={"About you..."}
               multiline={true}
+              maxLength={150}
               value={description}
               onChangeText={setDescription}
             />

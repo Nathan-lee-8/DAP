@@ -130,8 +130,9 @@ const CreateGroup = ({ navigation }: any) => {
         }).catch(() => {});
       };
 
-      if(groupURI !== 'defaultGroup') handleUploadImage(groupID);
-
+      if(groupURI !== 'defaultGroup') {
+        await getImgURI(groupURI, `public/processing/groupPictures/${groupID}.jpg`);
+      }
       navigation.reset({
         index: 1,
         routes: [
@@ -154,26 +155,6 @@ const CreateGroup = ({ navigation }: any) => {
       }
     } finally {
       setLoading(false);
-    }
-  }
-
-  //uploads group Image to s3
-  const handleUploadImage = async (groupID: string) => {
-    try{
-      const uri = await getImgURI(groupURI, 
-        `public/processing/groupPictures/${groupID}.jpg`);
-      await client.graphql({
-        query: updateGroup,
-        variables: {
-          input: {
-            id: groupID,
-            groupURL: uri
-          }
-        },
-        authMode:'userPool'
-      })
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
     }
   }
 

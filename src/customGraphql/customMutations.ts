@@ -434,3 +434,15 @@ export const deleteBlockList = /* GraphQL */ `mutation DeleteBlockList(
   APITypes.DeleteBlockListMutationVariables,
   APITypes.DeleteBlockListMutation
 >;
+export const deleteUser = /* GraphQL */ `mutation DeleteUser(
+  $input: DeleteUserInput!
+  $condition: ModelUserConditionInput
+) {
+  deleteUser(input: $input, condition: $condition) {
+    id
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteUserMutationVariables,
+  APITypes.DeleteUserMutation
+>;

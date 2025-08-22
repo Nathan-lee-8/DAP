@@ -3,27 +3,33 @@ import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard,
   TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
 import client from '../../client';
-import { createUser, createNotificationSettings } from '../../customGraphql/customMutations';
+import { createUser, createNotificationSettings 
+} from '../../customGraphql/customMutations';
 import { moderateText } from '../../customGraphql/customQueries';
 
 import { AuthContext } from '../../context/AuthContext';
 import styles from '../../styles/SignInScreenStyles';
 import ImgComponent from '../../components/ImgComponent';
+import { imagePicker, getImgURI } from '../../components/addImg';
 
 /**
  * Accesses user inputted email, password, first and last name and creates a 
  * user profile in Cognito. Navigates to the Verify page to confirm 
  * verification code.
  */
-const CreateUser = () => {
+const CreateUser = (route: any) => {
+  const navigation = route.navigation;
   const [ firstname, setFirstName ] = useState<string>('');
   const [ lastname, setLastName ] = useState<string>('');
+  const [ description, setDescription ] = useState<string>('');
+  const [ url, setURL ] = useState('defaultUser');
   const [ loading, setLoading ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) return;
   const { userEmail, triggerFetch } = authContext;
 
   const handleSignUp = async () => {
+    //ensure user enters first and last name
     if(firstname === '') {
       Alert.alert('Error', 'Please enter your first name.');
       return;
@@ -33,6 +39,7 @@ const CreateUser = () => {
     }
     setLoading(true);
 
+    //moderate first and last name
     const flagged = await textModeration(firstname + lastname);
     if(flagged){
       Alert.alert('Warning', 'Username is flagged for sensitive content. Please remove ' + 
@@ -41,6 +48,19 @@ const CreateUser = () => {
       setLoading(false);
       return;
     }
+    
+    //moderate description 
+    if(description !== ''){
+      const descFlagged = await textModeration(description);
+      if(descFlagged){
+        Alert.alert('Warning', 'Bio is flagged for sensitive content. Please remove ' + 
+          'sensitive content and review our community guidelines before posting.'
+        )
+        setLoading(false);
+        return;
+      }
+    }
+    //upload img to s3 and get the s3 filepath
     try{
       const user = await client.graphql({
         query: createUser,
@@ -51,6 +71,7 @@ const CreateUser = () => {
             fullname: firstname.trim().toLocaleLowerCase() + " " +
               lastname.trim().toLocaleLowerCase(),
             lastname: lastname.trim(),
+            description: description,
             profileURL: 'defaultUser',
             unreadChatCount: 0,
             unreadNotificationCount: 0
@@ -58,24 +79,10 @@ const CreateUser = () => {
         },
         authMode: 'userPool'
       });
-      await client.graphql({
-        query: createNotificationSettings,
-        variables: {
-          input: {
-            id: user.data.createUser.id,
-            userID: user.data.createUser.id,
-            newPost: false,
-            joinGroup: false,
-            groupRequest: false,
-            newComment: false,
-            newReply: false,
-            newReplyComment: false,
-            newMessage: false,
-            joinChat: false,
-          }
-        },
-        authMode: 'userPool'
-      })
+      const userID = user.data.createUser.id;
+      if(url !== 'defaultUser'){
+        await getImgURI(url, `public/processing/profilePictures/${userID}.jpg`);
+      }
       triggerFetch();
     } catch (error: any) {
       Alert.alert('Error', error.message);
@@ -101,13 +108,34 @@ const CreateUser = () => {
     return true;
   }
 
+  const addProfileImg = async () => {
+    try {
+      setLoading(true);
+      const uri = await imagePicker();
+      if(uri === null) throw new Error('No Image Selected');
+      setURL(uri);
+    } catch {
+       Alert.alert('Error', 'Issue loading image library');
+    } finally{
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}/>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.formContainer}>
-          <ImgComponent uri="logo" style={styles.logoLarge}/>
-          <Text style={styles.loginText}>About you</Text>
+          <Text style={[styles.loginText, { marginTop: '10%'}]}>About you</Text>
+          <TouchableOpacity style={styles.imageContainer} onPress={addProfileImg}>
+            <ImgComponent uri={url} style={styles.profImage}/>
+            {url === 'defaultUser' && 
+              <View style={styles.overlay}>
+                <Text style={styles.overLayText}>Add Img</Text>
+              </View>
+            }
+          </TouchableOpacity>
+
           <TextInput
             style={styles.input}
             value={firstname}
@@ -122,6 +150,27 @@ const CreateUser = () => {
             autoCapitalize="words"
             placeholder="Last Name"
           />
+          <TextInput
+            style={styles.longInput}
+            placeholder={"Description..."}
+            multiline={true}
+            maxLength={150}
+            value={description}
+            onChangeText={setDescription}
+          />
+          <View style={{flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10}}>
+            <Text>By creating an account, you agree to our </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Terms', {section: 'terms-of-service'})}>
+              <Text style={styles.hyperlink}>Terms, </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Terms', {section: 'privacy-policy'})}>
+              <Text style={styles.hyperlink}>Privacy, </Text>
+            </TouchableOpacity>
+            <Text>and </Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Terms', {section: 'community-guidelines'})}>
+              <Text style={styles.hyperlink}>Community Guidelines.</Text>
+            </TouchableOpacity>
+          </View>
           {loading ? ( 
             <ActivityIndicator size="small" color="#0000ff" />
           ) : (
