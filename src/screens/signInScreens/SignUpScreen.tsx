@@ -42,6 +42,10 @@ const SignUp = ( {navigation} : any ) => {
         ]);
         return;
       }
+      if(error.message.includes("already registered using a social login")){
+        Alert.alert('Account exists', 'Please sign in with your social provider.');
+        return;
+      }
       Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
