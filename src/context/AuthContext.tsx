@@ -197,12 +197,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  //subsciprtion to listen for new incoming messages from WS client
+  //subsciprtion to listen for new incoming messages from WS client and 
+  //update notification/unreadMessagecounts
   useEffect(() => {
     if(!currUser || !currUser.id) return;
     const handleWSMessage  = (data: any ) => {
       if(data.action === 'subscribe_to_chat'){
-        console.log('running joinChat from subscription')
         if (wsClient.socket && wsClient.socket.readyState === WebSocket.OPEN) {
           wsClient.send({
             action: 'joinChat',

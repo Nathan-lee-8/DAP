@@ -17,16 +17,16 @@ const styles = StyleSheet.create({
     backgroundColor: colorBackground,
   },
   header: {
-    height: Platform.OS === 'ios' ? 110 : 70,
+    height: Platform.OS === 'ios' ? 110 : 60,
     backgroundColor: colorPrimary
   },
   shortHeader:{
-    height: Platform.OS === 'ios' ? 70 : 30,
+    height: Platform.OS === 'ios' ? 70 : 0,
     backgroundColor: colorPrimary
   },
   backBtn: {
     position: 'absolute',
-    top: 60,
+    top: Platform.OS === 'ios' ? 60 : 10,
     left: 10,
     padding: 10, 
     flexDirection: 'row',
@@ -156,8 +156,8 @@ const styles = StyleSheet.create({
   },
   notificationIcon: {
     position: 'absolute',
-    right: 20,
-    top: 70
+    right: 10,
+    top: Platform.OS === 'ios' ? 70 : 20,
   },
 
   /** User Posts styles */
