@@ -21,8 +21,30 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser(
     description
     unreadChatCount
     unreadNotificationCount
-    owner
-    __typename
+    notificationSettings {
+      id
+      newPost
+      joinGroup
+      groupRequest
+      newComment
+      newReply
+      newReplyComment
+      newMessage
+      joinChat
+      userID
+      createdAt
+      updatedAt
+      owner
+    }
+    fcmTokens{
+      items{
+        id
+        tokenID
+        userID
+        createdAt
+        updatedAt
+      }
+    }
   }
 }
 ` as GeneratedSubscription<

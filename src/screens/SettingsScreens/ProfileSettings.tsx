@@ -19,22 +19,29 @@ const ProfileSettings = ({navigation} : any) => {
     return;
   }
 
-  const handleDeleteUser = async () => {
-    try{
-      client.graphql({
-        query: deleteUser,
-        variables: {
-          input: {
-            id: currUser.id
-          }
-        },
-        authMode: 'userPool',
-      })
-      logout();
-    }catch(err){
-      console.log(err);
-      Alert.alert('Error', 'Issue removing account. Please contact support');
-    }
+  const handleDeleteUser = () => {
+    Alert.alert("Warning", "Are you sure you would like to delete your account? " + 
+      "This action cannot be undone.", [
+      { text: "Cancel", onPress: () => {}},
+      { text: "Delete", onPress: async () => {
+        try{
+          await client.graphql({
+            query: deleteUser,
+            variables: {
+              input: {
+                id: currUser.id
+              }
+            },
+            authMode: 'userPool',
+          })
+          logout();
+          Alert.alert('Success', 'Account deleted.');
+        }catch(err){
+          console.log(err);
+          Alert.alert('Error', 'Issue removing account. Please contact support');
+        }
+      }}
+    ])
   }
 
   return(

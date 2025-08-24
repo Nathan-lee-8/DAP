@@ -1,6 +1,8 @@
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useRef, useContext, useCallback
+ } from 'react';
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, 
     KeyboardAvoidingView, Platform, Alert, Modal } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import client from '../client';
 import { getChat } from '../customGraphql/customQueries';
@@ -67,6 +69,16 @@ const ViewChat = ( { route, navigation } : any) => {
       setTitle(temptitle);
     }
   }, [participants]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if(!myUserChat || !myUserChat.id) return;
+      wsClient.send({ action: "setActive", userChatID: myUserChat.id, active: true, stage: 'prod' });
+      return () => {
+        wsClient.send({ action: "setActive", userChatID: myUserChat.id, active: false, stage: 'prod' });
+      };
+    }, [myUserChat?.id])
+  );
 
   //retrieves chat then starts WebSocket connection to listen for new messages 
   useEffect(() => {
@@ -293,6 +305,7 @@ const ViewChat = ( { route, navigation } : any) => {
     setInviteModalVisible(false);
     const userIDs = addedMembers.map((item: any) => item.id);
     try{
+      //create notification and userChat for each invited user 
       for(const userID of userIDs){
         await client.graphql({
           query: createUserChat,
@@ -323,6 +336,15 @@ const ViewChat = ( { route, navigation } : any) => {
           authMode: 'userPool'
         }).catch(() => {})
       }
+      
+      //create ws Connection for current User and online user
+      wsClient.send({
+        action: 'joinChat',
+        chatID: chatID,
+        userIDs: [currUser.id, ...userIDs]
+      })
+
+      //send a system message (notification) of which members were added
       var addedMemberNames = addedMembers.map((item) => 
         `${item.firstname} ${item.lastname}`).filter(Boolean).join(', ');
       await client.graphql({

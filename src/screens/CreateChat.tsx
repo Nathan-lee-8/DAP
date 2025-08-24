@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Platform,
   KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 
 import client from '../client';
-import { createChat, createUserChat, createMessage, createNotification, deleteChat,
-  updateChat } from '../customGraphql/customMutations';
+import { createChat, createUserChat, createMessage, createNotification, deleteChat
+} from '../customGraphql/customMutations';
 import { User } from '../API';
 
 import { AuthContext } from '../context/AuthContext';
@@ -13,6 +13,7 @@ import Icon from '@react-native-vector-icons/ionicons';
 import { SearchBar } from '../components/SearchBar';
 import ImgComponent from '../components/ImgComponent';
 import { imagePicker, getImgURI } from '../components/addImg';
+import wsClient from '../components/webSocket';
 
 /** 
  * UPDATE: ability to upload image on this page? 
@@ -62,22 +63,7 @@ const CreateChat = ({ route, navigation }: any) => {
       tempChatID = chatID;
 
       //upload image to s3 and update new filepath for chat
-      if(chatImage){
-        const filepath = await getImgURI(chatImage, 
-          `public/chatPictures/${chatID}/profile/${Date.now()}`);
-        if(filepath){
-          await client.graphql({
-            query: updateChat,
-            variables: {
-              input: {
-                id: chat.data.createChat.id,
-                url: filepath
-              }
-            },
-            authMode: 'userPool'
-          })
-        }
-      }
+      if(chatImage) await getImgURI(chatImage, `public/chatPictures/${chatID}.jpg`);
 
       //Create current user User Chat
       await client.graphql({
@@ -129,6 +115,14 @@ const CreateChat = ({ route, navigation }: any) => {
         }).catch(() => {})
       })
 
+      //WS call to create WS connection for current user and online user
+      const targetUserIDs = targetUsers.map(user => user.id);
+      wsClient.send({
+        action: 'joinChat',
+        chatID: chatID,
+        userIDs: [currUser.id, ...targetUserIDs]
+      })
+
       //Send message in chat
       await client.graphql({
         query: createMessage,
@@ -142,6 +136,7 @@ const CreateChat = ({ route, navigation }: any) => {
         authMode: 'userPool'
       })
 
+      //navigate to created chatroom
       navigation.reset({
         index: 1,
         routes: [

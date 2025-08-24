@@ -77,18 +77,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   //Subscription to listen for updates to User metadata
   useEffect(() => {
+    if(!currUser || !currUser.id) return;
     const subscription = client.graphql({
       query: onUpdateUser,
       variables:{
         filter: {
-          id: { eq: currUser?.id }
+          id: { eq: currUser.id }
         }
       },
       authMode: 'userPool'
     }).subscribe({
-      next: () => {
-        triggerFetch();
+      next: (msg) => {
+        const updateUser = msg.data?.onUpdateUser;
+        console.log('updating User', updateUser);
+        if(updateUser) setCurrUser(updateUser);
       },
+      error: (err) => console.error(err),
     })
     return () => subscription.unsubscribe();
   }, [currUser?.id]);
@@ -184,7 +188,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => { isMounted = false };
   }, [currUser?.id]);
 
-  //Subscription to listen for new tokens.
+  //Subscription to listen for new FCM tokens.
   useEffect(() => {
     const messaging = getMessaging();
     const unsubscribe = messaging.onTokenRefresh(async (newToken) => {
@@ -192,6 +196,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     return () => unsubscribe();
   }, []);
+
+  //subsciprtion to listen for new incoming messages from WS client
+  useEffect(() => {
+    if(!currUser || !currUser.id) return;
+    const handleWSMessage  = (data: any ) => {
+      if(data.action === 'subscribe_to_chat'){
+        console.log('running joinChat from subscription')
+        if (wsClient.socket && wsClient.socket.readyState === WebSocket.OPEN) {
+          wsClient.send({
+            action: 'joinChat',
+            userIDs: [currUser.id],
+            chatID: data.chatID
+          });
+        }
+      }else{
+        console.log('auth WS log', data);
+      }
+    }
+    wsClient.addListener(handleWSMessage);
+    return () => wsClient.removeListener(handleWSMessage);
+  }, [currUser?.id])
 
   //Listens to app state and manages Chat API connection 
   useEffect(() => {

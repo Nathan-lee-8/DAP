@@ -3,8 +3,7 @@ import { View, Text, TextInput, Alert, TouchableOpacity, Keyboard,
   TouchableWithoutFeedback, ActivityIndicator } from 'react-native';
 
 import client from '../../client';
-import { createUser, createNotificationSettings 
-} from '../../customGraphql/customMutations';
+import { createUser } from '../../customGraphql/customMutations';
 import { moderateText } from '../../customGraphql/customQueries';
 
 import { AuthContext } from '../../context/AuthContext';
@@ -160,14 +159,20 @@ const CreateUser = (route: any) => {
           />
           <View style={{flexDirection: 'row', flexWrap: 'wrap', marginBottom: 10}}>
             <Text>By creating an account, you agree to our </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Terms', {section: 'terms-of-service'})}>
+            <TouchableOpacity onPress={() => 
+              navigation.navigate('Terms', {section: 'terms-of-service'})}
+            >
               <Text style={styles.hyperlink}>Terms, </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('Terms', {section: 'privacy-policy'})}>
+            <TouchableOpacity onPress={() => 
+              navigation.navigate('Terms', {section: 'privacy-policy'})}
+            >
               <Text style={styles.hyperlink}>Privacy, </Text>
             </TouchableOpacity>
             <Text>and </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Terms', {section: 'community-guidelines'})}>
+            <TouchableOpacity onPress={() => 
+              navigation.navigate('Terms', {section: 'community-guidelines'})}
+            >
               <Text style={styles.hyperlink}>Community Guidelines.</Text>
             </TouchableOpacity>
           </View>
