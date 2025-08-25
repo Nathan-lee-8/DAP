@@ -48,7 +48,8 @@
       "function": {
         "textModeration": {
           "deploymentBucketName": "amplify-commhub-prod-24e37-deployment",
-          "s3Key": "amplify-builds/textModeration-5157725857696a774b77-build.zip"
+          "s3Key": "amplify-builds/textModeration-5157725857696a774b77-build.zip",
+          "openAiKey": ""
         }
       },
       "api": {

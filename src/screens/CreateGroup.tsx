@@ -267,12 +267,9 @@ const CreateGroup = ({ navigation }: any) => {
         <Icon name={'arrow-back'} size={25} color={'black'}/>
         <Text style={styles.backText}>Create Group</Text>
       </TouchableOpacity>
-      <ScrollView style={{flex: 1}} contentContainerStyle={{flexGrow: 1}} 
+      <ScrollView style={{flex: 1}} 
         keyboardShouldPersistTaps='handled'
       >
-        <View style={styles.addImageTextContainer}>
-          <Text style={styles.addImageText}>Add Image</Text>
-        </View>
         <TouchableOpacity onPress={getFilePath} style={styles.groupImgContainer}>
           <ImgComponent uri={groupURI} style={styles.groupImg}/>
           <LinearGradient
@@ -281,6 +278,11 @@ const CreateGroup = ({ navigation }: any) => {
             end={{ x: 0, y: 1 }}
             style={styles.gradient}
           />
+          {groupURI === 'defaultGroup' &&
+            <View style={styles.overlay}>
+              <Text style={styles.overLayText}>Add Img</Text>
+            </View>
+          }
         </TouchableOpacity>
         <TextInput
           style={[styles.input, {marginTop: 10}]}

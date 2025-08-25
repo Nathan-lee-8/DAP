@@ -7,6 +7,7 @@ type GeneratedQuery<InputType, OutputType> = string & {
   __generatedQueryInput: InputType;
   __generatedQueryOutput: OutputType;
 };
+
 export const moderateText = /* GraphQL */ `query ModerateText($text: String!) {
   moderateText(text: $text) {
     flagged
@@ -1794,6 +1795,46 @@ export const notificationsByGroup = /* GraphQL */ `query NotificationsByGroup(
 ` as GeneratedQuery<
   APITypes.NotificationsByGroupQueryVariables,
   APITypes.NotificationsByGroupQuery
+>;
+export const notificationsByOnClickID = /* GraphQL */ `query NotificationsByOnClickID(
+  $targetUserID: ID!
+  $createdAt: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelNotificationFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  notificationsByOnClickID(
+    targetUserID: $targetUserID
+    createdAt: $createdAt
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      type
+      name
+      content
+      userID
+      groupID
+      targetUserID
+      onClickID
+      read
+      createdAt
+      updatedAt
+      userNotificationsId
+      owner
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.NotificationsByOnClickIDQueryVariables,
+  APITypes.NotificationsByOnClickIDQuery
 >;
 export const getReport = /* GraphQL */ `query GetReport($id: ID!) {
   getReport(id: $id) {

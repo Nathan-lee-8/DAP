@@ -190,14 +190,16 @@ const CreateChat = ({ route, navigation }: any) => {
       </TouchableOpacity>
       <SearchBar userPressed={handleUserSelected} remove={targetUsers} />
       <TouchableOpacity onPress={openImageLibrary}
-        style={{height: 120, width: 120, alignSelf: 'center', marginVertical: 10}}
+        style={{height: 120, width: 120, borderRadius: 60, alignSelf: 'center', marginVertical: 10}}
       >
         <ImgComponent uri={chatImage || 'defaultGroup'} 
           style={{height: 120, width: 120, borderRadius: 60, alignSelf:'center'}}
-        />
-        <Text style={{position: 'absolute', top: '40%', left: 20, fontSize: 18}}>
-          Add Image
-        </Text>
+        /> 
+        {chatImage !== 'defaultGroup' &&              
+          <View style={[styles.overlay, {borderRadius: 60}]}>
+            <Text style={styles.overLayText}>Add Img</Text>
+          </View>
+        }
       </TouchableOpacity>
       <View style={styles.editNameContainer}>
         <TextInput

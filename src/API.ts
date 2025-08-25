@@ -4146,6 +4146,38 @@ export type NotificationsByGroupQuery = {
   } | null,
 };
 
+export type NotificationsByOnClickIDQueryVariables = {
+  targetUserID: string,
+  createdAt?: ModelStringKeyConditionInput | null,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelNotificationFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type NotificationsByOnClickIDQuery = {
+  notificationsByOnClickID?:  {
+    __typename: "ModelNotificationConnection",
+    items:  Array< {
+      __typename: "Notification",
+      id: string,
+      type: string,
+      name: string,
+      content: string,
+      userID: string,
+      groupID?: string | null,
+      targetUserID?: string | null,
+      onClickID: string,
+      read?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+      userNotificationsId?: string | null,
+      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type GetReportQueryVariables = {
   id: string,
 };

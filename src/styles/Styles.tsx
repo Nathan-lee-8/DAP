@@ -154,6 +154,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  processingTextLarge: {
+    textAlign: 'center',
+    marginVertical: 30,
+    color: 'black',
+    fontSize: 36,
+    fontWeight: 'bold',
+  },
+  processingDescription: {
+    color: 'black', 
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginHorizontal: 30,
+    marginVertical: 10,
+  },
   notificationIcon: {
     position: 'absolute',
     right: 10,
@@ -891,17 +905,6 @@ const styles = StyleSheet.create({
     padding: 5,
     marginBottom: 20,
     width: '40%',
-  },
-  addImageTextContainer: {
-    position: 'absolute',
-    top: 20,
-    width: '100%',
-    alignItems : 'center'
-  },
-  addImageText: {
-    fontSize: 30,
-    fontWeight: '600',
-    color: 'black',
   },
   addMemberText: {
     flexDirection: 'row',

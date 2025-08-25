@@ -115,8 +115,8 @@ const FormatPost = ( {post, destination, refresh} :
   const handleShare = async () => {
     try {
       const downloadedFiles = post.postURL ? 
-        await Promise.all(
-          post.postURL.filter((url): url is string => typeof url === 'string').map(downloadMediaToLocal)
+        await Promise.all(post.postURL
+          .filter((url): url is string => typeof url === 'string').map(downloadMediaToLocal)
         ) : [];
   
       const shareOptions = {
@@ -181,7 +181,7 @@ const FormatPost = ( {post, destination, refresh} :
             <ImgComponent uri={post.user.profileURL} style={styles.postProfileImg}/>
           </TouchableOpacity>
           <View style={styles.profileText}>
-            {destination !== 'Group' && post.group ? ( // if displayed not in groups show groupname
+            {destination !== 'Group' && post.group ? (
               <View style={styles.postAuthor}>
                 <Text style={styles.bold} 
                   onPress={visitProfile}
@@ -192,7 +192,8 @@ const FormatPost = ( {post, destination, refresh} :
                 <Text> posted in </Text>
                 <Text style={styles.bold} 
                   onPress={() => {
-                    if(post.group) navigation.navigate('ViewGroup', {groupID: post.group.id})
+                    if(post.group) 
+                      navigation.navigate('ViewGroup', {groupID: post.group.id})
                   }}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -305,7 +306,9 @@ const FormatPost = ( {post, destination, refresh} :
               )}
             />
           </View>
-          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+          <TouchableOpacity style={styles.closeOverlayButton} 
+            onPress={() => setModalVisible(false)}
+          >
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -328,8 +331,31 @@ const FormatPost = ( {post, destination, refresh} :
             <FlatList
               data={post.postURL}
               renderItem={({ item }) => (
-                <View>
-                  {item?.endsWith('.jpg') ? ( 
+                <View style={{width: width, height: '100%'}}>
+                  {item?.includes('quarantine') ? (
+                    <View>
+                      <Text style={styles.processingTextLarge}>Flagged</Text>
+                      <Text style={styles.processingDescription}>
+                        Media has been flagged.
+                      </Text>
+                      <Text style={styles.processingDescription}>
+                        Our team is reviewing the media for sensitive content. 
+                        Flagged content will be reviewed within 24 hours. Please contact 
+                        support with questions or concerns.
+                      </Text>
+                    </View>
+                  ) : item?.includes('processing') ? (
+                    <View>
+                      <Text style={styles.processingTextLarge}>Processing</Text>
+                      <Text style={styles.processingDescription}>
+                        Media is currently being reviewed. 
+                      </Text>
+                      <Text style={styles.processingDescription}>
+                        Image reviews will generally take minutes and videos will be reviewed 
+                        within 24 hours. Please contact support with questions or concerns.
+                      </Text>
+                    </View>
+                  ) : item?.endsWith('.jpg') ? ( 
                     <ImgComponent uri={item || 'defautUser'} 
                       style={{
                         width: width,
@@ -337,21 +363,7 @@ const FormatPost = ( {post, destination, refresh} :
                       }} 
                       resizeMode={"contain"}
                     />
-                  ) : item?.startsWith('https://commhubimages24e37-prod.s3.us-west-2.amazonaws.com/public/quarantine')  ? (
-                    <View style={{ width: width, height: '100%' }}>
-                      <ImgComponent uri={'groupAvatar'} style={{ width: '100%', height: '100%' }}/>
-                      <View style={styles.overlay}>
-                        <Text style={styles.processingText}>Flagged</Text>
-                      </View>
-                    </View>
-                  ) : item?.startsWith('https://commhubimages24e37-prod.s3.us-west-2.amazonaws.com/public/processing')  ? (
-                    <View style={{ width: width, height: '100%' }}>
-                      <ImgComponent uri={'groupAvatar'} style={{ width: '100%', height: '100%' }}/>
-                      <View style={styles.overlay}>
-                        <Text style={styles.processingText}>Processing</Text>
-                      </View>
-                    </View>
-                  )  : item?.endsWith('.mp4') ? (
+                  ) : item?.endsWith('.mp4') ? (
                     <Video source={{ uri: item }} style={{ width: width, height: '100%' }}
                       resizeMode="contain" controls
                     />
@@ -367,10 +379,12 @@ const FormatPost = ( {post, destination, refresh} :
             />
             <View style={styles.paginationContainer}>
               {post.postURL && post?.postURL.length > 1 && post?.postURL?.map((_, index) => (
-                <View key={index} style={[ styles.dot, currentIndex === index && styles.activeDot ]}/>
+                <View key={index} 
+                  style={[ styles.dot, currentIndex === index && styles.activeDot ]}
+                />
               ))}
-              <Icon name="chatbubble-outline" size={40} style={styles.imageCommentIcon} color={'grey'}
-                onPress={() => setCommentModalVisible(true)}
+              <Icon name="chatbubble-outline" size={40} style={styles.imageCommentIcon} 
+                color={'grey'} onPress={() => setCommentModalVisible(true)}
               />
             </View>
             <Modal 
@@ -380,7 +394,9 @@ const FormatPost = ( {post, destination, refresh} :
               onRequestClose={() => setCommentModalVisible(false)}  
             >
               <View style={styles.commentModalOverlay}>
-                <TouchableOpacity style={styles.commentModalHeader} onPress={() => setCommentModalVisible(false)}/>
+                <TouchableOpacity style={styles.commentModalHeader} 
+                  onPress={() => setCommentModalVisible(false)}
+                />
                 <GestureDetector gesture={panComments}>
                   <Animated.View style={[styles.commentModalContainer, animatedStyle]} >
                     <Text style={styles.title}>Comments</Text>

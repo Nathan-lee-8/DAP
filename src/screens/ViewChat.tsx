@@ -741,8 +741,33 @@ const ViewChat = ( { route, navigation } : any) => {
             <Icon name="close-outline" size={25} style={styles.closeImageModal}
               onPress={() => setMediaModalVisible(false)}
             />
-            {mediaModalUrl?.endsWith('.mp4') ? (
-              <Video source={{ uri: mediaModalUrl }} resizeMode="contain"/>
+            {mediaModalUrl?.includes('processing') ? (
+              <View>
+                <Text style={styles.processingTextLarge}>Processing</Text>
+                <Text style={styles.processingDescription}>
+                  Media is currently being reviewed. 
+                </Text>
+                <Text style={styles.processingDescription}>
+                  Image reviews will generally take minutes and videos will be reviewed 
+                  within 24 hours. Please contact support with questions or concerns.
+                </Text>
+              </View>
+            ) : mediaModalUrl?.includes('quarantine') ? (
+              <View>
+                <Text style={styles.processingTextLarge}>Flagged</Text>
+                <Text style={styles.processingDescription}>
+                  Media has been flagged.
+                </Text>
+                <Text style={styles.processingDescription}>
+                  Our team is reviewing the media for sensitive content. 
+                  Flagged content will be reviewed within 24 hours. Please contact 
+                  support with questions or concerns.
+                </Text>
+              </View>
+            ) : mediaModalUrl?.endsWith('.mp4') ? (
+              <Video source={{ uri: mediaModalUrl }} resizeMode="contain"
+                style={{height: '100%', width: '100%'}}
+              />
             ) : (
               <ImgComponent uri={mediaModalUrl || 'defaultGroup'} resizeMode='contain'
                 style={{height: '100%', width: '100%'}}
