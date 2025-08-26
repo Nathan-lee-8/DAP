@@ -169,7 +169,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setFetchCounter((item) => item + 1);
   }
 
-  //requests notification permission after user is set
+  //requests notification permission after user is set and listens for new
+  //incoming notifications
   useEffect(() => {
     let isMounted = true;
     const getNotificationPermission = async () => {
@@ -185,7 +186,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     }
     getNotificationPermission();
-    return () => { isMounted = false };
+    return () => {isMounted = false} 
   }, [currUser?.id]);
 
   //Subscription to listen for new FCM tokens.
@@ -210,7 +211,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             chatID: data.chatID
           });
         }
+      }else if(data.action === 'updateNotificationCount'){
+        setCurrUser((prev) => prev 
+          ? { ...prev, unreadNotificationCount: data.count } 
+          : prev);
       }else{
+        //1. Check which chatID the message belongs to,
+        //2. get userChat for that chatID and check count
+        //3. if count is 0, increment users unreadChatCount and mark chat as 
+        //   unread
         console.log('auth WS log', data);
       }
     }
