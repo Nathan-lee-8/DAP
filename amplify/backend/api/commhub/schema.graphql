@@ -196,8 +196,8 @@ type Notification @model @auth(
   content: String!
   userID: ID! @index(name: "notificationsByUser", queryField: "notificationsByUser", sortKeyFields: ["createdAt"])
   groupID: ID @index(name: "notificationsByGroup", queryField: "notificationsByGroup", sortKeyFields: ["createdAt"])
-  targetUserID: ID @index(name: "notificationsByOnClickID", queryField: "notificationsByOnClickID", sortKeyFields: ["createdAt"])
-  onClickID: ID!
+  targetUserID: ID
+  onClickID: ID! @index(name: "notificationsByOnClickID", queryField: "notificationsByOnClickID", sortKeyFields: ["createdAt"])
   read: Boolean
   user: User @belongsTo(fields:["userID"])
   group: Group @belongsTo(fields:["groupID"])

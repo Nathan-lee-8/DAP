@@ -212,15 +212,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           });
         }
       }else if(data.action === 'updateNotificationCount'){
+        console.log('setting User:', data);
         setCurrUser((prev) => prev 
           ? { ...prev, unreadNotificationCount: data.count } 
           : prev);
-      }else{
-        //1. Check which chatID the message belongs to,
-        //2. get userChat for that chatID and check count
-        //3. if count is 0, increment users unreadChatCount and mark chat as 
-        //   unread
-        console.log('auth WS log', data);
+      }else if(data.action === 'updateUnreadChatCount'){
+        console.log('setting User:', data);
+        setCurrUser((prev) => prev 
+          ? { ...prev, unreadChatCount: data.count } 
+          : prev);
+      } else{
+        console.log('new message: ', data);
+        
       }
     }
     wsClient.addListener(handleWSMessage);

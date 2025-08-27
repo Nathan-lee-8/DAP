@@ -77,6 +77,23 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         });
         triggerFetch();
       }
+
+      //for each notification in the notificationList: mark as read
+      const updatePromises = notificationList.map((notif) => {
+         if(!notif.read){
+          return client.graphql({
+            query: updateNotification,
+            variables: {
+              input: {
+                id: notif.id,
+                read: true
+              }
+            },
+            authMode: 'userPool'
+          });
+        }
+      })
+      await Promise.all(updatePromises);
     } catch (error) {
       Alert.alert('Error', 'Issue fetching notifications')
     } finally {
@@ -121,19 +138,6 @@ const Notifications = ( {closeNotificationModal} : any ) => {
   //Marks the current pressed notification as read and navigates to the 
   //proper post, group or chat after closing the notification modal
   const handleNav = async (item: Notification) => {
-    if(!item.read){
-      client.graphql({
-        query: updateNotification,
-        variables: {
-          input: {
-            id: item.id,
-            read: true
-          }
-        },
-        authMode: 'userPool'
-      }).catch(() => {});
-    }
-
     closeNotificationModal();
     if(item.type === 'Post' || item.type === 'AddGroup' || item.type === 'JoinGroup' ||
       item.type === 'RequestJoin'

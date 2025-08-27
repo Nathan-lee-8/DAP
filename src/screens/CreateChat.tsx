@@ -90,7 +90,7 @@ const CreateChat = ({ route, navigation }: any) => {
             input: {
               userID: user.id,
               chatID: chatID,
-              unreadMessageCount: 1,
+              unreadMessageCount: 0,
               lastMessage: message,
               lastMessageAt: new Date().toISOString(),
               role: 'Member',

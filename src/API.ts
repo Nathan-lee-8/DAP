@@ -1615,19 +1615,6 @@ export type CreateUserFeedMutation = {
     id: string,
     userID: string,
     postID: string,
-    post?:  {
-      __typename: "Post",
-      id: string,
-      content: string,
-      postURL?: Array< string | null > | null,
-      groupID: string,
-      userID: string,
-      commentCount: number,
-      createdAt: string,
-      updatedAt: string,
-      userPostsId?: string | null,
-      owner?: string | null,
-    } | null,
     postCreatedAt: string,
     createdAt: string,
     updatedAt: string,
@@ -4147,7 +4134,7 @@ export type NotificationsByGroupQuery = {
 };
 
 export type NotificationsByOnClickIDQueryVariables = {
-  targetUserID: string,
+  onClickID: string,
   createdAt?: ModelStringKeyConditionInput | null,
   sortDirection?: ModelSortDirection | null,
   filter?: ModelNotificationFilterInput | null,

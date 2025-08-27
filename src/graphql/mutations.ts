@@ -88,19 +88,6 @@ export const createUserFeed = /* GraphQL */ `mutation CreateUserFeed(
     id
     userID
     postID
-    post {
-      id
-      content
-      postURL
-      groupID
-      userID
-      commentCount
-      createdAt
-      updatedAt
-      userPostsId
-      owner
-      __typename
-    }
     postCreatedAt
     createdAt
     updatedAt

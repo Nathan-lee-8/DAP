@@ -1797,7 +1797,7 @@ export const notificationsByGroup = /* GraphQL */ `query NotificationsByGroup(
   APITypes.NotificationsByGroupQuery
 >;
 export const notificationsByOnClickID = /* GraphQL */ `query NotificationsByOnClickID(
-  $targetUserID: ID!
+  $onClickID: ID!
   $createdAt: ModelStringKeyConditionInput
   $sortDirection: ModelSortDirection
   $filter: ModelNotificationFilterInput
@@ -1805,7 +1805,7 @@ export const notificationsByOnClickID = /* GraphQL */ `query NotificationsByOnCl
   $nextToken: String
 ) {
   notificationsByOnClickID(
-    targetUserID: $targetUserID
+    onClickID: $onClickID
     createdAt: $createdAt
     sortDirection: $sortDirection
     filter: $filter
