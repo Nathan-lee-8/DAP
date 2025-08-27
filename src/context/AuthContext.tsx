@@ -278,6 +278,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   //  exists for other user: delete and create token
   //  no matching tokens: create token
   const registerTokenToBackend = async (tokenID: string) => {
+    console.log(tokenID);
     if(!currUser) return;
     try {
       const tokenData = await client.graphql({
@@ -287,7 +288,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       const tokenList = tokenData.data.tokensByID.items;
       const isCurrent = tokenList.some((item) => item.userID === currUser.id);
-      if(!isCurrent) return; //token connection exists for current user
+      if(isCurrent) return; //token connection exists for current user
 
       //remove all matching tokens from db
       tokenList.map((token: any) => {
