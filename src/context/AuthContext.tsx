@@ -9,7 +9,7 @@ import client from '../client';
 import { blockListByBlocked, blockListByBlocker, tokensByID, userByEmail 
 } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
-import { onCreateUserGroup, onCreateBlockList, onDeleteBlockList
+import { onCreateUserGroup, onCreateBlockList, onDeleteBlockList, onDeleteUserGroup
  } from '../customGraphql/customSubscriptions';
 import { User } from '../API';
 import wsClient from '../components/webSocket';
@@ -214,7 +214,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setGroupCount((prev)=> prev++);
       }
     })
-    return () => subscription.unsubscribe();
+    const deleteSubscription= client.graphql({
+      query: onDeleteUserGroup,
+      variables: {
+        filter: { userID: { eq: currUser.id } }
+      },
+      authMode: 'userPool'
+    }).subscribe({
+      next: () => {
+        setGroupCount((prev)=> prev++);
+      }
+    })
+    return () =>{ 
+      subscription.unsubscribe()
+      deleteSubscription.unsubscribe();
+    };
   }, [currUser?.id])
   
   //Listens to app state and manages Chat API connection 
