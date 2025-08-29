@@ -18,7 +18,6 @@ class WebSocketClient {
   connect() {
     if (this.socket || !this.userID) return;
 
-    console.log('Websocket opened');
     this.shouldReconnect = true;
 
     const fullUrl = `${this.url}?userID=${encodeURIComponent(this.userID)}`;
@@ -31,7 +30,6 @@ class WebSocketClient {
     };
 
     this.socket.onclose = () => {
-      console.log('WebSocket closed');
       this.socket = null;
       if(this.shouldReconnect){
         setTimeout(() => this.connect(), 3000); // reconnect after 3 sec

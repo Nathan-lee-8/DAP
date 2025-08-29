@@ -1,4 +1,5 @@
-import { useState, useContext, useEffect, useRef } from 'react';
+import { useState, useContext, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
   Modal } from 'react-native';
 
@@ -16,7 +17,7 @@ import Notifications from '../../components/Notifications';
  * Displays the active News feed for the current user and the notification count.
  * Allows the user to refresh the news feed and open/view notifications.
  */
-const HomeScreen = ( {navigation} : any) => {
+const HomeScreen = () => {
   const [ newsFeed, setNewsFeed ] = useState<UserFeed[]>([]);
   const [ modalVisible, setModalVisible ] = useState(false);
   const [ error, setError] = useState<string| null>(null);
@@ -27,27 +28,17 @@ const HomeScreen = ( {navigation} : any) => {
     setError('Could not load posts. Pull down to refresh.');
   }
 
-  const firstRender = useRef(true);
-  //Retreives Newsfeed every time screen is refocused and sets loading on
-  //first render.
-  useEffect(() => {
-    let isActive = true;
-    const loadInitialData = async () => {
-      if(firstRender.current){
-        setLoading(true);
-        await fetchNewsFeed(true);
-        if(isActive) setLoading(false);
-        firstRender.current = false;
-      } else{
-        await fetchNewsFeed(true);
-      }
-    }
-    loadInitialData();
-  }, [currUser?.id, blockList]);
+  //Retreives Newsfeed every time screen is refocused
+  useFocusEffect(
+    useCallback(() => {
+      fetchNewsFeed(true);
+    }, [currUser?.id, blockList])
+  );
 
   //retreives userfeed with logic for retreiving next items on scroll
   const fetchNewsFeed = async (refresh: boolean) => {
     if(!currUser) return;
+    if(refresh) setLoading(true);
     try{
       const res = await client.graphql({
         query: postsByUserFeed,
@@ -79,6 +70,8 @@ const HomeScreen = ( {navigation} : any) => {
     } catch (err) {
       console.log(err);
       setError('Could not load newfeed. Pull down to refresh.')
+    } finally{
+      setLoading(false);
     }
   };
 
