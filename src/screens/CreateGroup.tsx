@@ -123,6 +123,7 @@ const CreateGroup = ({ navigation }: any) => {
                 + ' added you to ' + groupName,
               userID: member.id,
               groupID: groupID,
+              read: false,
               onClickID: groupID
             }
           },

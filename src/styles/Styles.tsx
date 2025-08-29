@@ -1,6 +1,6 @@
 import { StyleSheet, Platform, Dimensions } from 'react-native';
 
-const colorBackground = '#f2f7f7';
+const colorBackground = '#f7f7f7';
 const colorPrimary = 'white';
 const textColor = 'black';
 

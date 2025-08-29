@@ -1,7 +1,6 @@
-import { useState, useContext, useCallback, useRef } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import { View, FlatList, TouchableOpacity, Text, ActivityIndicator, Dimensions,
-  RefreshControl, Alert } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+  RefreshControl } from 'react-native';
 
 import client  from '../../client';
 import { chatsByUser } from '../../customGraphql/customQueries';
@@ -20,21 +19,20 @@ import moment from "moment";
 const MessageUsers = ( {navigation}: any ) => {
   const [ chatRooms, setChatRooms ] = useState<UserChat[]>([])
   const [ loading, setLoading ] = useState<boolean>(true);
+  const [ error, setError ] = useState<string | null>(null);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
-  const firstRender = useRef(false);
+  const firstRender = useRef(true);
   const authContext = useContext(AuthContext);
   const currUser = authContext?.currUser;
   const blockList = authContext?.blockList;
   if(!currUser) return;
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchChatRooms(true);
-      if(firstRender.current){
-        firstRender.current = false;
-      }
-    }, [])
-  );
+  useEffect(()=> {
+    fetchChatRooms(true);
+    if(firstRender.current){
+      firstRender.current = false;
+    };
+  }, [currUser.unreadChatCount]);
 
   //retreives list of chatrooms that user is a part of
   const fetchChatRooms = async (refresh: boolean) => {
@@ -53,16 +51,29 @@ const MessageUsers = ( {navigation}: any ) => {
         authMode: 'userPool'
       });
       const chatRoomData = getChatRooms.data.chatsByUser.items;
+      const filteredChatRooms = chatRoomData.filter((item) => {
+        if(!item.chat) return false;
+        if (item.chat.participants?.items.length === 2) {
+          const otherUser = item.chat.participants.items.find(
+            (part) => part && part.userID !== currUser.id
+          );
+          if (blockList?.includes(otherUser?.user?.id ?? "")) {
+            return false; // exclude blocked DM
+          }
+        }
+      
+        return true;
+      })
       if(refresh){ 
-        setChatRooms(chatRoomData);
+        setChatRooms(filteredChatRooms);
       } else {
-        const uniqueChatRooms = chatRoomData.filter((item: UserChat) => 
+        const uniqueChatRooms = filteredChatRooms.filter((item: UserChat) => 
           !chatRooms.some((userChat: UserChat) => userChat.id === item.id));
         setChatRooms((prev: any) => [...prev, ...uniqueChatRooms]);
       }
       setNextToken(getChatRooms.data.chatsByUser.nextToken);
     } catch {
-      Alert.alert('Error', 'Error fetching chat rooms',);
+      setError('Could not load chatrooms. Pull down to refresh.');
     } finally {
       setLoading(false);
     }
@@ -119,16 +130,6 @@ const MessageUsers = ( {navigation}: any ) => {
             const displayURIs = getDisplayURIs(item) || [];
             const chatname = getChatName(item);
 
-            //filters out dm's(1 to 1 chats) with blocked users
-            if(item.chat.participants?.items.length === 2){ //guarantees direct chat (not group)
-              const otherUser = item.chat.participants.items.find(
-                (part) => part && part.userID !== currUser.id
-              )
-              if(blockList && blockList.includes(otherUser?.user?.id ?? "")){
-                return null;
-              }
-            }
-
             return (
               <TouchableOpacity onPress={() => handleOpenChatRoom(item)}>
                 <View style={(item.unreadMessageCount && item.unreadMessageCount > 0) ? 
@@ -180,7 +181,15 @@ const MessageUsers = ( {navigation}: any ) => {
             )
           }}
           ListEmptyComponent={
-            <View><Text style={styles.noResultsMsg}>No chat rooms found.</Text></View>
+            error ? (
+              <View>
+                <Text style={[styles.noResultsMsg, {color: 'red'}]}>{error}</Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.noResultsMsg}>No chat rooms yet. Tap + to create one!</Text>
+              </View>
+            )
           }
           refreshControl={
             <RefreshControl
@@ -192,7 +201,7 @@ const MessageUsers = ( {navigation}: any ) => {
           }
           onEndReachedThreshold={0.3}
           onEndReached={() => {
-            if(nextToken) fetchChatRooms(false)
+            if(!loading && nextToken) fetchChatRooms(false)
           }}
         />
       )}

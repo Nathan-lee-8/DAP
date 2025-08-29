@@ -6,7 +6,7 @@ import client from '../client';
 import { notificationsByUser } from "../customGraphql/customQueries";
 import { deleteNotification, updateNotification, updateUser 
 } from "../customGraphql/customMutations";
-import { ModelSortDirection, Notification } from "../API";
+import { ModelSortDirection, Notification, User } from "../API";
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles';
@@ -26,12 +26,12 @@ const Notifications = ( {closeNotificationModal} : any ) => {
   const [ notifications, setNotifications ] = useState<Notification[]>([]);
   const [ grouped, setGrouped ] = useState<any>([]);
   const [ loading, setLoading ] = useState(true);
+  const [ error, setError ] = useState<string | null>(null);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
-  const authContext = useContext(AuthContext);
-  if(!authContext) return;
-  const currUser = authContext.currUser;
-  const { triggerFetch } = authContext;
-  if(!currUser) return;
+  const {currUser, setCurrUser} = useContext(AuthContext)!;
+  if(!currUser) {
+    setError('Could not fetch notifications. Pull down to refresh.');
+  };
 
   const navigation = useNavigation<NativeStackNavigationProp<GlobalParamList>>();
 
@@ -47,9 +47,10 @@ const Notifications = ( {closeNotificationModal} : any ) => {
 
   //retreives all notifications and nexttoken and resets notification count to 0
   const fetchNotifications = async () => {
+    if(!currUser) return;
     setLoading(true);
     try{
-      const notifData = await client.graphql({
+      const results = await client.graphql({
         query: notificationsByUser,
         variables: {
           userID: currUser.id,
@@ -58,9 +59,9 @@ const Notifications = ( {closeNotificationModal} : any ) => {
         },
         authMode:'userPool'
       })
-      setNextToken(notifData.data.notificationsByUser.nextToken);
-      const notificationList = notifData.data.notificationsByUser.items
-        .filter((item) => item.type !== 'Message');
+      const notifData = results.data.notificationsByUser;
+      const notificationList = notifData.items.filter((item) => item.type !== 'Message');
+      setNextToken(notifData.nextToken);
       setNotifications(notificationList);
 
       //reset notification count to 0 
@@ -74,8 +75,8 @@ const Notifications = ( {closeNotificationModal} : any ) => {
             }
           },
           authMode: 'userPool'
-        });
-        triggerFetch();
+        });  
+        setCurrUser({...currUser,unreadNotificationCount: 0});
       }
 
       //for each notification in the notificationList: mark as read
@@ -95,13 +96,14 @@ const Notifications = ( {closeNotificationModal} : any ) => {
       })
       await Promise.all(updatePromises);
     } catch (error) {
-      Alert.alert('Error', 'Issue fetching notifications')
+      setError('Could not load notifications. Pull down to refresh.');
     } finally {
       setLoading(false);
     }
   }
 
   const fetchNextBatch = () => {
+    if(!currUser) return;
     client.graphql({
       query: notificationsByUser,
       variables: {
@@ -118,6 +120,8 @@ const Notifications = ( {closeNotificationModal} : any ) => {
       );
       setNotifications((prev: any) => [...prev, ...notifs]);
       setNextToken(notifData.data.notificationsByUser.nextToken);
+    }).catch(() => {
+      setError('Could not load notifications. Pull down to refresh.');
     })
 }
 
@@ -230,10 +234,16 @@ const Notifications = ( {closeNotificationModal} : any ) => {
                 
               </View>
             }
-            ListEmptyComponent={() => (
-              <View>
-                <Text style={styles.noResultsMsg}>No Notifications</Text>
-              </View>
+            ListEmptyComponent={() => (           
+              error ? (
+                <View>
+                  <Text style={[styles.noResultsMsg, {color: 'red'}]}>{error}</Text>
+                </View>
+              ) : (
+                <View>
+                  <Text style={styles.noResultsMsg}>No notifications to display.</Text>
+                </View>
+              )
             )}
             refreshControl={
               <RefreshControl

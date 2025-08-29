@@ -1321,66 +1321,6 @@ export const groupsByUser = /* GraphQL */ `query GroupsByUser(
         owner
         memberCount
         type
-        members{
-          items{
-            id
-            userID
-            groupID
-            role
-            createdAt
-            updatedAt
-            owner
-            __typename
-          }
-          nextToken
-          __typename
-        }
-        posts{
-          items {
-            id
-            content
-            postURL
-            groupID
-            userID
-            user{
-              id
-              email
-              firstname
-              fullname
-              lastname
-              profileURL
-              description
-              unreadChatCount
-              unreadNotificationCount
-              createdAt
-              updatedAt
-              owner
-              __typename
-            }
-            comments{
-              items{
-                id
-                content
-                commentURL
-                userID
-                postID
-                createdAt
-                updatedAt
-                owner
-                __typename
-              }
-              nextToken
-              __typename
-            }
-            commentCount
-            createdAt
-            updatedAt
-            owner
-            __typename
-          }
-          nextToken
-          __typename
-        }
         __typename
       }
       owner

@@ -1,13 +1,12 @@
-import { useState, useCallback, useContext, useRef } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator, Modal,
   RefreshControl, KeyboardAvoidingView, Platform } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
 
 import client from '../client';
 import { getGroup, postsByDate } from '../customGraphql/customQueries';
 import { createUserGroup, deleteUserGroup, deleteGroup, createNotification, 
   deleteNotification } from '../customGraphql/customMutations';
-import { Group, Post, UserGroup, User, Notification, ModelSortDirection } from '../API'
+import { Group, Post, UserGroup, User, Notification, ModelSortDirection } from '../API';
 
 import { AuthContext } from "../context/AuthContext";
 import styles from '../styles/Styles'
@@ -55,12 +54,9 @@ const ViewGroup = ( {route, navigation} : any) => {
     return;
   }
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchCurrentData();
-    }, [])
-  );
-
+  useEffect(() => {
+    fetchCurrentData();
+  }, [])
   //Retreives the current group Data and sets Groups, Posts, and Participants
   //also sets currUsers membership. sets group options based on membership role.
   const fetchCurrentData = async () => {
@@ -175,7 +171,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   //Group if it is public, and sends a request to join if it is private. FN should not be 
   //accessible to non-members
   const handleJoinGroup = async () => {
-    if(myUserGroup !== undefined || requestButtonText === 'Requested') return;
+    if( !group || myUserGroup !== undefined || requestButtonText === 'Requested') return;
 
     if(group?.type === 'Public'){
       try{
@@ -195,47 +191,28 @@ const ViewGroup = ( {route, navigation} : any) => {
       } catch {
         Alert.alert('Error', 'Issue joining Group');
       }
-      group?.members?.items.map(async (member) => {
-        if(member?.role === 'Admin' || member?.role === 'Owner'){
-          client.graphql({
-            query: createNotification,
-            variables: {
-              input: {
-                type: 'JoinGroup',
-                name: group.groupName,
-                content: `${currUser.firstname} ${currUser.lastname} has joined ` + 
-                  `${group.groupName}`,
-                userID: member.userID,
-                groupID: group.id,
-                onClickID: group.id
-              }
-            },
-            authMode: 'userPool'
-          }).catch(() => {})
-        }
-      })
     }else{
+      const owner = group?.members?.items.find(m => m?.role === 'Owner');
       setRequestButtonText('Requested');
-      group?.members?.items.map(async (member) => {
-        if(member?.role === 'Admin' || member?.role === 'Owner'){
-          client.graphql({
-            query: createNotification,
-            variables: {
-              input: {
-                type: 'RequestGroup',
-                name: group.groupName,
-                content: `${currUser.firstname} ${currUser.lastname}` + 
-                  ` has requested to join ${group.groupName}`,
-                userID: member.userID,
-                groupID: groupID,
-                targetUserID: currUser.id,
-                onClickID: group.id
-              }
-            },
-            authMode: 'userPool'
-          }).catch(() => {})
-        }
-      })
+      if(owner){
+        client.graphql({
+          query: createNotification,
+          variables: {
+            input: {
+              type: 'RequestGroup',
+              name: group.groupName,
+              content: `${currUser.firstname} ${currUser.lastname}` + 
+                ` has requested to join ${group.groupName}`,
+              userID: owner.userID,
+              groupID: groupID,
+              read: false,
+              targetUserID: currUser.id,
+              onClickID: group.id
+            }
+          },
+          authMode: 'userPool'
+        }).catch(() => {})
+      }
     }
   }
 
@@ -326,6 +303,7 @@ const ViewGroup = ( {route, navigation} : any) => {
                 `${group?.groupName}`,
               userID: memberID,
               groupID: groupID,
+              read: false,
               onClickID: groupID
             }
           },
@@ -448,6 +426,7 @@ const ViewGroup = ( {route, navigation} : any) => {
           name: group?.groupName || 'new group',
           content: 'Your request to join ' + group?.groupName + ' has been accepted',
           userID: item?.targetUser?.id,
+          read: false,
           onClickID: groupID
         }
       },
@@ -617,7 +596,9 @@ const ViewGroup = ( {route, navigation} : any) => {
             />
           </View>
           
-          <TouchableOpacity style={styles.closeOverlayButton} onPress={() => setModalVisible(false)}>
+          <TouchableOpacity style={styles.closeOverlayButton} 
+            onPress={() => setModalVisible(false)}
+          >
             <Text style={styles.buttonTextBlack}>Close</Text>
           </TouchableOpacity>
         </View>
@@ -632,7 +613,9 @@ const ViewGroup = ( {route, navigation} : any) => {
       >
         <View style={styles.searchModalOverlay}>
           <View style={styles.searchModalHeader}>
-            <TouchableOpacity onPress={() => setInviteModalVisible(false)} style={styles.closeSearchButton}>
+            <TouchableOpacity onPress={() => setInviteModalVisible(false)} 
+              style={styles.closeSearchButton}
+            >
               <Text style={styles.closeSearchButtonText}>Cancel</Text>
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Search User</Text>
@@ -650,7 +633,9 @@ const ViewGroup = ( {route, navigation} : any) => {
                       <Icon name="remove-circle-outline" style={styles.removeIcon} 
                         onPress={() => removeMember(item)} size={25}
                       />
-                      <ImgComponent style={styles.addedUserImg} uri={item.profileURL || 'defaultUser'}/>
+                      <ImgComponent style={styles.addedUserImg} 
+                        uri={item.profileURL || 'defaultUser'}
+                      />
                     </View>
                   )
                 }}

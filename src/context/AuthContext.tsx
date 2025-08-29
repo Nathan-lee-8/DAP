@@ -9,7 +9,7 @@ import client from '../client';
 import { blockListByBlocked, blockListByBlocker, tokensByID, userByEmail 
 } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
-import { onUpdateUser, onCreateBlockList, onDeleteBlockList
+import { onCreateUserGroup, onCreateBlockList, onDeleteBlockList
  } from '../customGraphql/customSubscriptions';
 import { User } from '../API';
 import wsClient from '../components/webSocket';
@@ -19,9 +19,11 @@ interface AuthContextType {
   userEmail: string;
   currUser: User | undefined;
   blockList: string[];
+  groupCount: number;
   setSignedIn: (value: boolean) => void;
   setUserEmail: (email: string) => void;
   setCurrUser: (currUser: User) => void;
+  setGroupCount: (count: number) => void;
   logout: () => void;
   triggerFetch: () => void;
   setBlockList: React.Dispatch<React.SetStateAction<string[]>>;
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [ isSignedIn, setSignedIn ] = useState<boolean>(false);
   const [ userEmail, setUserEmail ] = useState<string>('');
   const [ fetchCounter, setFetchCounter ] = useState(0);
+  const [ groupCount, setGroupCount ] = useState(0); 
   const [ tokenDynamoID, setTokenDynamoID ] = useState<string>();
   const [ blockList, setBlockList ] = useState<string[]>([]);
 
@@ -75,27 +78,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     getUserAttributes();
   }, [userEmail, fetchCounter]);
 
-  //Subscription to listen for updates to User metadata
-  useEffect(() => {
-    if(!currUser || !currUser.id) return;
-    const subscription = client.graphql({
-      query: onUpdateUser,
-      variables:{
-        filter: {
-          id: { eq: currUser.id }
-        }
-      },
-      authMode: 'userPool'
-    }).subscribe({
-      next: (msg) => {
-        const updateUser = msg.data?.onUpdateUser;
-        console.log('updating User', updateUser);
-        if(updateUser) setCurrUser(updateUser);
-      },
-      error: (err) => console.error(err),
-    })
-    return () => subscription.unsubscribe();
-  }, [currUser?.id]);
+  //trigger to get user attributes
+  const triggerFetch = () => {
+    setFetchCounter((item) => item + 1);
+  }
 
   //fetch blocked users whenever userID updates and subscription to listen for 
   //when users block or unblock currUser
@@ -164,11 +150,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [currUser?.id])
 
-  //trigger to get user attributes
-  const triggerFetch = () => {
-    setFetchCounter((item) => item + 1);
-  }
-
   //requests notification permission after user is set and listens for new
   //incoming notifications
   useEffect(() => {
@@ -189,15 +170,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => {isMounted = false} 
   }, [currUser?.id]);
 
-  //Subscription to listen for new FCM tokens.
-  useEffect(() => {
-    const messaging = getMessaging();
-    const unsubscribe = messaging.onTokenRefresh(async (newToken) => {
-      await registerTokenToBackend(newToken); 
-    });
-    return () => unsubscribe();
-  }, []);
-
   //subsciprtion to listen for new incoming messages from WS client and 
   //update notification/unreadMessagecounts
   useEffect(() => {
@@ -212,12 +184,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           });
         }
       }else if(data.action === 'updateNotificationCount'){
-        console.log('setting User:', data);
         setCurrUser((prev) => prev 
           ? { ...prev, unreadNotificationCount: data.count } 
           : prev);
       }else if(data.action === 'updateUnreadChatCount'){
-        console.log('setting User:', data);
         setCurrUser((prev) => prev 
           ? { ...prev, unreadChatCount: data.count } 
           : prev);
@@ -230,6 +200,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => wsClient.removeListener(handleWSMessage);
   }, [currUser?.id])
 
+  //subscription to listen for new usergroups and trigger state update
+  useEffect(() => {
+    if(!currUser) return;
+    const subscription = client.graphql({
+      query: onCreateUserGroup,
+      variables: {
+        filter: { userID: { eq: currUser.id } }
+      },
+      authMode: 'userPool'
+    }).subscribe({
+      next: () => {
+        setGroupCount((prev)=> prev++);
+      }
+    })
+    return () => subscription.unsubscribe();
+  }, [currUser?.id])
+  
   //Listens to app state and manages Chat API connection 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: AppStateStatus) => {
@@ -245,6 +232,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       subscription.remove();
     };
   }, [])
+
+  //Subscription to listen for new FCM tokens.
+  useEffect(() => {
+    const messaging = getMessaging();
+    const unsubscribe = messaging.onTokenRefresh(async (newToken) => {
+      await registerTokenToBackend(newToken); 
+    });
+    return () => unsubscribe();
+  }, []);
 
   //Signs out of the app and clears cached data
   const logout = async () => {
@@ -278,7 +274,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   //  exists for other user: delete and create token
   //  no matching tokens: create token
   const registerTokenToBackend = async (tokenID: string) => {
-    console.log(tokenID);
     if(!currUser) return;
     try {
       const tokenData = await client.graphql({
@@ -320,8 +315,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, blockList, setSignedIn,
-      setUserEmail, setCurrUser, logout, triggerFetch, setBlockList}}>
+    <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, blockList, groupCount,
+      setGroupCount, setSignedIn, setUserEmail, setCurrUser, logout, triggerFetch, 
+      setBlockList}}>
       {children}
     </AuthContext.Provider>
   );

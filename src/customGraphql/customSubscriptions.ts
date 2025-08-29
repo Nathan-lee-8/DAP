@@ -87,3 +87,36 @@ export const onDeleteBlockList = /* GraphQL */ `subscription OnDeleteBlockList(
   APITypes.OnDeleteBlockListSubscriptionVariables,
   APITypes.OnDeleteBlockListSubscription
 >;
+export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
+  $filter: ModelSubscriptionUserGroupFilterInput
+  $owner: String
+) {
+  onCreateUserGroup(filter: $filter, owner: $owner) {
+    id
+    userID
+    groupID
+    role
+    group {
+      id
+      groupName
+      nameLowercase
+      groupURL
+      description
+      isPublic
+      memberCount
+      type
+      createdAt
+      updatedAt
+      owner
+      __typename
+    }
+    createdAt
+    updatedAt
+    owner
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateUserGroupSubscriptionVariables,
+  APITypes.OnCreateUserGroupSubscription
+>;

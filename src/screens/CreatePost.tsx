@@ -150,7 +150,7 @@ const CreatePost = ( {route, navigation}: any ) => {
         </TouchableOpacity>
         <Text style={styles.noResultsMsg}>What's on your mind?</Text>
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+            <ActivityIndicator size="large" color="#0000ff" />  
         ) : (
           <View>
             <TextInput 
@@ -172,27 +172,29 @@ const CreatePost = ( {route, navigation}: any ) => {
             </View>
           </View>
         )}
-        <FlatList
-          data={media}
-          numColumns={4}
-          keyExtractor={(_,index) => index.toString()}
-          renderItem={({ item }) => (
-            <View style={styles.postImageContainer}>
-              {item.fileName?.endsWith('.mp4') || item.type?.startsWith('video') ? (
-                <Video source={{ uri: item.uri }} style={{ width: 90, height: 90 }}
-                  resizeMode="contain"
+        {!loading  &&
+          <FlatList
+            data={media}
+            numColumns={4}
+            keyExtractor={(_,index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.postImageContainer}>
+                {item.fileName?.endsWith('.mp4') || item.type?.startsWith('video') ? (
+                  <Video source={{ uri: item.uri }} style={{ width: 90, height: 90 }}
+                    resizeMode="contain"
+                  />
+                ) : (
+                  <ImgComponent uri={item.uri || 'defaultUser'} 
+                    style={{height: 90, width: 90}} 
+                  />
+                )}
+                <Icon style={styles.removeIcon} name="remove-circle-outline" size={20}
+                  onPress={() => handleRemoveItem(item)}
                 />
-              ) : (
-                <ImgComponent uri={item.uri || 'defaultUser'} 
-                  style={{height: 90, width: 90}} 
-                />
-              )}
-              <Icon style={styles.removeIcon} name="remove-circle-outline" size={20}
-                onPress={() => handleRemoveItem(item)}
-              />
-            </View>
-          )}
-        />
+              </View>
+            )}
+          />
+        }
       </View>
     </TouchableWithoutFeedback>
   )

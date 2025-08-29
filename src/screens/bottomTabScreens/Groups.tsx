@@ -1,8 +1,7 @@
 
-import { useContext, useCallback, useState, useRef } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl,
-   Alert } from 'react-native';
+import { useContext, useEffect, useState } from 'react';
+import { View, Text, ActivityIndicator, TouchableOpacity, FlatList, RefreshControl
+} from 'react-native';
  
 import client from '../../client';
 import { groupsByUser } from '../../customGraphql/customQueries';
@@ -20,24 +19,23 @@ import styles from '../../styles/Styles';
 const Groups = ( {navigation} : any ) => {
   const [ group, setGroup ] = useState<UserGroup[]>([]);
   const [ loading, setLoading ] = useState(false);
+  const [ error, setError ] = useState<string | null>(null);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
-  const authContext = useContext(AuthContext);
-  const currUser = authContext?.currUser;
-  if(!currUser) return;
+  const {currUser, groupCount} = useContext(AuthContext)!;
 
-  const firstRender = useRef(true);
-  useFocusEffect(
-    useCallback(() => {
-      fetchGroups(true);
-      if(firstRender.current){
-        firstRender.current = false;
-      }
-    }, [])
-  );
+  useEffect(() => {
+    if(!currUser){
+      setError('Could not load groups. Pull down to refresh.');
+      return;
+    }
+    setError(null);
+    fetchGroups(true);
+  }, [currUser?.id, groupCount])
 
   //Retreives current groups user is a part of 
   const fetchGroups = async ( refresh: boolean) => {
-    if(firstRender.current){
+    if(!currUser) return;
+    if(refresh){
       setLoading(true);
     }
     try{
@@ -56,14 +54,13 @@ const Groups = ( {navigation} : any ) => {
         setGroup(groupData);
       }else {
         //remove duplicates
-        const uniqueGroups = groupData.filter((item: UserGroup) => 
-          !group.some((existingItem: UserGroup) => existingItem.id === item.id)
+        setGroup((prev) => 
+          [...prev, ...groupData.filter(item => !prev.some(g => g.id === item.id))]
         );
-        setGroup((prev: any) => [...prev, ...uniqueGroups]);
       }
       setNextToken(groups.data.groupsByUser.nextToken);
     } catch {
-      Alert.alert('Error', 'Failed to get groups');
+      setError('Could not load Groups. Pull down to refresh.');
     } finally{
       setLoading(false);
     }
@@ -83,8 +80,9 @@ const Groups = ( {navigation} : any ) => {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <FlatList
+        <FlatList<UserGroup>
           data={group}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
             return (
               <TouchableOpacity onPress={() => viewGroup(item)}>
@@ -109,7 +107,15 @@ const Groups = ( {navigation} : any ) => {
             )
           }}
           ListEmptyComponent={
-            <View><Text style={styles.noResultsMsg}>No groups found.</Text></View>
+            error ? (
+              <View>
+                <Text style={[styles.noResultsMsg, {color: 'red'}]}>{error}</Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.noResultsMsg}>No groups yet. Tap + to create one!</Text>
+              </View>
+            )
           }
           refreshControl={
             <RefreshControl

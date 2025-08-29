@@ -1,8 +1,6 @@
-import { useState, useContext, useCallback, useLayoutEffect, useRef
-} from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useState, useContext, useEffect, useRef } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, 
-  Modal, Alert } from 'react-native';
+  Modal } from 'react-native';
 
 import client from '../../client';
 import { postsByUserFeed } from '../../customGraphql/customQueries';
@@ -21,53 +19,35 @@ import Notifications from '../../components/Notifications';
 const HomeScreen = ( {navigation} : any) => {
   const [ newsFeed, setNewsFeed ] = useState<UserFeed[]>([]);
   const [ modalVisible, setModalVisible ] = useState(false);
+  const [ error, setError] = useState<string| null>(null);
   const [ loading, setLoading ] = useState(false);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const { blockList, currUser } = useContext(AuthContext)!;
+  if(!currUser){
+    setError('Could not load posts. Pull down to refresh.');
+  }
 
   const firstRender = useRef(true);
   //Retreives Newsfeed every time screen is refocused and sets loading on
   //first render.
-  useFocusEffect(
-    useCallback(() => {
-      let isActive = true;
-      const loadInitialData = async () => {
-        if(firstRender.current){
-          setLoading(true);
-          await fetchNewsFeed(true);
-          if(isActive) setLoading(false);
-          firstRender.current = false;
-        } else{
-          await fetchNewsFeed(true);
-        }
+  useEffect(() => {
+    let isActive = true;
+    const loadInitialData = async () => {
+      if(firstRender.current){
+        setLoading(true);
+        await fetchNewsFeed(true);
+        if(isActive) setLoading(false);
+        firstRender.current = false;
+      } else{
+        await fetchNewsFeed(true);
       }
-      loadInitialData();
-    }, [currUser?.id, blockList])
-  );
-
-  //updates the unread notification count on the notification icon in header
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Icon name="notifications-outline" size={24} style={{marginRight: 15}}/>
-          {currUser && currUser?.unreadNotificationCount > 0 && 
-            <View style={{position: 'absolute', right: 10, top: -10}}>
-              <Text style={{fontWeight: 700, color: 'red'}}>
-                {currUser.unreadNotificationCount}
-              </Text>
-            </View>
-          }
-        </TouchableOpacity>
-      )
-    })
-  }, [currUser?.unreadNotificationCount])
+    }
+    loadInitialData();
+  }, [currUser?.id, blockList]);
 
   //retreives userfeed with logic for retreiving next items on scroll
   const fetchNewsFeed = async (refresh: boolean) => {
-    if(!currUser){
-      return;
-    }
+    if(!currUser) return;
     try{
       const res = await client.graphql({
         query: postsByUserFeed,
@@ -98,7 +78,7 @@ const HomeScreen = ( {navigation} : any) => {
       setNextToken(res.data.postsByUserFeed.nextToken);
     } catch (err) {
       console.log(err);
-      Alert.alert('Error', 'Error fetching news feed');
+      setError('Could not load newfeed. Pull down to refresh.')
     }
   };
 
@@ -132,11 +112,15 @@ const HomeScreen = ( {navigation} : any) => {
             )
           }}
           ListEmptyComponent={() => (
-            <TouchableOpacity onPress={() => navigation.navigate('CreateGroup')}>
+            error ? (
+              <View>
+                <Text style={[styles.noResultsMsg, {color: 'red'}]}>{error}</Text>
+              </View>
+            ) : (
               <Text style={styles.noResultsMsg}>
                 New To DAP? Create or join a Group to get started!
               </Text>
-            </TouchableOpacity>
+            )
           )}
           refreshControl={
             <RefreshControl

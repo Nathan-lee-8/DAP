@@ -1145,21 +1145,6 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
     userID
     groupID
     role
-    user {
-      id
-      email
-      firstname
-      lastname
-      fullname
-      profileURL
-      description
-      unreadChatCount
-      unreadNotificationCount
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
     group {
       id
       groupName
@@ -1176,7 +1161,6 @@ export const onCreateUserGroup = /* GraphQL */ `subscription OnCreateUserGroup(
     }
     createdAt
     updatedAt
-    userGroupsId
     owner
     __typename
   }

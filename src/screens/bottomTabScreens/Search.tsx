@@ -24,6 +24,7 @@ const Search = ( {navigation} : any ) => {
   const [ selected, setSelected ] = useState(true);
   const [ loading, setLoading ] = useState(false);
   const [ exploreGroups, setExplore ] = useState<Group[]>([]);
+  const [ error, setError ] = useState<string | null>(null);
   const [ nextToken, setNextToken ] = useState<string | null | undefined>(null);
   const currUser = useContext(AuthContext)?.currUser;
   if(!currUser) return;
@@ -35,6 +36,7 @@ const Search = ( {navigation} : any ) => {
   //Retreives groups by popularity and retreives all current user's groups 
   //and filters out groups the user is in. Displays in explore section.
   const fetchExplorer = async () => {
+    setLoading(true);
     try{
       const data = await client.graphql({
         query: groupsByMemberCount,
@@ -63,7 +65,7 @@ const Search = ( {navigation} : any ) => {
       const filteredData = allGroups.filter((item) => !myGroupIDs.includes(item.id));
       setExplore(filteredData);
     } catch {
-      Alert.alert('Error', 'Error fetching groups')
+      setError('Could not fetch explorer. Pull down to refresh.')
     } finally {
       setLoading(false);
     }
@@ -84,6 +86,8 @@ const Search = ( {navigation} : any ) => {
         .filter((group) => !exploreGroups.some((item) => item.id === group.id));
       setExplore((prev: Group[]) => [...prev, ...newGroups]);
       setNextToken(data.data.groupsByMemberCount.nextToken);
+    }).catch(() => {
+      setError('Could not fetch explorer. Pull down to refresh.');
     })
   }
 
@@ -100,8 +104,6 @@ const Search = ( {navigation} : any ) => {
   const handleViewGroup = (groupID: string) => {
     navigation.navigate('ViewGroup', {groupID: groupID});
   }
-
-  if(loading) return <ActivityIndicator size="large" color="#0000ff" />
 
   return (
     <View style={styles.container}>
@@ -135,6 +137,11 @@ const Search = ( {navigation} : any ) => {
         </View>
       </View>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+       {loading ? (
+        <View style={{flex: 1}}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+       ) : (
         <FlatList
           data={exploreGroups}
           renderItem={({item}) =>
@@ -155,7 +162,19 @@ const Search = ( {navigation} : any ) => {
             if(nextToken) fetchNextPage()
           }}
           onEndReachedThreshold={0.3}
+          ListEmptyComponent={
+            error ? (
+              <View>
+                <Text style={[styles.noResultsMsg, {color: 'red'}]}>{error}</Text>
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.noResultsMsg}>No public groups to explore</Text>
+              </View>
+            )
+          }
         />
+      )}
       </TouchableWithoutFeedback>
     </View>
   )

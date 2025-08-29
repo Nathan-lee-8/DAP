@@ -108,6 +108,7 @@ const CreateChat = ({ route, navigation }: any) => {
               name: chatname === 'Chat name' ? 'new chat' : chatname,
               content: currUser.fullname + " added you to a chat",
               type: 'AddChat',
+              read: false,
               onClickID: chatID,
             }
           },

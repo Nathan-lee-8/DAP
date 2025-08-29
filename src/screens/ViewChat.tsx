@@ -10,7 +10,7 @@ import { createMessage, updateUserChat, deleteUserChat, createUserChat, deleteCh
   updateUser, createNotification } from '../customGraphql/customMutations';
 import  { Message, UserChat, Chat, User } from '../API';
 
-import { Asset } from 'react-native-image-picker';
+import { Asset, launchCamera } from 'react-native-image-picker';
 import Video from 'react-native-video';
 import { mediaPicker, getMediaURI } from '../components/addMedia';
 
@@ -41,7 +41,10 @@ const ViewChat = ( { route, navigation } : any) => {
 
   const [ currMessage, setMessage ] = useState<string>(''); //curr message to send
   const [ media, setMedia ] = useState<Asset[]>([]); //curr selected media to send
+  const [ mediaLoading, setMediaLoading ] = useState(false);
   const [ loading, setLoading ] = useState<boolean>(false);
+  const [ pageLoading, setPageLoading ] = useState(false);
+  const [ error, setError ] = useState<string | null>(null);
   const [ iconsVisible, setIconsVisible ] = useState(false); //add media icons
 
   const [ modalVisible, setModalVisible ] = useState(false);
@@ -58,31 +61,15 @@ const ViewChat = ( { route, navigation } : any) => {
   const currUser = authContext?.currUser;
   const blockList = authContext?.blockList;
   const triggerFetch = authContext?.triggerFetch;
-  if(!currUser) return;
+  if(!currUser) setError('Could not load chat.');
 
-  //update title anytime participants changes
-  useEffect( () => {
-    if(chat?.name && chat.name !== 'Chat name') setTitle(chat.name);
-    else{
-      var temptitle = participants.filter((user) => user.user?.id !== currUser.id).map((item) => 
-        `${item.user?.firstname} ${item.user?.lastname}`).filter(Boolean).join(', ');
-      setTitle(temptitle);
-    }
-  }, [participants]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if(!myUserChat || !myUserChat.id) return;
-      wsClient.send({ action: "setActive", userChatID: myUserChat.id, active: true, stage: 'prod' });
-      return () => {
-        wsClient.send({ action: "setActive", userChatID: myUserChat.id, active: false, stage: 'prod' });
-      };
-    }, [myUserChat?.id])
-  );
-
-  //retrieves chat then starts WebSocket connection to listen for new messages 
+  //resets unread message count to 0, retrieves chat then starts WebSocket connection 
+  //to listen for new messages 
   useEffect(() => {
-    fetchChat();
+    const initialize = async () => {
+      await fetchChat();
+      resetMessageCount();
+    }
     const handleNewMessage = (data: any) => {
       if(data.chatID !== chatID) return;
       const currTime = new Date().toISOString();
@@ -103,44 +90,18 @@ const ViewChat = ( { route, navigation } : any) => {
       );
       scrollToBottom();
     }
+    
+    initialize();
     wsClient.addListener(handleNewMessage);
     return () => {
       wsClient.removeListener(handleNewMessage);
     }
-  }, [])
-
-  //on open set unreadMessageCount to 0 & decrement unreadChatCount if neccessary
-  useEffect(() => {
-    if(myUserChat && myUserChat.unreadMessageCount !== 0){
-      client.graphql({
-        query: updateUserChat,
-        variables: {
-          input: {
-            id: myUserChat.id,
-            unreadMessageCount: 0,
-          },
-        },
-        authMode: 'userPool'
-      });
-      client.graphql({
-        query: updateUser,
-        variables: {
-          input: {
-            id: currUser.id,
-            unreadChatCount: (currUser.unreadChatCount - 1) >= 0 ? 
-              currUser.unreadChatCount - 1 : 0,
-          }
-        },
-        authMode: 'userPool'
-      })
-      if(triggerFetch) triggerFetch();
-    }
-  }, [myUserChat]);
+  }, [myUserChat?.id]);
 
   //Get Chat metadata and set chat, messages, urls, nexttoken and myUser
   const fetchChat = async () => {
     if(loading) return;
-    setLoading(true);
+    setPageLoading(true);
     try{
       //retreive and set chat
       const chat = await client.graphql({
@@ -166,7 +127,7 @@ const ViewChat = ( { route, navigation } : any) => {
       let URLs: (string)[] = [];
       parts?.map((participant) => {
         if(!participant?.user) return;
-        if(participant.user.id === currUser.id){ //if my Userchat, set roles and options
+        if(participant.user.id === currUser?.id){ //if my Userchat, set roles and options
           setMyUserChat(participant);
           let currUsersChat = participant;
           if(currUsersChat.role === 'Admin'){
@@ -180,12 +141,12 @@ const ViewChat = ( { route, navigation } : any) => {
       })
       setURLs(URLs);
     } catch {
-      Alert.alert('Error', 'Could not find Chat');
+      setError('Could not load chat.');
     } finally {
-      setLoading(false);
+      setPageLoading(false);
     }
   };
-
+  
   //retrieve next 20 messages as user scrolls 
   const fetchMoreChat = () => {
     if(loading) return;
@@ -210,9 +171,59 @@ const ViewChat = ( { route, navigation } : any) => {
     })
   };
 
+  //update title anytime participants changes
+  useEffect( () => {
+    if(chat?.name && chat.name !== 'Chat name') setTitle(chat.name);
+    else{
+      var temptitle = participants.filter((user) => user.user?.id !== currUser?.id).map((item) => 
+        `${item.user?.firstname} ${item.user?.lastname}`).filter(Boolean).join(', ');
+      setTitle(temptitle);
+    }
+  }, [participants]);
+
+  //on open or when userChat changes, set user active/inactive for that chat
+  useFocusEffect(
+    useCallback(() => {
+      if(!myUserChat || !myUserChat.id) return;
+      wsClient.send({ action: "setActive", userChatID: myUserChat.id, active: true, stage: 'prod' });
+      return () => {
+        wsClient.send({ action: "setActive", userChatID: myUserChat.id, active: false, stage: 'prod' });
+      };
+    }, [myUserChat?.id])
+  );
+
+  //set unreadMessageCount to 0 & decrement unreadChatCount if neccessary
+  const resetMessageCount = () => {
+    if(!currUser )return;
+    if(myUserChat && myUserChat.unreadMessageCount !== 0){
+      client.graphql({
+        query: updateUserChat,
+        variables: {
+          input: {
+            id: myUserChat.id,
+            unreadMessageCount: 0,
+          },
+        },
+        authMode: 'userPool'
+      });
+      client.graphql({
+        query: updateUser,
+        variables: {
+          input: {
+            id: currUser.id,
+            unreadChatCount: (currUser.unreadChatCount - 1) >= 0 ? 
+              currUser.unreadChatCount - 1 : 0,
+          }
+        },
+        authMode: 'userPool'
+      })
+      if(triggerFetch) triggerFetch();
+    }
+  }
+
   //Send current message unless message is empty
   const sendMessage = async () => {
-    if((currMessage === '' && media.length === 0) || !chat ) return;
+    if(!currUser || (currMessage === '' && media.length === 0) || !chat ) return;
     setLoading(true);
     try {
       const newPaths = await handleUploadFilepaths() || [];
@@ -267,6 +278,7 @@ const ViewChat = ( { route, navigation } : any) => {
   //Deletes the current UserChat removing user from the group and sends a System message
   //in Chat that user has left
   const leaveChat = async () => {
+    if(!currUser) return;
     try{
       await client.graphql({
         query: deleteUserChat,
@@ -303,6 +315,7 @@ const ViewChat = ( { route, navigation } : any) => {
   //been added
   const handleInvite = async () => {
     setInviteModalVisible(false);
+    if(!currUser) return;
     const userIDs = addedMembers.map((item: any) => item.id);
     try{
       //create notification and userChat for each invited user 
@@ -330,6 +343,7 @@ const ViewChat = ( { route, navigation } : any) => {
               name: title.slice(0, 20),
               content: `${currUser.fullname} added you to a chat`,
               type: 'AddChat',
+              read: false,
               onClickID: chatID,
             }
           },
@@ -363,6 +377,7 @@ const ViewChat = ( { route, navigation } : any) => {
       Alert.alert('Error', 'Failed to add User(s) to Chat');
     }
   }
+  
   //Adds member to add to group queue
   const handleAddMember = (user: User) => {
     setAddedMembers([...addedMembers, user]);
@@ -416,19 +431,19 @@ const ViewChat = ( { route, navigation } : any) => {
 
   //Opens media library to choose video/image to add to message
   const openLibrary = async () => {
-    setLoading(true);
+    setMediaLoading(true);
     if(media.length >= 8){
       Alert.alert('Max 8 media files');
-      setLoading(false);
+      setMediaLoading(false);
       return;
     }
     var file = await mediaPicker();
     if(!file){
-      setLoading(false);
+      setMediaLoading(false);
       return;
     }
     setMedia(prev => [...prev, file as Asset]);
-    setLoading(false);
+    setMediaLoading(false);
   }
   //uploads all uri's in media to s3 and returns new s3 filepaths 
   const handleUploadFilepaths = async () => {
@@ -449,7 +464,23 @@ const ViewChat = ( { route, navigation } : any) => {
     setMedia(media.filter((file) => file.uri !== item.uri));
   }
   const openCamera = () => {
-    Alert.alert('not implemented yet');
+    setMediaLoading(true);
+    launchCamera(
+      {mediaType: 'photo', saveToPhotos: true }, 
+      (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled camera');
+        } else if (response.errorCode) {
+          console.log('Camera Error: ', response.errorMessage);
+          Alert.alert('Error', response.errorMessage || 'Unknown error');
+        } else {
+          console.log('Photo URI:', response.assets?.[0].uri);
+          const asset = response.assets?.[0];
+          if(asset) setMedia(prev => [...prev, asset as Asset])
+        }
+        setMediaLoading(false);
+      }
+    );
   }
 
   const openMedia = (url: string | null) => {
@@ -459,13 +490,20 @@ const ViewChat = ( { route, navigation } : any) => {
 
   //Msg and container styles based on Sent or Recieved
   const getMsgStyle = (id: string) => {
-    if(id === currUser.id) return styles.myMessage;
+    if(id === currUser?.id) return styles.myMessage;
     return styles.otherMessage;
   }
   const getMsgContainerStyle = (id: string) => {
-    if(id === currUser.id) return styles.myMessageContainer;
+    if(id === currUser?.id) return styles.myMessageContainer;
     return styles.otherMessageContainer;
   }
+
+  if(pageLoading) return (
+    <View style={styles.container}>
+      <View style={styles.header}/>
+      <ActivityIndicator size="large" color="#0000ff" />
+    </View>
+  )
 
   return(
     <View style={styles.container}>
@@ -499,7 +537,6 @@ const ViewChat = ( { route, navigation } : any) => {
       </View>
 
       {/* Flatlist for Messages */}
-
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -528,7 +565,7 @@ const ViewChat = ( { route, navigation } : any) => {
               )}
 
               <View style={getMsgContainerStyle(item.senderID)}>
-                {item.senderID !== currUser.id && 
+                {item.senderID !== currUser?.id && 
                   <ImgComponent uri={item.sender?.profileURL|| 'defaultUser'}
                     style={styles.msgIcon}
                   />
@@ -541,8 +578,8 @@ const ViewChat = ( { route, navigation } : any) => {
                     numColumns={3}
                     keyExtractor={(_, index) => index.toString()}
                     style={{
-                      marginLeft: item.senderID === currUser.id ? 'auto' : 5,
-                      marginRight: item.senderID === currUser.id ? 5 : 'auto'
+                      marginLeft: item.senderID === currUser?.id ? 'auto' : 5,
+                      marginRight: item.senderID === currUser?.id ? 5 : 'auto'
                     }}
                     renderItem={({ item }) => (
                       item?.endsWith('.mp4') ? (
@@ -568,7 +605,7 @@ const ViewChat = ( { route, navigation } : any) => {
                     <Text>{item.content}</Text>
                   </View>
                 }
-                {item.senderID === currUser.id && 
+                {item.senderID === currUser?.id && 
                   <ImgComponent uri={currUser.profileURL} style={styles.msgIcon}/>
                 }
               </View>
@@ -581,6 +618,15 @@ const ViewChat = ( { route, navigation } : any) => {
         }}
         onEndReachedThreshold={0.4}
         inverted
+        ListEmptyComponent={
+          error ? (
+            <View>
+              <Text style={[styles.noResultsMsg, {color: 'red'}]}>{error}</Text>
+            </View>
+          ) : (
+            <View><Text style={styles.systemMessage}>New chat</Text></View>
+          )
+        }
       />
       {/* Keyboard/TextInput section */}
       <KeyboardAvoidingView 
@@ -614,7 +660,9 @@ const ViewChat = ( { route, navigation } : any) => {
           />
         }
         <View style={{flexDirection: 'row', paddingBottom: Platform.OS === 'ios' ? 30 : 0}}>
-          {iconsVisible ? (
+          {mediaLoading ? (
+            <ActivityIndicator size="small" color="#0000ff" />
+          ) : iconsVisible ? (
             <View style={{flexDirection: 'row'}}>
               <Icon name="remove-circle" style={{marginRight: 5, alignSelf: 'center'}} 
                 size={25} onPress={() => setIconsVisible(false)}
@@ -639,11 +687,11 @@ const ViewChat = ( { route, navigation } : any) => {
             onChangeText={(text) => setMessage(text)}
             onFocus={() => setIconsVisible(false)}
           />
-          {loading ? ( 
+          {loading || mediaLoading ? ( 
             <ActivityIndicator size="small" color="#0000ff" />
           ) : (
-            <Icon style={styles.commentButton} onPress={loading ? undefined : sendMessage} 
-              name="send" size={30}
+            <Icon style={styles.commentButton} name="send" size={30} onPress={sendMessage} 
+              disabled={loading}
             />
           )}
         </View>
