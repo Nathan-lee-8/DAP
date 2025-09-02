@@ -147,10 +147,23 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
     postURL
     groupID
     userID
+    user{    
+      id
+      email
+      firstname
+      lastname
+      fullname
+      profileURL
+      description
+      unreadChatCount
+      unreadNotificationCount
+      createdAt
+      updatedAt
+      owner
+    }
     commentCount
     createdAt
     updatedAt
-    userPostsId
     owner
     __typename
   }

@@ -25,7 +25,7 @@ const EditGroup = ( {route, navigation} : any ) => {
   const [ name, setName ] = useState<string>(group.groupName);
   const [ description, setDescription ] = useState<string>(group.description);
   const [ type, setType ] = useState(group.type);
-  const currUser = useContext(AuthContext)?.currUser;
+  const {currUser, incrementRefreshGroup} = useContext(AuthContext)!;
   if(!currUser) return;
 
   //If filepath is not matching, uploads to s3 and returns new filepath. Then checks if name, 
@@ -36,8 +36,10 @@ const EditGroup = ( {route, navigation} : any ) => {
       && filepath === group.groupURL && group.type === type
     ){
       Alert.alert('Success', 'Group updated successfully')
+      navigation.goBack();
       return;
     }
+    setLoading(true);
 
     //moderate groupName if updated
     if(name !== group.groupName){
@@ -46,6 +48,7 @@ const EditGroup = ( {route, navigation} : any ) => {
         Alert.alert('Warning', 'Group name is flagged for sensitive content. Please remove ' + 
           'sensitive content and review our community guidelines before posting.'
         )
+        setLoading(false);
         return;
       }
     }
@@ -56,18 +59,13 @@ const EditGroup = ( {route, navigation} : any ) => {
         Alert.alert('Warning', 'Description is flagged for sensitive content. Please remove ' + 
           'sensitive content and review our community guidelines before posting.'
         )
+        setLoading(false);
         return;
       }
     }
 
     try{
-      setLoading(true);
       var currURI = filepath;
-      if(filepath !== group.groupURL){
-        var tempFilepath = await getImgURI(filepath, 
-          `public/processing/groupPictures/${group.id}.jpg`)
-        if(tempFilepath) currURI = tempFilepath;
-      }
       if(name !== group.groupName || description !== group.description || 
         filepath !== group.groupURL || group.type !== type 
       ){
@@ -86,6 +84,9 @@ const EditGroup = ( {route, navigation} : any ) => {
           },
           authMode: 'userPool'
         })
+        if(filepath !== group.groupURL){
+          await getImgURI(filepath, `public/processing/groupPictures/${group.id}.jpg`);
+        }
         Alert.alert('Success', 'Group updated successfully')
       }
     } catch {
@@ -93,6 +94,7 @@ const EditGroup = ( {route, navigation} : any ) => {
     } finally{
       setLoading(false);
       navigation.goBack();
+      incrementRefreshGroup();
     }
   }
 

@@ -92,6 +92,18 @@ export const createPost = /* GraphQL */ `mutation CreatePost(
 ) {
   createPost(input: $input, condition: $condition) {
     id
+    content
+    postURL
+    groupID
+    user{
+      id
+      firstname
+      lastname
+      profileURL
+    }
+    commentCount
+    createdAt
+    updatedAt
   }
 }
 ` as GeneratedMutation<

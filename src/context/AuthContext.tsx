@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useState, ReactNode, useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { fetchUserAttributes, signOut } from 'aws-amplify/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,8 +9,7 @@ import client from '../client';
 import { blockListByBlocked, blockListByBlocker, tokensByID, userByEmail 
 } from '../customGraphql/customQueries';
 import { createToken, deleteTokenItem } from '../customGraphql/customMutations';
-import { onCreateUserGroup, onCreateBlockList, onDeleteBlockList, onDeleteUserGroup
- } from '../customGraphql/customSubscriptions';
+import { onCreateBlockList, onDeleteBlockList } from '../customGraphql/customSubscriptions';
 import { User } from '../API';
 import wsClient from '../components/webSocket';
 
@@ -20,12 +19,14 @@ interface AuthContextType {
   currUser: User | undefined;
   blockList: string[];
   groupCount: number;
+  refreshGroups: number;
   setSignedIn: (value: boolean) => void;
   setUserEmail: (email: string) => void;
   setCurrUser: (currUser: User) => void;
   setGroupCount: (count: number) => void;
   logout: () => void;
   triggerFetch: () => void;
+  incrementRefreshGroup: () => void;
   setBlockList: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
@@ -39,6 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [ groupCount, setGroupCount ] = useState(0); 
   const [ tokenDynamoID, setTokenDynamoID ] = useState<string>();
   const [ blockList, setBlockList ] = useState<string[]>([]);
+  const [ refreshGroups, setRefreshGroups] = useState(0);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   //runs on app start up to check if user is already signed in
   useEffect(() => {
@@ -191,44 +194,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setCurrUser((prev) => prev 
           ? { ...prev, unreadChatCount: data.count } 
           : prev);
-      } else{
+      } else if(data.action === 'updateGroupCount'){
+        if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+        debounceTimeout.current = setTimeout(() => {
+          setGroupCount(prev => prev + 1);
+        }, 1000);
+      } else if(data.action === 'updateProfileImage'){ 
+        triggerFetch();
+      } else { 
         console.log('new message: ', data);
-        
       }
     }
     wsClient.addListener(handleWSMessage);
     return () => wsClient.removeListener(handleWSMessage);
-  }, [currUser?.id])
-
-  //subscription to listen for new usergroups and trigger state update
-  useEffect(() => {
-    if(!currUser) return;
-    const subscription = client.graphql({
-      query: onCreateUserGroup,
-      variables: {
-        filter: { userID: { eq: currUser.id } }
-      },
-      authMode: 'userPool'
-    }).subscribe({
-      next: () => {
-        setGroupCount((prev)=> prev++);
-      }
-    })
-    const deleteSubscription= client.graphql({
-      query: onDeleteUserGroup,
-      variables: {
-        filter: { userID: { eq: currUser.id } }
-      },
-      authMode: 'userPool'
-    }).subscribe({
-      next: () => {
-        setGroupCount((prev)=> prev++);
-      }
-    })
-    return () =>{ 
-      subscription.unsubscribe()
-      deleteSubscription.unsubscribe();
-    };
   }, [currUser?.id])
   
   //Listens to app state and manages Chat API connection 
@@ -283,6 +261,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }).catch(() => {})
   }
 
+  const incrementRefreshGroup = () => {
+    setRefreshGroups(prev => prev + 1);
+  }
+
   //Checks if any other tokens with the same ID exist: 
   //  exists for current user: do nothing
   //  exists for other user: delete and create token
@@ -330,8 +312,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ isSignedIn, userEmail, currUser, blockList, groupCount,
-      setGroupCount, setSignedIn, setUserEmail, setCurrUser, logout, triggerFetch, 
-      setBlockList}}>
+      refreshGroups, setGroupCount, setSignedIn, setUserEmail, setCurrUser,
+      logout, triggerFetch, setBlockList, incrementRefreshGroup}}
+    >
       {children}
     </AuthContext.Provider>
   );

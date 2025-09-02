@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, FlatList, Platform, Alert,
   ActivityIndicator, KeyboardAvoidingView, ScrollView } from 'react-native';
 
 import client from '../client';
-import { createUserGroup, createGroup, deleteGroup, updateGroup, createNotification
+import { createUserGroup, createGroup, deleteGroup, createNotification
  } from '../customGraphql/customMutations';
 import { moderateText } from '../customGraphql/customQueries';
 import { User } from '../API';
@@ -30,8 +30,7 @@ const CreateGroup = ({ navigation }: any) => {
   const [ loading, setLoading ] = useState(false);
   const [ goNext, setGoNext ] = useState(false);
 
-  const authContext = useContext(AuthContext);
-  const currUser = authContext?.currUser;
+  const { currUser } = useContext(AuthContext)!;
   if(!currUser) return;
   
   //Triggered when CreateGroup Button Pressed. Takes user inputs and creates a group,

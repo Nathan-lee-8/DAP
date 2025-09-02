@@ -306,7 +306,7 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
     postURL
     groupID
     userID
-    user {
+    user{
       id
       email
       firstname
@@ -319,25 +319,6 @@ export const onCreatePost = /* GraphQL */ `subscription OnCreatePost(
       createdAt
       updatedAt
       owner
-      __typename
-    }
-    group {
-      id
-      groupName
-      nameLowercase
-      groupURL
-      description
-      isPublic
-      memberCount
-      type
-      createdAt
-      updatedAt
-      owner
-      __typename
-    }
-    comments {
-      nextToken
-      __typename
     }
     commentCount
     createdAt

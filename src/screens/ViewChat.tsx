@@ -559,7 +559,7 @@ const ViewChat = ( { route, navigation } : any) => {
           return (
             <View>
               {shouldShowDate && (
-                <Text style={{ textAlign: 'center' }}>
+                <Text style={{ margin: 5, textAlign: 'center' }}>
                   {currTime.format('MMM D, YYYY')}
                 </Text>
               )}

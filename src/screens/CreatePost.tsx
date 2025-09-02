@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert, FlatList, Keyboard,
 import { Video } from 'react-native-video';
 
 import client from '../client';
-import { createPost, updatePost } from '../customGraphql/customMutations';
+import { createPost } from '../customGraphql/customMutations';
 import { moderateText } from '../customGraphql/customQueries';
 
 import { AuthContext } from '../context/AuthContext';
@@ -85,7 +85,13 @@ const CreatePost = ( {route, navigation}: any ) => {
         authMode: 'userPool'
       })
       const postID = postData.data.createPost.id;
-      await handleUploadFilepaths(postID);
+      await Promise.all(
+        media.map(async (item, index) => {
+          const uri = await getMediaURI(item, 
+            `public/processing/groupPictures/${groupID}/${postID}/${Date.now()}_${index}`);
+          return uri;
+        })
+      )
       navigation.goBack();
       Alert.alert('Success','Post Created');
     } catch (err) {
@@ -112,32 +118,6 @@ const CreatePost = ( {route, navigation}: any ) => {
       console.log('Error', err);
     }
     return true;
-  }
-
-  //uploads all uri's in media to s3 and returns new s3 filepaths 
-  const handleUploadFilepaths = async (postID: string) => {
-    try{
-      const newPaths = await Promise.all(
-        media.map(async (item, index) => {
-          const uri = await getMediaURI(item, 
-            `public/processing/groupPictures/${groupID}/${postID}/${Date.now()}_${index}`);
-          return uri;
-        })
-      )
-      await client.graphql({
-        query: updatePost,
-        variables: {
-          input:{
-            id: postID,
-            postURL: newPaths
-          }
-        },
-        authMode: 'userPool'
-      })
-    } catch (err){
-      console.log(err);
-      Alert.alert('Error', 'There was an issue uploading the media');
-    }
   }
 
   return (

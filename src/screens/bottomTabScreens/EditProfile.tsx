@@ -25,7 +25,7 @@ const EditProfile = ({navigation}: any) => {
   const [ editsOn, setEditsOn ] = useState(false);
   const authContext = useContext(AuthContext);
   if(!authContext) return;
-  const { currUser, setCurrUser } = authContext;
+  const { currUser, triggerFetch } = authContext;
   if(!currUser) return;
   
   //use temp values to hold data until user saves
@@ -38,8 +38,7 @@ const EditProfile = ({navigation}: any) => {
   useFocusEffect(
     useCallback(() => {
       return () => {
-        setTempURL(currUser.profileURL);
-        setEditsOn(false);
+        cancelEdits();
       };
     }, [])
   );
@@ -88,7 +87,7 @@ const EditProfile = ({navigation}: any) => {
       }
       if(tempProfileURL === null) throw new Error('Upload failed');
       setTempURL(tempProfileURL);
-      const data = await client.graphql({
+      await client.graphql({
         query: updateUser,
         variables: {
           input: {
@@ -102,7 +101,7 @@ const EditProfile = ({navigation}: any) => {
         },
         authMode: 'userPool'
       });
-      setCurrUser(data.data.updateUser);
+      triggerFetch();
       Alert.alert('Success', 'Profile updated successfully');
     } catch {
       Alert.alert('Error', 'Failed to update Profile');
@@ -112,13 +111,20 @@ const EditProfile = ({navigation}: any) => {
     }
   }
 
+  const cancelEdits = () => {
+    setTempURL(currUser.profileURL);
+    setTempFirst(currUser.firstname);;
+    setTempLast(currUser.lastname)
+    setDescription(currUser.description || '');
+    setEditsOn(false);
+  }
+
   //Opens images picker to set new profile picture
   const addProfileImg = async () => {
     try {
       setLoading(true);
       const uri = await imagePicker();
-      if(uri === null) throw new Error('No Image Selected');
-      setTempURL(uri);
+      if(uri) setTempURL(uri);
     } catch {
        Alert.alert('Error', 'Issue loading image library');
     } finally{
@@ -184,9 +190,13 @@ const EditProfile = ({navigation}: any) => {
           >
             <TouchableOpacity onPress={addProfileImg} style={styles.uploadImage}>
               <ImgComponent uri={tempURL || 'defaultUser'} style={styles.editProfileURL}/>
-              <Text style={styles.uploadImageText}>Edit Image</Text>
+              {tempURL === 'defaultUser' && 
+                <View style={[styles.overlay, {borderRadius: 90}]}>
+                  <Text style={styles.overLayText}>Edit Image</Text>
+                </View>  
+              }
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setEditsOn(false)} 
+            <TouchableOpacity onPress={cancelEdits} 
               style={styles.editProfileButton}
             >
               <Text style={styles.noResultsMsg}>Cancel</Text>

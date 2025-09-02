@@ -6,6 +6,7 @@ import client from '../client';
 import { getGroup, postsByDate } from '../customGraphql/customQueries';
 import { createUserGroup, deleteUserGroup, deleteGroup, createNotification, 
   deleteNotification } from '../customGraphql/customMutations';
+import { onCreatePost } from "../customGraphql/customSubscriptions";
 import { Group, Post, UserGroup, User, Notification, ModelSortDirection } from '../API';
 
 import { AuthContext } from "../context/AuthContext";
@@ -45,9 +46,7 @@ const ViewGroup = ( {route, navigation} : any) => {
   const [ addedMembers, setAddedMembers ] = useState<User[]>([]);
   const flatListRef = useRef<FlatList>(null);
 
-  const authContext = useContext(AuthContext);
-  const currUser = authContext?.currUser;
-  const blockList = authContext?.blockList;
+  const {currUser, blockList, refreshGroups } = useContext(AuthContext)!;
   if(!currUser) {
     Alert.alert('Error', 'Unable to view group');
     navigation.goBack();
@@ -56,7 +55,19 @@ const ViewGroup = ( {route, navigation} : any) => {
 
   useEffect(() => {
     fetchCurrentData();
-  }, [])
+    const subscription = client.graphql({
+      query: onCreatePost,
+      authMode:'userPool'
+    }).subscribe({
+      next: (data) => { 
+        const newPost = data.data.onCreatePost;
+        if(newPost) setPosts((prev)=> [newPost, ...prev]);
+      }
+    })
+    return () => {
+      subscription.unsubscribe();
+    }
+  }, [refreshGroups]);
   //Retreives the current group Data and sets Groups, Posts, and Participants
   //also sets currUsers membership. sets group options based on membership role.
   const fetchCurrentData = async () => {
@@ -157,7 +168,7 @@ const ViewGroup = ( {route, navigation} : any) => {
         item !== null && !post.some(existingItem => existingItem.id === item.id) 
         && !blockList?.includes(item.user?.id ?? "")
       );
-      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+      setPosts((prevPosts) => [...newPosts, ...prevPosts]);
       setPostNextToken(posts.data.postsByDate.nextToken);
     });
   }
@@ -222,7 +233,7 @@ const ViewGroup = ( {route, navigation} : any) => {
     if(option === 'View Members'){
       navigation.navigate('ViewGroupMembers', {group: group});
     }else if(option === 'Edit'){
-      handleEditGroup();
+      navigation.navigate('EditGroup', {group: group});
     }else if(option === 'Invite'){
       setInviteModalVisible(true);
     }else if(option === 'Leave'){
@@ -234,10 +245,6 @@ const ViewGroup = ( {route, navigation} : any) => {
     }else{
       Alert.alert(option, 'Not implemented yet');
     }
-  }
-
-  const handleEditGroup = () => {
-    navigation.navigate('EditGroup', {group: group});
   }
 
   const handleLeaveGroup = () => {
