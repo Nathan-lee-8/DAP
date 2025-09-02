@@ -12,10 +12,10 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		3EEB2EAA2DC059FF00B8C12D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3EEB2EA92DC059FF00B8C12D /* GoogleService-Info.plist */; };
-		61E652C456EE8554FE156FB2 /* Pods_dap_dapTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E04EC570C56950D40AB59A3B /* Pods_dap_dapTests.framework */; };
 		73EFC5C17B516306AFD810AB /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		C6ED446F25F64A1796B8F694 /* Pods_dap.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6697D3CD8071CDE7E3D492DD /* Pods_dap.framework */; };
+		8D6EE8F7E16894E19F4ED521 /* Pods_dap.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5B9CF75311367758C03CA1F /* Pods_dap.framework */; };
+		E3D3DB4F38D2B51AA4D7531A /* Pods_dap_dapTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7E0F2D445E397337716434C /* Pods_dap_dapTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,11 +44,11 @@
 		3EEB2EA92DC059FF00B8C12D /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4F98367C3FF970FF44EEC836 /* Pods-dap-dapTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dap-dapTests.debug.xcconfig"; path = "Target Support Files/Pods-dap-dapTests/Pods-dap-dapTests.debug.xcconfig"; sourceTree = "<group>"; };
 		52270A07C6E6408D1AA37821 /* Pods-dap-dapTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dap-dapTests.release.xcconfig"; path = "Target Support Files/Pods-dap-dapTests/Pods-dap-dapTests.release.xcconfig"; sourceTree = "<group>"; };
-		6697D3CD8071CDE7E3D492DD /* Pods_dap.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_dap.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F730677F3F1D281D939ED99 /* Pods-dap.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dap.debug.xcconfig"; path = "Target Support Files/Pods-dap/Pods-dap.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = dap/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9FDB280E0EC2E3FA48529144 /* Pods-dap.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-dap.release.xcconfig"; path = "Target Support Files/Pods-dap/Pods-dap.release.xcconfig"; sourceTree = "<group>"; };
-		E04EC570C56950D40AB59A3B /* Pods_dap_dapTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_dap_dapTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7E0F2D445E397337716434C /* Pods_dap_dapTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_dap_dapTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C5B9CF75311367758C03CA1F /* Pods_dap.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_dap.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -57,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				61E652C456EE8554FE156FB2 /* Pods_dap_dapTests.framework in Frameworks */,
+				E3D3DB4F38D2B51AA4D7531A /* Pods_dap_dapTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C6ED446F25F64A1796B8F694 /* Pods_dap.framework in Frameworks */,
+				8D6EE8F7E16894E19F4ED521 /* Pods_dap.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,8 +110,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				6697D3CD8071CDE7E3D492DD /* Pods_dap.framework */,
-				E04EC570C56950D40AB59A3B /* Pods_dap_dapTests.framework */,
+				C5B9CF75311367758C03CA1F /* Pods_dap.framework */,
+				A7E0F2D445E397337716434C /* Pods_dap_dapTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -511,7 +511,7 @@
 				CODE_SIGN_ENTITLEMENTS = dap/dapDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6446LBMN97;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = dap/Info.plist;
@@ -548,7 +548,7 @@
 				CODE_SIGN_ENTITLEMENTS = dap/dapRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6446LBMN97;
 				INFOPLIST_FILE = dap/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
@@ -634,6 +634,14 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/React/Base/**",
+					"$(inherited)/**",
+					"${PODS_ROOT}/React/**",
+					"${PODS_ROOT}/Headers/Public/**",
+					"${PODS_ROOT}/Headers/Public/React-Core/**",
+					"${PODS_ROOT}/FirebaseCore/FirebaseCore/Sources/Public/**",
+					"${PODS_ROOT}/FirebaseMessaging/FirebaseMessaging/Sources/Public/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -716,6 +724,14 @@
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-NativeModulesApple/React_NativeModulesApple.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers",
 					"${PODS_CONFIGURATION_BUILD_DIR}/React-graphics/React_graphics.framework/Headers/react/renderer/graphics/platform/ios",
+					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native/React/Base/**",
+					"$(inherited)/**",
+					"${PODS_ROOT}/React/**",
+					"${PODS_ROOT}/Headers/Public/**",
+					"${PODS_ROOT}/Headers/Public/React-Core/**",
+					"${PODS_ROOT}/FirebaseCore/FirebaseCore/Sources/Public/**",
+					"${PODS_ROOT}/FirebaseMessaging/FirebaseMessaging/Sources/Public/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
