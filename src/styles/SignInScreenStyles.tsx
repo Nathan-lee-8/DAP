@@ -122,22 +122,18 @@ const styles = StyleSheet.create({
     color: "#007BFF",
     textAlign: 'center'
   },
-  googleLoginContainer: {
-    width: width - 40,
+  googleBtn: {
+    alignSelf: 'center',
+    width: 300,
     height: 50,
-    borderWidth: 1,
-    borderColor: '#a3a3a3',
-    flexDirection: 'row',
-    alignItems: 'center',
-    textAlign: 'center',
-    justifyContent:'center',
-    borderRadius: 5,
+    borderRadius: 8,
     marginBottom: 10,
   },
-  googleLoginText: {
-    marginLeft: 12,
-    fontSize: 16,
-    fontWeight: '600',
+  appleBtn:{
+    alignSelf: 'center',
+    width: 295,
+    height: 44,
+    marginBottom: 10,
   },
   centeredRow:{
     marginTop: 15,

@@ -13,6 +13,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SignInParamList } from '../../types/rootStackParamTypes';
 
+import { AppleButton } from '@invertase/react-native-apple-authentication';
+import { GoogleSigninButton } from '@react-native-google-signin/google-signin';
+
 /**
  * Displays Inputs for user to sign in with email and password and Icon for user to sign
  * in with Google. Signs in using user input values and retrieves the User input email 
@@ -39,6 +42,7 @@ const SignIn = () => {
         Alert.alert('Error', 'Please verify your email before signing in.', [
           {text: 'OK', onPress: () => navigation.navigate('Verify', {email: email})}
         ]);
+        setLoading(false);
         return;
       };
       setUserEmail(email.trim().toLowerCase());
@@ -121,12 +125,19 @@ const SignIn = () => {
                 <Text style={styles.loginBtnText}>Sign In</Text>
               </TouchableOpacity>
               <Text style={{textAlign:'center', marginVertical: 15}}>or</Text>
-              <TouchableOpacity style={styles.googleLoginContainer} disabled={loading}
-                onPress={() => signInWithRedirect({ provider: 'Google' })}
-              >
-                <Icon name="logo-google" size={25} />
-                <Text style={styles.googleLoginText}>Continue with Google</Text>
-              </TouchableOpacity>
+              <AppleButton
+                buttonStyle={AppleButton.Style.BLACK}  // BLACK, WHITE, WHITE_OUTLINE
+                buttonType={AppleButton.Type.SIGN_IN}  // SIGN_IN, CONTINUE
+                style={styles.appleBtn}
+                cornerRadius={4}
+                onPress={() => signInWithRedirect({provider: 'Apple'})}
+              />
+              <GoogleSigninButton
+                style={styles.googleBtn}
+                size={GoogleSigninButton.Size.Wide}
+                color={GoogleSigninButton.Color.Dark}
+                onPress={() => signInWithRedirect({provider: 'Google'})}
+              />
             </View>
           )}
 
